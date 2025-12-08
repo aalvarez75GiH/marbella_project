@@ -1,0 +1,39 @@
+export const colors = {
+  brand: {
+    primary: "#247F35",
+    secondary: "#F7F2C9",
+    tertiary: "#3A2F01",
+    white: "#FFFFFF",
+    black: "#000000",
+  },
+  ui: {
+    primary: "#247F35",
+    secondary: "#3A2F01",
+    tertiary: "#F7F2C9",
+    disabled: "#898989",
+    error: "#FA462D",
+    success: "#247F35",
+    business: "#FFBA08",
+  },
+  bg: {
+    screens_bg: "#F5F4F4",
+    elements_bg: "#FFFFFF",
+  },
+  text: {
+    black: "#000000",
+    white: "#FFFFFF",
+    not_active: "#6A6A6A",
+    error: "#FA462D",
+  },
+  inputs: {
+    bg: "#FFFFFF",
+    bottom_lines: "#D9D9D9",
+    placeHolders: "#898989",
+  },
+  ctas: {
+    regular_flow: "#247F35",
+    business: "#FFB400",
+    error: "#D62828",
+    operations: "#3A2F01",
+  },
+};
