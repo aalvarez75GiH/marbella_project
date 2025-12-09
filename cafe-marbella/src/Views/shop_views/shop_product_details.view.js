@@ -1,6 +1,6 @@
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
-import { fonts, fontWeights } from "../../infrastructure/theme/fonts";
+import { ScrollView } from "react-native";
 
 import { Container } from "../../components/containers/general.containers";
 // import BuggyIcon from "../../../assets/my_icons/buggy_icon.svg";
@@ -32,8 +32,15 @@ export default function Shop_Product_Details_View({ route }) {
           action={() => navigation.goBack()}
           label="Product Details"
         />
-        <Spacer position="top" size="large" />
-        <Product_Details_Card item={item} />
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            flexGrow: 1, // Ensures content fills the available space
+            alignItems: "center", // Centers content horizontally
+          }}
+        >
+          <Product_Details_Card item={item} />
+        </ScrollView>
       </Container>
     </SafeArea>
   );
