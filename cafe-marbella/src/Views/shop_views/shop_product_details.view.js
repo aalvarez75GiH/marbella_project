@@ -1,7 +1,5 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, FlatList } from "react-native";
 import { useTheme } from "styled-components/native";
-
+import { useNavigation } from "@react-navigation/native";
 import { fonts, fontWeights } from "../../infrastructure/theme/fonts";
 
 import { Container } from "../../components/containers/general.containers";
@@ -14,18 +12,12 @@ import { Product_Initial_Card } from "../../components/cards/product_initial_car
 
 import { whole_bean_coffee } from "../../../src/infrastructure/local data/products";
 import { ground_bean_coffee } from "../../../src/infrastructure/local data/products";
+import { Product_Details_Card } from "../../components/cards/product_details_card/product_details.card";
 
-export default function Shop_View() {
-  const renderStoredMessagesTile = ({ item }) => {
-    return (
-      <Spacer position="bottom" size="medium">
-        <Product_Initial_Card item={item} />
-      </Spacer>
-    );
-  };
-
+export default function Shop_Product_Details_View({ route }) {
   const theme = useTheme();
-
+  const navigation = useNavigation();
+  const { item } = route.params;
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
       <Container
@@ -36,36 +28,13 @@ export default function Shop_View() {
         justify="flex-start"
         align="center"
       >
-        <Go_Back_Header action={() => null} label="Whole bean coffee" />
-        <Spacer position="top" size="large" />
-        {/* <Product_Initial_Card /> */}
-        <FlatList
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
-          data={ground_bean_coffee}
-          //data={whole_bean_coffee}
-          renderItem={renderStoredMessagesTile}
-          keyExtractor={(item, id) => {
-            return item.id;
-          }}
+        <Go_Back_Header
+          action={() => navigation.goBack()}
+          label="Product Details"
         />
+        <Spacer position="top" size="large" />
+        <Product_Details_Card item={item} />
       </Container>
     </SafeArea>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // backgroundColor: theme.colors.ui.primary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  test: {
-    width: 300,
-    height: 300,
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
