@@ -18,6 +18,7 @@ export default function Shop_Product_Details_View({ route }) {
   const theme = useTheme();
   const navigation = useNavigation();
   const { item } = route.params;
+  console.log("ROUTE ITEM:", JSON.stringify(item, null, 2));
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
       <Container

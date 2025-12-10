@@ -43,7 +43,7 @@ export default function Shop_View() {
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           data={ground_bean_coffee}
-          //data={whole_bean_coffee}
+          // data={whole_bean_coffee}
           renderItem={renderStoredMessagesTile}
           keyExtractor={(item, id) => {
             return item.id;
