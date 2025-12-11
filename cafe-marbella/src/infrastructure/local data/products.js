@@ -16,6 +16,7 @@ export const whole_bean_coffee = [
       {
         id: "250",
         sizeLabel: "250 gr",
+        sizeLabel_ounces: "9 oz",
         sizeGrams: 250,
         price: 8.99,
         isDefault: true,
@@ -29,6 +30,7 @@ export const whole_bean_coffee = [
       {
         id: "500",
         sizeLabel: "500 gr",
+        sizeLabel_ounces: "18 oz",
         sizeGrams: 500,
         price: 15.99,
         images: [
@@ -40,7 +42,8 @@ export const whole_bean_coffee = [
       },
       {
         id: "1000",
-        sizeLabel: "1 kg",
+        sizeLabel: "1000 gr",
+        sizeLabel_ounces: "36 oz",
         sizeGrams: 1000,
         price: 29.99,
         images: [
@@ -66,6 +69,7 @@ export const whole_bean_coffee = [
       {
         id: "250",
         sizeLabel: "250 gr",
+        sizeLabel_ounces: "9 oz",
         sizeGrams: 250,
         price: 9.49,
         isDefault: true,
@@ -79,6 +83,7 @@ export const whole_bean_coffee = [
       {
         id: "500",
         sizeLabel: "500 gr",
+        sizeLabel_ounces: "18 oz",
         sizeGrams: 500,
         price: 16.99,
         images: [
@@ -90,7 +95,8 @@ export const whole_bean_coffee = [
       },
       {
         id: "1000",
-        sizeLabel: "1 kg",
+        sizeLabel: "1000 gr",
+        sizeLabel_ounces: "36 oz",
         sizeGrams: 1000,
         price: 31.99,
         images: [
@@ -116,6 +122,7 @@ export const whole_bean_coffee = [
       {
         id: "250",
         sizeLabel: "250 gr",
+        sizeLabel_ounces: "9 oz",
         sizeGrams: 250,
         price: 9.49,
         isDefault: true,
@@ -129,6 +136,7 @@ export const whole_bean_coffee = [
       {
         id: "500",
         sizeLabel: "500 gr",
+        sizeLabel_ounces: "18 oz",
         sizeGrams: 500,
         price: 16.99,
         images: [
@@ -140,7 +148,8 @@ export const whole_bean_coffee = [
       },
       {
         id: "1000",
-        sizeLabel: "1 kg",
+        sizeLabel: "1000 gr",
+        sizeLabel_ounces: "36 oz",
         sizeGrams: 1000,
         price: 31.99,
         images: [
@@ -166,6 +175,7 @@ export const whole_bean_coffee = [
       {
         id: "250",
         sizeLabel: "250 gr",
+        sizeLabel_ounces: "9 oz",
         sizeGrams: 250,
         price: 9.49,
         isDefault: true,
@@ -179,6 +189,7 @@ export const whole_bean_coffee = [
       {
         id: "500",
         sizeLabel: "500 gr",
+        sizeLabel_ounces: "18 oz",
         sizeGrams: 500,
         price: 16.99,
         images: [
@@ -190,7 +201,8 @@ export const whole_bean_coffee = [
       },
       {
         id: "1000",
-        sizeLabel: "1 kg",
+        sizeLabel: "1000 gr",
+        sizeLabel_ounces: "36 oz",
         sizeGrams: 1000,
         price: 31.99,
         images: [
@@ -399,6 +411,7 @@ export const ground_bean_coffee = [
       {
         id: "250",
         sizeLabel: "250 gr",
+        sizeLabel_ounces: "9 oz",
         sizeGrams: 250,
         price: 8.99,
         isDefault: true,
@@ -412,10 +425,12 @@ export const ground_bean_coffee = [
       {
         id: "500",
         sizeLabel: "500 gr",
+        sizeLabel_ounces: "18 oz",
         sizeGrams: 500,
         price: 15.99,
         images: [
-          require("../../../assets/products_images/vzla_bag_gb.png"),
+          //   require("../../../assets/products_images/vzla_bag_gb.png"),
+          require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
           require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
@@ -423,7 +438,8 @@ export const ground_bean_coffee = [
       },
       {
         id: "1000",
-        sizeLabel: "1 kg",
+        sizeLabel: "1000 gr",
+        sizeLabel_ounces: "36 oz",
         sizeGrams: 1000,
         price: 29.99,
         images: [
@@ -449,6 +465,7 @@ export const ground_bean_coffee = [
       {
         id: "250",
         sizeLabel: "250 gr",
+        sizeLabel_ounces: "9 oz",
         sizeGrams: 250,
         price: 9.49,
         isDefault: true,
@@ -462,6 +479,7 @@ export const ground_bean_coffee = [
       {
         id: "500",
         sizeLabel: "500 gr",
+        sizeLabel_ounces: "18 oz",
         sizeGrams: 500,
         price: 16.99,
         images: [
@@ -473,7 +491,8 @@ export const ground_bean_coffee = [
       },
       {
         id: "1000",
-        sizeLabel: "1 kg",
+        sizeLabel: "1000 gr",
+        sizeLabel_ounces: "36 oz",
         sizeGrams: 1000,
         price: 31.99,
         images: [
@@ -499,6 +518,7 @@ export const ground_bean_coffee = [
       {
         id: "250",
         sizeLabel: "250 gr",
+        sizeLabel_ounces: "9 oz",
         sizeGrams: 250,
         price: 9.49,
         isDefault: true,
@@ -512,6 +532,7 @@ export const ground_bean_coffee = [
       {
         id: "500",
         sizeLabel: "500 gr",
+        sizeLabel_ounces: "18 oz",
         sizeGrams: 500,
         price: 16.99,
         images: [
@@ -523,7 +544,8 @@ export const ground_bean_coffee = [
       },
       {
         id: "1000",
-        sizeLabel: "1 kg",
+        sizeLabel: "1000 gr",
+        sizeLabel_ounces: "36 oz",
         sizeGrams: 1000,
         price: 31.99,
         images: [
@@ -549,6 +571,7 @@ export const ground_bean_coffee = [
       {
         id: "250",
         sizeLabel: "250 gr",
+        sizeLabel_ounces: "9 oz",
         sizeGrams: 250,
         price: 9.49,
         isDefault: true,
@@ -562,6 +585,7 @@ export const ground_bean_coffee = [
       {
         id: "500",
         sizeLabel: "500 gr",
+        sizeLabel_ounces: "18 oz",
         sizeGrams: 500,
         price: 16.99,
         images: [
@@ -573,7 +597,8 @@ export const ground_bean_coffee = [
       },
       {
         id: "1000",
-        sizeLabel: "1 kg",
+        sizeLabel: "1000 gr",
+        sizeLabel_ounces: "36 oz",
         sizeGrams: 1000,
         price: 31.99,
         images: [

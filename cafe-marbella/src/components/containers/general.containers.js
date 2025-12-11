@@ -1,5 +1,6 @@
-import { ScrollView, TouchableOpacity, View } from "react-native";
+import { Pressable, ScrollView, TouchableOpacity, View } from "react-native";
 import styled, { css } from "styled-components/native";
+import { theme } from "../../infrastructure/theme/index"; // adjust path
 
 const baseStyles = css`
   width: ${(props) => props.width || "100%"};
@@ -25,6 +26,8 @@ const baseStyles = css`
     props.border_radius_bottom_left || props.border_radius || "0px"};
   border-bottom-right-radius: ${(props) =>
     props.border_radius_bottom_right || props.border_radius || "0px"};
+  gap: ${(props) => props.gap || "0px"};
+  overflow: ${(props) => props.overflow || "visible"};
 `;
 
 export const Container = styled(View)`
@@ -55,4 +58,23 @@ export const Scrollable_MainContent = styled(ScrollView).attrs((props) => ({
   width: ${(props) => props.width || "100%"};
   height: ${(props) => props.height || "89%"};
   background-color: ${(props) => props.color || "blue"};
+`;
+
+export const Pressable_Container = styled(Pressable)`
+  ${baseStyles};
+`;
+
+export const ThumbnailPressable = styled(Pressable)`
+  width: ${(props) => props.width || "80px"};
+  height: ${(props) => props.height || "80px"};
+  border-radius: ${(props) => props.radius || "12px"};
+  overflow: hidden;
+
+  justify-content: center;
+  align-items: center;
+
+  border-width: ${(props) => (props.active ? "2px" : "1px")};
+  border-color: ${(props) =>
+    props.active ? theme.colors.ui.success : "#E2E2E2"};
+  background-color: #f8f8f8;
 `;

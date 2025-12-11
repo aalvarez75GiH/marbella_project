@@ -10,6 +10,10 @@ import {
 import { theme } from "../../../infrastructure/theme/index.js";
 import { Product_Image_Component } from "../product_details_card/product_image.component.js";
 import { Product_Initial_Info_Component } from "../product_initial_card/product_intial_info.component.js";
+import { Product_Details_Info_Component } from "../product_details_card/product_details_info.component.js";
+import { Product_Details_Carousel_Component } from "./product_details_carousel.component.js";
+import { Spacer } from "../../spacers and globals/optimized.spacer.component.js";
+import { Product_Size_Options_Component } from "./product_size_options.component.js";
 
 export const Product_Details_Card = ({ item = null }) => {
   console.log("ITEM AT PRODUCT DETAILS CARD:", JSON.stringify(item, null, 2));
@@ -34,65 +38,39 @@ export const Product_Details_Card = ({ item = null }) => {
       align="center"
       direction="column"
       justify="flex-start"
-      color={theme.colors.bg.elements_bg}
+      color={theme.colors.bg.screens_bg}
       onPress={() => null}
     >
       {/* <Product_Image_Component image={main_image} /> */}
       <Product_Image_Component
         image={selectedVariant.images[selectedImageIndex]}
       />
-      {/* <Container width="100%" height="10%" color={"#898989"} /> */}
-      <View style={styles.thumbnailRow}>
-        {selectedVariant.images.map((imgSrc, index) => (
-          <Pressable
-            key={index}
-            onPress={() => setSelectedImageIndex(index)}
-            style={[
-              styles.thumbnailWrapper,
-              index === selectedImageIndex && styles.thumbnailActive,
-            ]}
-          >
-            <Image source={imgSrc} style={styles.thumbnail} />
-          </Pressable>
-        ))}
-      </View>
-      <Product_Initial_Info_Component
+      <Spacer position="top" size="small" />
+      <Product_Details_Carousel_Component
+        item={item}
+        setSelectedImageIndex={setSelectedImageIndex}
+        selectedVariant={selectedVariant}
+        selectedImageIndex={selectedImageIndex}
+      />
+      <Spacer position="top" size="small" />
+
+      <Product_Details_Info_Component
         product_name={product_name}
         product_subtitle={product_subtitle}
         size_variants={size_variants}
+        selectedVariant={selectedVariant}
+        selectedVariantId={selectedVariantId}
+        setSelectedVariantId={setSelectedVariantId}
+      />
+
+      <Spacer position="top" size="small" />
+      <Product_Size_Options_Component
+        item={item}
+        selectedVariant={selectedVariant}
+        selectedVariantId={selectedVariantId}
+        setSelectedVariantId={setSelectedVariantId}
+        setSelectedImageIndex={setSelectedImageIndex}
       />
     </Container>
   );
 };
-
-const styles = StyleSheet.create({
-  thumbnailRow: {
-    flexDirection: "row",
-    alignItems: "space-around",
-    gap: 20, // works in RN 0.71+, otherwise replace with margin
-    marginTop: 12,
-  },
-
-  thumbnailWrapper: {
-    width: 80,
-    height: 80,
-    borderRadius: 12,
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: "#E2E2E2",
-    backgroundColor: "#F8F8F8",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  thumbnailActive: {
-    borderWidth: 2,
-    borderColor: theme.colors.ui.success, // darker border to indicate selection
-  },
-
-  thumbnail: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "contain",
-  },
-});

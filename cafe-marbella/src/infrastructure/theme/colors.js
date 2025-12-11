@@ -23,6 +23,7 @@ export const colors = {
     black: "#000000",
     white: "#FFFFFF",
     not_active: "#6A6A6A",
+    success: "#247F35",
     error: "#FA462D",
   },
   inputs: {
