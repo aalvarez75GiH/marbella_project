@@ -17,13 +17,13 @@ export const Product_Details_Carousel_Component = ({
   return (
     <Container
       width="100%"
-      height="10%"
       //color="lightgray"
       color={theme.colors.bg.elements_bg}
       direction="row"
       align="center"
       justify="space-around"
-      gap="10px"
+      //   gap="10px"
+      style={{ paddingVertical: 10 }}
     >
       <FlatList
         horizontal

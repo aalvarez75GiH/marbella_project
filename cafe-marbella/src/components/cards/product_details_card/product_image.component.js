@@ -11,13 +11,23 @@ export const Product_Image_Component = ({ image }) => {
   return (
     <Container
       width="100%"
-      height="30%"
+      // height="65%"
       color={theme.colors.bg.elements_bg}
-      //color={"red"}
+      // color={"red"}
+      justify="center"
+      align="center"
+      // style={{ paddingRight: "5%" }}
+      style={{ paddingRight: "5%", height: 350 }}
+    >
+      {/* <Container
+      width="100%"
+      height="90%"
+      color={theme.colors.bg.elements_bg}
+      // color={"red"}
       justify="center"
       align="center"
       style={{ paddingRight: "5%" }}
-    >
+    > */}
       <Image
         // source={images[item.image]}
         source={image}

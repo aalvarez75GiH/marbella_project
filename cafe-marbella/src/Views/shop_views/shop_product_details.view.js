@@ -2,7 +2,10 @@ import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native";
 
-import { Container } from "../../components/containers/general.containers";
+import {
+  Container,
+  Flexible_Container,
+} from "../../components/containers/general.containers";
 // import BuggyIcon from "../../../assets/my_icons/buggy_icon.svg";
 import { BuggyIcon } from "../../../assets/modified icons/buggy_modified_icon";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
@@ -20,29 +23,25 @@ export default function Shop_Product_Details_View({ route }) {
   const { item } = route.params;
   console.log("ROUTE ITEM:", JSON.stringify(item, null, 2));
   return (
-    <SafeArea background_color={theme.colors.bg.elements_bg}>
-      <Container
-        width="100%"
-        height="100%"
-        color={theme.colors.bg.screens_bg}
-        // color={"green"}
-        justify="flex-start"
-        align="center"
+    <SafeArea
+      background_color={theme.colors.bg.elements_bg}
+      style={{ flex: 1 }}
+    >
+      <Go_Back_Header
+        action={() => navigation.goBack()}
+        label="Product Details"
+      />
+      {/* <Flexible_Container> */}
+      <ScrollView
+        style={{ flex: 1, width: "100%" }}
+        showsVerticalScrollIndicator={false}
+        // contentContainerStyle={{
+        //   paddingBottom: 260,
+        // }}
       >
-        <Go_Back_Header
-          action={() => navigation.goBack()}
-          label="Product Details"
-        />
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            flexGrow: 1, // Ensures content fills the available space
-            alignItems: "center", // Centers content horizontally
-          }}
-        >
-          <Product_Details_Card item={item} />
-        </ScrollView>
-      </Container>
+        <Product_Details_Card item={item} />
+      </ScrollView>
+      {/* </Flexible_Container> */}
     </SafeArea>
   );
 }

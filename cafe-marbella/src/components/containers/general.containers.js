@@ -4,7 +4,14 @@ import { theme } from "../../infrastructure/theme/index"; // adjust path
 
 const baseStyles = css`
   width: ${(props) => props.width || "100%"};
-  height: ${(props) => props.height || "89%"};
+  ${(props) =>
+    props.height &&
+    css`
+      height: ${props.height};
+    `}
+  /* height: ${(props) => (props.height ? props.height : undefined)}; */
+  /* height: heightProp ? heightProp : undefined */
+
   justify-content: ${(props) => props.justify || "center"};
   align-items: ${(props) => props.align || "center"};
   background-color: ${(props) => props.color || "#FADADD"};

@@ -16,7 +16,7 @@ import { whole_bean_coffee } from "../../../src/infrastructure/local data/produc
 import { ground_bean_coffee } from "../../../src/infrastructure/local data/products";
 
 export default function Shop_View() {
-  const renderStoredMessagesTile = ({ item }) => {
+  const renderProductInitialCard = ({ item }) => {
     return (
       <Spacer position="bottom" size="medium">
         <Product_Initial_Card item={item} />
@@ -44,7 +44,7 @@ export default function Shop_View() {
           showsVerticalScrollIndicator={false}
           data={ground_bean_coffee}
           // data={whole_bean_coffee}
-          renderItem={renderStoredMessagesTile}
+          renderItem={renderProductInitialCard}
           keyExtractor={(item, id) => {
             return item.id;
           }}

@@ -21,111 +21,82 @@ export const Product_Details_Info_Component = ({
   return (
     <Container
       width="100%"
-      height="16%"
       color={theme.colors.bg.elements_bg}
-      //   color={"lightgreen"}
-      justify="center"
       align="flex-start"
-      direction="row"
-      justifyContent="center"
+      direction="column"
+      justify="flex-start"
+      style={{ paddingVertical: 16 }}
     >
+      <Spacer position="left" size="large">
+        <Text variant="raleway_bold_20">{product_name}</Text>
+        <Text variant="raleway_bold_20">{product_subtitle}</Text>
+      </Spacer>
+
       <Container
         width="100%"
-        height="110px"
-        color={theme.colors.bg.elements_bg}
-        // color={"#CAD"}
+        direction="row"
         justify="flex-start"
-        align="flex-start"
+        align="center"
+        color={theme.colors.bg.elements_bg}
       >
-        <Spacer position="top" size="large" />
+        <Spacer position="left" size="large">
+          <Text variant="raleway_bold_20">{selectedVariant.sizeLabel}</Text>
+        </Spacer>
+
+        <Spacer position="left" size="medium" />
+        <Container width="2px" height="25px" color="#000000" />
+        <Spacer position="left" size="large" />
+        <Text variant="raleway_bold_18">
+          {selectedVariant.sizeLabel_ounces}
+        </Text>
+      </Container>
+
+      <Container
+        width="100%"
+        direction="row"
+        justify="space-between"
+        align="center"
+        style={{ marginTop: 16 }}
+        color={theme.colors.bg.elements_bg}
+      >
         <Container
-          width="100%"
-          height="50%"
-          direction="column"
-          align="flex-start"
+          width="50%"
           justify="center"
+          align="flex-start"
           color={theme.colors.bg.elements_bg}
         >
           <Spacer position="left" size="large">
-            <Text variant="raleway_bold_20">{product_name}</Text>
-            <Text variant="raleway_bold_20">{product_subtitle}</Text>
+            <Text
+              variant="dm_sans_bold_28"
+              style={{ color: theme.colors.text.success }}
+            >
+              {selectedVariant.price ? `$${selectedVariant.price}` : null}
+            </Text>
           </Spacer>
         </Container>
 
         <Container
-          width="100%"
-          height="35%"
-          color={theme.colors.bg.elements_bg}
-          //color={"blue"}
-          justify="flex-start"
-          align="flex-start"
-          direction="row"
-        >
-          <Spacer position="left" size="large">
-            <Text variant="raleway_bold_20">{selectedVariant.sizeLabel}</Text>
-          </Spacer>
-          <Spacer position="left" size="medium" />
-          <Container width="2px" height="25px" color="#000000" />
-          <Spacer position="left" size="large" />
-          <Text variant="raleway_bold_18">
-            {selectedVariant.sizeLabel_ounces}
-          </Text>
-        </Container>
-        {/* ********************************************* */}
-        <Container
-          width="100%"
-          height="50%"
-          color={theme.colors.bg.elements_bg}
-          //   color={"blue"}
+          width="50%"
           justify="center"
           align="center"
-          direction="row"
+          color={theme.colors.bg.elements_bg}
         >
-          {/* <Spacer position="left" size="large"> */}
-          <Container
-            width="50%"
-            height="100%"
-            justify="center"
-            align="flex-start"
-            color={theme.colors.bg.elements_bg}
-          >
-            <Spacer position="left" size="large">
-              <Text
-                variant="dm_sans_bold_28"
-                style={{
-                  color: theme.colors.text.success,
-                }}
-              >
-                {selectedVariant.price ? `$${selectedVariant.price}` : null}
-              </Text>
-            </Spacer>
-          </Container>
-          <Container
-            width="50%"
-            height="85%"
+          <Pressable_Container
+            width="65%"
+            height="44px" // ✅ fixed button height
+            border_radius="30px"
+            color={theme.colors.ui.success}
             justify="center"
             align="center"
-            color={theme.colors.bg.elements_bg}
-            // color="lightgreen"
           >
-            <Pressable_Container
-              width="65%"
-              height="100%"
-              border_radius={"30px"}
-              color={theme.colors.ui.success}
+            <Text
+              variant="dm_sans_bold_16_white"
+              style={{ textDecorationLine: "underline" }}
             >
-              <Text
-                variant="dm_sans_bold_16_white"
-                style={{
-                  textDecorationLine: "underline",
-                }}
-              >
-                Add to cart
-              </Text>
-            </Pressable_Container>
-          </Container>
+              Add to cart
+            </Text>
+          </Pressable_Container>
         </Container>
-        {/* ********************************************* */}
       </Container>
     </Container>
   );
