@@ -25,7 +25,7 @@ export const Product_Details_Info_Component = ({
       align="flex-start"
       direction="column"
       justify="flex-start"
-      style={{ paddingVertical: 16 }}
+      padding_vertical="16px"
     >
       <Spacer position="left" size="large">
         <Text variant="raleway_bold_20">{product_name}</Text>

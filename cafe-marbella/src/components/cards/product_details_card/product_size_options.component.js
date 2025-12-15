@@ -19,7 +19,7 @@ export const Product_Size_Options_Component = ({
       justify="flex-start"
       align="center"
       color={theme.colors.bg.elements_bg}
-      style={{ paddingVertical: 16 }}
+      padding_vertical="16px"
     >
       <Container
         width="100%"

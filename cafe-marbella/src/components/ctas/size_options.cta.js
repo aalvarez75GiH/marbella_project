@@ -13,7 +13,7 @@ export const Size_Options_CTA = ({ action, isActive, sizeLabel }) => {
       align="center"
       onPress={() => action()}
       color={isActive ? theme.colors.ui.secondary : theme.colors.bg.screens_bg}
-      style={{ paddingVertical: 12 }}
+      padding_vertical="12px"
     >
       <Text variant={isActive ? "dm_sans_bold_16_white" : "dm_sans_bold_16"}>
         {sizeLabel}

@@ -1,5 +1,6 @@
 export const fonts = {
   ralewayRegular: "ralewayRegular",
+  ralewayMedium: "ralewayMedium",
   ralewayBold: "ralewayBold",
   dmSansRegular: "dmSansRegular",
   dmSansBold: "dmSansBold",

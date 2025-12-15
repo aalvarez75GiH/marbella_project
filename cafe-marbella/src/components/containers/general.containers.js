@@ -9,8 +9,6 @@ const baseStyles = css`
     css`
       height: ${props.height};
     `}
-  /* height: ${(props) => (props.height ? props.height : undefined)}; */
-  /* height: heightProp ? heightProp : undefined */
 
   justify-content: ${(props) => props.justify || "center"};
   align-items: ${(props) => props.align || "center"};
@@ -35,6 +33,13 @@ const baseStyles = css`
     props.border_radius_bottom_right || props.border_radius || "0px"};
   gap: ${(props) => props.gap || "0px"};
   overflow: ${(props) => props.overflow || "visible"};
+  /* Dynamically calculate padding */
+  padding: ${(props) =>
+    `${props.padding_vertical || "0px"} ${props.padding_horizontal || "0px"}`};
+  /* padding-top: ${(props) => props.padding_top || "0px"};
+  padding-bottom: ${(props) => props.padding_bottom || "0px"};
+  padding-left: ${(props) => props.padding_left || "0px"};
+  padding-right: ${(props) => props.padding_right || "0px"}; */
 `;
 
 export const Container = styled(View)`

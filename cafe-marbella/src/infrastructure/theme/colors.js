@@ -14,6 +14,8 @@ export const colors = {
     error: "#FA462D",
     success: "#247F35",
     business: "#FFBA08",
+    white: "#FFFFFF",
+    black: "#000000",
   },
   bg: {
     screens_bg: "#F5F4F4",

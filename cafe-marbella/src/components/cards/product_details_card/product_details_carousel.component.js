@@ -22,8 +22,7 @@ export const Product_Details_Carousel_Component = ({
       direction="row"
       align="center"
       justify="space-around"
-      //   gap="10px"
-      style={{ paddingVertical: 10 }}
+      padding_vertical="10px"
     >
       <FlatList
         horizontal
