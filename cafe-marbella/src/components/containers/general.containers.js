@@ -4,6 +4,7 @@ import { theme } from "../../infrastructure/theme/index"; // adjust path
 
 const baseStyles = css`
   width: ${(props) => props.width || "100%"};
+  minwidth: ${(props) => props.min_width || "auto"};
   ${(props) =>
     props.height &&
     css`
@@ -36,10 +37,6 @@ const baseStyles = css`
   /* Dynamically calculate padding */
   padding: ${(props) =>
     `${props.padding_vertical || "0px"} ${props.padding_horizontal || "0px"}`};
-  /* padding-top: ${(props) => props.padding_top || "0px"};
-  padding-bottom: ${(props) => props.padding_bottom || "0px"};
-  padding-left: ${(props) => props.padding_left || "0px"};
-  padding-right: ${(props) => props.padding_right || "0px"}; */
 `;
 
 export const Container = styled(View)`

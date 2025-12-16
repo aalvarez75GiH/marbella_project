@@ -114,6 +114,17 @@ font-size: ${theme.fontSizes.text_12};
 font-family: ${theme.fonts.dmSansBold};
 color: ${theme.colors.text.white};
 `;
+const dm_sans_bold_10 = (theme) => `
+font-size: ${theme.fontSizes.text_10};
+font-family: ${theme.fonts.dmSansBold};
+color: ${theme.colors.text.black};
+`;
+
+const dm_sans_bold_10_white = (theme) => `
+font-size: ${theme.fontSizes.text_10};
+font-family: ${theme.fonts.dmSansBold};
+color: ${theme.colors.text.white};
+`;
 
 // ************* RALEWAY VARIANTS **************** //
 
@@ -184,6 +195,8 @@ const variants = {
   dm_sans_bold_14_white,
   dm_sans_bold_12,
   dm_sans_bold_12_white,
+  dm_sans_bold_10,
+  dm_sans_bold_10_white,
   //*************************
   raleway_bold_20,
   raleway_bold_18,
