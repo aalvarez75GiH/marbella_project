@@ -12,6 +12,7 @@ import { Menu_Navigator } from "./menu.navigator";
 import ShopIcon from "../../../assets/my_icons/shop_icon.svg";
 import OrdersIcon from "../../../assets/my_icons/receipt_orders.svg";
 import MenuIcon from "../../../assets/my_icons/two_lines_menu_icon.svg";
+import { Cart_Active_With_Items_CTA } from "../../components/ctas/my_cart_active_items.cta";
 
 const Tab = createBottomTabNavigator();
 
@@ -108,15 +109,18 @@ export const AppNavigator = () => {
           ),
         }}
       />
+
       <Tab.Screen
-        name="Menu"
+        name="Cart"
         component={Menu_Navigator}
-        listeners={tabBarListeners}
         options={{
-          //   title: globalLanguage === "EN" ? "Work" : "Trabajo",
-          title: "Menu",
-          tabBarIcon: ({ color }) => (
-            <MenuIcon width={25} height={25} fill={color} />
+          title: "Cart",
+          tabBarIcon: ({ color, size }) => (
+            <Cart_Active_With_Items_CTA
+              color={color}
+              size={size ?? 25}
+              quantity={0}
+            />
           ),
         }}
       />

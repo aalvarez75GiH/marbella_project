@@ -157,6 +157,11 @@ font-size: ${theme.fontSizes.text_14};
 font-family: ${theme.fonts.ralewayBold};
 color: ${theme.colors.text.black};
 `;
+const raleway_bold_10 = (theme) => `
+font-size: ${theme.fontSizes.text_14};
+font-family: ${theme.fonts.ralewayBold};
+color: ${theme.colors.text.black};
+`;
 
 const variants = {
   dm_sans_bold_40,
@@ -188,6 +193,7 @@ const variants = {
   raleway_bold_16,
   raleway_bold_16_white,
   raleway_bold_14,
+  raleway_bold_10,
 };
 
 export const Text = styled.Text`

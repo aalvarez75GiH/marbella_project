@@ -26,4 +26,5 @@ export const fontSizes = {
   text_16: "16px",
   text_14: "14px",
   text_12: "12px",
+  text_10: "10px",
 };
