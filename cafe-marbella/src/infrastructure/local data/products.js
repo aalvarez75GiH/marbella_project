@@ -26,6 +26,13 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 1,
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "500",
@@ -39,6 +46,13 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 1,
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "1000",
@@ -52,6 +66,13 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 1,
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
     ],
   },
@@ -79,6 +100,13 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 1,
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "500",
@@ -92,6 +120,13 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 1,
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "1000",
@@ -105,6 +140,13 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 1,
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
     ],
   },
@@ -132,6 +174,13 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 1,
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "500",
@@ -145,6 +194,13 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 1,
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "1000",
@@ -158,6 +214,13 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 1,
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
     ],
   },
@@ -185,6 +248,13 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 1,
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "500",
@@ -198,6 +268,13 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 1,
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "1000",
@@ -211,192 +288,18 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 1,
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
     ],
   },
 ];
 
-// export const whole_bean_coffee = [
-//   {
-//     id: 1,
-//     product_name: "Medium Roast",
-//     product_subtitle: "Whole Bean Venezuela",
-//     main_image: require("../../../assets/products_images/vzla_bag_wb.png"),
-//     description:
-//       "From the high mountains of the Andes, our Venezuelan coffee boasts a rich aroma with delicate notes of chocolate and caramel. A smooth, balanced cup that embodies the essence of our heritage.",
-//     rating: 4.8,
-//     flag_image: VzlaFlag,
-
-//     size_variants: [
-//       {
-//         id: "250",
-//         sizeLabel: "250 gr",
-//         sizeGrams: 250,
-//         price: 8.99,
-//         isDefault: true,
-//         image_1: require("../../../assets/products_images/vzla_bag_wb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.jpeg"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.jpeg"),
-//       },
-//       {
-//         id: "500",
-//         sizeLabel: "500 gr",
-//         sizeGrams: 500,
-//         price: 15.99,
-//         image_1: require("../../../assets/products_images/vzla_bag_wb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.jpeg"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.jpeg"),
-//       },
-//       {
-//         id: "1000",
-//         sizeLabel: "1 kg",
-//         sizeGrams: 1000,
-//         price: 29.99,
-//         image_1: require("../../../assets/products_images/vzla_bag_wb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.jpeg"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.jpeg"),
-//       },
-//     ],
-//   },
-
-//   {
-//     id: 2,
-//     product_name: "Medium Roast",
-//     product_subtitle: "Whole Bean Mexico",
-//     main_image: require("../../../assets/products_images/mexico_bag_wb.png"),
-//     description:
-//       "Sourced from Mexico's finest coffee-growing regions, this dark roast offers a bold flavor profile with hints of dark chocolate and a smoky finish. Perfect for those who crave a robust cup.",
-//     rating: 4.6,
-//     flag_image: MexicoFlag,
-
-//     size_variants: [
-//       {
-//         id: "250",
-//         sizeLabel: "250 gr",
-//         sizeGrams: 250,
-//         price: 9.49,
-//         isDefault: true,
-//         image_1: require("../../../assets/products_images/mexico_bag_wb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.jpeg"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.jpeg"),
-//       },
-//       {
-//         id: "500",
-//         sizeLabel: "500 gr",
-//         sizeGrams: 500,
-//         price: 16.99,
-//         image_1: require("../../../assets/products_images/mexico_bag_wb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.jpeg"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.jpeg"),
-//       },
-//       {
-//         id: "1000",
-//         sizeLabel: "1 kg",
-//         sizeGrams: 1000,
-//         price: 31.99,
-//         image_1: require("../../../assets/products_images/mexico_bag_wb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.jpeg"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.jpeg"),
-//       },
-//     ],
-//   },
-
-//   {
-//     id: 3,
-//     product_name: "Medium Roast",
-//     product_subtitle: "Whole Bean Honduras",
-//     main_image: require("../../../assets/products_images/honduras_bag_wb.png"),
-//     description:
-//       "Grown in the fertile lands of Honduras, our coffee offers a bright acidity with hints of citrus and nuts.",
-//     rating: 4.9,
-//     flag_image: HondurasFlag,
-
-//     size_variants: [
-//       {
-//         id: "250",
-//         sizeLabel: "250 gr",
-//         sizeGrams: 250,
-//         price: 9.49,
-//         isDefault: true,
-//         image_1: require("../../../assets/products_images/honduras_bag_wb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.jpeg"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.jpeg"),
-//       },
-//       {
-//         id: "500",
-//         sizeLabel: "500 gr",
-//         sizeGrams: 500,
-//         price: 16.99,
-//         image_1: require("../../../assets/products_images/honduras_bag_wb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.jpeg"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.jpeg"),
-//       },
-//       {
-//         id: "1000",
-//         sizeLabel: "1 kg",
-//         sizeGrams: 1000,
-//         price: 31.99,
-//         image_1: require("../../../assets/products_images/honduras_bag_wb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.jpeg"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.jpeg"),
-//       },
-//     ],
-//   },
-
-//   {
-//     id: 4,
-//     product_name: "Medium Roast",
-//     product_subtitle: "Whole Bean Nicaragua",
-//     main_image: require("../../../assets/products_images/nicaragua_bag_wb.png"),
-//     description:
-//       "From the volcanic slopes of Nicaragua, our coffee presents a complex profile with notes of cocoa and red fruit.",
-//     rating: 5.0,
-//     flag_image: NicaraguaFlag,
-
-//     size_variants: [
-//       {
-//         id: "250",
-//         sizeLabel: "250 gr",
-//         sizeGrams: 250,
-//         price: 9.49,
-//         isDefault: true,
-//         image_1: require("../../../assets/products_images/nicaragua_bag_wb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.jpeg"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.jpeg"),
-//       },
-//       {
-//         id: "500",
-//         sizeLabel: "500 gr",
-//         sizeGrams: 500,
-//         price: 16.99,
-//         image_1: require("../../../assets/products_images/nicaragua_bag_wb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.jpeg"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.jpeg"),
-//       },
-//       {
-//         id: "1000",
-//         sizeLabel: "1 kg",
-//         sizeGrams: 1000,
-//         price: 31.99,
-//         image_1: require("../../../assets/products_images/nicaragua_bag_wb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.jpeg"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.jpeg"),
-//       },
-//     ],
-//   },
-// ];
 export const ground_bean_coffee = [
   {
     id: 1,
@@ -421,6 +324,13 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 3,
+        promotion: {
+          active: false,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "500",
@@ -435,6 +345,13 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 11,
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "Time limited: 10% off buying 2 bags!",
+        },
       },
       {
         id: "1000",
@@ -448,6 +365,13 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 10,
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "Time limited: 10% off buying 2 bags!",
+        },
       },
     ],
   },
@@ -475,6 +399,13 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 6,
+        promotion: {
+          active: false,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "500",
@@ -488,6 +419,13 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 2,
+        promotion: {
+          active: false,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "1000",
@@ -501,6 +439,13 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 11,
+        promotion: {
+          active: false,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
     ],
   },
@@ -528,6 +473,13 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 8,
+        promotion: {
+          active: false,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "500",
@@ -541,6 +493,13 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 2,
+        promotion: {
+          active: false,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "1000",
@@ -554,6 +513,13 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 2,
+        promotion: {
+          active: false,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
     ],
   },
@@ -581,6 +547,13 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 1,
+        promotion: {
+          active: false,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "500",
@@ -594,6 +567,13 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 10,
+        promotion: {
+          active: false,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "1000",
@@ -607,189 +587,14 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
+        quantity: 11,
+        promotion: {
+          active: false,
+          type: "discount",
+          value: 10, // 10% discount
+          description: "10% off buying 2 bags!",
+        },
       },
     ],
   },
 ];
-
-// export const ground_bean_coffee = [
-//   {
-//     id: 1,
-//     product_name: "Medium Roast",
-//     product_subtitle: "Ground Bean Venezuela",
-//     main_image: require("../../../assets/products_images/vzla_bag_gb.png"),
-//     description:
-//       "From the high mountains of the Andes, our Venezuelan coffee boasts a rich aroma with delicate notes of chocolate and caramel. A smooth, balanced cup that embodies the essence of our heritage.",
-//     rating: 4.8,
-//     flag_image: VzlaFlag,
-
-//     size_variants: [
-//       {
-//         id: "250",
-//         sizeLabel: "250 gr",
-//         sizeGrams: 250,
-//         price: 8.99,
-//         isDefault: true,
-//         image_1: require("../../../assets/products_images/vzla_bag_gb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
-//       },
-//       {
-//         id: "500",
-//         sizeLabel: "500 gr",
-//         sizeGrams: 500,
-//         price: 15.99,
-//         image_1: require("../../../assets/products_images/vzla_bag_gb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
-//       },
-//       {
-//         id: "1000",
-//         sizeLabel: "1 kg",
-//         sizeGrams: 1000,
-//         price: 29.99,
-//         image_1: require("../../../assets/products_images/vzla_bag_gb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
-//       },
-//     ],
-//   },
-
-//   {
-//     id: 2,
-//     product_name: "Medium Roast",
-//     product_subtitle: "Ground Bean Mexico",
-//     main_image: require("../../../assets/products_images/mexico_bag_gb.png"),
-//     description:
-//       "Sourced from Mexico's finest coffee-growing regions, this dark roast offers a bold flavor profile with hints of dark chocolate and a smoky finish. Perfect for those who crave a robust cup.",
-//     rating: 4.6,
-//     flag_image: MexicoFlag,
-
-//     size_variants: [
-//       {
-//         id: "250",
-//         sizeLabel: "250 gr",
-//         sizeGrams: 250,
-//         price: 9.49,
-//         isDefault: true,
-//         image_1: require("../../../assets/products_images/mexico_bag_gb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
-//       },
-//       {
-//         id: "500",
-//         sizeLabel: "500 gr",
-//         sizeGrams: 500,
-//         price: 16.99,
-//         image_1: require("../../../assets/products_images/mexico_bag_gb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
-//       },
-//       {
-//         id: "1000",
-//         sizeLabel: "1 kg",
-//         sizeGrams: 1000,
-//         price: 31.99,
-//         image_1: require("../../../assets/products_images/mexico_bag_gb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
-//       },
-//     ],
-//   },
-
-//   {
-//     id: 3,
-//     product_name: "Medium Roast",
-//     product_subtitle: "Ground Bean Honduras",
-//     main_image: require("../../../assets/products_images/honduras_bag_gb.png"),
-//     description:
-//       "Grown in the fertile lands of Honduras, our coffee offers a bright acidity with hints of citrus and nuts.",
-//     rating: 4.9,
-//     flag_image: HondurasFlag,
-
-//     size_variants: [
-//       {
-//         id: "250",
-//         sizeLabel: "250 gr",
-//         sizeGrams: 250,
-//         price: 9.49,
-//         isDefault: true,
-//         image_1: require("../../../assets/products_images/honduras_bag_gb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
-//       },
-//       {
-//         id: "500",
-//         sizeLabel: "500 gr",
-//         sizeGrams: 500,
-//         price: 16.99,
-//         image_1: require("../../../assets/products_images/honduras_bag_gb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
-//       },
-//       {
-//         id: "1000",
-//         sizeLabel: "1 kg",
-//         sizeGrams: 1000,
-//         price: 31.99,
-//         image_1: require("../../../assets/products_images/honduras_bag_gb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
-//       },
-//     ],
-//   },
-
-//   {
-//     id: 4,
-//     product_name: "Medium Roast",
-//     product_subtitle: "Ground Bean Nicaragua",
-//     main_image: require("../../../assets/products_images/nicaragua_bag_gb.png"),
-//     description:
-//       "From the volcanic slopes of Nicaragua, our coffee presents a complex profile with notes of cocoa and red fruit.",
-//     rating: 5.0,
-//     flag_image: NicaraguaFlag,
-
-//     size_variants: [
-//       {
-//         id: "250",
-//         sizeLabel: "250 gr",
-//         sizeGrams: 250,
-//         price: 9.49,
-//         isDefault: true,
-//         image_1: require("../../../assets/products_images/nicaragua_bag_gb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
-//       },
-//       {
-//         id: "500",
-//         sizeLabel: "500 gr",
-//         sizeGrams: 500,
-//         price: 16.99,
-//         image_1: require("../../../assets/products_images/nicaragua_bag_gb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
-//       },
-//       {
-//         id: "1000",
-//         sizeLabel: "1 kg",
-//         sizeGrams: 1000,
-//         price: 31.99,
-//         image_1: require("../../../assets/products_images/nicaragua_bag_gb.png"),
-//         image_2: require("../../../assets/transitory_products_images/marbella_transitory_1.jpeg"),
-//         image_3: require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
-//         image_4: require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
-//       },
-//     ],
-//   },
-// ];
