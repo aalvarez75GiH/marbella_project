@@ -306,6 +306,9 @@ export const ground_bean_coffee = [
     id: 1,
     product_name: "Medium Roast",
     product_subtitle: "Ground Bean Venezuela",
+    cart_product_name: "Cafe Marbella",
+    cart_product_country_name: "Venezuela",
+    cart_product_description: "Ground bean coffee",
     description:
       "From the high mountains of the Andes, our Venezuelan coffee boasts a rich aroma with delicate notes of chocolate and caramel. A smooth, balanced cup that embodies the essence of our heritage.",
     rating: 4.8,
