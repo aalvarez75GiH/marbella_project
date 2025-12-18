@@ -26,7 +26,7 @@ export const Product_Details_Card = ({ item = null }) => {
   console.log("SELECTED IMAGE ID:", selectedVariant.images[selectedImageIndex]);
   console.log("QUANTITY:", selectedVariant.quantity);
 
-  const modifiedItem = {
+  const product_to_add_to_cart = {
     ...item,
     size_variants: [selectedVariant], // Replace all variants with the selected one
   };
@@ -63,7 +63,7 @@ export const Product_Details_Card = ({ item = null }) => {
         selectedVariant={selectedVariant}
         selectedVariantId={selectedVariantId}
         setSelectedVariantId={setSelectedVariantId}
-        item={modifiedItem}
+        product_to_add_to_cart={product_to_add_to_cart}
       />
       <Spacer position="top" size="small" />
       <Product_Size_Options_Component

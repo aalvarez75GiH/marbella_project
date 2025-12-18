@@ -22,6 +22,11 @@ font-size: ${theme.fontSizes.text_28};
 font-family: ${theme.fonts.dmSansBold};
 color: ${theme.colors.text.black};
 `;
+const dm_sans_Semi_bold_28 = (theme) => `
+font-size: ${theme.fontSizes.text_28};
+font-family: ${theme.fonts.dmSansSemiBold};
+color: ${theme.colors.text.black};
+`;
 const dm_sans_bold_26 = (theme) => `
 font-size: ${theme.fontSizes.text_26};
 font-family: ${theme.fonts.dmSansBold};
@@ -128,10 +133,25 @@ color: ${theme.colors.text.white};
 
 // ************* RALEWAY VARIANTS **************** //
 
+const raleway_bold_24 = (theme) => `
+font-size: ${theme.fontSizes.text_24};
+font-family: ${theme.fonts.ralewayBold};
+color: ${theme.colors.text.black};
+`;
+const raleway_bold_24_white = (theme) => `
+font-size: ${theme.fontSizes.text_24};
+font-family: ${theme.fonts.ralewayBold};
+color: ${theme.colors.text.white};
+`;
 const raleway_bold_20 = (theme) => `
 font-size: ${theme.fontSizes.text_20};
 font-family: ${theme.fonts.ralewayBold};
 color: ${theme.colors.text.black};
+`;
+const raleway_bold_20_white = (theme) => `
+font-size: ${theme.fontSizes.text_20};
+font-family: ${theme.fonts.ralewayBold};
+color: ${theme.colors.text.white};
 `;
 const raleway_bold_18 = (theme) => `
 font-size: ${theme.fontSizes.text_18};
@@ -173,16 +193,27 @@ font-size: ${theme.fontSizes.text_14};
 font-family: ${theme.fonts.ralewayBold};
 color: ${theme.colors.text.white};
 `;
+const raleway_bold_12_white = (theme) => `
+font-size: ${theme.fontSizes.text_12};
+font-family: ${theme.fonts.ralewayBold};
+color: ${theme.colors.text.white};
+`;
 const raleway_bold_10 = (theme) => `
-font-size: ${theme.fontSizes.text_14};
+font-size: ${theme.fontSizes.text_10};
 font-family: ${theme.fonts.ralewayBold};
 color: ${theme.colors.text.black};
+`;
+const raleway_bold_10_white = (theme) => `
+font-size: ${theme.fontSizes.text_10};
+font-family: ${theme.fonts.ralewayBold};
+color: ${theme.colors.text.white};
 `;
 
 const variants = {
   dm_sans_bold_40,
   dm_sans_bold_40_white,
   dm_sans_bold_28,
+  dm_sans_Semi_bold_28,
   dm_sans_bold_26,
   dm_sans_bold_24,
   dm_sans_bold_24_white,
@@ -203,7 +234,10 @@ const variants = {
   dm_sans_bold_10,
   dm_sans_bold_10_white,
   //*************************
+  raleway_bold_24,
+  raleway_bold_24_white,
   raleway_bold_20,
+  raleway_bold_20_white,
   raleway_bold_18,
   raleway_bold_18_white,
   raleway_medium_18,
@@ -212,7 +246,9 @@ const variants = {
   raleway_bold_16_white,
   raleway_bold_14,
   raleway_bold_14_white,
+  raleway_bold_12_white,
   raleway_bold_10,
+  raleway_bold_10_white,
 };
 
 export const Text = styled.Text`

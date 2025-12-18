@@ -10,13 +10,17 @@ export const Cart_Context_Provider = ({ children }) => {
 
   console.log("CART AT CONTEXT: ", JSON.stringify(cart, null, 2));
 
-  const addingItemToCart = (item, navigation, nextView) => {
+  const addingProductToCart = (
+    product_to_add_to_cart,
+    navigation,
+    nextView
+  ) => {
     setIsLoading(true);
 
     setTimeout(() => {
       setCart((prevCart) => ({
         ...prevCart,
-        products: [...prevCart.products, item], // Add the new product to the array
+        products: [...prevCart.products, product_to_add_to_cart], // Add the new product to the array
         updated_at: new Date().toISOString(), // Update the timestamp
       }));
 
@@ -32,7 +36,7 @@ export const Cart_Context_Provider = ({ children }) => {
       value={{
         isLoading,
         setIsLoading,
-        addingItemToCart,
+        addingProductToCart,
         cart,
       }}
     >

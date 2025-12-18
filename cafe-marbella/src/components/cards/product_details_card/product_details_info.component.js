@@ -14,12 +14,15 @@ export const Product_Details_Info_Component = ({
   product_name,
   product_subtitle,
   selectedVariant,
-  item,
+  product_to_add_to_cart,
 }) => {
   const navigation = useNavigation();
-  const { setIsLoading, addingItemToCart } = useContext(CartContext);
+  const { addingProductToCart } = useContext(CartContext);
 
-  console.log("ITEM MODIFIED:", JSON.stringify(item, null, 2));
+  console.log(
+    "PRODUCT TO ADD TO CART:",
+    JSON.stringify(product_to_add_to_cart, null, 2)
+  );
 
   return (
     <Container
@@ -92,12 +95,16 @@ export const Product_Details_Info_Component = ({
             justify="center"
             align="center"
             onPress={() => {
-              addingItemToCart(item, navigation, "Shop_Shopping_Cart_View");
+              addingProductToCart(
+                product_to_add_to_cart,
+                navigation,
+                "Shop_Shopping_Cart_View"
+              );
             }}
           >
             <Text
               variant="dm_sans_bold_16_white"
-              style={{ textDecorationLine: "underline" }}
+              //   style={{ textDecorationLine: "underline" }}
             >
               Add to cart
             </Text>

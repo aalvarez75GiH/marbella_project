@@ -4,6 +4,7 @@ export const fonts = {
   ralewayBold: "ralewayBold",
   dmSansRegular: "dmSansRegular",
   dmSansBold: "dmSansBold",
+  dmSansSemiBold: "dmSansSemiBold",
   cormorantRegular: "cormorantRegular",
   cormorantBold: "cormorantBold",
 };
