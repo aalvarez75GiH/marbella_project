@@ -8,7 +8,7 @@ import { Size_Options_CTA } from "../../ctas/size_options.cta.js";
 import { Regular_CTA } from "../../ctas/regular.cta.js";
 
 export const Product_Details_Description_Component = ({ item = null }) => {
-  console.log("DESCRIPTION:", item.description);
+  //   console.log("DESCRIPTION:", item.description);
   const { description } = item || {};
   return (
     <Container

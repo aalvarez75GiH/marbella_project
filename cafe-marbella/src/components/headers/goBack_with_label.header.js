@@ -1,4 +1,6 @@
 import React from "react";
+import { useNavigation } from "@react-navigation/native";
+
 import ArrowBackIcon from "../../../assets/my_icons/arrow_back_icon.svg";
 import { Text } from "../../infrastructure/typography/text.component.js";
 import {
@@ -8,6 +10,7 @@ import {
 import { theme } from "../../infrastructure/theme/index.js";
 
 export const Go_Back_Header = ({ action, label = "" }) => {
+  const navigation = useNavigation();
   return (
     <Container
       width="100%"
@@ -22,7 +25,7 @@ export const Go_Back_Header = ({ action, label = "" }) => {
         height="100%"
         color={theme.colors.bg.elements_bg}
         // color={"red"}
-        onPress={action}
+        onPress={() => navigation.goBack()}
       >
         <ArrowBackIcon width={30} height={30} fill={"#000000"} />
       </Action_Container>

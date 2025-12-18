@@ -1,4 +1,15 @@
-import { create } from "react-native/types_generated/Libraries/ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload";
+import VzlaFlag from "../../../assets/flags images/flag_venezuela.svg";
+import MexicoFlag from "../../../assets/flags images/flag_mexico.svg";
+import HondurasFlag from "../../../assets/flags images/flag_honduras.svg";
+import NicaraguaFlag from "../../../assets/flags images/flag_nicaragua.svg";
+
+export const shopping_cart = {
+  user_id: "user_1",
+  cart_id: "cart_1",
+  created_at: "2025-12-17T10:00:00Z",
+  updated_at: "2025-12-17T12:00:00Z",
+  products: [],
+};
 
 export const shopping_carts = [
   {

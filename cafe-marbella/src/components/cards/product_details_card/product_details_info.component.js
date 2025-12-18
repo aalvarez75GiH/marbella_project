@@ -1,23 +1,26 @@
-import React from "react";
-import { Image } from "react-native";
+import React, { useContext } from "react";
+import { useNavigation } from "@react-navigation/native";
 
 import { Text } from "../../../infrastructure/typography/text.component.js";
 import {
   Container,
-  Action_Container,
   Pressable_Container,
 } from "../../containers/general.containers.js";
 import { theme } from "../../../infrastructure/theme/index.js";
 import { Spacer } from "../../../components/spacers and globals/optimized.spacer.component.js";
+import { CartContext } from "../../../infrastructure/services/cart/cart.context.js";
 
 export const Product_Details_Info_Component = ({
   product_name,
   product_subtitle,
-  size_variants,
-  selectedVariantId,
-  setSelectedVariantId,
   selectedVariant,
+  item,
 }) => {
+  const navigation = useNavigation();
+  const { setIsLoading, addingItemToCart } = useContext(CartContext);
+
+  console.log("ITEM MODIFIED:", JSON.stringify(item, null, 2));
+
   return (
     <Container
       width="100%"
@@ -88,6 +91,9 @@ export const Product_Details_Info_Component = ({
             color={theme.colors.ui.success}
             justify="center"
             align="center"
+            onPress={() => {
+              addingItemToCart(item, navigation, "Shop_Shopping_Cart_View");
+            }}
           >
             <Text
               variant="dm_sans_bold_16_white"

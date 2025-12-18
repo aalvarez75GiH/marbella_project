@@ -9,7 +9,7 @@ import { Product_Initial_Info_Component } from "./product_intial_info.component.
 import { Product_Identification_Line } from "./product_identification_line.component.js";
 
 export const Product_Initial_Card = ({ item = null }) => {
-  console.log("ITEM AT INITIAL CARD:", JSON.stringify(item, null, 2));
+  // console.log("ITEM AT INITIAL CARD:", JSON.stringify(item, null, 2));
   const {
     flag_image: FlagImage,
     product_name,
