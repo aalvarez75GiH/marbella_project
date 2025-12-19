@@ -31,7 +31,7 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 1,
+        stock: 1,
         promotion: {
           active: true,
           type: "discount",
@@ -51,7 +51,7 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 1,
+        stock: 1,
         promotion: {
           active: true,
           type: "discount",
@@ -71,7 +71,7 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 1,
+        stock: 1,
         promotion: {
           active: true,
           type: "discount",
@@ -108,7 +108,7 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 1,
+        stock: 1,
         promotion: {
           active: true,
           type: "discount",
@@ -128,7 +128,7 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 1,
+        stock: 1,
         promotion: {
           active: true,
           type: "discount",
@@ -148,7 +148,7 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 1,
+        stock: 1,
         promotion: {
           active: true,
           type: "discount",
@@ -185,7 +185,7 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 1,
+        stock: 1,
         promotion: {
           active: true,
           type: "discount",
@@ -205,7 +205,7 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 1,
+        stock: 1,
         promotion: {
           active: true,
           type: "discount",
@@ -225,7 +225,7 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 1,
+        stock: 1,
         promotion: {
           active: true,
           type: "discount",
@@ -262,7 +262,7 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 1,
+        stock: 1,
         promotion: {
           active: true,
           type: "discount",
@@ -282,7 +282,7 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 1,
+        stock: 1,
         promotion: {
           active: true,
           type: "discount",
@@ -302,7 +302,7 @@ export const whole_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 1,
+        stock: 1,
         promotion: {
           active: true,
           type: "discount",
@@ -341,7 +341,7 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 3,
+        stock: 3,
         promotion: {
           active: false,
           type: "discount",
@@ -362,7 +362,7 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 11,
+        stock: 11,
         promotion: {
           active: true,
           type: "discount",
@@ -382,7 +382,7 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 10,
+        stock: 10,
         promotion: {
           active: true,
           type: "discount",
@@ -419,7 +419,7 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 6,
+        stock: 6,
         promotion: {
           active: false,
           type: "discount",
@@ -439,7 +439,7 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 2,
+        stock: 2,
         promotion: {
           active: false,
           type: "discount",
@@ -496,7 +496,7 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 8,
+        stock: 8,
         promotion: {
           active: false,
           type: "discount",
@@ -536,7 +536,7 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 2,
+        stock: 2,
         promotion: {
           active: false,
           type: "discount",
@@ -573,7 +573,7 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 1,
+        stock: 1,
         promotion: {
           active: false,
           type: "discount",
@@ -593,7 +593,7 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 10,
+        stock: 10,
         promotion: {
           active: false,
           type: "discount",
@@ -613,7 +613,7 @@ export const ground_bean_coffee = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        quantity: 11,
+        stock: 11,
         promotion: {
           active: false,
           type: "discount",

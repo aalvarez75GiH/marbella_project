@@ -98,7 +98,8 @@ export const Product_Details_Info_Component = ({
               addingProductToCart(
                 product_to_add_to_cart,
                 navigation,
-                "Shop_Shopping_Cart_View"
+                "Shop_Shopping_Cart_View",
+                selectedVariant
               );
             }}
           >

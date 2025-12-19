@@ -9,6 +9,9 @@ export const shopping_cart = {
   created_at: "2025-12-17T10:00:00Z",
   updated_at: "2025-12-17T12:00:00Z",
   products: [],
+  sub_total: 0,
+  taxes: 0,
+  total: 0,
 };
 
 export const shopping_carts = [

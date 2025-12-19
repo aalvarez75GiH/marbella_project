@@ -19,7 +19,7 @@ import { CartContext } from "../../infrastructure/services/cart/cart.context";
 export default function Process_Shopping_Cart_View() {
   const theme = useTheme();
   const { cart } = useContext(CartContext);
-  const { products } = cart;
+  const { products, sub_total } = cart;
   console.log("CART IN SHOPPING CART VIEW:", JSON.stringify(cart, null, 2));
   const image = cart.products[0].size_variants[0].images[0];
 
@@ -100,7 +100,8 @@ export default function Process_Shopping_Cart_View() {
             color={theme.colors.bg.elements_bg}
           >
             <Spacer position="right" size="large">
-              <Text variant="dm_sans_bold_20">$57.66</Text>
+              {/* <Text variant="dm_sans_bold_20">$57.66</Text> */}
+              <Text variant="dm_sans_bold_20">${sub_total}</Text>
             </Spacer>
             <Spacer position="right" size="large">
               <Text

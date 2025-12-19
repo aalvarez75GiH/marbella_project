@@ -28,7 +28,12 @@ export const Product_Details_Card = ({ item = null }) => {
 
   const product_to_add_to_cart = {
     ...item,
-    size_variants: [selectedVariant], // Replace all variants with the selected one
+    size_variants: [
+      {
+        ...selectedVariant,
+        quantity: 1, // 👈 cart quantity
+      },
+    ],
   };
 
   return (
