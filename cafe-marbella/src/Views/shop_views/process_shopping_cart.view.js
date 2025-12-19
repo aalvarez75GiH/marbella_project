@@ -19,8 +19,18 @@ import { CartContext } from "../../infrastructure/services/cart/cart.context";
 export default function Process_Shopping_Cart_View() {
   const theme = useTheme();
   const { cart } = useContext(CartContext);
+  const { products } = cart;
   console.log("CART IN SHOPPING CART VIEW:", JSON.stringify(cart, null, 2));
   const image = cart.products[0].size_variants[0].images[0];
+
+  const renderProductCartItemTile = ({ item }) => {
+    return (
+      <Spacer position="bottom" size="medium">
+        <Product_Cart_Item_Tile image={image} />
+      </Spacer>
+    );
+  };
+
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
       <Container
@@ -37,13 +47,72 @@ export default function Process_Shopping_Cart_View() {
         <Spacer position="top" size="small" />
         <Container
           width="100%"
-          height="50%"
+          height="65%"
           color={theme.colors.bg.elements_bg}
           // color={"green"}
-          justify="flex-start"
+          justify="center"
           align="center"
         >
-          <Product_Cart_Item_Tile image={image} />
+          <Spacer position="top" size="medium" />
+          <FlatList
+            style={{ flex: 1 }}
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+            data={products}
+            // data={whole_bean_coffee}
+            renderItem={renderProductCartItemTile}
+            keyExtractor={(item, id) => {
+              return item.id;
+            }}
+            gap={"15px"}
+          />
+          {/* <Product_Cart_Item_Tile image={image} /> */}
+        </Container>
+        <Spacer position="top" size="small" />
+        <Container
+          width="95%"
+          height="10%"
+          color={theme.colors.bg.elements_bg}
+          // color={"lightgreen"}
+          direction="row"
+          border_radius="20px"
+          overflow="hidden"
+        >
+          <Container
+            width="50%"
+            height="100%"
+            // color="red"
+            color={theme.colors.bg.elements_bg}
+            justify="flex-start"
+            align="flex-start"
+          >
+            <Spacer position="top" size="medium" />
+            <Spacer position="left" size="large">
+              <Text variant="dm_sans_bold_20">Sub total:</Text>
+            </Spacer>
+          </Container>
+          <Container
+            width="50%"
+            height="100%"
+            // color="lightblue"
+            justify="center"
+            align="flex-end"
+            color={theme.colors.bg.elements_bg}
+          >
+            <Spacer position="right" size="large">
+              <Text variant="dm_sans_bold_20">$57.66</Text>
+            </Spacer>
+            <Spacer position="right" size="large">
+              <Text
+                variant="dm_sans_bold_14"
+                style={{
+                  color: "#7A7A7A",
+                }}
+              >
+                (fees not included)
+              </Text>
+            </Spacer>
+          </Container>
         </Container>
       </Container>
     </SafeArea>

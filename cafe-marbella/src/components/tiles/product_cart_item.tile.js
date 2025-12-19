@@ -18,8 +18,10 @@ export const Product_Cart_Item_Tile = ({ image }) => {
   return (
     <>
       <Container
-        width="95%"
-        height="60%"
+        // width="95%"
+        width="390px"
+        //height="70%"
+        height="240px"
         // color="red"
         color={theme.colors.ui.secondary}
         direction="row"
