@@ -12,9 +12,18 @@ import { Text } from "../../infrastructure/typography/text.component";
 
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 
-export const Product_Cart_Item_Tile = ({ image }) => {
+export const Product_Cart_Item_Tile = ({ item }) => {
   const theme = useTheme();
-
+  console.log("ITEM IN CART TILE:", JSON.stringify(item, null, 2));
+  const {
+    cart_product_name,
+    cart_product_country_name,
+    cart_product_description,
+    size_variants,
+  } = item || {};
+  const { sizeLabel, sizeLabel_ounces, price, images, quantity } =
+    size_variants[0];
+  const image = images[0];
   return (
     <>
       <Container
@@ -86,10 +95,16 @@ export const Product_Cart_Item_Tile = ({ image }) => {
               align="flex-start"
             >
               <Spacer position="left" size="large">
-                <Text variant="raleway_bold_14_white">Cafe Marbella</Text>
-                <Text variant="raleway_bold_24_white">Venezuela</Text>
-                <Text variant="raleway_bold_14_white">Ground bean coffee</Text>
-                <Text variant="raleway_bold_14_white">250 gr - 8 oz</Text>
+                <Text variant="raleway_bold_14_white">{cart_product_name}</Text>
+                <Text variant="raleway_bold_24_white">
+                  {cart_product_country_name}
+                </Text>
+                <Text variant="raleway_bold_14_white">
+                  {cart_product_description}
+                </Text>
+                <Text variant="raleway_bold_14_white">
+                  {sizeLabel} - {sizeLabel_ounces}
+                </Text>
               </Spacer>
             </Container>
             <Container
@@ -120,7 +135,7 @@ export const Product_Cart_Item_Tile = ({ image }) => {
                   color: theme.colors.ui.tertiary,
                 }}
               >
-                $19.22
+                ${price}
               </Text>
             </Container>
             <Container
@@ -160,7 +175,7 @@ export const Product_Cart_Item_Tile = ({ image }) => {
                     color: theme.colors.ui.tertiary,
                   }}
                 >
-                  1
+                  {quantity}
                 </Text>
                 <Action_Container
                   width="20%"

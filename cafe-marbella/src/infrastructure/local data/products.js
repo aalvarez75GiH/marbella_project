@@ -8,6 +8,10 @@ export const whole_bean_coffee = [
     id: 1,
     product_name: "Medium Roast",
     product_subtitle: "Whole Bean Venezuela",
+    cart_product_name: "Cafe Marbella",
+    cart_product_country_name: "Venezuela",
+    cart_product_description: "Whole bean coffee",
+
     description:
       "From the high mountains of the Andes, our Venezuelan coffee boasts a rich aroma with delicate notes of chocolate and caramel. A smooth, balanced cup that embodies the essence of our heritage.",
     rating: 4.8,
@@ -82,6 +86,9 @@ export const whole_bean_coffee = [
     id: 2,
     product_name: "Medium Roast",
     product_subtitle: "Whole Bean Mexico",
+    cart_product_name: "Cafe Marbella",
+    cart_product_country_name: "México",
+    cart_product_description: "Whole bean coffee",
     description:
       "Sourced from Mexico's finest coffee-growing regions, this dark roast offers a bold flavor profile with hints of dark chocolate and a smoky finish. Perfect for those who crave a robust cup.",
     rating: 4.6,
@@ -156,6 +163,9 @@ export const whole_bean_coffee = [
     id: 3,
     product_name: "Medium Roast",
     product_subtitle: "Whole Bean Honduras",
+    cart_product_name: "Cafe Marbella",
+    cart_product_country_name: "Hondúras",
+    cart_product_description: "Whole bean coffee",
     description:
       "Grown in the fertile lands of Honduras, our coffee offers a bright acidity with hints of citrus and nuts.",
     rating: 4.9,
@@ -230,6 +240,9 @@ export const whole_bean_coffee = [
     id: 4,
     product_name: "Medium Roast",
     product_subtitle: "Whole Bean Nicaragua",
+    cart_product_name: "Cafe Marbella",
+    cart_product_country_name: "Nicaragua",
+    cart_product_description: "Whole bean coffee",
     description:
       "From the volcanic slopes of Nicaragua, our coffee presents a complex profile with notes of cocoa and red fruit.",
     rating: 5.0,
@@ -384,6 +397,9 @@ export const ground_bean_coffee = [
     id: 2,
     product_name: "Medium Roast",
     product_subtitle: "Ground Bean Mexico",
+    cart_product_name: "Cafe Marbella",
+    cart_product_country_name: "México",
+    cart_product_description: "Ground bean coffee",
     description:
       "Sourced from Mexico's finest coffee-growing regions, this dark roast offers a bold flavor profile with hints of dark chocolate and a smoky finish. Perfect for those who crave a robust cup.",
     rating: 4.6,
@@ -458,6 +474,9 @@ export const ground_bean_coffee = [
     id: 3,
     product_name: "Medium Roast",
     product_subtitle: "Ground Bean Honduras",
+    cart_product_name: "Cafe Marbella",
+    cart_product_country_name: "Hondúras",
+    cart_product_description: "Ground bean coffee",
     description:
       "Grown in the fertile lands of Honduras, our coffee offers a bright acidity with hints of citrus and nuts.",
     rating: 4.9,
@@ -532,6 +551,9 @@ export const ground_bean_coffee = [
     id: 4,
     product_name: "Medium Roast",
     product_subtitle: "Ground Bean Nicaragua",
+    cart_product_name: "Cafe Marbella",
+    cart_product_country_name: "Nicaragua",
+    cart_product_description: "Ground bean coffee",
     description:
       "From the volcanic slopes of Nicaragua, our coffee presents a complex profile with notes of cocoa and red fruit.",
     rating: 5.0,
