@@ -18,6 +18,7 @@ export const fontWeights = {
 
 export const fontSizes = {
   text_40: "40px",
+  text_32: "32px",
   text_28: "28px",
   text_26: "26px",
   text_24: "24px",

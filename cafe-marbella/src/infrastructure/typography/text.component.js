@@ -17,6 +17,21 @@ font-size: ${theme.fontSizes.text_40};
 font-family: ${theme.fonts.dmSansBold};
 color: ${theme.colors.text.white};
 `;
+const dm_sans_semiBold_32 = (theme) => `
+font-size: ${theme.fontSizes.text_32};
+font-family: ${theme.fonts.dmSansSemiBold};
+color: ${theme.colors.text.black};
+`;
+const dm_sans_bold_32 = (theme) => `
+font-size: ${theme.fontSizes.text_32};
+font-family: ${theme.fonts.dmSansBold};
+color: ${theme.colors.text.black};
+`;
+const dm_sans_bold_32_white = (theme) => `
+font-size: ${theme.fontSizes.text_32};
+font-family: ${theme.fonts.dmSansBold};
+color: ${theme.colors.text.white};
+`;
 const dm_sans_bold_28 = (theme) => `
 font-size: ${theme.fontSizes.text_28};
 font-family: ${theme.fonts.dmSansBold};
@@ -212,6 +227,9 @@ color: ${theme.colors.text.white};
 const variants = {
   dm_sans_bold_40,
   dm_sans_bold_40_white,
+  dm_sans_bold_32,
+  dm_sans_semiBold_32,
+  dm_sans_bold_32_white,
   dm_sans_bold_28,
   dm_sans_Semi_bold_28,
   dm_sans_bold_26,

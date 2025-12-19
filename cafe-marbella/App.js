@@ -11,6 +11,7 @@ export default function App() {
     ralewayBold: require("./assets/fonts/raleway/Raleway-Bold.ttf"),
     dmSansRegular: require("./assets/fonts/dm sans/DMSans-Regular.ttf"),
     dmSansBold: require("./assets/fonts/dm sans/DMSans-Bold.ttf"),
+    dmSansSemiBold: require("./assets/fonts/dm sans/DMSans-SemiBold.ttf"),
     cormorantRegular: require("./assets/fonts/cormorant/Cormorant-Regular.ttf"),
     cormorantBold: require("./assets/fonts/cormorant/Cormorant-Bold.ttf"),
   });
