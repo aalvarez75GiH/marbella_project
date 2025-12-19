@@ -25,7 +25,8 @@ export const Go_Back_Header = ({ action, label = "" }) => {
         height="100%"
         color={theme.colors.bg.elements_bg}
         // color={"red"}
-        onPress={() => navigation.goBack()}
+        // onPress={() => navigation.goBack()}
+        onPress={action}
       >
         <ArrowBackIcon width={30} height={30} fill={"#000000"} />
       </Action_Container>

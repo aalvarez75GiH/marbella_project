@@ -14,6 +14,8 @@ import { CartContext } from "../../infrastructure/services/cart/cart.context";
 
 export const Product_Cart_Item_Tile = ({ item }) => {
   const theme = useTheme();
+  const { increaseCartItemQty, decreaseCartItemQty, removeCartItem } =
+    useContext(CartContext);
   console.log("ITEM IN CART TILE:", JSON.stringify(item, null, 2));
   const {
     cart_product_name,
@@ -159,6 +161,7 @@ export const Product_Cart_Item_Tile = ({ item }) => {
                   border_radius="15px"
                   border_width="2px"
                   border_color={theme.colors.ui.white}
+                  onPress={() => decreaseCartItemQty(item)}
                 >
                   <Text
                     variant="dm_sans_bold_14"
@@ -184,6 +187,7 @@ export const Product_Cart_Item_Tile = ({ item }) => {
                   border_radius="15px"
                   border_width="2px"
                   border_color={theme.colors.ui.white}
+                  onPress={() => increaseCartItemQty(item)}
                 >
                   <Text
                     variant="dm_sans_bold_14"

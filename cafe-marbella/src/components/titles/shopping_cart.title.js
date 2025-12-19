@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useContext } from "react";
+
 import ArrowBackIcon from "../../../assets/my_icons/arrow_back_icon.svg";
 import ExitIcon from "../../../assets/my_icons/exit_icon.svg";
 import { Text } from "../../infrastructure/typography/text.component.js";
@@ -9,6 +10,7 @@ import {
 import { theme } from "../../infrastructure/theme/index.js";
 import { Spacer } from "../spacers and globals/optimized.spacer.component.js";
 
+import { CartContext } from "../../infrastructure/services/cart/cart.context.js";
 export const Shopping_Cart_Title = ({}) => {
   return (
     <Container

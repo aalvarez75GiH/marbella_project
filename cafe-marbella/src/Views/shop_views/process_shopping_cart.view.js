@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { FlatList, Image } from "react-native";
 import { useTheme } from "styled-components/native";
+import { useNavigation } from "@react-navigation/native";
 
 import {
   Action_Container,
@@ -13,6 +14,7 @@ import { Shopping_Cart_Title } from "../../components/titles/shopping_cart.title
 import RemoveIcon from "../../../assets/my_icons/remove_icon.svg";
 import { Text } from "../../infrastructure/typography/text.component";
 import { Product_Cart_Item_Tile } from "../../components/tiles/product_cart_item.tile";
+import { Shopping_Cart_Sub_Total_Footer } from "../../components/footers/shopping_cart_sub_total.footer";
 
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 
@@ -23,6 +25,7 @@ export default function Process_Shopping_Cart_View() {
   console.log("CART IN SHOPPING CART VIEW:", JSON.stringify(cart, null, 2));
   const image = cart.products[0].size_variants[0].images[0];
 
+  const navigation = useNavigation();
   const renderProductCartItemTile = ({ item }) => {
     return (
       <Spacer position="bottom" size="medium">
@@ -41,7 +44,7 @@ export default function Process_Shopping_Cart_View() {
         justify="flex-start"
         align="center"
       >
-        <Go_Back_Header action={() => null} label="" />
+        <Go_Back_Header action={() => navigation.popToTop()} label="" />
         <Spacer position="top" size="small" />
         <Shopping_Cart_Title />
         <Spacer position="top" size="small" />
@@ -59,7 +62,6 @@ export default function Process_Shopping_Cart_View() {
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
             data={products}
-            // data={whole_bean_coffee}
             renderItem={renderProductCartItemTile}
             keyExtractor={(item, id) => {
               return item.id;
@@ -69,52 +71,7 @@ export default function Process_Shopping_Cart_View() {
           {/* <Product_Cart_Item_Tile image={image} /> */}
         </Container>
         <Spacer position="top" size="small" />
-        <Container
-          width="95%"
-          height="10%"
-          color={theme.colors.bg.elements_bg}
-          // color={"lightgreen"}
-          direction="row"
-          border_radius="20px"
-          overflow="hidden"
-        >
-          <Container
-            width="50%"
-            height="100%"
-            // color="red"
-            color={theme.colors.bg.elements_bg}
-            justify="flex-start"
-            align="flex-start"
-          >
-            <Spacer position="top" size="medium" />
-            <Spacer position="left" size="large">
-              <Text variant="dm_sans_bold_20">Sub total:</Text>
-            </Spacer>
-          </Container>
-          <Container
-            width="50%"
-            height="100%"
-            // color="lightblue"
-            justify="center"
-            align="flex-end"
-            color={theme.colors.bg.elements_bg}
-          >
-            <Spacer position="right" size="large">
-              {/* <Text variant="dm_sans_bold_20">$57.66</Text> */}
-              <Text variant="dm_sans_bold_20">${sub_total}</Text>
-            </Spacer>
-            <Spacer position="right" size="large">
-              <Text
-                variant="dm_sans_bold_14"
-                style={{
-                  color: "#7A7A7A",
-                }}
-              >
-                (fees not included)
-              </Text>
-            </Spacer>
-          </Container>
-        </Container>
+        <Shopping_Cart_Sub_Total_Footer sub_total={sub_total} />
       </Container>
     </SafeArea>
   );
