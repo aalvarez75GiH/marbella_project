@@ -149,22 +149,24 @@ export const Product_Cart_Item_Tile = ({ item }) => {
               <Container
                 width="100%"
                 height="100%"
-                // color={"red"}
+                //color={"red"}
                 direction="row"
                 justify="space-evenly"
                 color={theme.colors.ui.secondary}
               >
                 <Action_Container
-                  width="20%"
-                  height="40%"
+                  width="25px" // Set width and height to the same value
+                  height="25px"
                   color={theme.colors.ui.secondary}
-                  border_radius="15px"
+                  border_radius="25px" // Half of the width/height for a perfect circle
                   border_width="2px"
                   border_color={theme.colors.ui.white}
                   onPress={() => decreaseCartItemQty(item)}
+                  justify="flex-start" // Center content vertically
+                  align="center" // Center content horizontally
                 >
                   <Text
-                    variant="dm_sans_bold_14"
+                    variant="raleway_bold_14_white"
                     style={{
                       color: theme.colors.ui.tertiary,
                     }}
@@ -181,16 +183,18 @@ export const Product_Cart_Item_Tile = ({ item }) => {
                   {quantity}
                 </Text>
                 <Action_Container
-                  width="20%"
-                  height="40%"
+                  width="25px"
+                  height="25px"
                   color={theme.colors.ui.secondary}
-                  border_radius="15px"
+                  border_radius="25px"
                   border_width="2px"
                   border_color={theme.colors.ui.white}
                   onPress={() => increaseCartItemQty(item)}
+                  justify="center"
+                  align="center"
                 >
                   <Text
-                    variant="dm_sans_bold_14"
+                    variant="raleway_bold_16_white"
                     style={{
                       color: theme.colors.ui.tertiary,
                     }}

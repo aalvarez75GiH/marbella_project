@@ -12,7 +12,7 @@ export const Regular_CTA = ({
   width,
   height,
   caption = "Click Me",
-  caption_text_variant,
+  caption_text_variant = "dm_sans_bold_16",
   border_radius,
   color = theme.colors.ui.secondary,
   border_width = "1px",

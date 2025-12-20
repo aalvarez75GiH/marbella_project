@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useLayoutEffect } from "react";
 import { FlatList, Image } from "react-native";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
@@ -15,6 +15,7 @@ import RemoveIcon from "../../../assets/my_icons/remove_icon.svg";
 import { Text } from "../../infrastructure/typography/text.component";
 import { Product_Cart_Item_Tile } from "../../components/tiles/product_cart_item.tile";
 import { Shopping_Cart_Sub_Total_Footer } from "../../components/footers/shopping_cart_sub_total.footer";
+import { Regular_CTA } from "../../components/ctas/regular.cta";
 
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 
@@ -26,6 +27,18 @@ export default function Process_Shopping_Cart_View() {
   const image = cart.products[0].size_variants[0].images[0];
 
   const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: { display: "none" },
+    });
+
+    return () =>
+      navigation.getParent()?.setOptions({
+        tabBarStyle: undefined,
+      });
+  }, [navigation]);
+
   const renderProductCartItemTile = ({ item }) => {
     return (
       <Spacer position="bottom" size="medium">
@@ -50,7 +63,7 @@ export default function Process_Shopping_Cart_View() {
         <Spacer position="top" size="small" />
         <Container
           width="100%"
-          height="65%"
+          height="55%"
           color={theme.colors.bg.elements_bg}
           // color={"green"}
           justify="center"
@@ -70,8 +83,18 @@ export default function Process_Shopping_Cart_View() {
           />
           {/* <Product_Cart_Item_Tile image={image} /> */}
         </Container>
-        <Spacer position="top" size="small" />
+        <Spacer position="top" size="large" />
         <Shopping_Cart_Sub_Total_Footer sub_total={sub_total} />
+        <Spacer position="top" size="medium" />
+        <Regular_CTA
+          width="95%"
+          height="10%"
+          color={theme.colors.ui.business}
+          border_radius={"40px"}
+          caption="Proceed to checkout"
+          caption_text_variant="dm_sans_bold_20"
+          action={() => null}
+        />
       </Container>
     </SafeArea>
   );
