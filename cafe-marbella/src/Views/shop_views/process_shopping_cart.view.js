@@ -1,5 +1,5 @@
-import React, { useContext, useLayoutEffect } from "react";
-import { FlatList, Image } from "react-native";
+import React, { useContext, useLayoutEffect, useEffect } from "react";
+import { FlatList } from "react-native";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -11,7 +11,6 @@ import { Go_Back_Header } from "../../components/headers/goBack_with_label.heade
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 import { Shopping_Cart_Title } from "../../components/titles/shopping_cart.title";
-import RemoveIcon from "../../../assets/my_icons/remove_icon.svg";
 import { Text } from "../../infrastructure/typography/text.component";
 import { Product_Cart_Item_Tile } from "../../components/tiles/product_cart_item.tile";
 import { Shopping_Cart_Sub_Total_Footer } from "../../components/footers/shopping_cart_sub_total.footer";
@@ -21,10 +20,18 @@ import { CartContext } from "../../infrastructure/services/cart/cart.context";
 
 export default function Process_Shopping_Cart_View() {
   const theme = useTheme();
+  // *************
   const { cart } = useContext(CartContext);
-  const { products, sub_total } = cart;
-  console.log("CART IN SHOPPING CART VIEW:", JSON.stringify(cart, null, 2));
-  const image = cart.products[0].size_variants[0].images[0];
+  const products = cart?.products ?? [];
+  const sub_total = cart?.sub_total ?? 0;
+
+  // *************
+  useEffect(() => {
+    // ⬅️ when cart becomes empty, go back
+    if (products.length === 0) {
+      navigation.goBack();
+    }
+  }, [products.length]);
 
   const navigation = useNavigation();
 
@@ -40,6 +47,7 @@ export default function Process_Shopping_Cart_View() {
   }, [navigation]);
 
   const renderProductCartItemTile = ({ item }) => {
+    const image = item?.size_variants?.[0]?.images?.[0]; // ✅ safe
     return (
       <Spacer position="bottom" size="medium">
         <Product_Cart_Item_Tile image={image} item={item} />
@@ -70,6 +78,7 @@ export default function Process_Shopping_Cart_View() {
           align="center"
         >
           <Spacer position="top" size="medium" />
+
           <FlatList
             style={{ flex: 1 }}
             showsHorizontalScrollIndicator={false}
