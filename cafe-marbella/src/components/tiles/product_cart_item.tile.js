@@ -14,7 +14,7 @@ import { CartContext } from "../../infrastructure/services/cart/cart.context";
 
 export const Product_Cart_Item_Tile = ({ item }) => {
   const theme = useTheme();
-  const { increaseCartItemQty, decreaseCartItemQty, removeCartItem } =
+  const { increaseCartItemQty, decreaseCartItemQty, removingProductFromCart } =
     useContext(CartContext);
   console.log("ITEM IN CART TILE:", JSON.stringify(item, null, 2));
   const {
@@ -63,23 +63,29 @@ export const Product_Cart_Item_Tile = ({ item }) => {
           color="lightblue"
           justify="flex-start"
         >
-          <Container width="100%" height="15%" color="green" direction="row">
+          <Container
+            width="100%"
+            height="15%"
+            color={theme.colors.ui.secondary}
+            direction="row"
+          >
             <Container
               width="80%"
               height="100%"
               // color="yellow"
               color={theme.colors.ui.secondary}
             ></Container>
-            <Container
+            <Action_Container
               width="20%"
               height="100%"
               // color="orange"
               color={theme.colors.ui.secondary}
               justify="flex-end"
               align="center"
+              onPress={() => removingProductFromCart(item)}
             >
               <RemoveIcon width={20} height={20} fill={"#FFFFFF"} />
-            </Container>
+            </Action_Container>
           </Container>
           <Container
             width="100%"

@@ -183,6 +183,25 @@ export const Cart_Context_Provider = ({ children }) => {
       navigation.navigate(nextView);
     }, 1000);
   };
+  const removingProductFromCart = (item) => {
+    const { productId, variantId } = extractingIDs(item);
+
+    setCart((prevCart) => {
+      const products = prevCart?.products ?? [];
+
+      const updatedProducts = products.filter((p) => {
+        const v = p?.size_variants?.[0];
+        return !(p.id === productId && v?.id === variantId);
+      });
+
+      return {
+        ...prevCart,
+        products: updatedProducts,
+        sub_total: calculateSubtotal(updatedProducts),
+        updated_at: new Date().toISOString(),
+      };
+    });
+  };
 
   return (
     <CartContext.Provider
@@ -193,6 +212,7 @@ export const Cart_Context_Provider = ({ children }) => {
         cart,
         increaseCartItemQty,
         decreaseCartItemQty,
+        removingProductFromCart,
       }}
     >
       {children}
