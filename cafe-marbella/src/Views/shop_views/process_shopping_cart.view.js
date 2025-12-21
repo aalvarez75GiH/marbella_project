@@ -15,13 +15,14 @@ import { Text } from "../../infrastructure/typography/text.component";
 import { Product_Cart_Item_Tile } from "../../components/tiles/product_cart_item.tile";
 import { Shopping_Cart_Sub_Total_Footer } from "../../components/footers/shopping_cart_sub_total.footer";
 import { Regular_CTA } from "../../components/ctas/regular.cta";
+import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 
 export default function Process_Shopping_Cart_View() {
   const theme = useTheme();
   // *************
-  const { cart } = useContext(CartContext);
+  const { cart, isLoading, cartTotalItems } = useContext(CartContext);
   const products = cart?.products ?? [];
   const sub_total = cart?.sub_total ?? 0;
 
@@ -57,54 +58,60 @@ export default function Process_Shopping_Cart_View() {
 
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
-      <Container
-        width="100%"
-        height="100%"
-        color={theme.colors.bg.screens_bg}
-        // color={"green"}
-        justify="flex-start"
-        align="center"
-      >
-        <Go_Back_Header action={() => navigation.popToTop()} label="" />
-        <Spacer position="top" size="small" />
-        <Shopping_Cart_Title />
-        <Spacer position="top" size="small" />
+      {isLoading ? (
+        <Global_activity_indicator
+          caption="Wait, we are updating shopping cart..."
+          caption_width="65%"
+        />
+      ) : (
         <Container
           width="100%"
-          height="55%"
-          color={theme.colors.bg.elements_bg}
+          height="100%"
+          color={theme.colors.bg.screens_bg}
           // color={"green"}
-          justify="center"
+          justify="flex-start"
           align="center"
         >
-          <Spacer position="top" size="medium" />
+          <Go_Back_Header action={() => navigation.popToTop()} label="" />
+          <Spacer position="top" size="small" />
+          <Shopping_Cart_Title cartTotalItems={cartTotalItems} />
+          <Spacer position="top" size="small" />
+          <Container
+            width="100%"
+            height="55%"
+            color={theme.colors.bg.elements_bg}
+            // color={"green"}
+            justify="center"
+            align="center"
+          >
+            <Spacer position="top" size="medium" />
 
-          <FlatList
-            style={{ flex: 1 }}
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
-            data={products}
-            renderItem={renderProductCartItemTile}
-            keyExtractor={(item, id) => {
-              return item.id;
-            }}
-            gap={"15px"}
+            <FlatList
+              style={{ flex: 1 }}
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
+              data={products}
+              renderItem={renderProductCartItemTile}
+              keyExtractor={(item, id) => {
+                return item.id;
+              }}
+              gap={"15px"}
+            />
+          </Container>
+          <Spacer position="top" size="large" />
+          <Shopping_Cart_Sub_Total_Footer sub_total={sub_total} />
+          <Spacer position="top" size="medium" />
+          <Regular_CTA
+            width="95%"
+            height="10%"
+            color={theme.colors.ui.business}
+            border_radius={"40px"}
+            caption="Proceed to checkout"
+            caption_text_variant="dm_sans_bold_20"
+            action={() => null}
           />
-          {/* <Product_Cart_Item_Tile image={image} /> */}
         </Container>
-        <Spacer position="top" size="large" />
-        <Shopping_Cart_Sub_Total_Footer sub_total={sub_total} />
-        <Spacer position="top" size="medium" />
-        <Regular_CTA
-          width="95%"
-          height="10%"
-          color={theme.colors.ui.business}
-          border_radius={"40px"}
-          caption="Proceed to checkout"
-          caption_text_variant="dm_sans_bold_20"
-          action={() => null}
-        />
-      </Container>
+      )}
     </SafeArea>
   );
 }

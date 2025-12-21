@@ -11,7 +11,8 @@ import { theme } from "../../infrastructure/theme/index.js";
 import { Spacer } from "../spacers and globals/optimized.spacer.component.js";
 
 import { CartContext } from "../../infrastructure/services/cart/cart.context.js";
-export const Shopping_Cart_Title = ({}) => {
+export const Shopping_Cart_Title = ({ cartTotalItems }) => {
+  const label = cartTotalItems === 1 ? "item" : "items";
   return (
     <Container
       width="100%"
@@ -46,7 +47,10 @@ export const Shopping_Cart_Title = ({}) => {
         <Spacer position="left" size="large">
           <Spacer position="left" size="medium">
             <Spacer position="left" size="small">
-              <Text variant="dm_sans_bold_14">1 item</Text>
+              {/* <Text variant="dm_sans_bold_14">1 item</Text> */}
+              <Text variant="dm_sans_bold_14">
+                {cartTotalItems} {label}
+              </Text>
             </Spacer>
           </Spacer>
         </Spacer>

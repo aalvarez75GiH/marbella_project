@@ -12,7 +12,7 @@ import { Text } from "../../infrastructure/typography/text.component";
 
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 
-export const Product_Cart_Item_Tile = ({ item }) => {
+export const Product_Cart_Item_Tile = ({ item, image }) => {
   const theme = useTheme();
   const { increaseCartItemQty, decreaseCartItemQty, removingProductFromCart } =
     useContext(CartContext);
@@ -23,9 +23,7 @@ export const Product_Cart_Item_Tile = ({ item }) => {
     cart_product_description,
     size_variants,
   } = item || {};
-  const { sizeLabel, sizeLabel_ounces, price, images, quantity } =
-    size_variants[0];
-  const image = images[0];
+  const { sizeLabel, sizeLabel_ounces, price, quantity } = size_variants[0];
   return (
     <>
       <Container
