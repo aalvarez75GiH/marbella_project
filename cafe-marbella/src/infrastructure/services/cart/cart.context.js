@@ -209,12 +209,6 @@ export const Cart_Context_Provider = ({ children }) => {
         const total_items_qty = getTotalCartQuantity(cartUpdated);
         setCartTotalItems(total_items_qty);
         return cartUpdated;
-        // return {
-        //   ...prevCart,
-        //   products: updatedProducts,
-        //   sub_total,
-        //   updated_at: new Date().toISOString(),
-        // };
       });
 
       setIsLoading(false);
@@ -232,13 +226,21 @@ export const Cart_Context_Provider = ({ children }) => {
           const v = p?.size_variants?.[0];
           return !(p.id === productId && v?.id === variantId);
         });
-
-        return {
+        const cartUpdated = {
           ...prevCart,
           products: updatedProducts,
           sub_total: calculateSubtotal(updatedProducts),
           updated_at: new Date().toISOString(),
         };
+        const total_items_qty = getTotalCartQuantity(cartUpdated);
+        setCartTotalItems(total_items_qty);
+        // return {
+        //   ...prevCart,
+        //   products: updatedProducts,
+        //   sub_total: calculateSubtotal(updatedProducts),
+        //   updated_at: new Date().toISOString(),
+        // };
+        return cartUpdated;
       });
       setIsLoading(false);
     }, 500);
