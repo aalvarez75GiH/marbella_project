@@ -1,9 +1,10 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
 import { Text } from "../../infrastructure/typography/text.component"; // or RN Text
 import BuggyIcon from "../../../assets/my_icons/buggy.svg";
 import { Container } from "../containers/general.containers";
 import { Spacer } from "../spacers and globals/optimized.spacer.component";
+
+import { CartContext } from "../../infrastructure/services/cart/cart.context";
 
 export const Cart_Active_With_Items_CTA = ({
   color,
@@ -11,6 +12,7 @@ export const Cart_Active_With_Items_CTA = ({
   quantity,
   type,
 }) => {
+  const { cartTotalItems } = React.useContext(CartContext);
   return type === 1 ? (
     <>
       <Container

@@ -1,10 +1,7 @@
 import React from "react";
 
 import { Text } from "../../infrastructure/typography/text.component.js";
-import {
-  Pressable_Container,
-  Action_Container,
-} from "../containers/general.containers.js";
+import { Action_Container } from "../containers/general.containers.js";
 import { theme } from "../../infrastructure/theme/index.js";
 
 export const Regular_CTA = ({

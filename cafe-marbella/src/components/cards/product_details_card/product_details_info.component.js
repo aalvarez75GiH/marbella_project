@@ -103,12 +103,7 @@ export const Product_Details_Info_Component = ({
               );
             }}
           >
-            <Text
-              variant="dm_sans_bold_16_white"
-              //   style={{ textDecorationLine: "underline" }}
-            >
-              Add to cart
-            </Text>
+            <Text variant="dm_sans_bold_16_white">Add to cart</Text>
           </Pressable_Container>
         </Container>
       </Container>

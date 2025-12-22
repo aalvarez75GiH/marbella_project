@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { FlatList, Image } from "react-native";
+import { Image } from "react-native";
 import { useTheme } from "styled-components/native";
 
 import {
@@ -27,23 +27,14 @@ export const Product_Cart_Item_Tile = ({ item, image }) => {
   return (
     <>
       <Container
-        // width="95%"
         width="390px"
-        //height="70%"
         height="240px"
-        // color="red"
         color={theme.colors.ui.secondary}
         direction="row"
         overflow="hidden"
         border_radius="20px"
       >
-        <Container
-          width="30%"
-          height="100%"
-          //color="blue"
-          color={theme.colors.ui.secondary}
-          // border_radius="20px"
-        >
+        <Container width="30%" height="100%" color={theme.colors.ui.secondary}>
           <Image
             // source={images[item.image]}
             source={image}

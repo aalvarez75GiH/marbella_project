@@ -7,7 +7,7 @@ export const Cart_Context_Provider = ({ children }) => {
   const [cart, setCart] = useState(shopping_cart);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [cartTotalItems, setCartTotalItems] = useState(1);
+  const [cartTotalItems, setCartTotalItems] = useState(0);
 
   console.log("CART AT CONTEXT: ", JSON.stringify(cart, null, 2));
 
@@ -19,21 +19,24 @@ export const Cart_Context_Provider = ({ children }) => {
     }, 0);
   };
 
+  //   Extract productId and variantId from item
   const extractingIDs = (item) => {
     const { id, size_variants } = item;
     const { id: variantId } = size_variants[0];
     return { productId: id, variantId };
   };
 
-  //   const getTotalCartQuantity = (updatedCart) => {
-  //     return (
-  //       updatedCart?.products?.reduce((total, product) => {
-  //         const quantity = product?.size_variants?.[0]?.quantity ?? 0;
-  //         return total + quantity;
-  //       }, 0) || 0
-  //     );
-  //   };
+  //   Get total quantity of items in cart
+  const getTotalCartQuantity = (updatedCart) => {
+    return (
+      updatedCart?.products?.reduce((total, product) => {
+        const quantity = product?.size_variants?.[0]?.quantity ?? 0;
+        return total + quantity;
+      }, 0) || 0
+    );
+  };
 
+  //   //   *** UPDATE product quantity at cart ***
   const updatingProductsQtyAtCart = (item, products, task) => {
     const { productId, variantId } = extractingIDs(item);
 
@@ -80,15 +83,7 @@ export const Cart_Context_Provider = ({ children }) => {
     return updatedProducts;
   };
 
-  const getTotalCartQuantity = (updatedCart) => {
-    return (
-      updatedCart?.products?.reduce((total, product) => {
-        const quantity = product?.size_variants?.[0]?.quantity ?? 0;
-        return total + quantity;
-      }, 0) || 0
-    );
-  };
-
+  // Increase cart item quantity
   const increaseCartItemQty = (item) => {
     setCart((prev) => {
       const products = prev?.products ?? [];
@@ -136,6 +131,7 @@ export const Cart_Context_Provider = ({ children }) => {
     });
   };
 
+  //   *** ADD product to cart ***
   const addingProductToCart = (
     product_to_add_to_cart,
     navigation,
@@ -215,6 +211,8 @@ export const Cart_Context_Provider = ({ children }) => {
       navigation.navigate(nextView);
     }, 1000);
   };
+
+  //   *** REMOVE product from cart ***
   const removingProductFromCart = (item) => {
     const { productId, variantId } = extractingIDs(item);
     setIsLoading(true);
@@ -234,12 +232,7 @@ export const Cart_Context_Provider = ({ children }) => {
         };
         const total_items_qty = getTotalCartQuantity(cartUpdated);
         setCartTotalItems(total_items_qty);
-        // return {
-        //   ...prevCart,
-        //   products: updatedProducts,
-        //   sub_total: calculateSubtotal(updatedProducts),
-        //   updated_at: new Date().toISOString(),
-        // };
+
         return cartUpdated;
       });
       setIsLoading(false);

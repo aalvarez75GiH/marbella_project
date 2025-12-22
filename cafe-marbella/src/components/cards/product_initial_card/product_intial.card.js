@@ -9,12 +9,10 @@ import { Product_Initial_Info_Component } from "./product_intial_info.component.
 import { Product_Identification_Line } from "./product_identification_line.component.js";
 
 export const Product_Initial_Card = ({ item = null }) => {
-  // console.log("ITEM AT INITIAL CARD:", JSON.stringify(item, null, 2));
   const {
     flag_image: FlagImage,
     product_name,
     product_subtitle,
-    // main_image,
     rating,
     size_variants,
   } = item || {};
@@ -24,7 +22,6 @@ export const Product_Initial_Card = ({ item = null }) => {
   const productMainImage = defaultVariant.images[0];
 
   const navigation = useNavigation();
-  // Assuming you are navigating to the next screen
 
   const handleNavigate = (item) => {
     const { flag_image, ...itemWithoutFlagImage } = item; // Exclude flag_image
@@ -41,7 +38,6 @@ export const Product_Initial_Card = ({ item = null }) => {
       direction="column"
       justify="flex-start"
       color={theme.colors.bg.elements_bg}
-      // onPress={() => navigation.navigate("Shop_Product_Details_View", { item })}
       onPress={() => handleNavigate(item)}
     >
       <Rating_And_Country_Flag_Component

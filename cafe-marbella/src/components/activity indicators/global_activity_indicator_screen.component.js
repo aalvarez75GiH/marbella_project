@@ -1,16 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { ActivityIndicator } from "react-native";
 
 import { Text } from "../../infrastructure/typography/text.component.js";
 import { theme } from "../../infrastructure/theme/index.js";
 import { Spacer } from "../spacers and globals/optimized.spacer.component.js";
-import {
-  Container,
-  Action_Container,
-} from "../containers/general.containers.js";
+import { Container } from "../containers/general.containers.js";
 
 export const Global_activity_indicator = ({
-  action,
   caption = "Wait...",
   caption_width = "45%",
 }) => {
@@ -23,7 +19,6 @@ export const Global_activity_indicator = ({
         align="center"
         color={theme.colors.bg.screens_bg}
         direction="column"
-        // color={"green"}
       >
         <Container
           width={caption_width}
@@ -31,7 +26,6 @@ export const Global_activity_indicator = ({
           justify="center"
           align="center"
           color={theme.colors.bg.screens_bg}
-          //color={"red"}
           direction="column"
         >
           <ActivityIndicator size="small" color="#000000" />

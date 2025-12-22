@@ -1,11 +1,7 @@
 import React from "react";
-import { Image } from "react-native";
 
 import { Text } from "../../../infrastructure/typography/text.component.js";
-import {
-  Container,
-  Action_Container,
-} from "../../containers/general.containers.js";
+import { Container } from "../../containers/general.containers.js";
 import { theme } from "../../../infrastructure/theme/index.js";
 import { Spacer } from "../../../components/spacers and globals/optimized.spacer.component.js";
 import StarIcon from "../../../../assets/my_icons/star_icon.svg";

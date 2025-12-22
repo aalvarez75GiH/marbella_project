@@ -1,16 +1,10 @@
-import React, { useContext } from "react";
+import React from "react";
 
-import ArrowBackIcon from "../../../assets/my_icons/arrow_back_icon.svg";
-import ExitIcon from "../../../assets/my_icons/exit_icon.svg";
 import { Text } from "../../infrastructure/typography/text.component.js";
-import {
-  Container,
-  Action_Container,
-} from "../containers/general.containers.js";
+import { Container } from "../containers/general.containers.js";
 import { theme } from "../../infrastructure/theme/index.js";
 import { Spacer } from "../spacers and globals/optimized.spacer.component.js";
 
-import { CartContext } from "../../infrastructure/services/cart/cart.context.js";
 export const Shopping_Cart_Title = ({ cartTotalItems }) => {
   const label = cartTotalItems === 1 ? "item" : "items";
   return (

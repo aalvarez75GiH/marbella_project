@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Platform } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
@@ -8,10 +8,11 @@ import { Menu_Navigator } from "./menu.navigator";
 
 import ShopIcon from "../../../assets/my_icons/shop_icon.svg";
 import OrdersIcon from "../../../assets/my_icons/receipt_orders.svg";
-import MenuIcon from "../../../assets/my_icons/two_lines_menu_icon.svg";
 import { Cart_Active_With_Items_CTA } from "../../components/ctas/my_cart_active_items.cta";
 import { theme } from "../theme";
 import { Cart_Context_Provider } from "../services/cart/cart.context";
+
+import { CartContext } from "../services/cart/cart.context";
 
 const Tab = createBottomTabNavigator();
 
@@ -20,11 +21,9 @@ const tabBarListeners = ({ navigation, route }) => ({
 });
 
 export const AppNavigator = () => {
-  //   const { globalLanguage } = React.useContext(GlobalContext);
   return (
     <Cart_Context_Provider>
       <Tab.Navigator
-        //   tabBar={(props) => <ConditionalTabBar {...props} />}
         screenOptions={{
           tabBarActiveTintColor: "#247F35",
           tabBarInactiveTintColor: "#000000",
@@ -55,7 +54,6 @@ export const AppNavigator = () => {
           component={Shop_Navigator}
           listeners={tabBarListeners}
           options={{
-            //   title: globalLanguage === "EN" ? "Work" : "Trabajo",
             title: "Shop",
             tabBarIcon: ({ color }) => (
               <ShopIcon width={25} height={25} fill={color} />
@@ -74,20 +72,23 @@ export const AppNavigator = () => {
             ),
           }}
         />
-
         <Tab.Screen
           name="Cart"
           component={Menu_Navigator}
           options={{
             title: "Cart",
-            tabBarIcon: ({ color, size }) => (
-              <Cart_Active_With_Items_CTA
-                size={size ?? 25}
-                quantity={0}
-                type={2}
-                color={theme.colors.bg.elements_bg}
-              />
-            ),
+            tabBarIcon: ({ color, size }) => {
+              // Access the cart context here
+              const { cartTotalItems } = useContext(CartContext);
+              return (
+                <Cart_Active_With_Items_CTA
+                  size={size ?? 25}
+                  quantity={cartTotalItems}
+                  type={2}
+                  color={theme.colors.bg.elements_bg}
+                />
+              );
+            },
           }}
         />
       </Tab.Navigator>

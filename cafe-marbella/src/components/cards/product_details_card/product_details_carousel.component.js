@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Image, ScrollView } from "react-native";
-import { View, Pressable, StyleSheet, FlatList } from "react-native";
+import { FlatList } from "react-native";
 
-import { Text } from "../../../infrastructure/typography/text.component.js";
 import {
   Container,
   Pressable_Container,

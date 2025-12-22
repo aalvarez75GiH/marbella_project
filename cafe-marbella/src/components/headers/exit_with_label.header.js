@@ -1,5 +1,4 @@
 import React from "react";
-import ArrowBackIcon from "../../../assets/my_icons/arrow_back_icon.svg";
 import ExitIcon from "../../../assets/my_icons/exit_icon.svg";
 import { Text } from "../../infrastructure/typography/text.component.js";
 import {

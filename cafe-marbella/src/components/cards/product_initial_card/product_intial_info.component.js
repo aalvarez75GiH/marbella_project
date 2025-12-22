@@ -1,16 +1,9 @@
 import React from "react";
-import { Image } from "react-native";
 
 import { Text } from "../../../infrastructure/typography/text.component.js";
-import {
-  Container,
-  Action_Container,
-} from "../../containers/general.containers.js";
+import { Container } from "../../containers/general.containers.js";
 import { theme } from "../../../infrastructure/theme/index.js";
 import { Spacer } from "../../../components/spacers and globals/optimized.spacer.component.js";
-import StarIcon from "../../../../assets/my_icons/star_icon.svg";
-import { Rating_And_Country_Flag_Component } from "./rating_and_country_flag.component.js";
-import { Product_Image_Component } from "./product_image.component.js";
 
 export const Product_Initial_Info_Component = ({
   product_name,
@@ -34,7 +27,6 @@ export const Product_Initial_Info_Component = ({
         // color={"#CAD"}
         justify="flex-start"
         align="flex-start"
-        // style={{ paddingRight: "5%" }}
       >
         <Spacer position="top" size="large" />
         <Spacer position="left" size="large">
@@ -69,7 +61,6 @@ export const Product_Initial_Info_Component = ({
         // color="lightyellow"
         justify="center"
         align="center"
-        // style={{ paddingRight: "5%" }}
       >
         <Text
           variant="raleway_bold_14"
