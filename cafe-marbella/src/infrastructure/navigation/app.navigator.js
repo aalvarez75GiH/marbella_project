@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import { Shop_Navigator } from "./shop.navigator";
 import { Orders_Navigator } from "./orders.navigator";
-import { Menu_Navigator } from "./menu.navigator";
+import { Cart_Navigator } from "./cart.navigator";
 
 import ShopIcon from "../../../assets/my_icons/shop_icon.svg";
 import OrdersIcon from "../../../assets/my_icons/receipt_orders.svg";
@@ -74,7 +74,7 @@ export const AppNavigator = () => {
         />
         <Tab.Screen
           name="Cart"
-          component={Menu_Navigator}
+          component={Cart_Navigator}
           options={{
             title: "Cart",
             tabBarIcon: ({ color, size }) => {
@@ -84,7 +84,7 @@ export const AppNavigator = () => {
                 <Cart_Active_With_Items_CTA
                   size={size ?? 25}
                   quantity={cartTotalItems}
-                  type={2}
+                  type={1}
                   color={theme.colors.bg.elements_bg}
                 />
               );
