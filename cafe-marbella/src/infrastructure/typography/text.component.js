@@ -101,15 +101,16 @@ font-size: ${theme.fontSizes.text_16};
 font-family: ${theme.fonts.dmSansBold};
 color: ${theme.colors.text.black};
 `;
-const dm_sans_regular_16 = (theme) => `
-font-size: ${theme.fontSizes.text_16};
-font-family: ${theme.fonts.dmSansRegular};
-color: ${theme.colors.text.black};
-`;
 const dm_sans_bold_16_white = (theme) => `
 font-size: ${theme.fontSizes.text_16};
 font-family: ${theme.fonts.dmSansBold};
 color: ${theme.colors.text.white};
+`;
+
+const dm_sans_regular_16 = (theme) => `
+font-size: ${theme.fontSizes.text_16};
+font-family: ${theme.fonts.dmSansRegular};
+color: ${theme.colors.text.black};
 `;
 
 const dm_sans_bold_14 = (theme) => `

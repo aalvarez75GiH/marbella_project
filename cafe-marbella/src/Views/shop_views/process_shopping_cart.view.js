@@ -108,7 +108,7 @@ export default function Process_Shopping_Cart_View() {
             border_radius={"40px"}
             caption="Proceed to checkout"
             caption_text_variant="dm_sans_bold_20"
-            action={() => null}
+            action={() => navigation.navigate("Shop_Delivery_Type_View")}
           />
         </Container>
       )}
