@@ -1,5 +1,7 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
 import { shopping_cart } from "../../local data/shopping_cart";
+import { products as catalogProducts } from "../../local data/products";
+// adjust path
 
 export const CartContext = createContext();
 
@@ -11,7 +13,7 @@ export const Cart_Context_Provider = ({ children }) => {
 
   console.log("CART AT CONTEXT: ", JSON.stringify(cart, null, 2));
 
-  //   Calculate subtotal of cart helper function
+  //Calculate subtotal of cart helper function
   const calculateSubtotal = (products) => {
     return products.reduce((sum, product) => {
       const variant = product.size_variants[0];

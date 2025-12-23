@@ -19,10 +19,10 @@ export const Product_Details_Info_Component = ({
   const navigation = useNavigation();
   const { addingProductToCart } = useContext(CartContext);
 
-  console.log(
-    "PRODUCT TO ADD TO CART:",
-    JSON.stringify(product_to_add_to_cart, null, 2)
-  );
+  //   console.log(
+  //     "PRODUCT TO ADD TO CART:",
+  //     JSON.stringify(product_to_add_to_cart, null, 2)
+  //   );
 
   return (
     <Container
@@ -94,6 +94,14 @@ export const Product_Details_Info_Component = ({
             color={theme.colors.ui.success}
             justify="center"
             align="center"
+            // onPress={() => {
+            //   addingProductToCart(
+            //     product_id,
+            //     variant_id,
+            //     navigation,
+            //     "Shop_Shopping_Cart_View"
+            //   );
+            // }}
             onPress={() => {
               addingProductToCart(
                 product_to_add_to_cart,
