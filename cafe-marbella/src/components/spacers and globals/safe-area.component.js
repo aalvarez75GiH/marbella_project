@@ -1,4 +1,5 @@
-import { Platform, SafeAreaView } from "react-native";
+import { Platform } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
 export const SafeArea = styled(SafeAreaView)`
