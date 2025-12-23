@@ -12,18 +12,18 @@ import { Text } from "../../infrastructure/typography/text.component";
 
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 
-export const Product_Cart_Item_Tile = ({ item, image }) => {
+export const Product_Cart_Item_Tile = ({ product, image }) => {
   const theme = useTheme();
   const { increaseCartItemQty, decreaseCartItemQty, removingProductFromCart } =
     useContext(CartContext);
-  console.log("ITEM IN CART TILE:", JSON.stringify(item, null, 2));
-  const {
-    cart_product_name,
-    cart_product_country_name,
-    cart_product_description,
-    size_variants,
-  } = item || {};
+
+  const { title, originCountry, grindType, size_variants } = product || {};
   const { sizeLabel, sizeLabel_ounces, price, quantity } = size_variants[0];
+
+  const cartTitle = product.title; // "Cafe Marbella"
+  const cartCountry = product.originCountry;
+  const cartDesc =
+    product.grindType === "whole" ? "Whole bean coffee" : "Ground bean coffee";
   return (
     <>
       <Container
@@ -71,7 +71,7 @@ export const Product_Cart_Item_Tile = ({ item, image }) => {
               color={theme.colors.ui.secondary}
               justify="flex-end"
               align="center"
-              onPress={() => removingProductFromCart(item)}
+              onPress={() => removingProductFromCart(product)}
             >
               <RemoveIcon width={20} height={20} fill={"#FFFFFF"} />
             </Action_Container>
@@ -92,13 +92,9 @@ export const Product_Cart_Item_Tile = ({ item, image }) => {
               align="flex-start"
             >
               <Spacer position="left" size="large">
-                <Text variant="raleway_bold_14_white">{cart_product_name}</Text>
-                <Text variant="raleway_bold_24_white">
-                  {cart_product_country_name}
-                </Text>
-                <Text variant="raleway_bold_14_white">
-                  {cart_product_description}
-                </Text>
+                <Text variant="raleway_bold_14_white">{cartTitle}</Text>
+                <Text variant="raleway_bold_24_white">{cartCountry}</Text>
+                <Text variant="raleway_bold_14_white">{cartDesc}</Text>
                 <Text variant="raleway_bold_14_white">
                   {sizeLabel} - {sizeLabel_ounces}
                 </Text>
@@ -156,7 +152,7 @@ export const Product_Cart_Item_Tile = ({ item, image }) => {
                   border_radius="25px" // Half of the width/height for a perfect circle
                   border_width="2px"
                   border_color={theme.colors.ui.white}
-                  onPress={() => decreaseCartItemQty(item)}
+                  onPress={() => decreaseCartItemQty(product)}
                   justify="flex-start" // Center content vertically
                   align="center" // Center content horizontally
                 >
@@ -184,7 +180,7 @@ export const Product_Cart_Item_Tile = ({ item, image }) => {
                   border_radius="25px"
                   border_width="2px"
                   border_color={theme.colors.ui.white}
-                  onPress={() => increaseCartItemQty(item)}
+                  onPress={() => increaseCartItemQty(product)}
                   justify="center"
                   align="center"
                 >

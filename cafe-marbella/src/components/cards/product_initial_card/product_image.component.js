@@ -2,10 +2,7 @@ import React from "react";
 import { Image } from "react-native";
 import { theme } from "../../../infrastructure/theme/index.js";
 
-import {
-  Container,
-  Action_Container,
-} from "../../containers/general.containers.js";
+import { Container } from "../../containers/general.containers.js";
 
 export const Product_Image_Component = ({ image }) => {
   return (

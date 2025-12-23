@@ -14,8 +14,12 @@ import { Product_Initial_Card } from "../../components/cards/product_initial_car
 
 import { whole_bean_coffee } from "../../../src/infrastructure/local data/products";
 import { ground_bean_coffee } from "../../../src/infrastructure/local data/products";
+import { products } from "../../../src/infrastructure/local data/products";
 
 export default function Shop_View() {
+  const data = products.filter((p) => p.grindType === "ground");
+  console.log("GROUND BEAN COFFEE:", JSON.stringify(data, null, 2));
+
   const renderProductInitialCard = ({ item }) => {
     return (
       <Spacer position="bottom" size="medium">
@@ -42,7 +46,8 @@ export default function Shop_View() {
         <FlatList
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
-          data={ground_bean_coffee}
+          data={data}
+          // data={ground_bean_coffee}
           // data={whole_bean_coffee}
           renderItem={renderProductInitialCard}
           keyExtractor={(item, id) => {
