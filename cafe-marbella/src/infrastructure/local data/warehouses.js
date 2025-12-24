@@ -49,17 +49,50 @@ export const warehouses = [
     // 🔥 replace products: [] with inventory
     inventory: {
       // sku = `${productId}:${variantId}`
+      /* =========================
+         VENEZUELA
+      ========================= */
       "vzla-medium-whole:250": 1,
       "vzla-medium-whole:500": 1,
       "vzla-medium-whole:1000": 1,
 
-      "vzla-medium-ground:250": 3,
-      "vzla-medium-ground:500": 11,
-      "vzla-medium-ground:1000": 10,
+      "vzla-medium-ground:250": 10,
+      "vzla-medium-ground:500": 0,
+      "vzla-medium-ground:1000": 0,
+
+      /* =========================
+         MEXICO
+      ========================= */
+      // added whole (you already have it in catalog)
+      "mex-medium-whole:250": 4,
+      "mex-medium-whole:500": 3,
+      "mex-medium-whole:1000": 2,
 
       "mex-medium-ground:250": 6,
       "mex-medium-ground:500": 2,
       "mex-medium-ground:1000": 11,
+
+      /* =========================
+         HONDURAS
+      ========================= */
+      "hnd-medium-whole:250": 5,
+      "hnd-medium-whole:500": 3,
+      "hnd-medium-whole:1000": 2,
+
+      "hnd-medium-ground:250": 8,
+      "hnd-medium-ground:500": 2,
+      "hnd-medium-ground:1000": 2,
+
+      /* =========================
+         NICARAGUA
+      ========================= */
+      "nic-medium-whole:250": 2,
+      "nic-medium-whole:500": 2,
+      "nic-medium-whole:1000": 1,
+
+      "nic-medium-ground:250": 1,
+      "nic-medium-ground:500": 10,
+      "nic-medium-ground:1000": 11,
     },
   },
 ];

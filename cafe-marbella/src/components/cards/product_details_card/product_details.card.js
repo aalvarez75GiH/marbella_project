@@ -61,15 +61,6 @@ export const Product_Details_Card = ({ item = null }) => {
       />
       <Spacer position="top" size="small" />
 
-      {/* <Product_Details_Info_Component
-        product_id={item.id}
-        variant_id={selectedVariantId}
-        product_name={product_name}
-        product_subtitle={product_subtitle}
-        size_variants={size_variants}
-        selectedVariant={selectedVariant}
-        setSelectedVariantId={setSelectedVariantId}
-      /> */}
       <Product_Details_Info_Component
         product_name={product_name}
         product_subtitle={product_subtitle}

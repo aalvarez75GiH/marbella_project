@@ -41,7 +41,7 @@ export default function Shopping_Cart_View() {
     const image = item?.size_variants?.[0]?.images?.[0]; // ✅ safe
     return (
       <Spacer position="bottom" size="medium">
-        <Product_Cart_Item_Tile image={image} item={item} />
+        <Product_Cart_Item_Tile image={image} product={item} />
       </Spacer>
     );
   };

@@ -1,3 +1,4 @@
+import React, { useContext } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, FlatList } from "react-native";
 import { useTheme } from "styled-components/native";
@@ -16,9 +17,13 @@ import { whole_bean_coffee } from "../../../src/infrastructure/local data/produc
 import { ground_bean_coffee } from "../../../src/infrastructure/local data/products";
 import { products } from "../../../src/infrastructure/local data/products";
 
+import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
 export default function Shop_View() {
-  const data = products.filter((p) => p.grindType === "ground");
-  console.log("GROUND BEAN COFFEE:", JSON.stringify(data, null, 2));
+  const { shopProductsGround, shopProductsWhole } =
+    useContext(WarehouseContext);
+  // const data = shopProductsGround;
+  const data = shopProductsWhole;
+  // console.log("DATA:", JSON.stringify(data, null, 2));
 
   const renderProductInitialCard = ({ item }) => {
     return (

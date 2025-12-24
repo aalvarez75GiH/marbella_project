@@ -17,7 +17,7 @@ export const Product_Cart_Item_Tile = ({ product, image }) => {
   const { increaseCartItemQty, decreaseCartItemQty, removingProductFromCart } =
     useContext(CartContext);
 
-  const { title, originCountry, grindType, size_variants } = product || {};
+  const { size_variants } = product || {};
   const { sizeLabel, sizeLabel_ounces, price, quantity } = size_variants[0];
 
   const cartTitle = product.title; // "Cafe Marbella"
