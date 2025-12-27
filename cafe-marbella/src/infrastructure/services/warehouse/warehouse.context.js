@@ -88,10 +88,10 @@ export const Warehouse_Context_Provider = ({ children }) => {
     );
   }, [selectedWarehouse]);
 
-  console.log(
-    "SHOP PRODUCTS GROUND AT WAREHOUSE CONTEXT: ",
-    JSON.stringify(shopProductsGround, null, 2)
-  );
+  // console.log(
+  //   "SHOP PRODUCTS GROUND AT WAREHOUSE CONTEXT: ",
+  //   JSON.stringify(shopProductsGround, null, 2)
+  // );
   const shopProductsWhole = useMemo(() => {
     if (!selectedWarehouse) return [];
     return getWarehouseShopProductsAll(
@@ -101,10 +101,10 @@ export const Warehouse_Context_Provider = ({ children }) => {
     );
   }, [selectedWarehouse]);
 
-  console.log(
-    "SHOP PRODUCTS WHOLE AT WAREHOUSE CONTEXT: ",
-    JSON.stringify(shopProductsWhole, null, 2)
-  );
+  // console.log(
+  //   "SHOP PRODUCTS WHOLE AT WAREHOUSE CONTEXT: ",
+  //   JSON.stringify(shopProductsWhole, null, 2)
+  // );
 
   return (
     <WarehouseContext.Provider

@@ -3,6 +3,7 @@ import { Navigation } from "./src/infrastructure/navigation";
 import { ThemeProvider } from "styled-components/native";
 import { useFonts } from "expo-font";
 
+import { Authentication_Context_Provider } from "./src/infrastructure/services/authentication/authentication.context";
 import { theme } from "./src/infrastructure/theme";
 
 export default function App() {
@@ -20,7 +21,9 @@ export default function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Navigation />
+      <Authentication_Context_Provider>
+        <Navigation />
+      </Authentication_Context_Provider>
     </ThemeProvider>
   );
 }

@@ -1,7 +1,9 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
 import { shopping_cart } from "../../local data/shopping_cart";
 import { products as catalogProducts } from "../../local data/products";
-// adjust path
+import { gettingCartByUserIDRequest } from "./cart.services";
+
+import { AuthenticationContext } from "../authentication/authentication.context";
 
 export const CartContext = createContext();
 
@@ -10,6 +12,42 @@ export const Cart_Context_Provider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [cartTotalItems, setCartTotalItems] = useState(0);
+
+  const { user } = useContext(AuthenticationContext);
+  console.log("USER AT CART CONTEXT: ", JSON.stringify(user, null, 2));
+  const userId = user?.user_id;
+  console.log("USER ID AT CART CONTEXT: ", userId);
+
+  // useEffect(() => {
+  //   const gettingCartByUserID = async (userId) => {
+  //     const myCart = await gettingCartByUserIDRequest(userId);
+  //     console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
+  //     // Simulate fetching cart data for the user
+  //     // In a real app, replace this with an API call
+  //     console.log("Fetching cart for user ID:", userId);
+  //     return shopping_cart; // returning local data for simulation
+  //   };
+  //   gettingCartByUserID(userId);
+  // }, []);
+  useEffect(() => {
+    const gettingCartByUserID = async (userId) => {
+      try {
+        console.log("Fetching cart for userId:", userId);
+        const myCart = await gettingCartByUserIDRequest(userId);
+        console.log(
+          "MY CART FROM API CALL:",
+          JSON.stringify(myCart[0], null, 2)
+        );
+        // Handle the fetched cart data (e.g., update state or context)
+      } catch (error) {
+        console.error("Error fetching cart:", error);
+      }
+    };
+
+    if (userId) {
+      gettingCartByUserID(userId);
+    }
+  }, [userId]);
 
   console.log("CART AT CONTEXT: ", JSON.stringify(cart, null, 2));
 

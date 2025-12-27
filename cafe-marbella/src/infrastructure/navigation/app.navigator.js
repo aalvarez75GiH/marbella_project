@@ -14,6 +14,7 @@ import { theme } from "../theme";
 import { Cart_Context_Provider } from "../services/cart/cart.context";
 import { Geolocation_Context_Provider } from "../services/geolocation/geolocation.context";
 import { Warehouse_Context_Provider } from "../services/warehouse/warehouse.context";
+import { Authentication_Context_Provider } from "../services/authentication/authentication.context";
 
 import { CartContext } from "../services/cart/cart.context";
 const Tab = createBottomTabNavigator();
