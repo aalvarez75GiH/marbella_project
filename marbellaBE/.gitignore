@@ -66,4 +66,8 @@ node_modules/
 .env
 
 # service key
+marbellaBE/functions/serviceAccountKey.json
+marbellaBE/functions/*.json
 googleServicesAccountKey.json
+# Firebase / GCP secrets
+
