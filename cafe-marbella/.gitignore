@@ -39,3 +39,12 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# dotenv environment variables file
+.env
+
+# service key
+marbellaBE/functions/serviceAccountKey.json
+marbellaBE/functions/*.json
+googleServicesAccountKey.json
+# Firebase / GCP secrets
