@@ -1,6 +1,7 @@
 /* eslint-disable */
 
-const functions = require("firebase-functions");
+// const functions = require("firebase-functions");
+const { onRequest } = require("firebase-functions/v2/https");
 // const { admin, db } = require("./fb"); // ✅ same initialized admin
 
 // const admin = require("firebase-admin");
@@ -16,5 +17,8 @@ const cartsRouter = require("./api/carts/cart.routes");
 // ********** express configuration
 
 // *************************************************
-exports.usersEndPoint = functions.https.onRequest(usersRouter);
-exports.cartsEndPoint = functions.https.onRequest(cartsRouter);
+// exports.usersEndPoint = functions.https.onRequest(usersRouter);
+// exports.cartsEndPoint = functions.https.onRequest(cartsRouter);
+
+exports.usersendpoint = onRequest(usersRouter);
+exports.cartsendpoint = onRequest(cartsRouter);
