@@ -22,3 +22,5 @@ const cartsRouter = require("./api/carts/cart.routes");
 
 exports.usersendpoint = onRequest(usersRouter);
 exports.cartsendpoint = onRequest(cartsRouter);
+// exports["users-endpoint"] = onRequest(usersRouter);
+// exports["carts-endpoint"] = onRequest(cartsRouter);

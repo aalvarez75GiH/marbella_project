@@ -46,7 +46,7 @@ cartsRouter.get("/cart", (req, res) => {
 });
 
 cartsRouter.post("/", (req, res) => {
-  const user = {
+  const cart = {
     user_id: req.body.user_id,
     cart_id: uuidv4(),
     createdAt: new Date().toISOString(),
@@ -55,11 +55,11 @@ cartsRouter.post("/", (req, res) => {
     taxes: req.body.taxes,
     total: req.body.total,
   };
-  console.log("USER AT END POINT:", user);
+  console.log("CART AT END POINT:", cart);
   // return res.status(201).json({ status: "Success", user });
   (async () => {
     try {
-      await cartsControllers.createUser(user).then((newCart) => {
+      await cartsControllers.createCart(cart).then((newCart) => {
         res.status(201).json(newCart);
       });
     } catch (error) {
@@ -71,4 +71,31 @@ cartsRouter.post("/", (req, res) => {
     }
   })();
 });
+
+cartsRouter.put("/products_cart", async (req, res) => {
+  const user_id = req.query.user_id;
+  const product = req.body;
+  // console.log("USER AT END POINT:", user_id);
+  // console.log("PRODUCT TO ADD AT END POINT:", product);
+  // return res.status(201).json({ status: "Success", user });
+
+  try {
+    const cartUpdated = await cartsControllers.updateProductsCart(
+      user_id,
+      product
+    );
+
+    if (!cartUpdated) {
+      return res.status(404).json({ status: "NotFound", user_id });
+    }
+    return res.status(201).json(cartUpdated);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({
+      status: "Failed",
+      msg: "Something went wrong saving Data...",
+    });
+  }
+});
+
 module.exports = cartsRouter;
