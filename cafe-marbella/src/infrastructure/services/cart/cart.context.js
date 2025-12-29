@@ -1,7 +1,10 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
 import { shopping_cart } from "../../local data/shopping_cart";
 import { products as catalogProducts } from "../../local data/products";
-import { gettingCartByUserIDRequest } from "./cart.services";
+import {
+  gettingCartByUserIDRequest,
+  updatingProductsCart,
+} from "./cart.services";
 
 import { AuthenticationContext } from "../authentication/authentication.context";
 
@@ -37,6 +40,10 @@ export const Cart_Context_Provider = ({ children }) => {
         console.log(
           "MY CART FROM API CALL:",
           JSON.stringify(myCart[0], null, 2)
+        );
+        setCart(myCart[0]);
+        setCartTotalItems(
+          myCart[0].products[0]?.size_variants[0]?.quantity || 0
         );
         // Handle the fetched cart data (e.g., update state or context)
       } catch (error) {
@@ -148,6 +155,7 @@ export const Cart_Context_Provider = ({ children }) => {
       return updatedCart;
     });
   };
+
   const decreaseCartItemQty = (item) => {
     setCart((prev) => {
       const products = prev?.products ?? [];
@@ -171,7 +179,7 @@ export const Cart_Context_Provider = ({ children }) => {
     });
   };
 
-  //   *** ADD product to cart ***
+  //   *** ADD product to cart in the cloud ***
   const addingProductToCart = (
     product_to_add_to_cart,
     navigation,
@@ -179,78 +187,106 @@ export const Cart_Context_Provider = ({ children }) => {
   ) => {
     setIsLoading(true);
 
-    setTimeout(() => {
-      setCart((prevCart) => {
-        const products = prevCart?.products ?? [];
-
-        const incoming = product_to_add_to_cart;
-        const incomingVariant = incoming.size_variants[0];
-
-        const existingIndex = products.findIndex((p) => {
-          const v = p.size_variants?.[0];
-          return p.id === incoming.id && v?.id === incomingVariant.id;
-        });
-
-        let updatedProducts;
-
-        // 🟢 If exists → increment quantity
-        if (existingIndex !== -1) {
-          updatedProducts = products.map((p, idx) => {
-            if (idx !== existingIndex) return p;
-
-            const currentVariant = p.size_variants[0];
-            const currentQty = currentVariant.quantity ?? 0;
-            const stock = currentVariant.stock ?? Infinity;
-
-            return {
-              ...p,
-              size_variants: [
-                {
-                  ...currentVariant,
-                  quantity: Math.min(currentQty + 1, stock),
-                },
-              ],
-            };
-          });
-        }
-        // 🟢 If new → add product
-        else {
-          updatedProducts = [
-            ...products,
-            {
-              ...incoming,
-              size_variants: [
-                {
-                  ...incomingVariant,
-                  quantity: 1,
-                },
-              ],
-            },
-          ];
-        }
-
-        // 🔢 Calculate subtotal
-        console.log(
-          "UPDATED PRODUCTS BEFORE CALCULATION:",
-          JSON.stringify(updatedProducts, null, 2)
+    setTimeout(async () => {
+      try {
+        console.log("Fetching cart for userId:", userId);
+        const myCart = await updatingProductsCart(
+          userId,
+          product_to_add_to_cart
         );
-        const sub_total = calculateSubtotal(updatedProducts);
-
-        const cartUpdated = {
-          ...prevCart,
-          products: updatedProducts,
-          sub_total,
-          updated_at: new Date().toISOString(),
-        };
-        const total_items_qty = getTotalCartQuantity(cartUpdated);
+        console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
+        setCart(myCart);
+        const total_items_qty = getTotalCartQuantity(myCart);
         setCartTotalItems(total_items_qty);
-        return cartUpdated;
-      });
-
+        // setCartTotalItems(myCart.products[0]?.size_variants[0]?.quantity || 0);
+        // Handle the fetched cart data (e.g., update state or context)
+      } catch (error) {
+        console.error("Error fetching cart:", error);
+      }
       setIsLoading(false);
       navigation.navigate(nextView);
     }, 1000);
   };
+  // //   *** ADD product to cart ***
+  // const addingProductToCart = (
+  //   product_to_add_to_cart,
+  //   navigation,
+  //   nextView
+  // ) => {
+  //   setIsLoading(true);
+
+  //   setTimeout(() => {
+  //     setCart((prevCart) => {
+  //       const products = prevCart?.products ?? [];
+
+  //       const incoming = product_to_add_to_cart;
+  //       const incomingVariant = incoming.size_variants[0];
+
+  //       const existingIndex = products.findIndex((p) => {
+  //         const v = p.size_variants?.[0];
+  //         return p.id === incoming.id && v?.id === incomingVariant.id;
+  //       });
+
+  //       let updatedProducts;
+
+  //       // 🟢 If exists → increment quantity
+  //       if (existingIndex !== -1) {
+  //         updatedProducts = products.map((p, idx) => {
+  //           if (idx !== existingIndex) return p;
+
+  //           const currentVariant = p.size_variants[0];
+  //           const currentQty = currentVariant.quantity ?? 0;
+  //           const stock = currentVariant.stock ?? Infinity;
+
+  //           return {
+  //             ...p,
+  //             size_variants: [
+  //               {
+  //                 ...currentVariant,
+  //                 quantity: Math.min(currentQty + 1, stock),
+  //               },
+  //             ],
+  //           };
+  //         });
+  //       }
+  //       // 🟢 If new → add product
+  //       else {
+  //         updatedProducts = [
+  //           ...products,
+  //           {
+  //             ...incoming,
+  //             size_variants: [
+  //               {
+  //                 ...incomingVariant,
+  //                 quantity: 1,
+  //               },
+  //             ],
+  //           },
+  //         ];
+  //       }
+
+  //       // 🔢 Calculate subtotal
+  //       console.log(
+  //         "UPDATED PRODUCTS BEFORE CALCULATION:",
+  //         JSON.stringify(updatedProducts, null, 2)
+  //       );
+  //       const sub_total = calculateSubtotal(updatedProducts);
+
+  //       const cartUpdated = {
+  //         ...prevCart,
+  //         products: updatedProducts,
+  //         sub_total,
+  //         updated_at: new Date().toISOString(),
+  //       };
+  //       const total_items_qty = getTotalCartQuantity(cartUpdated);
+  //       setCartTotalItems(total_items_qty);
+  //       return cartUpdated;
+  //     });
+
+  //     setIsLoading(false);
+  //     navigation.navigate(nextView);
+  //   }, 1000);
+  // };
 
   //   *** REMOVE product from cart ***
   const removingProductFromCart = (item) => {

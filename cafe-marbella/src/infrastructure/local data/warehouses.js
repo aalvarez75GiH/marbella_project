@@ -52,7 +52,7 @@ export const warehouses = [
       /* =========================
          VENEZUELA
       ========================= */
-      "vzla-medium-whole:250": 1,
+      "vzla-medium-whole:250": 5,
       "vzla-medium-whole:500": 1,
       "vzla-medium-whole:1000": 1,
 

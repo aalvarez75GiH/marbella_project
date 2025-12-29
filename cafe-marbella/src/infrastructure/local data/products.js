@@ -542,6 +542,22 @@ export const products = [
   },
 ];
 
+// {
+//   "products": [
+//     {
+//       "id": "vzla-medium-whole",
+//       "size_variants": [
+//         { "size": "250 gr", "quantity": 2 }
+//       ]
+//     },
+//     {
+//       "id": "vzla-medium-whole",
+//       "size_variants": [
+//         { "size": "500 gr", "quantity": 1 },
+//       ]
+//     }
+//   ]
+// }
 // export const whole_bean_coffee = [
 //   {
 //     id: 1,
