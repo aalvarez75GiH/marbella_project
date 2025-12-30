@@ -27,14 +27,21 @@ export default function Process_Shopping_Cart_View() {
   const sub_total = cart?.sub_total ?? 0;
 
   // *************
+  const navigation = useNavigation();
+  // useEffect(() => {
+  //   // ⬅️ when cart becomes empty, go back
+  //   if (products.length === 0) {
+  //     navigation.goBack();
+  //   }
+  // }, [products.length]);
+  // const navigation = useNavigation();
+
   useEffect(() => {
     // ⬅️ when cart becomes empty, go back
-    if (products.length === 0) {
+    if (products.length === 0 && navigation.canGoBack()) {
       navigation.goBack();
     }
-  }, [products.length]);
-
-  const navigation = useNavigation();
+  }, [products.length, navigation]);
 
   useLayoutEffect(() => {
     navigation.getParent()?.setOptions({

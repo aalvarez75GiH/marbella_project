@@ -4,6 +4,7 @@ const express = require("express");
 const cartsRouter = express.Router();
 const { v4: uuidv4 } = require("uuid");
 const cartsControllers = require("./carts.controllers");
+const { increaseOrDecreaseCartItemQty } = require("./cart.handlers");
 
 cartsRouter.get("/", (req, res) => {
   const user_id = req.query.user_id;
@@ -11,7 +12,7 @@ cartsRouter.get("/", (req, res) => {
   //   res.status(200).send(uid);
   (async () => {
     try {
-      const cart = await cartsControllers.getCartByUserUID(user_id);
+      const cart = await cartsControllers.getCartByUserID(user_id);
       if (cart) {
         return res.status(200).json(cart);
       }
@@ -23,26 +24,16 @@ cartsRouter.get("/", (req, res) => {
     }
   })();
 });
-cartsRouter.get("/cart", (req, res) => {
+
+cartsRouter.get("/cart", async (req, res) => {
   const user_id = req.query.user_id;
-  console.log("USER ID AT CARTS ROUTE:", user_id);
-  //   res.status(200).send(uid);
-  (async () => {
-    try {
-      const cart = await cartsControllers.getCartByUserUID(user_id);
-      if (cart.length > 0) {
-        return res.status(200).json(cart);
-      }
-      if (cart.length === 0) {
-        return res.status(404).json({ status: "NotFound", user_id });
-      }
-    } catch (error) {
-      return res.status(500).send({
-        status: "Failed",
-        msg: error,
-      });
-    }
-  })();
+  try {
+    const cart = await cartsControllers.getCartByUserID(user_id);
+    if (!cart) return res.status(404).json({ status: "NotFound", user_id });
+    return res.status(200).json(cart);
+  } catch (error) {
+    return res.status(500).json({ status: "Failed", msg: String(error) });
+  }
 });
 
 cartsRouter.post("/", (req, res) => {
@@ -95,6 +86,21 @@ cartsRouter.put("/products_cart", async (req, res) => {
       status: "Failed",
       msg: "Something went wrong saving Data...",
     });
+  }
+});
+
+cartsRouter.put("/adjust-qty", async (req, res) => {
+  const task = req.query.task; // "increase" or "decrease"
+  const user_id = req.query.user_id;
+  console.log("USER ID AT ADJUST QTY ENDPOINT:", user_id);
+  console.log("TASK AT ADJUST QTY ENDPOINT:", task);
+  try {
+    const product = req.body;
+    console.log(" PRODUCT TO ADJUST QTY COMING REQ BODY:", product);
+    const cart = await increaseOrDecreaseCartItemQty(product, task, user_id);
+    res.status(200).json(cart);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
   }
 });
 

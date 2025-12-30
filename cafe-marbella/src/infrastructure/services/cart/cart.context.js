@@ -4,6 +4,7 @@ import { products as catalogProducts } from "../../local data/products";
 import {
   gettingCartByUserIDRequest,
   updatingProductsCart,
+  IncOrDecProductsCartQty,
 } from "./cart.services";
 
 import { AuthenticationContext } from "../authentication/authentication.context";
@@ -17,9 +18,10 @@ export const Cart_Context_Provider = ({ children }) => {
   const [cartTotalItems, setCartTotalItems] = useState(0);
 
   const { user } = useContext(AuthenticationContext);
+  const { user_id } = user || {};
   console.log("USER AT CART CONTEXT: ", JSON.stringify(user, null, 2));
-  const userId = user?.user_id;
-  console.log("USER ID AT CART CONTEXT: ", userId);
+  // const userId = user?.user_id;
+  console.log("USER ID AT CART CONTEXT: ", user_id);
 
   // useEffect(() => {
   //   const gettingCartByUserID = async (userId) => {
@@ -35,15 +37,17 @@ export const Cart_Context_Provider = ({ children }) => {
   useEffect(() => {
     const gettingCartByUserID = async (userId) => {
       try {
-        console.log("Fetching cart for userId:", userId);
-        const myCart = await gettingCartByUserIDRequest(userId);
+        console.log("Fetching cart for userId:", user_id);
+        const myCart = await gettingCartByUserIDRequest(user_id);
         console.log(
           "MY CART FROM API CALL:",
           JSON.stringify(myCart[0], null, 2)
         );
-        setCart(myCart[0]);
+        // setCart(myCart[0]);
+        setCart(myCart);
         setCartTotalItems(
-          myCart[0].products[0]?.size_variants[0]?.quantity || 0
+          myCart.quantity || 0
+          // myCart[0].products[0]?.size_variants[0]?.quantity || 0
         );
         // Handle the fetched cart data (e.g., update state or context)
       } catch (error) {
@@ -51,10 +55,15 @@ export const Cart_Context_Provider = ({ children }) => {
       }
     };
 
-    if (userId) {
-      gettingCartByUserID(userId);
+    if (user_id) {
+      gettingCartByUserID(user_id);
     }
-  }, [userId]);
+  }, [user_id]);
+
+  useEffect(() => {
+    const total_items_qty = getTotalCartQuantity(cart);
+    setCartTotalItems(total_items_qty);
+  }, [cart]);
 
   console.log("CART AT CONTEXT: ", JSON.stringify(cart, null, 2));
 
@@ -131,52 +140,24 @@ export const Cart_Context_Provider = ({ children }) => {
   };
 
   // Increase cart item quantity
-  const increaseCartItemQty = (item) => {
-    setCart((prev) => {
-      const products = prev?.products ?? [];
-
-      const updatedProducts = updatingProductsQtyAtCart(
-        item,
-        products,
-        "increase"
-      );
-      const updatedCart = {
-        ...prev,
-        products: updatedProducts,
-        sub_total: calculateSubtotal(updatedProducts),
-        updated_at: new Date().toISOString(),
-      };
-      console.log(
-        "UPDATED CART AFTER INCREASE:",
-        JSON.stringify(updatedCart, null, 2)
-      );
-      const total_items_qty = getTotalCartQuantity(updatedCart);
-      setCartTotalItems(total_items_qty);
-      return updatedCart;
-    });
+  const increaseCartItemQty = async (item) => {
+    try {
+      const myCart = await IncOrDecProductsCartQty(user_id, item, "increase");
+      console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
+      setCart(myCart);
+    } catch (error) {
+      console.error("Error updating cart:", error);
+    }
   };
-
-  const decreaseCartItemQty = (item) => {
-    setCart((prev) => {
-      const products = prev?.products ?? [];
-
-      const updatedProducts = updatingProductsQtyAtCart(
-        item,
-        products,
-        "decrease"
-      );
-
-      const cartUpdated = {
-        ...prev,
-        products: updatedProducts,
-        sub_total: calculateSubtotal(updatedProducts),
-        updated_at: new Date().toISOString(),
-      };
-      const total_items_qty = getTotalCartQuantity(cartUpdated);
-      setCartTotalItems(total_items_qty);
-
-      return cartUpdated;
-    });
+  // Increase cart item quantity
+  const decreaseCartItemQty = async (item) => {
+    try {
+      const myCart = await IncOrDecProductsCartQty(user_id, item, "decrease");
+      console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
+      setCart(myCart);
+    } catch (error) {
+      console.error("Error updating cart:", error);
+    }
   };
 
   //   *** ADD product to cart in the cloud ***
@@ -189,9 +170,9 @@ export const Cart_Context_Provider = ({ children }) => {
 
     setTimeout(async () => {
       try {
-        console.log("Fetching cart for userId:", userId);
+        console.log("Fetching cart for userId:", user_id);
         const myCart = await updatingProductsCart(
-          userId,
+          user_id,
           product_to_add_to_cart
         );
         console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
@@ -207,86 +188,6 @@ export const Cart_Context_Provider = ({ children }) => {
       navigation.navigate(nextView);
     }, 1000);
   };
-  // //   *** ADD product to cart ***
-  // const addingProductToCart = (
-  //   product_to_add_to_cart,
-  //   navigation,
-  //   nextView
-  // ) => {
-  //   setIsLoading(true);
-
-  //   setTimeout(() => {
-  //     setCart((prevCart) => {
-  //       const products = prevCart?.products ?? [];
-
-  //       const incoming = product_to_add_to_cart;
-  //       const incomingVariant = incoming.size_variants[0];
-
-  //       const existingIndex = products.findIndex((p) => {
-  //         const v = p.size_variants?.[0];
-  //         return p.id === incoming.id && v?.id === incomingVariant.id;
-  //       });
-
-  //       let updatedProducts;
-
-  //       // 🟢 If exists → increment quantity
-  //       if (existingIndex !== -1) {
-  //         updatedProducts = products.map((p, idx) => {
-  //           if (idx !== existingIndex) return p;
-
-  //           const currentVariant = p.size_variants[0];
-  //           const currentQty = currentVariant.quantity ?? 0;
-  //           const stock = currentVariant.stock ?? Infinity;
-
-  //           return {
-  //             ...p,
-  //             size_variants: [
-  //               {
-  //                 ...currentVariant,
-  //                 quantity: Math.min(currentQty + 1, stock),
-  //               },
-  //             ],
-  //           };
-  //         });
-  //       }
-  //       // 🟢 If new → add product
-  //       else {
-  //         updatedProducts = [
-  //           ...products,
-  //           {
-  //             ...incoming,
-  //             size_variants: [
-  //               {
-  //                 ...incomingVariant,
-  //                 quantity: 1,
-  //               },
-  //             ],
-  //           },
-  //         ];
-  //       }
-
-  //       // 🔢 Calculate subtotal
-  //       console.log(
-  //         "UPDATED PRODUCTS BEFORE CALCULATION:",
-  //         JSON.stringify(updatedProducts, null, 2)
-  //       );
-  //       const sub_total = calculateSubtotal(updatedProducts);
-
-  //       const cartUpdated = {
-  //         ...prevCart,
-  //         products: updatedProducts,
-  //         sub_total,
-  //         updated_at: new Date().toISOString(),
-  //       };
-  //       const total_items_qty = getTotalCartQuantity(cartUpdated);
-  //       setCartTotalItems(total_items_qty);
-  //       return cartUpdated;
-  //     });
-
-  //     setIsLoading(false);
-  //     navigation.navigate(nextView);
-  //   }, 1000);
-  // };
 
   //   *** REMOVE product from cart ***
   const removingProductFromCart = (item) => {
