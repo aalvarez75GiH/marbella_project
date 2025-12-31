@@ -62,3 +62,23 @@ export const IncOrDecProductsCartQty = async (user_id, product, task) => {
     throw error;
   }
 };
+
+export const removingCartItemRequest = async (
+  user_id,
+  productId,
+  variantId
+) => {
+  const { cartsEndPoint } = environment;
+  console.log("USER ID AT SERVICE:", user_id);
+  // console.log("PRODUCT TO ADD AT SERVICE:", JSON.stringify(product, null, 2));
+  const baseUrl = cartsEndPoint; // Replace with your backend base URL
+  const endpoint = `${baseUrl}/item?user_id=${user_id}&product_id=${productId}&variant_id=${variantId}`;
+  try {
+    const res = await axios.delete(endpoint);
+    console.log("RESPONSE:", res.data);
+    return res.data;
+  } catch (error) {
+    console.error("Error updating cart:", error);
+    throw error;
+  }
+};

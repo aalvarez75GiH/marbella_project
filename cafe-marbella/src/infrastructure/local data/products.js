@@ -178,7 +178,12 @@ export const products = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        promotion: { active: true, type: "discount", value: 10 },
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10,
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "500",
@@ -192,7 +197,12 @@ export const products = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        promotion: { active: true, type: "discount", value: 10 },
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10,
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "1000",
@@ -206,7 +216,12 @@ export const products = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        promotion: { active: true, type: "discount", value: 10 },
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10,
+          description: "10% off buying 2 bags!",
+        },
       },
     ],
   },
@@ -237,7 +252,12 @@ export const products = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        promotion: { active: false },
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10,
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "500",
@@ -251,7 +271,12 @@ export const products = [
           require("../../../assets/transitory_products_images/marbella_transitory_2.png"),
           require("../../../assets/transitory_products_images/marbella_transitory_3.png"),
         ],
-        promotion: { active: false },
+        promotion: {
+          active: true,
+          type: "discount",
+          value: 10,
+          description: "10% off buying 2 bags!",
+        },
       },
       {
         id: "1000",

@@ -5,6 +5,7 @@ import {
   gettingCartByUserIDRequest,
   updatingProductsCart,
   IncOrDecProductsCartQty,
+  removingCartItemRequest,
 } from "./cart.services";
 
 import { AuthenticationContext } from "../authentication/authentication.context";
@@ -92,7 +93,7 @@ export const Cart_Context_Provider = ({ children }) => {
     );
   };
 
-  //   //   *** UPDATE product quantity at cart ***
+  // *** UPDATE product quantity at cart ***
   const updatingProductsQtyAtCart = (item, products, task) => {
     const { productId, variantId } = extractingIDs(item);
 
@@ -139,22 +140,71 @@ export const Cart_Context_Provider = ({ children }) => {
     return updatedProducts;
   };
 
-  // Increase cart item quantity
   const increaseCartItemQty = async (item) => {
+    // Optimistically update the cart locally
+    setCart((prev) => {
+      const products = prev?.products ?? [];
+
+      const updatedProducts = updatingProductsQtyAtCart(
+        item,
+        products,
+        "increase"
+      );
+      const updatedCart = {
+        ...prev,
+        products: updatedProducts,
+        sub_total: calculateSubtotal(updatedProducts),
+        updated_at: new Date().toISOString(),
+      };
+      console.log(
+        "UPDATED CART AFTER INCREASE (Optimistic):",
+        JSON.stringify(updatedCart, null, 2)
+      );
+      const total_items_qty = getTotalCartQuantity(updatedCart);
+      setCartTotalItems(total_items_qty);
+      return updatedCart;
+    });
+
+    // Make the backend request
     try {
       const myCart = await IncOrDecProductsCartQty(user_id, item, "increase");
       console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
-      setCart(myCart);
+      setCart(myCart); // Update the cart with the backend response
     } catch (error) {
       console.error("Error updating cart:", error);
     }
   };
-  // Increase cart item quantity
+
   const decreaseCartItemQty = async (item) => {
+    // Optimistically update the cart locally
+    setCart((prev) => {
+      const products = prev?.products ?? [];
+
+      const updatedProducts = updatingProductsQtyAtCart(
+        item,
+        products,
+        "decrease"
+      );
+      const updatedCart = {
+        ...prev,
+        products: updatedProducts,
+        sub_total: calculateSubtotal(updatedProducts),
+        updated_at: new Date().toISOString(),
+      };
+      console.log(
+        "UPDATED CART AFTER INCREASE (Optimistic):",
+        JSON.stringify(updatedCart, null, 2)
+      );
+      const total_items_qty = getTotalCartQuantity(updatedCart);
+      setCartTotalItems(total_items_qty);
+      return updatedCart;
+    });
+
+    // Make the backend request
     try {
       const myCart = await IncOrDecProductsCartQty(user_id, item, "decrease");
       console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
-      setCart(myCart);
+      setCart(myCart); // Update the cart with the backend response
     } catch (error) {
       console.error("Error updating cart:", error);
     }
@@ -177,8 +227,9 @@ export const Cart_Context_Provider = ({ children }) => {
         );
         console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
         setCart(myCart);
-        const total_items_qty = getTotalCartQuantity(myCart);
-        setCartTotalItems(total_items_qty);
+        setCartTotalItems(myCart.quantity || 0);
+        // const total_items_qty = getTotalCartQuantity(myCart);
+        // setCartTotalItems(total_items_qty);
         // setCartTotalItems(myCart.products[0]?.size_variants[0]?.quantity || 0);
         // Handle the fetched cart data (e.g., update state or context)
       } catch (error) {
@@ -190,10 +241,10 @@ export const Cart_Context_Provider = ({ children }) => {
   };
 
   //   *** REMOVE product from cart ***
-  const removingProductFromCart = (item) => {
+  const removingProductFromCart = async (item) => {
     const { productId, variantId } = extractingIDs(item);
     setIsLoading(true);
-    setTimeout(() => {
+    setTimeout(async () => {
       setCart((prevCart) => {
         const products = prevCart?.products ?? [];
 
@@ -212,6 +263,18 @@ export const Cart_Context_Provider = ({ children }) => {
 
         return cartUpdated;
       });
+      // Make the backend request
+      try {
+        const myCart = await removingCartItemRequest(
+          user_id,
+          productId,
+          variantId
+        );
+        console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
+        setCart(myCart); // Update the cart with the backend response
+      } catch (error) {
+        console.error("Error updating cart:", error);
+      }
       setIsLoading(false);
     }, 500);
   };
