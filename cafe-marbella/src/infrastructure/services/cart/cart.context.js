@@ -1,6 +1,5 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
 import { shopping_cart } from "../../local data/shopping_cart";
-import { products as catalogProducts } from "../../local data/products";
 import {
   gettingCartByUserIDRequest,
   updatingProductsCart,

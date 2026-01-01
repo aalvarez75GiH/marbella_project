@@ -4,10 +4,15 @@
 //     "http://192.168.3.7:5001/cafe-marbella-be/us-central1/usersEndPoint",
 //   cartsEndPoint:
 //     "http://192.168.3.7:5001/cafe-marbella-be/us-central1/cartsEndPoint",
+
+import { products } from "../infrastructure/local data/products";
+
 // };
 export const environment = {
   usersEndPoint:
     "https://us-central1-cafe-marbella-be.cloudfunctions.net/usersendpoint",
   cartsEndPoint:
     "https://us-central1-cafe-marbella-be.cloudfunctions.net/cartsendpoint",
+  productsEndPoint:
+    "https://us-central1-cafe-marbella-be.cloudfunctions.net/productsendpoint",
 };

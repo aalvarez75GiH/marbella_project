@@ -1,7 +1,14 @@
-import React, { useEffect, useState, createContext, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  createContext,
+  useMemo,
+  useContext,
+} from "react";
 
-import { products as catalogProducts } from "../../local data/products";
+import { productsCatalog } from "../../local data/products";
 import { warehouses } from "../../local data/warehouses";
+import { GlobalContext } from "../global/global.context";
 
 export const WarehouseContext = createContext();
 
@@ -10,6 +17,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
   const [error, setError] = useState(null);
   // later you’ll set this based on geolocation
 
+  // const { productsCatalog } = useContext(GlobalContext);
   const [selectedWarehouse, setSelectedWarehouse] = useState(warehouses[0]);
 
   console.log(
@@ -82,7 +90,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
   const shopProductsGround = useMemo(() => {
     if (!selectedWarehouse) return [];
     return getWarehouseShopProductsAll(
-      catalogProducts,
+      productsCatalog,
       selectedWarehouse,
       "ground"
     );
@@ -95,7 +103,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
   const shopProductsWhole = useMemo(() => {
     if (!selectedWarehouse) return [];
     return getWarehouseShopProductsAll(
-      catalogProducts,
+      productsCatalog,
       selectedWarehouse,
       "whole"
     );

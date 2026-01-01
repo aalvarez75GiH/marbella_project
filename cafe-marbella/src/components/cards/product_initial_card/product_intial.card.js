@@ -11,6 +11,7 @@ import { Product_Identification_Line } from "./product_identification_line.compo
 export const Product_Initial_Card = ({ item = null }) => {
   const {
     flag_image: FlagImage,
+    // flag_key,
     product_name,
     product_subtitle,
     rating,
