@@ -1,6 +1,6 @@
 import React, { useState, createContext, useEffect } from "react";
 
-import { user_authenticated } from "../../local data/authentication.local_data";
+import { user_authenticated } from "../../local_data/authentication";
 
 export const AuthenticationContext = createContext();
 

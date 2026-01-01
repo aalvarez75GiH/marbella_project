@@ -5,9 +5,7 @@ import React, {
   useMemo,
   useContext,
 } from "react";
-
-import { productsCatalog } from "../../local data/products";
-import { warehouses } from "../../local data/warehouses";
+import { warehouses } from "../../local_data/warehouses";
 import { GlobalContext } from "../global/global.context";
 
 export const WarehouseContext = createContext();
@@ -17,7 +15,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
   const [error, setError] = useState(null);
   // later you’ll set this based on geolocation
 
-  // const { productsCatalog } = useContext(GlobalContext);
+  const { productsCatalog } = useContext(GlobalContext);
   const [selectedWarehouse, setSelectedWarehouse] = useState(warehouses[0]);
 
   console.log(
@@ -64,6 +62,10 @@ export const Warehouse_Context_Provider = ({ children }) => {
     warehouse,
     grindType
   ) => {
+    console.log(
+      "CATALOG PRODUCTS AT WAREHOUSE FUNCTION: ",
+      JSON.stringify(catalogProducts, null, 2)
+    );
     return catalogProducts
       .filter((p) => p.grindType === grindType)
       .map((p) => {
@@ -94,7 +96,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
       selectedWarehouse,
       "ground"
     );
-  }, [selectedWarehouse]);
+  }, [selectedWarehouse, productsCatalog]);
 
   // console.log(
   //   "SHOP PRODUCTS GROUND AT WAREHOUSE CONTEXT: ",
@@ -107,7 +109,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
       selectedWarehouse,
       "whole"
     );
-  }, [selectedWarehouse]);
+  }, [selectedWarehouse, productsCatalog]);
 
   // console.log(
   //   "SHOP PRODUCTS WHOLE AT WAREHOUSE CONTEXT: ",

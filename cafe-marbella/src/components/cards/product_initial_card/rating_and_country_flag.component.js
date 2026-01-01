@@ -6,7 +6,7 @@ import { theme } from "../../../infrastructure/theme/index.js";
 import { Spacer } from "../../../components/spacers and globals/optimized.spacer.component.js";
 import StarIcon from "../../../../assets/my_icons/star_icon.svg";
 
-import { FLAGS_BY_KEY } from "../../../infrastructure/local data/images.map.js";
+// import { FLAGS_BY_KEY } from "../../../infrastructure/local data/images.map.js";
 export const Rating_And_Country_Flag_Component = ({
   rating = "4.5",
   FlagImage,

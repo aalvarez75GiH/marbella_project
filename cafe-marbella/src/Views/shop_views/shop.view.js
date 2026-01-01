@@ -1,28 +1,19 @@
 import React, { useContext } from "react";
-import { StatusBar } from "expo-status-bar";
 import { StyleSheet, FlatList } from "react-native";
 import { useTheme } from "styled-components/native";
 
-import { fonts, fontWeights } from "../../infrastructure/theme/fonts";
-
 import { Container } from "../../components/containers/general.containers";
-// import BuggyIcon from "../../../assets/my_icons/buggy_icon.svg";
-import { BuggyIcon } from "../../../assets/modified icons/buggy_modified_icon";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 import { Product_Initial_Card } from "../../components/cards/product_initial_card/product_intial.card";
-
-import { whole_bean_coffee } from "../../../src/infrastructure/local data/products";
-import { ground_bean_coffee } from "../../../src/infrastructure/local data/products";
-import { products } from "../../../src/infrastructure/local data/products";
 
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
 export default function Shop_View() {
   const { shopProductsGround, shopProductsWhole } =
     useContext(WarehouseContext);
   // const data = shopProductsGround;
-  const data = shopProductsWhole;
+  const data = shopProductsGround;
   // console.log("DATA:", JSON.stringify(data, null, 2));
 
   const renderProductInitialCard = ({ item }) => {

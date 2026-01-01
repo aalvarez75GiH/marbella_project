@@ -1,5 +1,4 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
-import { shopping_cart } from "../../local data/shopping_cart";
 import {
   gettingCartByUserIDRequest,
   updatingProductsCart,
@@ -12,7 +11,7 @@ import { AuthenticationContext } from "../authentication/authentication.context"
 export const CartContext = createContext();
 
 export const Cart_Context_Provider = ({ children }) => {
-  const [cart, setCart] = useState(shopping_cart);
+  const [cart, setCart] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [cartTotalItems, setCartTotalItems] = useState(0);
@@ -23,26 +22,12 @@ export const Cart_Context_Provider = ({ children }) => {
   // const userId = user?.user_id;
   console.log("USER ID AT CART CONTEXT: ", user_id);
 
-  // useEffect(() => {
-  //   const gettingCartByUserID = async (userId) => {
-  //     const myCart = await gettingCartByUserIDRequest(userId);
-  //     console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
-  //     // Simulate fetching cart data for the user
-  //     // In a real app, replace this with an API call
-  //     console.log("Fetching cart for user ID:", userId);
-  //     return shopping_cart; // returning local data for simulation
-  //   };
-  //   gettingCartByUserID(userId);
-  // }, []);
   useEffect(() => {
     const gettingCartByUserID = async (userId) => {
       try {
         console.log("Fetching cart for userId:", user_id);
         const myCart = await gettingCartByUserIDRequest(user_id);
-        console.log(
-          "MY CART FROM API CALL:",
-          JSON.stringify(myCart[0], null, 2)
-        );
+        console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
         // setCart(myCart[0]);
         setCart(myCart);
         setCartTotalItems(

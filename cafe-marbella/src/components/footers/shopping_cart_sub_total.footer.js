@@ -5,7 +5,10 @@ import { Text } from "../../infrastructure/typography/text.component.js";
 import { theme } from "../../infrastructure/theme/index.js";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component.js";
 
+import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
 export const Shopping_Cart_Sub_Total_Footer = ({ sub_total }) => {
+  const { formatCentsToUSD } = React.useContext(GlobalContext);
+  const formatted_subTotal = formatCentsToUSD(sub_total);
   return (
     <Container
       width="95%"
@@ -38,7 +41,9 @@ export const Shopping_Cart_Sub_Total_Footer = ({ sub_total }) => {
         color={theme.colors.bg.elements_bg}
       >
         <Spacer position="right" size="large">
-          <Text variant="dm_sans_bold_20">${sub_total}</Text>
+          <Text variant="dm_sans_bold_20">
+            {sub_total ? formatted_subTotal : 0.0}
+          </Text>
         </Spacer>
         <Spacer position="right" size="large">
           <Text

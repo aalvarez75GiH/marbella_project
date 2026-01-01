@@ -8,7 +8,9 @@ import {
 } from "../../containers/general.containers.js";
 import { theme } from "../../../infrastructure/theme/index.js";
 import { Spacer } from "../../../components/spacers and globals/optimized.spacer.component.js";
+
 import { CartContext } from "../../../infrastructure/services/cart/cart.context.js";
+import { GlobalContext } from "../../../infrastructure/services/global/global.context.js";
 
 export const Product_Details_Info_Component = ({
   product_name,
@@ -18,12 +20,10 @@ export const Product_Details_Info_Component = ({
 }) => {
   const navigation = useNavigation();
   const { addingProductToCart } = useContext(CartContext);
+  const { price, sizeLabel, sizeLabel_ounces } = selectedVariant || {};
 
-  //   console.log(
-  //     "PRODUCT TO ADD TO CART:",
-  //     JSON.stringify(product_to_add_to_cart, null, 2)
-  //   );
-
+  const { formatCentsToUSD } = useContext(GlobalContext);
+  const price_formatted = formatCentsToUSD(price);
   return (
     <Container
       width="100%"
@@ -46,15 +46,13 @@ export const Product_Details_Info_Component = ({
         color={theme.colors.bg.elements_bg}
       >
         <Spacer position="left" size="large">
-          <Text variant="raleway_bold_20">{selectedVariant.sizeLabel}</Text>
+          <Text variant="raleway_bold_20">{sizeLabel}</Text>
         </Spacer>
 
         <Spacer position="left" size="medium" />
         <Container width="2px" height="25px" color="#000000" />
         <Spacer position="left" size="large" />
-        <Text variant="raleway_bold_18">
-          {selectedVariant.sizeLabel_ounces}
-        </Text>
+        <Text variant="raleway_bold_18">{sizeLabel_ounces}</Text>
       </Container>
 
       <Container
@@ -76,7 +74,7 @@ export const Product_Details_Info_Component = ({
               variant="dm_sans_bold_28"
               style={{ color: theme.colors.text.success }}
             >
-              {selectedVariant.price ? `$${selectedVariant.price}` : null}
+              {price ? `${price_formatted}` : null}
             </Text>
           </Spacer>
         </Container>
@@ -94,14 +92,6 @@ export const Product_Details_Info_Component = ({
             color={theme.colors.ui.success}
             justify="center"
             align="center"
-            // onPress={() => {
-            //   addingProductToCart(
-            //     product_id,
-            //     variant_id,
-            //     navigation,
-            //     "Shop_Shopping_Cart_View"
-            //   );
-            // }}
             onPress={() => {
               addingProductToCart(
                 product_to_add_to_cart,

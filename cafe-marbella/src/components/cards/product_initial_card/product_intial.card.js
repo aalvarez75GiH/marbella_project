@@ -7,16 +7,24 @@ import { Rating_And_Country_Flag_Component } from "./rating_and_country_flag.com
 import { Product_Image_Component } from "./product_image.component.js";
 import { Product_Initial_Info_Component } from "./product_intial_info.component.js";
 import { Product_Identification_Line } from "./product_identification_line.component.js";
+import { FLAGS_BY_KEY } from "../../../infrastructure/local_data/images_mapping/flags.maps.js";
 
 export const Product_Initial_Card = ({ item = null }) => {
   const {
-    flag_image: FlagImage,
-    // flag_key,
+    // flag_image: FlagImage,
+    flag_key,
     product_name,
     product_subtitle,
     rating,
     size_variants,
   } = item || {};
+
+  console.log("Product_Initial_Card ITEM:", JSON.stringify(item, null, 2));
+
+  const normalizedFlagKey = String(flag_key ?? "")
+    .trim()
+    .toLowerCase();
+  const FlagImage = FLAGS_BY_KEY[normalizedFlagKey] ?? null;
 
   const defaultVariant =
     item.size_variants.find((v) => v.isDefault) || item.size_variants[0];

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
 
 import { gettingAllProductsCatalogRequest } from "./global.services";
-// import { normalizeProductFromBackend } from "../../utils/normalize_product_from_backend";
+import { normalizeProductFromBackend } from "../../local_data/images_mapping/normalize_product_from_backend";
 
 export const GlobalContext = createContext();
 
@@ -14,17 +14,12 @@ export const Global_Context_Provider = ({ children }) => {
     const gettingAllProductsCatalog = async () => {
       //   setIsLoading(true);
       try {
-        // Simulate an API call to fetch products catalog
-        // const response = await fetch("https://fakestoreapi.com/products");
         const allProductsAtCatalog = await gettingAllProductsCatalogRequest();
-        // const data = await response.json();
-        console.log(
-          "PRODUCTS CATALOG FROM API CALL: ",
-          JSON.stringify(allProductsAtCatalog, null, 2)
+
+        const normalized = allProductsAtCatalog.map(
+          normalizeProductFromBackend
         );
-        // const normalized = allProductsAtCatalog.map(
-        //   normalizeProductFromBackend
-        // );
+
         setProductsCatalog(normalized);
         // setIsLoading(false);
       } catch (err) {
@@ -34,21 +29,21 @@ export const Global_Context_Provider = ({ children }) => {
     };
     gettingAllProductsCatalog();
   }, []);
-  // // ✅ compute data for shop
-  // const shopProductsGround = useMemo(() => {
-  //     if (!selectedWarehouse) return [];
-  //     return getWarehouseShopProductsAll(
-  //       catalogProducts,
-  //       selectedWarehouse,
-  //       "ground"
-  //     );
-  //   }, [selectedWarehouse]);
+
+  const formatCentsToUSD = (cents = 0) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(cents / 100);
+  };
 
   return (
     <GlobalContext.Provider
       value={{
         isLoading,
         productsCatalog,
+        formatCentsToUSD,
+        error,
       }}
     >
       {children}

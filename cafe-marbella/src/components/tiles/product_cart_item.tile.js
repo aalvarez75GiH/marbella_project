@@ -11,7 +11,7 @@ import RemoveIcon from "../../../assets/my_icons/remove_icon.svg";
 import { Text } from "../../infrastructure/typography/text.component";
 
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
-
+import { GlobalContext } from "../../infrastructure/services/global/global.context";
 export const Product_Cart_Item_Tile = ({ product, image }) => {
   const theme = useTheme();
   const { increaseCartItemQty, decreaseCartItemQty, removingProductFromCart } =
@@ -19,6 +19,9 @@ export const Product_Cart_Item_Tile = ({ product, image }) => {
 
   const { size_variants } = product || {};
   const { sizeLabel, sizeLabel_ounces, price, quantity } = size_variants[0];
+
+  const { formatCentsToUSD } = useContext(GlobalContext);
+  const price_formatted = formatCentsToUSD(price);
 
   const cartTitle = product.title; // "Cafe Marbella"
   const cartCountry = product.originCountry;
@@ -128,7 +131,7 @@ export const Product_Cart_Item_Tile = ({ product, image }) => {
                   color: theme.colors.ui.tertiary,
                 }}
               >
-                ${price}
+                {price ? price_formatted : "0.00"}
               </Text>
             </Container>
             <Container
