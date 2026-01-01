@@ -14,6 +14,7 @@ const { onRequest } = require("firebase-functions/v2/https");
 // const storesRouter = require("./api/stores/stores.routes");
 const usersRouter = require("./api/users/users.routes");
 const cartsRouter = require("./api/carts/cart.routes");
+const productsRouter = require("./api/products/products.routes");
 // ********** express configuration
 
 // *************************************************
@@ -22,5 +23,6 @@ const cartsRouter = require("./api/carts/cart.routes");
 
 exports.usersendpoint = onRequest(usersRouter);
 exports.cartsendpoint = onRequest(cartsRouter);
+exports.productsendpoint = onRequest(productsRouter);
 // exports["users-endpoint"] = onRequest(usersRouter);
 // exports["carts-endpoint"] = onRequest(cartsRouter);
