@@ -18,16 +18,16 @@ export const Cart_Context_Provider = ({ children }) => {
 
   const { user } = useContext(AuthenticationContext);
   const { user_id } = user || {};
-  console.log("USER AT CART CONTEXT: ", JSON.stringify(user, null, 2));
+  // console.log("USER AT CART CONTEXT: ", JSON.stringify(user, null, 2));
   // const userId = user?.user_id;
-  console.log("USER ID AT CART CONTEXT: ", user_id);
+  // console.log("USER ID AT CART CONTEXT: ", user_id);
 
   useEffect(() => {
     const gettingCartByUserID = async (userId) => {
       try {
         console.log("Fetching cart for userId:", user_id);
         const myCart = await gettingCartByUserIDRequest(user_id);
-        console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
+        // console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
         // setCart(myCart[0]);
         setCart(myCart);
         setCartTotalItems(
@@ -50,7 +50,7 @@ export const Cart_Context_Provider = ({ children }) => {
     setCartTotalItems(total_items_qty);
   }, [cart]);
 
-  console.log("CART AT CONTEXT: ", JSON.stringify(cart, null, 2));
+  // console.log("CART AT CONTEXT: ", JSON.stringify(cart, null, 2));
 
   //Calculate subtotal of cart helper function
   const calculateSubtotal = (products) => {

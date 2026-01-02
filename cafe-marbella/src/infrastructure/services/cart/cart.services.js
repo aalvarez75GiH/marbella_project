@@ -11,7 +11,7 @@ export const gettingCartByUserIDRequest = async (user_id) => {
         params: { user_id },
         timeout: 15000,
       });
-      console.log("RESPONSE:", res.data);
+      // console.log("RESPONSE:", res.data);
       return res.data;
     } catch (error) {
       console.log("AXIOS message:", error.message);

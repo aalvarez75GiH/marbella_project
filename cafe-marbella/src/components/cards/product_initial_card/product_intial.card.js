@@ -19,7 +19,7 @@ export const Product_Initial_Card = ({ item = null }) => {
     size_variants,
   } = item || {};
 
-  console.log("Product_Initial_Card ITEM:", JSON.stringify(item, null, 2));
+  // console.log("Product_Initial_Card ITEM:", JSON.stringify(item, null, 2));
 
   const normalizedFlagKey = String(flag_key ?? "")
     .trim()

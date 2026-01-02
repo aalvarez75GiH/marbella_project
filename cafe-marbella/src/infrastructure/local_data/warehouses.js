@@ -29,7 +29,7 @@ export const warehouses = [
     warehouse_id: "WH001",
     location: {
       city: "Athens",
-      address: "123 Athens St, Athens, Greece",
+      address: "2159 West Broad st Suite B Athens GA 30606",
       latitude: 37.9838,
       longitude: 23.7275,
     },
@@ -43,7 +43,6 @@ export const warehouses = [
       phone: "+30 210 1234567",
       opening_time: "08:00 AM",
       closing_time: "05:00 PM",
-      address: "123 Athens St, Athens, Greece",
     },
 
     // 🔥 replace products: [] with inventory

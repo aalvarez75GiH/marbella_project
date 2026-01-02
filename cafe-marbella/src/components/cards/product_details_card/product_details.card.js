@@ -11,7 +11,7 @@ import { Product_Details_Description_Component } from "./product_details_descrip
 import { Product_Details_Avail_Promotion_Component } from "./product_details_availability.component.js";
 
 export const Product_Details_Card = ({ item = null }) => {
-  console.log("ITEM AT PRODUCT DETAILS CARD:", JSON.stringify(item, null, 2));
+  // console.log("ITEM AT PRODUCT DETAILS CARD:", JSON.stringify(item, null, 2));
   const { product_name, product_subtitle, size_variants } = item || {};
 
   const defaultVariant =
@@ -22,9 +22,9 @@ export const Product_Details_Card = ({ item = null }) => {
   const selectedVariant =
     item.size_variants.find((v) => v.id === selectedVariantId) ||
     defaultVariant;
-  console.log("SELECTED VARIANT ID:", selectedVariantId);
-  console.log("SELECTED IMAGE ID:", selectedVariant.images[selectedImageIndex]);
-  console.log("QUANTITY:", selectedVariant.quantity);
+  // console.log("SELECTED VARIANT ID:", selectedVariantId);
+  // console.log("SELECTED IMAGE ID:", selectedVariant.images[selectedImageIndex]);
+  // console.log("QUANTITY:", selectedVariant.quantity);
 
   const product_to_add_to_cart = {
     ...item,

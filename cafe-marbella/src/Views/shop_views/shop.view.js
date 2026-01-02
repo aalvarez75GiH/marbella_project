@@ -12,9 +12,9 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 export default function Shop_View() {
   const { shopProductsGround, shopProductsWhole } =
     useContext(WarehouseContext);
-  // const data = shopProductsGround;
+  // const data = shopProductsWhole;
   const data = shopProductsGround;
-  // console.log("DATA:", JSON.stringify(data, null, 2));
+  console.log("DATA:", JSON.stringify(data, null, 2));
 
   const renderProductInitialCard = ({ item }) => {
     return (
