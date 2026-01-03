@@ -25,3 +25,26 @@ export const gettingWarehouseByIDRequest = async (warehouse_id) => {
     throw error;
   }
 };
+export const gettingClosestWarehouseForDeviceRequest = async (lat, lng) => {
+  const { warehouseEndPoint } = environment;
+
+  try {
+    try {
+      const res = await axios.get(`${warehouseEndPoint}/closestWH`, {
+        params: { lat, lng },
+        timeout: 15000,
+      });
+      console.log("RESPONSE:", res.data);
+      return res.data.closest;
+    } catch (error) {
+      console.log("AXIOS message:", error.message);
+      console.log("AXIOS code:", error.code);
+      console.log("AXIOS status:", error.response?.status);
+      console.log("AXIOS data:", error.response?.data);
+      throw error;
+    }
+  } catch (error) {
+    console.error("Error fetching cart:", error);
+    throw error;
+  }
+};

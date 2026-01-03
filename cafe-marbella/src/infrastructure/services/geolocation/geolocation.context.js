@@ -6,6 +6,8 @@ export const geolocationContext = createContext();
 export const Geolocation_Context_Provider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [deviceLat, setDeviceLat] = useState(null);
+  const [deviceLng, setDeviceLng] = useState(null);
 
   useEffect(() => {
     const requestLocationPermission = async () => {
@@ -20,6 +22,8 @@ export const Geolocation_Context_Provider = ({ children }) => {
 
         let userLocation = await Location.getCurrentPositionAsync({});
         console.log("USER LOCATION:", JSON.stringify(userLocation, null, 2));
+        setDeviceLat(userLocation.coords.latitude);
+        setDeviceLng(userLocation.coords.longitude);
         // You can use userLocation.coords.latitude and userLocation.coords.longitude as needed
         setIsLoading(false);
       } catch (err) {
@@ -35,6 +39,8 @@ export const Geolocation_Context_Provider = ({ children }) => {
     <geolocationContext.Provider
       value={{
         isLoading,
+        deviceLat,
+        deviceLng,
       }}
     >
       {children}

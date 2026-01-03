@@ -5,9 +5,13 @@ import React, {
   useMemo,
   useContext,
 } from "react";
-import { gettingWarehouseByIDRequest } from "./warehouse.services";
+import {
+  gettingWarehouseByIDRequest,
+  gettingClosestWarehouseForDeviceRequest,
+} from "./warehouse.services";
 
 import { GlobalContext } from "../global/global.context";
+import { geolocationContext } from "../geolocation/geolocation.context";
 
 export const WarehouseContext = createContext();
 
@@ -18,24 +22,61 @@ export const Warehouse_Context_Provider = ({ children }) => {
   // later you’ll set this based on geolocation
   const { productsCatalog } = useContext(GlobalContext);
 
+  const { deviceLat, deviceLng } = useContext(geolocationContext);
+  // useEffect(() => {
+  //   // const gettingWarehouseByUserID = async (warehouse_id) => {
+  //   //   try {
+  //   //     console.log("Fetching warehouse:", warehouse_id);
+  //   //     const myWarehouse = await gettingWarehouseByIDRequest(warehouse_id);
+  //   //     console.log(
+  //   //       "MY WAREHOUSE FROM API CALL:",
+  //   //       JSON.stringify(myWarehouse, null, 2)
+  //   //     );
+  //   //     setMyWarehouse(myWarehouse);
+  //   //   } catch (error) {
+  //   //     console.error("Error fetching cart:", error);
+  //   //   }
+  //   // };
+  //   const gettingClosestWarehouse = async (lat, lng) => {
+  //     try {
+  //       console.log("Fetching closest warehouse for location:", lat, lng);
+  //       const closestWarehouse = await gettingClosestWarehouseForDeviceRequest(
+  //         deviceLat,
+  //         deviceLng
+  //       );
+  //       console.log(
+  //         "CLOSEST WAREHOUSE FROM API CALL:",
+  //         JSON.stringify(closestWarehouse, null, 2)
+  //       );
+  //       setMyWarehouse(closestWarehouse);
+  //     } catch (error) {
+  //       console.error("Error fetching closest warehouse:", error);
+  //     }
+  //   };
   useEffect(() => {
-    const gettingWarehouseByUserID = async (warehouse_id) => {
+    if (typeof deviceLat !== "number" || typeof deviceLng !== "number") {
+      console.log("Device location not ready yet:", deviceLat, deviceLng);
+      return;
+    }
+
+    const run = async () => {
       try {
-        console.log("Fetching warehouse:", warehouse_id);
-        const myWarehouse = await gettingWarehouseByIDRequest(warehouse_id);
-        console.log(
-          "MY WAREHOUSE FROM API CALL:",
-          JSON.stringify(myWarehouse, null, 2)
+        const closestWarehouse = await gettingClosestWarehouseForDeviceRequest(
+          deviceLat,
+          deviceLng
         );
-        setMyWarehouse(myWarehouse);
+        console.log(
+          "CLOSEST WAREHOUSE FROM API CALL:",
+          JSON.stringify(closestWarehouse, null, 2)
+        );
+        setMyWarehouse(closestWarehouse);
       } catch (error) {
-        console.error("Error fetching cart:", error);
+        console.error("Error fetching closest warehouse:", error);
       }
     };
 
-    gettingWarehouseByUserID("9958f0e2-d900-401a-96ab-b2fcf3636782");
-    // gettingWarehouseByUserID("35832b23-55af-4d31-9a16-62ecbf66707c");
-  }, []);
+    run();
+  }, [deviceLat, deviceLng]);
 
   const makeSku = (productId, variantId) => `${productId}:${variantId}`;
 

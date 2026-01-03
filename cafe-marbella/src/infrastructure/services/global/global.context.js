@@ -15,10 +15,10 @@ export const Global_Context_Provider = ({ children }) => {
       //   setIsLoading(true);
       try {
         const allProductsAtCatalog = await gettingAllProductsCatalogRequest();
-        console.log(
-          "ALL PRODUCTS AT CATALOG FROM API CALL:",
-          JSON.stringify(allProductsAtCatalog, null, 2)
-        );
+        // console.log(
+        //   "ALL PRODUCTS AT CATALOG FROM API CALL:",
+        //   JSON.stringify(allProductsAtCatalog, null, 2)
+        // );
         const normalized = allProductsAtCatalog.map(
           normalizeProductFromBackend
         );

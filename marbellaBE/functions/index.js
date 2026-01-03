@@ -1,5 +1,7 @@
 /* eslint-disable */
 
+require("dotenv").config();
+
 const { onRequest } = require("firebase-functions/v2/https");
 
 // const paymentsRouter = require("./api/payments/payments.routes");
