@@ -37,22 +37,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
   //   //     console.error("Error fetching cart:", error);
   //   //   }
   //   // };
-  //   const gettingClosestWarehouse = async (lat, lng) => {
-  //     try {
-  //       console.log("Fetching closest warehouse for location:", lat, lng);
-  //       const closestWarehouse = await gettingClosestWarehouseForDeviceRequest(
-  //         deviceLat,
-  //         deviceLng
-  //       );
-  //       console.log(
-  //         "CLOSEST WAREHOUSE FROM API CALL:",
-  //         JSON.stringify(closestWarehouse, null, 2)
-  //       );
-  //       setMyWarehouse(closestWarehouse);
-  //     } catch (error) {
-  //       console.error("Error fetching closest warehouse:", error);
-  //     }
-  //   };
+
   useEffect(() => {
     if (typeof deviceLat !== "number" || typeof deviceLng !== "number") {
       console.log("Device location not ready yet:", deviceLat, deviceLng);
@@ -89,7 +74,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
   //   return warehouses.find((w) => w.id === warehouseId);
   // };
 
-  const getWarehouseShopProductsWithPositiveStock = (
+  const getWarehouseProductsWithPositiveStock = (
     productsList,
     warehouse,
     grindType
@@ -117,11 +102,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
       .filter((p) => p.inStock);
   };
 
-  const getWarehouseShopProductsAll = (
-    catalogProducts,
-    warehouse,
-    grindType
-  ) => {
+  const getWarehouseProductsAll = (catalogProducts, warehouse, grindType) => {
     return catalogProducts
       .filter((p) => p.grindType === grindType)
       .map((p) => {
@@ -145,23 +126,35 @@ export const Warehouse_Context_Provider = ({ children }) => {
   };
 
   // ✅ compute data for shop
+  // const shopProductsGround = useMemo(() => {
+  //   if (!myWarehouse) return [];
+  //   // return getWarehouseShopProductsAll(productsCatalog, myWarehouse, "ground");
+  //   return getWarehouseProductsWithPositiveStock(
+  //     productsCatalog,
+  //     myWarehouse,
+  //     "ground"
+  //   );
+  // }, [myWarehouse, productsCatalog]);
+  // ✅ compute data for shop
   const shopProductsGround = useMemo(() => {
     if (!myWarehouse) return [];
     // return getWarehouseShopProductsAll(productsCatalog, myWarehouse, "ground");
-    return getWarehouseShopProductsWithPositiveStock(
-      productsCatalog,
-      myWarehouse,
-      "ground"
-    );
+    return getWarehouseProductsAll(productsCatalog, myWarehouse, "ground");
   }, [myWarehouse, productsCatalog]);
+
+  // const shopProductsWhole = useMemo(() => {
+  //   if (!myWarehouse) return [];
+  //   return getWarehouseProductsWithPositiveStock(
+  //     productsCatalog,
+  //     myWarehouse,
+  //     "whole"
+  //   );
+  //   // return getWarehouseShopProductsAll(productsCatalog, myWarehouse, "whole");
+  // }, [myWarehouse, productsCatalog]);
 
   const shopProductsWhole = useMemo(() => {
     if (!myWarehouse) return [];
-    return getWarehouseShopProductsWithPositiveStock(
-      productsCatalog,
-      myWarehouse,
-      "whole"
-    );
+    return getWarehouseProductsAll(productsCatalog, myWarehouse, "whole");
     // return getWarehouseShopProductsAll(productsCatalog, myWarehouse, "whole");
   }, [myWarehouse, productsCatalog]);
 
