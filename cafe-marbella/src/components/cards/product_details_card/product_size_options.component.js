@@ -52,6 +52,7 @@ export const Product_Size_Options_Component = ({
                 setSelectedVariantId(variant.id);
                 setSelectedImageIndex(0);
               }}
+              disabled={variant.stock === 0}
             />
           );
         })}

@@ -1,13 +1,17 @@
 import React from "react";
 import { useNavigation } from "@react-navigation/native";
 
-import { Action_Container } from "../../containers/general.containers.js";
+import {
+  Action_Container,
+  Container,
+} from "../../containers/general.containers.js";
 import { theme } from "../../../infrastructure/theme/index.js";
 import { Rating_And_Country_Flag_Component } from "./rating_and_country_flag.component.js";
 import { Product_Image_Component } from "./product_image.component.js";
 import { Product_Initial_Info_Component } from "./product_intial_info.component.js";
 import { Product_Identification_Line } from "./product_identification_line.component.js";
 import { FLAGS_BY_KEY } from "../../../infrastructure/local_data/images_mapping/flags.maps.js";
+import { Text } from "../../../infrastructure/typography/text.component.js";
 
 export const Product_Initial_Card = ({ item = null }) => {
   const {
@@ -17,8 +21,10 @@ export const Product_Initial_Card = ({ item = null }) => {
     product_subtitle,
     rating,
     size_variants,
+    totalStock,
   } = item || {};
 
+  console.log("TOTAL STOCK:", totalStock);
   // console.log("Product_Initial_Card ITEM:", JSON.stringify(item, null, 2));
 
   const normalizedFlagKey = String(flag_key ?? "")
@@ -47,18 +53,34 @@ export const Product_Initial_Card = ({ item = null }) => {
       direction="column"
       justify="flex-start"
       color={theme.colors.bg.elements_bg}
-      onPress={() => handleNavigate(item)}
+      // onPress={() => handleNavigate(item)}
+      onPress={
+        () => (totalStock > 0 ? handleNavigate(item) : null) // Replace with your desired action
+      }
     >
       <Rating_And_Country_Flag_Component
         rating={rating}
         FlagImage={FlagImage}
       />
       <Product_Image_Component image={productMainImage} />
-      <Product_Initial_Info_Component
-        product_name={product_name}
-        product_subtitle={product_subtitle}
-        size_variants={size_variants}
-      />
+      {totalStock > 0 && (
+        <Product_Initial_Info_Component
+          product_name={product_name}
+          product_subtitle={product_subtitle}
+          size_variants={size_variants}
+        />
+      )}
+      {totalStock === 0 && (
+        <Container
+          width="100%"
+          height="26%"
+          justify="center"
+          align="center"
+          color={theme.colors.bg.elements_bg}
+        >
+          <Text variant="dm_sans_bold_16">Out of Stock</Text>
+        </Container>
+      )}
 
       <Product_Identification_Line product_color={"#CA7B53"} />
     </Action_Container>

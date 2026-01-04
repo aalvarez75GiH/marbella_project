@@ -24,7 +24,7 @@ export const colors = {
   text: {
     black: "#000000",
     white: "#FFFFFF",
-    not_active: "#6A6A6A",
+    not_active: "#c2c2c2",
     success: "#247F35",
     error: "#FA462D",
   },
