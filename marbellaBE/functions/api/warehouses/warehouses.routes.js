@@ -100,7 +100,8 @@ warehousesRouter.get("/closestWH", async (req, res) => {
   console.log("ORIGIN:", JSON.stringify(origin, null, 2));
   let warehouses = [];
   try {
-    const allWarehouses = await warehousesControllers.getAllWarehouses();
+    // const allWarehouses = await warehousesControllers.getAllWarehouses();
+    const allWarehouses = await warehousesControllers.getActiveWarehouses();
     const closestWarehouse = await gettingMostClosestWarehouse(
       allWarehouses,
       origin

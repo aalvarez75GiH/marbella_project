@@ -124,6 +124,16 @@ const gettingMostClosestWarehouse = async (allWarehouses, origin) => {
   //   const key = process.env.GOOGLE_KEY;
   if (!key) throw new Error("Missing GOOGLE_KEY");
 
+  // ✅ ONLY ACTIVE WAREHOUSES
+  //   const activeWarehouses = allWarehouses.filter(
+  //     (warehouse) => warehouse?.active === true
+  //   );
+
+  // Optional but helpful
+  //   if (!activeWarehouses.length) {
+  //     return { closest: null, warehouses: [] };
+  //   }
+
   const warehousesWithDistance = await Promise.all(
     allWarehouses.map(async (warehouse) => {
       // ✅ adjust this depending on your stored shape:

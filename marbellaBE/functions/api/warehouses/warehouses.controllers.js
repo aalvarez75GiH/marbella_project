@@ -29,6 +29,15 @@ const getAllWarehouses = async () => {
   }
 };
 
+const getActiveWarehouses = async () => {
+  const snap = await firebase_controller.db
+    .collection("warehouses")
+    .where("active", "==", true)
+    .get();
+
+  return snap.docs.map((d) => d.data());
+};
+
 // const getWarehouseById = async (warehouse_id) => {
 //   try {
 //     // Fetch the warehouse by ID from the database or data source
@@ -114,6 +123,7 @@ const createWarehouse = async (warehouse) => {
 
 module.exports = {
   getAllWarehouses,
+  getActiveWarehouses,
   createWarehouse,
   getWarehouseById,
 };
