@@ -29,6 +29,7 @@ export const Delivery_Type_CTA = ({
       border_radius={border_radius}
       justify="flex-start"
       overflow="hidden"
+      onPress={action}
     >
       <Container width="100%" height="20%" color={color}></Container>
       <Container width="100%" height="60%" color={color}>

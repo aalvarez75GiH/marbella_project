@@ -23,20 +23,6 @@ export const Warehouse_Context_Provider = ({ children }) => {
   const { productsCatalog } = useContext(GlobalContext);
 
   const { deviceLat, deviceLng } = useContext(geolocationContext);
-  // useEffect(() => {
-  //   // const gettingWarehouseByUserID = async (warehouse_id) => {
-  //   //   try {
-  //   //     console.log("Fetching warehouse:", warehouse_id);
-  //   //     const myWarehouse = await gettingWarehouseByIDRequest(warehouse_id);
-  //   //     console.log(
-  //   //       "MY WAREHOUSE FROM API CALL:",
-  //   //       JSON.stringify(myWarehouse, null, 2)
-  //   //     );
-  //   //     setMyWarehouse(myWarehouse);
-  //   //   } catch (error) {
-  //   //     console.error("Error fetching cart:", error);
-  //   //   }
-  //   // };
 
   useEffect(() => {
     if (typeof deviceLat !== "number" || typeof deviceLng !== "number") {
@@ -50,10 +36,10 @@ export const Warehouse_Context_Provider = ({ children }) => {
           deviceLat,
           deviceLng
         );
-        console.log(
-          "CLOSEST WAREHOUSE FROM API CALL:",
-          JSON.stringify(closestWarehouse, null, 2)
-        );
+        // console.log(
+        //   "CLOSEST WAREHOUSE FROM API CALL:",
+        //   JSON.stringify(closestWarehouse, null, 2)
+        // );
         setMyWarehouse(closestWarehouse);
       } catch (error) {
         console.error("Error fetching closest warehouse:", error);

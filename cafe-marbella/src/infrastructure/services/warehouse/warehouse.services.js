@@ -3,7 +3,7 @@ import { environment } from "../../../util/env";
 
 export const gettingWarehouseByIDRequest = async (warehouse_id) => {
   const { warehouseEndPoint } = environment;
-  console.log("WAREHOUSE ID AT SERVICE:", warehouse_id);
+  // console.log("WAREHOUSE ID AT SERVICE:", warehouse_id);
 
   try {
     try {
@@ -11,7 +11,7 @@ export const gettingWarehouseByIDRequest = async (warehouse_id) => {
         params: { warehouse_id },
         timeout: 15000,
       });
-      console.log("RESPONSE:", res.data);
+      // console.log("RESPONSE:", res.data);
       return res.data;
     } catch (error) {
       console.log("AXIOS message:", error.message);
@@ -34,7 +34,7 @@ export const gettingClosestWarehouseForDeviceRequest = async (lat, lng) => {
         params: { lat, lng },
         timeout: 15000,
       });
-      console.log("RESPONSE:", res.data);
+      // console.log("RESPONSE:", res.data);
       return res.data.closest;
     } catch (error) {
       console.log("AXIOS message:", error.message);

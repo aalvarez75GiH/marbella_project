@@ -14,7 +14,7 @@ export default function Shop_View() {
     useContext(WarehouseContext);
   // const data = shopProductsWhole;
   const data = shopProductsGround;
-  console.log("DATA:", JSON.stringify(data, null, 2));
+  // console.log("DATA:", JSON.stringify(data, null, 2));
 
   const renderProductInitialCard = ({ item }) => {
     return (
