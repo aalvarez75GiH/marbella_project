@@ -12,6 +12,7 @@ import { Product_Initial_Info_Component } from "./product_intial_info.component.
 import { Product_Identification_Line } from "./product_identification_line.component.js";
 import { FLAGS_BY_KEY } from "../../../infrastructure/local_data/images_mapping/flags.maps.js";
 import { Text } from "../../../infrastructure/typography/text.component.js";
+import { Product_Initial_OOS_Info_Component } from "./product_initial_oos_info.component.js";
 
 export const Product_Initial_Card = ({ item = null }) => {
   const {
@@ -70,17 +71,7 @@ export const Product_Initial_Card = ({ item = null }) => {
           size_variants={size_variants}
         />
       )}
-      {totalStock === 0 && (
-        <Container
-          width="100%"
-          height="26%"
-          justify="center"
-          align="center"
-          color={theme.colors.bg.elements_bg}
-        >
-          <Text variant="dm_sans_bold_16">Out of Stock</Text>
-        </Container>
-      )}
+      {totalStock === 0 && <Product_Initial_OOS_Info_Component />}
 
       <Product_Identification_Line product_color={"#CA7B53"} />
     </Action_Container>

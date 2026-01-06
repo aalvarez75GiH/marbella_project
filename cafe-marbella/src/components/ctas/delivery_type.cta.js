@@ -18,7 +18,7 @@ export const Delivery_Type_CTA = ({
   border_radius = "0px",
   //   color = theme.colors.ui.secondary,
   type = "pickup",
-  delivery_fee = "$5.00",
+  delivery_fee = "",
   Icon,
 }) => {
   return type === "pickup" ? (
@@ -54,7 +54,7 @@ export const Delivery_Type_CTA = ({
         overflow="hidden"
         justify="flex-end"
       >
-        <Text variant="dm_sans_bold_14_white">+Add {delivery_fee}</Text>
+        <Text variant="dm_sans_bold_14_white">+Fees {delivery_fee}</Text>
       </Container>
       <Container width="100%" height="60%" color={color}>
         <Text variant="raleway_bold_18_white">{caption}</Text>

@@ -12,6 +12,7 @@ export const colors = {
     tertiary: "#F7F2C9",
     disabled: "#898989",
     error: "#FA462D",
+    error_light: "#fc9588",
     success: "#247F35",
     business: "#FFBA08",
     white: "#FFFFFF",
@@ -24,7 +25,7 @@ export const colors = {
   text: {
     black: "#000000",
     white: "#FFFFFF",
-    not_active: "#c2c2c2",
+    not_active: "#",
     success: "#247F35",
     error: "#FA462D",
   },
