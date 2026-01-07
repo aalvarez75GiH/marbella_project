@@ -17,25 +17,33 @@ import { Shopping_Cart_Sub_Total_Footer } from "../../components/footers/shoppin
 import { Regular_CTA } from "../../components/ctas/regular.cta";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { Order_Info_Tile } from "../../components/tiles/order_info.tile";
+import { Delivery_type_Badge } from "../../components/others/delivery_type.badge";
+import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
+import { Delivery_Information_Order_Tile } from "../../components/tiles/delivery_information_order.tile";
 
-import { CartContext } from "../../infrastructure/services/cart/cart.context";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
-import { GlobalContext } from "../../infrastructure/services/global/global.context";
+import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
 
 export default function Shop_Order_Review_View() {
   const theme = useTheme();
-  const { formatCentsToUSD } = useContext(GlobalContext);
-  const formatted_currency = formatCentsToUSD;
-  // *************
   const { myOrder, isLoading } = useContext(OrdersContext);
   console.log(
     "myOrder in Shop_Order_Review_View:",
     JSON.stringify(myOrder, null, 2)
   );
-  const { pricing } = myOrder || {};
+  const { myWarehouse } = useContext(WarehouseContext);
+  const { distance_in_miles } = myWarehouse || {};
+  const { pricing, warehouse_to_pickup } = myOrder || {};
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
-  const navigation = useNavigation();
+  const {
+    name: warehouse_name,
+    address: warehouse_address,
+    closing_time,
+    opening_time,
+  } = warehouse_to_pickup || {};
 
+  const navigation = useNavigation();
+  let delivery_type = "pickup";
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
       {isLoading ? (
@@ -65,6 +73,34 @@ export default function Shop_Order_Review_View() {
               discount={discount}
               total={total}
             />
+            <Spacer position="top" size="small" />
+
+            {delivery_type === "pickup" ? (
+              <Delivery_type_Badge
+                caption_text_variant="dm_sans_bold_14"
+                caption="Free Pickup"
+                type="pickup"
+              />
+            ) : (
+              <Delivery_type_Badge
+                caption_text_1_variant="dm_sans_bold_16"
+                caption_text_2_variant="dm_sans_bold_14"
+                //   caption_1={`Delivery +Fees ${formatted_currency(shipping)}`}
+                caption_1="Delivery"
+                caption_2="for just $5"
+                type="delivery"
+              />
+            )}
+            {/* ********************************** */}
+            <Delivery_Information_Order_Tile
+              warehouse_name={warehouse_name}
+              warehouse_address={warehouse_address}
+              opening_time={opening_time}
+              closing_time={closing_time}
+              distance_to_warehouse_mi={distance_in_miles}
+            />
+
+            {/* ********************************** */}
           </Container>
         </>
       )}

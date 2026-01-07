@@ -9,6 +9,7 @@ import { Spacer } from "../../components/spacers and globals/optimized.spacer.co
 import { Product_Initial_Card } from "../../components/cards/product_initial_card/product_intial.card";
 
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
+
 export default function Shop_View() {
   const { shopProductsGround, shopProductsWhole } =
     useContext(WarehouseContext);
@@ -54,19 +55,3 @@ export default function Shop_View() {
     </SafeArea>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // backgroundColor: theme.colors.ui.primary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  test: {
-    width: 300,
-    height: 300,
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

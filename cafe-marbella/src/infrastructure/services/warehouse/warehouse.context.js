@@ -19,6 +19,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [myWarehouse, setMyWarehouse] = useState(null);
+  useState(null);
   // later you’ll set this based on geolocation
   const { productsCatalog } = useContext(GlobalContext);
 
@@ -30,23 +31,24 @@ export const Warehouse_Context_Provider = ({ children }) => {
       return;
     }
 
-    const run = async () => {
+    const gettingClosestWarehouseForDevice = async () => {
       try {
         const closestWarehouse = await gettingClosestWarehouseForDeviceRequest(
           deviceLat,
           deviceLng
         );
-        // console.log(
-        //   "CLOSEST WAREHOUSE FROM API CALL:",
-        //   JSON.stringify(closestWarehouse, null, 2)
-        // );
+
         setMyWarehouse(closestWarehouse);
+        console.log(
+          "DISTANCE IN MILES AT CONTEXT:",
+          closestWarehouse.distance_in_miles
+        );
       } catch (error) {
         console.error("Error fetching closest warehouse:", error);
       }
     };
 
-    run();
+    gettingClosestWarehouseForDevice();
   }, [deviceLat, deviceLng]);
 
   const makeSku = (productId, variantId) => `${productId}:${variantId}`;
@@ -60,6 +62,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
   //   return warehouses.find((w) => w.id === warehouseId);
   // };
 
+  // Getting products of the closest warehouse with positive stock
   const getWarehouseProductsWithPositiveStock = (
     productsList,
     warehouse,
@@ -88,6 +91,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
       .filter((p) => p.inStock);
   };
 
+  // Getting all products of the closest warehouse not matter stock
   const getWarehouseProductsAll = (catalogProducts, warehouse, grindType) => {
     return catalogProducts
       .filter((p) => p.grindType === grindType)
@@ -152,8 +156,6 @@ export const Warehouse_Context_Provider = ({ children }) => {
 
         myWarehouse,
         setMyWarehouse,
-        // selectedWarehouse,
-        // setSelectedWarehouse,
 
         shopProductsGround,
         shopProductsWhole,

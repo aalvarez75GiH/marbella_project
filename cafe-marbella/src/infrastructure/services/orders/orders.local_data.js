@@ -34,6 +34,8 @@ export const myOrder_schema = {
     address: "",
     geo: {},
     phone_number: "",
+    closing_time: "",
+    opening_time: "",
   },
   delivery_type: "",
 };

@@ -11,7 +11,6 @@ import { Go_Back_Header } from "../../components/headers/goBack_with_label.heade
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 import { Shopping_Cart_Title } from "../../components/titles/shopping_cart.title";
-import { Text } from "../../infrastructure/typography/text.component";
 import { Product_Cart_Item_Tile } from "../../components/tiles/product_cart_item.tile";
 import { Shopping_Cart_Sub_Total_Footer } from "../../components/footers/shopping_cart_sub_total.footer";
 import { Regular_CTA } from "../../components/ctas/regular.cta";
@@ -28,13 +27,6 @@ export default function Process_Shopping_Cart_View() {
 
   // *************
   const navigation = useNavigation();
-  // useEffect(() => {
-  //   // ⬅️ when cart becomes empty, go back
-  //   if (products.length === 0) {
-  //     navigation.goBack();
-  //   }
-  // }, [products.length]);
-  // const navigation = useNavigation();
 
   useEffect(() => {
     // ⬅️ when cart becomes empty, go back
@@ -43,6 +35,7 @@ export default function Process_Shopping_Cart_View() {
     }
   }, [products.length, navigation]);
 
+  // Hiding tab bar for this screen
   useLayoutEffect(() => {
     navigation.getParent()?.setOptions({
       tabBarStyle: { display: "none" },

@@ -5,16 +5,15 @@ import { ScrollView } from "react-native";
 
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
-
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { Product_Details_Card } from "../../components/cards/product_details_card/product_details.card";
+
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 
 export default function Shop_Product_Details_View({ route }) {
   const theme = useTheme();
   const navigation = useNavigation();
   const { item } = route.params;
-  //   console.log("ROUTE ITEM:", JSON.stringify(item, null, 2));
   const { isLoading } = useContext(CartContext);
   return (
     <SafeArea

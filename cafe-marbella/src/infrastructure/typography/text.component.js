@@ -101,6 +101,12 @@ font-size: ${theme.fontSizes.text_16};
 font-family: ${theme.fonts.dmSansBold};
 color: ${theme.colors.text.black};
 `;
+const dm_sans_semiBold_16 = (theme) => `
+font-size: ${theme.fontSizes.text_16};
+font-family: ${theme.fonts.dmSansSemiBold};
+color: ${theme.colors.text.black};
+`;
+
 const dm_sans_bold_16_white = (theme) => `
 font-size: ${theme.fontSizes.text_16};
 font-family: ${theme.fonts.dmSansBold};
@@ -121,6 +127,11 @@ color: ${theme.colors.text.black};
 const dm_sans_bold_14 = (theme) => `
 font-size: ${theme.fontSizes.text_14};
 font-family: ${theme.fonts.dmSansBold};
+color: ${theme.colors.text.black};
+`;
+const dm_sans_regular_14 = (theme) => `
+font-size: ${theme.fontSizes.text_14};
+font-family: ${theme.fonts.dmSansRegular};
 color: ${theme.colors.text.black};
 `;
 const dm_sans_bold_14_white = (theme) => `
@@ -249,11 +260,13 @@ const variants = {
   dm_sans_regular_18,
   dm_sans_bold_18_white,
   dm_sans_bold_16,
+  dm_sans_semiBold_16,
   dm_sans_regular_16,
   dm_sans_bold_16_white,
   dm_sans_bold_16_cta_disabled,
   dm_sans_bold_14,
   dm_sans_bold_14_white,
+  dm_sans_regular_14,
   dm_sans_bold_12,
   dm_sans_bold_12_white,
   dm_sans_bold_10,

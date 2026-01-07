@@ -12,9 +12,9 @@ import DeliveryTruckIcon from "../../../assets/my_icons/deliveryTruckIcon.svg";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
-import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
+import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 
 export default function Shop_Delivery_Type_View() {
   const theme = useTheme();
@@ -27,7 +27,6 @@ export default function Shop_Delivery_Type_View() {
     myWarehouse;
   const { formatted_address } = geo || {};
   const { phone } = warehouse_information || {};
-  console.log("Shop_Delivery_Type_View: cart =", JSON.stringify(cart, null, 2));
 
   const { user } = useContext(AuthenticationContext);
   const { first_name, last_name, email, phone_number, uid, address } =
@@ -61,6 +60,8 @@ export default function Shop_Delivery_Type_View() {
           address: formatted_address,
           geo: geo,
           phone_number: phone,
+          closing_time: warehouse_information?.closing_time,
+          opening_time: warehouse_information?.opening_time,
         },
         customer: {
           first_name: first_name,
