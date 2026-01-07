@@ -2,6 +2,7 @@ import React, { useContext, useLayoutEffect, useEffect } from "react";
 import { FlatList } from "react-native";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
+import { ScrollView } from "react-native-gesture-handler";
 
 import {
   Action_Container,
@@ -33,8 +34,11 @@ export default function Shop_Order_Review_View() {
   );
   const { myWarehouse } = useContext(WarehouseContext);
   const { distance_in_miles } = myWarehouse || {};
-  const { pricing, warehouse_to_pickup } = myOrder || {};
+  const { pricing, warehouse_to_pickup, customer, order_products } =
+    myOrder || {};
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
+  const { address: customer_address } = customer || {};
+
   const {
     name: warehouse_name,
     address: warehouse_address,
@@ -43,7 +47,29 @@ export default function Shop_Order_Review_View() {
   } = warehouse_to_pickup || {};
 
   const navigation = useNavigation();
-  let delivery_type = "pickup";
+  let delivery_type = "Delivey";
+
+  const renderProductCartItemTile = ({ item }) => {
+    const image = item?.size_variants?.[0]?.images?.[0]; // ✅ safe
+    return (
+      <Spacer position="bottom" size="medium">
+        <Product_Cart_Item_Tile image={image} product={item} />
+      </Spacer>
+    );
+  };
+
+  const renderingOrderProducts = () => {
+    return order_products.map((item) => {
+      return (
+        <Spacer position="bottom" size="medium" key={item.id}>
+          <Product_Cart_Item_Tile
+            image={item.size_variants[0].images[0]}
+            product={item}
+          />
+        </Spacer>
+      );
+    });
+  };
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
       {isLoading ? (
@@ -53,55 +79,87 @@ export default function Shop_Order_Review_View() {
         />
       ) : (
         <>
-          <Container
-            width="100%"
-            height="100%"
-            color={theme.colors.bg.screens_bg}
-            //   color={"green"}
-            justify="flex-start"
-            align="center"
+          <Go_Back_Header
+            action={() => navigation.popToTop()}
+            label="Order review"
+          />
+          <ScrollView
+            contentContainerStyle={{
+              flexGrow: 1,
+              justifyContent: "flex-start",
+              alignItems: "center",
+              backgroundColor: theme.colors.bg.screens_bg,
+              paddingBottom: 20, // Prevents last items from being cut off
+            }}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
           >
-            <Go_Back_Header
-              action={() => navigation.popToTop()}
-              label="Order review"
-            />
-            <Spacer position="top" size="small" />
-            <Order_Info_Tile
-              sub_total={sub_total}
-              shipping={shipping}
-              taxes={taxes}
-              discount={discount}
-              total={total}
-            />
-            <Spacer position="top" size="small" />
-
-            {delivery_type === "pickup" ? (
-              <Delivery_type_Badge
-                caption_text_variant="dm_sans_bold_14"
-                caption="Free Pickup"
-                type="pickup"
+            <Container
+              width="100%"
+              align="center"
+              justify="flex-start"
+              style={{ flex: 1 }} // Ensures dynamic height adjustment
+              color={theme.colors.bg.screens_bg}
+            >
+              <Spacer position="top" size="small" />
+              <Order_Info_Tile
+                sub_total={sub_total}
+                shipping={shipping}
+                taxes={taxes}
+                discount={discount}
+                total={total}
               />
-            ) : (
-              <Delivery_type_Badge
-                caption_text_1_variant="dm_sans_bold_16"
-                caption_text_2_variant="dm_sans_bold_14"
-                //   caption_1={`Delivery +Fees ${formatted_currency(shipping)}`}
-                caption_1="Delivery"
-                caption_2="for just $5"
-                type="delivery"
-              />
-            )}
-            {/* ********************************** */}
-            <Delivery_Information_Order_Tile
-              warehouse_name={warehouse_name}
-              warehouse_address={warehouse_address}
-              opening_time={opening_time}
-              closing_time={closing_time}
-              distance_to_warehouse_mi={distance_in_miles}
-            />
-
-            {/* ********************************** */}
-          </Container>
+              <Spacer position="top" size="small" />
+              <>
+                {delivery_type === "pickup" ? (
+                  <Delivery_type_Badge
+                    caption_text_variant="dm_sans_bold_14"
+                    caption="Free Pickup"
+                    type="pickup"
+                  />
+                ) : (
+                  <Delivery_type_Badge
+                    caption_text_1_variant="dm_sans_bold_16"
+                    caption_text_2_variant="dm_sans_bold_14"
+                    caption_1="Delivery"
+                    caption_2="for just $5"
+                    type="delivery"
+                  />
+                )}
+                <Delivery_Information_Order_Tile
+                  warehouse_name={warehouse_name}
+                  warehouse_address={warehouse_address}
+                  opening_time={opening_time}
+                  closing_time={closing_time}
+                  distance_to_warehouse_mi={distance_in_miles}
+                  delivery_type={delivery_type}
+                  customer_address={customer_address}
+                />
+              </>
+              <Spacer position="top" size="large" />
+              <Container
+                width="100%"
+                align="flex-start"
+                color={theme.colors.bg.elements_bg}
+              >
+                <Spacer position="top" size="large" />
+                <Spacer position="left" size="extraLarge">
+                  <Text variant="dm_sans_bold_20">Products in the order</Text>
+                </Spacer>
+              </Container>
+              <Spacer position="top" size="large" />
+              {renderingOrderProducts()}
+            </Container>
+          </ScrollView>
+          <Regular_CTA
+            width="95%"
+            height="10%"
+            color={theme.colors.ui.business}
+            border_radius={"40px"}
+            caption="Contionue to payment"
+            caption_text_variant="dm_sans_bold_20"
+            action={() => null}
+          />
         </>
       )}
     </SafeArea>

@@ -7,107 +7,181 @@ import { theme } from "../../infrastructure/theme/index.js";
 import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
 
 import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
+import DeliveryIcon from "../../../assets/my_icons/deliveryTruckIcon.svg";
 
 export const Delivery_Information_Order_Tile = ({
   warehouse_name = "Warehouse",
   warehouse_address = `2159 West Broad st suite B{"\n"}Athens GA, 30606`,
   opening_time,
   closing_time,
-
+  delivery_type,
   distance_to_warehouse_mi,
+  customer_address = "",
 }) => {
-  return (
-    <>
-      <Container width="100%" height="25%" color={theme.colors.bg.elements_bg}>
+  return delivery_type === "pickup" ? (
+    <Container
+      width="100%"
+      //   height="25%"
+      color={theme.colors.bg.elements_bg}
+      align="center"
+    >
+      <Container
+        width="90%"
+        color={theme.colors.ui.tertiary}
+        // color={"pink"}
+        justify="centers"
+        align="center"
+        border_radius="20px"
+        direction="row"
+        overflow="hidden"
+        padding_vertical="5%"
+      >
         <Container
-          width="90%"
-          height="100%"
+          width="30%"
+          //   height="95%"
           color={theme.colors.ui.tertiary}
-          //color={"green"}
-          justify="centers"
-          align="center"
-          border_radius="20px"
-          direction="row"
-          overflow="hidden"
+          // color={"lightgreen"}
+        >
+          <StoreIcon width={60} height={60} fill={"#000000"} />
+        </Container>
+        <Container
+          width="70%"
+          color={theme.colors.ui.tertiary}
+          //   color={"lightblue"}
         >
           <Container
-            width="30%"
-            height="95%"
-            color={theme.colors.ui.tertiary}
-            // color={"lightgreen"}
+            width="100%"
+            justify="center"
+            align="flex-start"
+            color="transparent"
+            padding_vertical="3%"
+            //color={"lightblue"}
           >
-            <StoreIcon width={60} height={60} fill={"#000000"} />
+            <Spacer position="left" size="large">
+              <Text variant="dm_sans_bold_22">Pickup at</Text>
+            </Spacer>
+            <Spacer position="left" size="large">
+              <Text variant="dm_sans_bold_14">{warehouse_name}</Text>
+            </Spacer>
+          </Container>
+
+          <Container
+            width="100%"
+            justify="center"
+            align="flex-start"
+            color="transparent"
+
+            //color="yellow"
+          >
+            <Spacer position="left" size="large">
+              <Text variant="dm_sans_regular_14">
+                {/* 2159 West Broad st suite B{"\n"}Athens GA, 30606 */}
+                {warehouse_address}
+              </Text>
+            </Spacer>
+          </Container>
+          <Spacer position="top" size="small" />
+          <Container
+            width="100%"
+            color="transparent"
+            //color="purple"
+            justify="center"
+            align="flex-start"
+          >
+            <Spacer position="left" size="large">
+              <Text variant="dm_sans_regular_14">
+                Between {opening_time} - {closing_time}
+              </Text>
+            </Spacer>
           </Container>
           <Container
-            width="70%"
-            height="95%"
-            color={theme.colors.ui.tertiary}
-            //   color={"lightblue"}
+            width="100%"
+            color="transparent"
+            //color="pink"
+            justify="center"
+            align="flex-start"
           >
-            <Container
-              width="100%"
-              height="25%"
-              justify="center"
-              align="flex-start"
-              color="transparent"
-              //color={"lightblue"}
-            >
-              <Spacer position="left" size="large">
-                <Text variant="dm_sans_bold_22">Pickup at</Text>
-              </Spacer>
-              <Spacer position="left" size="large">
-                <Text variant="dm_sans_bold_14">{warehouse_name}</Text>
-              </Spacer>
-            </Container>
-
-            <Container
-              width="100%"
-              height="28%"
-              justify="center"
-              align="flex-start"
-              color="transparent"
-              //color="yellow"
-            >
-              <Spacer position="left" size="large">
-                <Text variant="dm_sans_regular_14">
-                  {/* 2159 West Broad st suite B{"\n"}Athens GA, 30606 */}
-                  {warehouse_address}
-                </Text>
-              </Spacer>
-            </Container>
-            <Spacer position="top" size="small" />
-            <Container
-              width="100%"
-              height="10%"
-              color="transparent"
-              //color="purple"
-              justify="center"
-              align="flex-start"
-            >
-              <Spacer position="left" size="large">
-                <Text variant="dm_sans_regular_14">
-                  Between {opening_time} - {closing_time}
-                </Text>
-              </Spacer>
-            </Container>
-            <Container
-              width="100%"
-              color="transparent"
-              //color="pink"
-              height="15%"
-              justify="center"
-              align="flex-start"
-            >
-              <Spacer position="left" size="large">
-                {/* <Text variant="dm_sans_regular_14">3.4 miles away</Text> */}
-                <Text variant="dm_sans_regular_14">
-                  {distance_to_warehouse_mi} away
-                </Text>
-              </Spacer>
-            </Container>
+            <Spacer position="left" size="large">
+              {/* <Text variant="dm_sans_regular_14">3.4 miles away</Text> */}
+              <Text variant="dm_sans_regular_14">
+                {distance_to_warehouse_mi} away
+              </Text>
+            </Spacer>
           </Container>
         </Container>
       </Container>
-    </>
+    </Container>
+  ) : (
+    <Container
+      width="100%"
+      color={theme.colors.bg.elements_bg}
+      overflow="hidden"
+    >
+      <Container
+        padding_vertical="5%"
+        width="95%"
+        color={theme.colors.ui.tertiary}
+        // color={"green"}
+        justify="centers"
+        align="center"
+        border_radius="20px"
+        direction="row"
+        overflow="hidden"
+      >
+        <Container
+          padding_vertical="5%"
+          width="30%"
+          color={theme.colors.ui.tertiary}
+          // color={"lightgreen"}
+        >
+          {/* <StoreIcon width={60} height={60} fill={"#000000"} /> */}
+          <DeliveryIcon width={60} height={60} fill={"#000000"} />
+        </Container>
+        <Container
+          width="70%"
+          color={theme.colors.ui.tertiary}
+          //   color={"lightblue"}
+        >
+          <Container
+            width="100%"
+            justify="center"
+            padding_vertical="3%"
+            align="flex-start"
+            color="transparent"
+            //color={"lightblue"}
+          >
+            <Spacer position="left" size="large">
+              <Text variant="dm_sans_bold_22">Delivey at</Text>
+            </Spacer>
+          </Container>
+
+          <Container
+            width="100%"
+            justify="center"
+            align="flex-start"
+            color="transparent"
+            //color="yellow"
+          >
+            <Spacer position="left" size="large">
+              <Text variant="dm_sans_regular_14">{customer_address}</Text>
+            </Spacer>
+          </Container>
+          <Spacer position="top" size="small" />
+          <Container
+            width="100%"
+            color="transparent"
+            //color="purple"
+            justify="center"
+            align="flex-start"
+          >
+            <Spacer position="left" size="large">
+              <Text variant="dm_sans_regular_14">
+                Delivery by USPS - 1 to 3 days
+              </Text>
+            </Spacer>
+          </Container>
+        </Container>
+      </Container>
+    </Container>
   );
 };

@@ -20,17 +20,14 @@ export const Order_Info_Tile = ({
     <>
       <Container
         width="100%"
-        height="25%"
         //   color={"red"}
         color={theme.colors.bg.elements_bg}
         justify="center"
         align="center"
         direction="row"
-        //   padding_vertical="8px"
       >
         <Container
           width="60%"
-          height="100%"
           //   color={"purple"}
           color={theme.colors.bg.elements_bg}
           justify="center"
@@ -38,7 +35,6 @@ export const Order_Info_Tile = ({
         >
           <Container
             width="100%"
-            height="15%"
             // color={"orange"}
             color={theme.colors.bg.elements_bg}
             justify="center"
@@ -48,9 +44,9 @@ export const Order_Info_Tile = ({
               <Text variant="dm_sans_regular_18">Items:</Text>
             </Spacer>
           </Container>
+          <Spacer position="top" size="small" />
           <Container
             width="100%"
-            height="15%"
             // color={"red"}
             color={theme.colors.bg.elements_bg}
             justify="center"
@@ -60,9 +56,9 @@ export const Order_Info_Tile = ({
               <Text variant="dm_sans_regular_18">Shipping & handling:</Text>
             </Spacer>
           </Container>
+          <Spacer position="top" size="small" />
           <Container
             width="100%"
-            height="15%"
             // color={"lightblue"}
             color={theme.colors.bg.elements_bg}
             justify="center"
@@ -72,9 +68,9 @@ export const Order_Info_Tile = ({
               <Text variant="dm_sans_regular_18">Estimated tax:</Text>
             </Spacer>
           </Container>
+          <Spacer position="top" size="small" />
           <Container
             width="100%"
-            height="15%"
             // color={"lightgreen"}
             color={theme.colors.bg.elements_bg}
             justify="center"
@@ -84,9 +80,10 @@ export const Order_Info_Tile = ({
               <Text variant="dm_sans_regular_18">Discounts:</Text>
             </Spacer>
           </Container>
+          <Spacer position="top" size="small" />
+          <Spacer position="top" size="small" />
           <Container
             width="100%"
-            height="15%"
             // color={"pink"}
             color={theme.colors.bg.elements_bg}
             justify="center"
@@ -96,11 +93,12 @@ export const Order_Info_Tile = ({
               <Text variant="dm_sans_bold_18">Order total:</Text>
             </Spacer>
           </Container>
+          <Spacer position="top" size="small" />
+          <Spacer position="top" size="small" />
         </Container>
         {/* ***************************************** */}
         <Container
           width="40%"
-          height="100%"
           //   color={"yellow"}
           color={theme.colors.bg.elements_bg}
           justify="center"
@@ -108,7 +106,6 @@ export const Order_Info_Tile = ({
         >
           <Container
             width="100%"
-            height="15%"
             //   color={"orange"}
             color={theme.colors.bg.elements_bg}
             justify="center"
@@ -122,7 +119,6 @@ export const Order_Info_Tile = ({
           </Container>
           <Container
             width="100%"
-            height="15%"
             // color={"red"}
             color={theme.colors.bg.elements_bg}
             justify="center"
@@ -136,7 +132,6 @@ export const Order_Info_Tile = ({
           </Container>
           <Container
             width="100%"
-            height="15%"
             // color={"lightblue"}
             color={theme.colors.bg.elements_bg}
             justify="center"
@@ -150,7 +145,6 @@ export const Order_Info_Tile = ({
           </Container>
           <Container
             width="100%"
-            height="15%"
             // color={"lightgreen"}
             color={theme.colors.bg.elements_bg}
             justify="center"
@@ -164,7 +158,6 @@ export const Order_Info_Tile = ({
           </Container>
           <Container
             width="100%"
-            height="15%"
             // color={"pink"}
             color={theme.colors.bg.elements_bg}
             justify="center"

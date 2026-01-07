@@ -6,7 +6,6 @@ import { theme } from "../../infrastructure/theme/index.js";
 
 export const Delivery_type_Badge = ({
   width,
-  height,
   border_radius,
   border_color,
   border_width,
@@ -22,15 +21,15 @@ export const Delivery_type_Badge = ({
   return type === "pickup" ? (
     <Container
       width="100%"
-      height="15%"
       color={theme.colors.bg.elements_bg}
       //   color={"green"}
       justify="center"
       align="flex-start"
+      padding_vertical="7%"
     >
       <Container
         width={width || "30%"}
-        height={height || "60%"}
+        padding_vertical="5%"
         border_radius={border_radius || "8px"}
         justify="center"
         align="center"
@@ -46,15 +45,15 @@ export const Delivery_type_Badge = ({
   ) : (
     <Container
       width="100%"
-      height="15%"
       color={theme.colors.bg.elements_bg}
       justify="center"
       align="flex-start"
+      padding_vertical="7%"
     >
       <Container
+        padding_vertical="3%"
         margin_left="30px"
         width={width || "30%"}
-        height={height || "60%"}
         border_radius={border_radius || "8px"}
         justify="center"
         align="center"
