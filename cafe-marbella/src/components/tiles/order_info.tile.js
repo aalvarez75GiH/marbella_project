@@ -25,7 +25,9 @@ export const Order_Info_Tile = ({
         justify="center"
         align="center"
         direction="row"
+        padding_vertical="5%"
       >
+        {/* *** Row 1 **** */}
         <Container
           width="60%"
           //   color={"purple"}
@@ -94,9 +96,8 @@ export const Order_Info_Tile = ({
             </Spacer>
           </Container>
           <Spacer position="top" size="small" />
-          <Spacer position="top" size="small" />
         </Container>
-        {/* ***************************************** */}
+        {/* *** Row 2 **** */}
         <Container
           width="40%"
           //   color={"yellow"}
@@ -117,6 +118,7 @@ export const Order_Info_Tile = ({
               </Text>
             </Spacer>
           </Container>
+          <Spacer position="top" size="small" />
           <Container
             width="100%"
             // color={"red"}
@@ -130,6 +132,7 @@ export const Order_Info_Tile = ({
               </Text>
             </Spacer>
           </Container>
+          <Spacer position="top" size="small" />
           <Container
             width="100%"
             // color={"lightblue"}
@@ -143,6 +146,7 @@ export const Order_Info_Tile = ({
               </Text>
             </Spacer>
           </Container>
+          <Spacer position="top" size="small" />
           <Container
             width="100%"
             // color={"lightgreen"}
@@ -156,6 +160,7 @@ export const Order_Info_Tile = ({
               </Text>
             </Spacer>
           </Container>
+          <Spacer position="top" size="small" />
           <Container
             width="100%"
             // color={"pink"}

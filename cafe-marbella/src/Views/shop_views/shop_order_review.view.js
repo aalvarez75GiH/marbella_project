@@ -21,6 +21,7 @@ import { Order_Info_Tile } from "../../components/tiles/order_info.tile";
 import { Delivery_type_Badge } from "../../components/others/delivery_type.badge";
 import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
 import { Delivery_Information_Order_Tile } from "../../components/tiles/delivery_information_order.tile";
+import { Splitter_Component } from "../../components/others/grey_splitter.component";
 
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
@@ -47,7 +48,7 @@ export default function Shop_Order_Review_View() {
   } = warehouse_to_pickup || {};
 
   const navigation = useNavigation();
-  let delivery_type = "Delivey";
+  let delivery_type = "pickup";
 
   const renderProductCartItemTile = ({ item }) => {
     const image = item?.size_variants?.[0]?.images?.[0]; // ✅ safe
@@ -88,7 +89,7 @@ export default function Shop_Order_Review_View() {
               flexGrow: 1,
               justifyContent: "flex-start",
               alignItems: "center",
-              backgroundColor: theme.colors.bg.screens_bg,
+              backgroundColor: theme.colors.bg.elements_bg,
               paddingBottom: 20, // Prevents last items from being cut off
             }}
             showsVerticalScrollIndicator={false}
@@ -99,9 +100,15 @@ export default function Shop_Order_Review_View() {
               align="center"
               justify="flex-start"
               style={{ flex: 1 }} // Ensures dynamic height adjustment
-              color={theme.colors.bg.screens_bg}
+              color={theme.colors.bg.elements_bg}
+              //   color={theme.colors.bg.screens_bg}
             >
               <Spacer position="top" size="small" />
+              <Splitter_Component
+                width="100%"
+                height="5px"
+                color={theme.colors.bg.screens_bg}
+              />
               <Order_Info_Tile
                 sub_total={sub_total}
                 shipping={shipping}
@@ -109,7 +116,12 @@ export default function Shop_Order_Review_View() {
                 discount={discount}
                 total={total}
               />
-              <Spacer position="top" size="small" />
+              <Splitter_Component
+                width="100%"
+                height="5px"
+                color={theme.colors.bg.screens_bg}
+              />
+              {/* <Spacer position="top" size="small" /> */}
               <>
                 {delivery_type === "pickup" ? (
                   <Delivery_type_Badge
@@ -126,6 +138,7 @@ export default function Shop_Order_Review_View() {
                     type="delivery"
                   />
                 )}
+
                 <Delivery_Information_Order_Tile
                   warehouse_name={warehouse_name}
                   warehouse_address={warehouse_address}
@@ -136,6 +149,7 @@ export default function Shop_Order_Review_View() {
                   customer_address={customer_address}
                 />
               </>
+
               <Spacer position="top" size="large" />
               <Container
                 width="100%"
@@ -143,23 +157,39 @@ export default function Shop_Order_Review_View() {
                 color={theme.colors.bg.elements_bg}
               >
                 <Spacer position="top" size="large" />
-                <Spacer position="left" size="extraLarge">
+                <Spacer position="left" size="large">
                   <Text variant="dm_sans_bold_20">Products in the order</Text>
                 </Spacer>
               </Container>
               <Spacer position="top" size="large" />
-              {renderingOrderProducts()}
+              <Spacer position="top" size="large" />
+              <Container
+                width="100%"
+                height="auto"
+                color={theme.colors.bg.elements_bg}
+                // color={"red"}
+              >
+                {renderingOrderProducts()}
+              </Container>
             </Container>
           </ScrollView>
-          <Regular_CTA
-            width="95%"
-            height="10%"
-            color={theme.colors.ui.business}
-            border_radius={"40px"}
-            caption="Contionue to payment"
-            caption_text_variant="dm_sans_bold_20"
-            action={() => null}
-          />
+          <Container
+            width="100%"
+            height="12%"
+            color={theme.colors.bg.elements_bg}
+            justify="center"
+            align="center"
+          >
+            <Regular_CTA
+              width="95%"
+              height="70%"
+              color={theme.colors.ui.business}
+              border_radius={"40px"}
+              caption="Continue to payment"
+              caption_text_variant="dm_sans_bold_20"
+              action={() => null}
+            />
+          </Container>
         </>
       )}
     </SafeArea>
