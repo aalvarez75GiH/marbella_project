@@ -38,4 +38,5 @@ export const myOrder_schema = {
     opening_time: "",
   },
   delivery_type: "",
+  order_delivery_address: "",
 };

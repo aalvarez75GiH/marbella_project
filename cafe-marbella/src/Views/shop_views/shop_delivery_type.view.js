@@ -2,7 +2,10 @@ import React, { useContext } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 
-import { Container } from "../../components/containers/general.containers";
+import {
+  Container,
+  Action_Container,
+} from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Text } from "../../infrastructure/typography/text.component";
@@ -10,13 +13,17 @@ import { Delivery_Type_CTA } from "../../components/ctas/delivery_type.cta";
 import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
 import DeliveryTruckIcon from "../../../assets/my_icons/deliveryTruckIcon.svg";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
+import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
+import LocationIcon from "../../../assets/my_icons/distance_icon.svg";
+import { Delivery_Address_Option_Tile } from "../../components/tiles/delivery_address_option.tile";
 
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
-import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 
+import AddIcon from "../../../assets/my_icons/addIcon.svg";
 export default function Shop_Delivery_Type_View() {
+  const [deliveryOption, setDeliveryOption] = React.useState(null);
   const theme = useTheme();
   const navigation = useNavigation();
   const { cart } = useContext(CartContext);
@@ -28,53 +35,84 @@ export default function Shop_Delivery_Type_View() {
   const { formatted_address } = geo || {};
   const { phone } = warehouse_information || {};
 
-  const { user } = useContext(AuthenticationContext);
-  const { first_name, last_name, email, phone_number, uid, address } =
-    user || {};
   const { myOrder, setMyOrder, isLoading, setIsLoading } =
     useContext(OrdersContext);
 
+  const { customer } = myOrder || {};
+  const { address } = customer || {};
+  console.log("DELIVERY TYPE OPTION:", deliveryOption);
+
   const settingMyOrderDeliveryType = (delivery_type) => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setMyOrder((prevOrder) => ({
-        ...prevOrder,
-        delivery_type: delivery_type,
-        user_id: user_id,
-        cart_id: cart_id,
-        order_products: products,
-        pricing: {
-          sub_total: sub_total,
-          taxes: Math.round(0.08 * sub_total),
-          total:
-            sub_total +
-            Math.round(0.08 * sub_total) +
-            (delivery_type === "delivery" ? 500 : 0),
-          shipping: delivery_type === "delivery" ? 500 : 0,
-          discount: 0,
-        },
-        quantity: quantity,
-        warehouse_to_pickup: {
-          warehouse_id: warehouse_id,
-          name: warehouse_name,
-          address: formatted_address,
-          geo: geo,
-          phone_number: phone,
-          closing_time: warehouse_information?.closing_time,
-          opening_time: warehouse_information?.opening_time,
-        },
-        customer: {
-          first_name: first_name,
-          last_name: last_name,
-          email: email,
-          phone_number: phone_number,
-          address: address,
-          uid: uid,
-        },
-      }));
-      setIsLoading(false);
-      navigation.navigate("Shop_Order_Review_View");
-    }, 500); // Simulate a brief loading period
+    if (delivery_type === "delivery") {
+      setDeliveryOption("delivery");
+      setTimeout(() => {
+        setMyOrder((prevOrder) => ({
+          ...prevOrder,
+          delivery_type: delivery_type,
+          user_id: user_id,
+          cart_id: cart_id,
+          order_products: products,
+          pricing: {
+            sub_total: sub_total,
+            taxes: Math.round(0.08 * sub_total),
+            total:
+              sub_total +
+              Math.round(0.08 * sub_total) +
+              (delivery_type === "delivery" ? 500 : 0),
+            shipping: delivery_type === "delivery" ? 500 : 0,
+            discount: 0,
+          },
+          quantity: quantity,
+          warehouse_to_pickup: {
+            warehouse_id: "",
+            name: "",
+            address: "",
+            geo: {},
+            phone_number: "",
+            closing_time: "",
+            opening_time: "",
+          },
+        }));
+        setIsLoading(false);
+        // navigation.navigate("Shop_Order_Review_View");
+      }, 500); // Simulate a brief loading period
+    }
+
+    if (delivery_type === "pickup") {
+      setDeliveryOption("pickup");
+      setIsLoading(true);
+      setTimeout(() => {
+        setMyOrder((prevOrder) => ({
+          ...prevOrder,
+          delivery_type: delivery_type,
+          user_id: user_id,
+          cart_id: cart_id,
+          order_products: products,
+          pricing: {
+            sub_total: sub_total,
+            taxes: Math.round(0.08 * sub_total),
+            total:
+              sub_total +
+              Math.round(0.08 * sub_total) +
+              (delivery_type === "delivery" ? 500 : 0),
+            shipping: delivery_type === "delivery" ? 500 : 0,
+            discount: 0,
+          },
+          quantity: quantity,
+          warehouse_to_pickup: {
+            warehouse_id: warehouse_id,
+            name: warehouse_name,
+            address: formatted_address,
+            geo: geo,
+            phone_number: phone,
+            closing_time: warehouse_information?.closing_time,
+            opening_time: warehouse_information?.opening_time,
+          },
+        }));
+        setIsLoading(false);
+        navigation.navigate("Shop_Order_Review_View");
+      }, 500); // Simulate a brief loading period
+    }
   };
 
   console.log(
@@ -137,9 +175,38 @@ export default function Shop_Delivery_Type_View() {
               type="delivery"
               border_radius="10px"
               delivery_fee=""
-              action={() => null}
+              action={() => settingMyOrderDeliveryType("delivery")}
             />
           </Container>
+          {deliveryOption === "delivery" && (
+            <>
+              <Container
+                width="100%"
+                height="10%"
+                color={theme.colors.bg.elements_bg}
+              >
+                <Text variant="raleway_bold_18">
+                  Select your delivery address
+                </Text>
+              </Container>
+              {/* ********* Delivery address options components ******** */}
+              <Delivery_Address_Option_Tile
+                address={address}
+                address_option={"current_address"}
+                action={() => {
+                  setMyOrder((prevOrder) => ({
+                    ...prevOrder,
+                    order_delivery_address: address,
+                  }));
+                  navigation.navigate("Shop_Order_Review_View");
+                }}
+              />
+              <Delivery_Address_Option_Tile
+                address={address}
+                address_option={"new_address"}
+              />
+            </>
+          )}
         </Container>
       )}
     </SafeArea>

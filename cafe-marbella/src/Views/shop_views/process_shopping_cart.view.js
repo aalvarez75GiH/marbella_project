@@ -17,6 +17,8 @@ import { Regular_CTA } from "../../components/ctas/regular.cta";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
+import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
+import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
 
 export default function Process_Shopping_Cart_View() {
   const theme = useTheme();
@@ -25,6 +27,11 @@ export default function Process_Shopping_Cart_View() {
   const products = cart?.products ?? [];
   const sub_total = cart?.sub_total ?? 0;
 
+  const { myOrder, setMyOrder } = useContext(OrdersContext);
+
+  const { user } = useContext(AuthenticationContext);
+  const { first_name, last_name, email, phone_number, uid, address } =
+    user || {};
   // *************
   const navigation = useNavigation();
 
@@ -108,7 +115,23 @@ export default function Process_Shopping_Cart_View() {
             border_radius={"40px"}
             caption="Proceed to checkout"
             caption_text_variant="dm_sans_bold_20"
-            action={() => navigation.navigate("Shop_Delivery_Type_View")}
+            // action={() => navigation.navigate("Shop_Delivery_Type_View")}
+            action={() => {
+              setMyOrder((prevOrder) => {
+                return {
+                  ...prevOrder,
+                  customer: {
+                    first_name: first_name,
+                    last_name: last_name,
+                    email: email,
+                    phone_number: phone_number,
+                    address: address,
+                    uid: uid,
+                  },
+                };
+              });
+              navigation.navigate("Shop_Delivery_Type_View");
+            }}
           />
         </Container>
       )}

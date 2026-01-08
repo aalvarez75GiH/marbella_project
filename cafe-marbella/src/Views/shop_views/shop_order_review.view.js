@@ -35,8 +35,13 @@ export default function Shop_Order_Review_View() {
   );
   const { myWarehouse } = useContext(WarehouseContext);
   const { distance_in_miles } = myWarehouse || {};
-  const { pricing, warehouse_to_pickup, customer, order_products } =
-    myOrder || {};
+  const {
+    pricing,
+    warehouse_to_pickup,
+    customer,
+    order_products,
+    delivery_type,
+  } = myOrder || {};
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
   const { address: customer_address } = customer || {};
 
@@ -48,16 +53,7 @@ export default function Shop_Order_Review_View() {
   } = warehouse_to_pickup || {};
 
   const navigation = useNavigation();
-  let delivery_type = "pickup";
-
-  const renderProductCartItemTile = ({ item }) => {
-    const image = item?.size_variants?.[0]?.images?.[0]; // ✅ safe
-    return (
-      <Spacer position="bottom" size="medium">
-        <Product_Cart_Item_Tile image={image} product={item} />
-      </Spacer>
-    );
-  };
+  //   let delivery_type = "pickup";
 
   const renderingOrderProducts = () => {
     return order_products.map((item) => {
@@ -81,7 +77,7 @@ export default function Shop_Order_Review_View() {
       ) : (
         <>
           <Go_Back_Header
-            action={() => navigation.popToTop()}
+            action={() => navigation.goBack()}
             label="Order review"
           />
           <ScrollView
@@ -187,7 +183,7 @@ export default function Shop_Order_Review_View() {
               border_radius={"40px"}
               caption="Continue to payment"
               caption_text_variant="dm_sans_bold_20"
-              action={() => null}
+              action={() => navigation.navigate("Payment_Customer_Name_View")}
             />
           </Container>
         </>

@@ -18,6 +18,7 @@ export const Delivery_Information_Order_Tile = ({
   distance_to_warehouse_mi,
   customer_address = "",
 }) => {
+  console.log("Delivery_Information_Order_Tile delivery_type:", delivery_type);
   return delivery_type === "pickup" ? (
     <Container
       width="100%"

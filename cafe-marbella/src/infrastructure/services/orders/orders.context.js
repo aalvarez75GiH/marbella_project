@@ -11,6 +11,7 @@ export const Orders_Context_Provider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [myOrder, setMyOrder] = useState(myOrder_schema);
+  const [deliveryOption, setDeliveryOption] = useState(null);
 
   console.log("MY ORDER AT ORDERS CONTEXT: ", JSON.stringify(myOrder, null, 2));
   return (
@@ -20,6 +21,8 @@ export const Orders_Context_Provider = ({ children }) => {
         myOrder,
         setMyOrder,
         setIsLoading,
+        deliveryOption,
+        setDeliveryOption,
       }}
     >
       {children}
