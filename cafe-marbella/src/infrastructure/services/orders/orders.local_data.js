@@ -7,7 +7,7 @@ export const myOrder_schema = {
     address: "",
     uid: "",
   },
-  order_id: "",
+  //   order_id: "",
   user_id: "",
   cart_id: "",
   pricing: { sub_total: 0, taxes: 0, discount: 0, shipping: 0, total: 0 },
@@ -18,6 +18,7 @@ export const myOrder_schema = {
   updated_at: "",
   payment_information: {
     method: "",
+    card_id: "",
     payment_status: "", // paid,unpaid, pending, failed, refunded, requires_payment
     transaction_id: "",
     billing_address: "",
