@@ -72,3 +72,6 @@ marbellaBE/functions/*.json
 googleServicesAccountKey.json
 # Firebase / GCP secrets
 
+# macOS
+.DS_Store
+*.pem
