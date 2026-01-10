@@ -14,6 +14,7 @@ export default function App() {
     dmSansBold: require("./assets/fonts/dm sans/DMSans-Bold.ttf"),
     dmSansSemiBold: require("./assets/fonts/dm sans/DMSans-SemiBold.ttf"),
     cormorantRegular: require("./assets/fonts/cormorant/Cormorant-Regular.ttf"),
+    cormorantSemiBoldItalic: require("./assets/fonts/cormorant/Cormorant-SemiBoldItalic.ttf"),
     cormorantBold: require("./assets/fonts/cormorant/Cormorant-Bold.ttf"),
   });
 

@@ -6,6 +6,17 @@ const defaultTextStyles = (theme) => `
   color: ${theme.colors.text.black};
  
 `;
+// ************* Cormorant VARIANTS **************** //
+const cormorant_regular_36 = (theme) => `
+font-size: ${theme.fontSizes.text_32};
+font-family: ${theme.fonts.cormorantRegular};
+color: ${theme.colors.brand.primary};
+`;
+const cormorant_bold_32_italic = (theme) => `
+font-size: ${theme.fontSizes.text_32};
+font-family: ${theme.fonts.cormorantSemiBoldItalic};
+color: ${theme.colors.brand.primary};
+`;
 // ************* DM SANS VARIANTS **************** //
 const dm_sans_bold_40 = (theme) => `
 font-size: ${theme.fontSizes.text_40};
@@ -242,6 +253,8 @@ color: ${theme.colors.text.white};
 `;
 
 const variants = {
+  cormorant_bold_32_italic,
+  // *************************
   dm_sans_bold_40,
   dm_sans_bold_40_white,
   dm_sans_bold_32,

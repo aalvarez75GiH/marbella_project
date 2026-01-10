@@ -16,6 +16,7 @@ export const CreditCardInputComponent = ({
   name = "Jonh Doe",
   onSuccess,
   onError,
+  cardIsLoading,
   whileIsSuccess,
   // setCard,
   // card,
@@ -82,13 +83,11 @@ export const CreditCardInputComponent = ({
 
   return (
     <Spacer position="left" size="medium">
-      <Container width="100%" height="25%" color={theme.colors.bg.elements_bg}>
-        <LiteCreditCardInput onChange={onChange} />
-        {isLoading && (
-          <Container width="40px" height="40px">
-            <ActivityIndicator color="#010606" />
-          </Container>
-        )}
+      <Container width="100%" height="auto" color={theme.colors.bg.elements_bg}>
+        <LiteCreditCardInput
+          onChange={onChange}
+          // style={{ backgroundColor: "red" }}
+        />
       </Container>
     </Spacer>
   );

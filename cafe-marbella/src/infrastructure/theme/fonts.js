@@ -7,6 +7,8 @@ export const fonts = {
   dmSansSemiBold: "dmSansSemiBold",
   cormorantRegular: "cormorantRegular",
   cormorantBold: "cormorantBold",
+  cormorantBoldItalic: "cormorantBoldItalic",
+  cormorantSemiBoldItalic: "cormorantSemiBoldItalic",
 };
 
 export const fontWeights = {

@@ -35,12 +35,12 @@ export default function Process_Shopping_Cart_View() {
   // *************
   const navigation = useNavigation();
 
-  useEffect(() => {
-    // ⬅️ when cart becomes empty, go back
-    if (products.length === 0 && navigation.canGoBack()) {
-      navigation.goBack();
-    }
-  }, [products.length, navigation]);
+  // useEffect(() => {
+  //   // ⬅️ when cart becomes empty, go back
+  //   if (products.length === 0 && navigation.canGoBack()) {
+  //     navigation.goBack();
+  //   }
+  // }, [products.length, navigation]);
 
   // Hiding tab bar for this screen
   useLayoutEffect(() => {

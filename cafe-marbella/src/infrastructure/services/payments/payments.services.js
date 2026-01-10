@@ -25,7 +25,11 @@ export const paymentRequest = async (card_id, totalForStripe, nameOnCard) => {
     })
     .then((response) => {
       console.log("REPONSE AT SERVICE:", JSON.stringify(response, null, 2));
-      return response.data;
+      //   return response.data;
+      return {
+        status: response.status,
+        paymentData: response.data,
+      };
     })
     .catch((error) => {
       return error;

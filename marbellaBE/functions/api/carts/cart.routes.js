@@ -41,7 +41,7 @@ cartsRouter.get("/cart", async (req, res) => {
   }
 });
 
-cartsRouter.post("/", (req, res) => {
+cartsRouter.post("/", async (req, res) => {
   const cart = {
     user_id: req.body.user_id,
     cart_id: uuidv4(),
@@ -52,29 +52,23 @@ cartsRouter.post("/", (req, res) => {
     total: req.body.total,
   };
   console.log("CART AT END POINT:", cart);
-  // return res.status(201).json({ status: "Success", user });
-  (async () => {
-    try {
-      await cartsControllers.createCart(cart).then((newCart) => {
-        res.status(201).json(newCart);
-      });
-    } catch (error) {
-      console.log(error);
-      return res.status(500).send({
-        status: "Failed",
-        msg: "Something went wrong saving Data...",
-      });
-    }
-  })();
+
+  try {
+    await cartsControllers.createCart(cart).then((newCart) => {
+      res.status(201).json(newCart);
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({
+      status: "Failed",
+      msg: "Something went wrong saving Data...",
+    });
+  }
 });
 
 cartsRouter.put("/products_cart", async (req, res) => {
-  // const user_id = req.query.user_id;
   const user_id = String(req.query.user_id || "").trim();
   const product = req.body;
-  // console.log("USER AT END POINT:", user_id);
-  // console.log("PRODUCT TO ADD AT END POINT:", product);
-  // return res.status(201).json({ status: "Success", user });
 
   try {
     const cartUpdated = await cartsControllers.updateProductsCart(

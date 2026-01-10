@@ -1,4 +1,10 @@
-import React, { useEffect, useState, createContext, useContext } from "react";
+import React, {
+  useEffect,
+  useState,
+  createContext,
+  useContext,
+  useRef,
+} from "react";
 import {
   gettingCartByUserIDRequest,
   updatingProductsCart,
@@ -18,22 +24,16 @@ export const Cart_Context_Provider = ({ children }) => {
 
   const { user } = useContext(AuthenticationContext);
   const { user_id } = user || {};
-  // console.log("USER AT CART CONTEXT: ", JSON.stringify(user, null, 2));
-  // const userId = user?.user_id;
-  // console.log("USER ID AT CART CONTEXT: ", user_id);
+
+  const removingRef = useRef(false);
 
   useEffect(() => {
     const gettingCartByUserID = async (userId) => {
       try {
         console.log("Fetching cart for userId:", user_id);
         const myCart = await gettingCartByUserIDRequest(user_id);
-        // console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
-        // setCart(myCart[0]);
         setCart(myCart);
-        setCartTotalItems(
-          myCart.quantity || 0
-          // myCart[0].products[0]?.size_variants[0]?.quantity || 0
-        );
+        setCartTotalItems(myCart.quantity || 0);
         // Handle the fetched cart data (e.g., update state or context)
       } catch (error) {
         console.error("Error fetching cart:", error);
@@ -49,8 +49,6 @@ export const Cart_Context_Provider = ({ children }) => {
     const total_items_qty = getTotalCartQuantity(cart);
     setCartTotalItems(total_items_qty);
   }, [cart]);
-
-  // console.log("CART AT CONTEXT: ", JSON.stringify(cart, null, 2));
 
   //Calculate subtotal of cart helper function
   const calculateSubtotal = (products) => {
@@ -212,9 +210,6 @@ export const Cart_Context_Provider = ({ children }) => {
         console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
         setCart(myCart);
         setCartTotalItems(myCart.quantity || 0);
-        // const total_items_qty = getTotalCartQuantity(myCart);
-        // setCartTotalItems(total_items_qty);
-        // setCartTotalItems(myCart.products[0]?.size_variants[0]?.quantity || 0);
         // Handle the fetched cart data (e.g., update state or context)
       } catch (error) {
         console.error("Error fetching cart:", error);
@@ -225,42 +220,56 @@ export const Cart_Context_Provider = ({ children }) => {
   };
 
   //   *** REMOVE product from cart ***
+
   const removingProductFromCart = async (item) => {
+    if (removingRef.current) return { ok: false, becameEmpty: false };
+    removingRef.current = true;
+
     const { productId, variantId } = extractingIDs(item);
+
+    // compute next products from current cart
+    const prevProducts = cart?.products ?? [];
+    const updatedProducts = prevProducts.filter((p) => {
+      const v = p?.size_variants?.[0];
+      return !(p.id === productId && v?.id === variantId);
+    });
+
+    const optimisticCart = {
+      ...cart,
+      products: updatedProducts,
+      sub_total: calculateSubtotal(updatedProducts),
+      updated_at: new Date().toISOString(),
+    };
+
+    const optimisticEmpty = updatedProducts.length === 0;
+
     setIsLoading(true);
-    setTimeout(async () => {
-      setCart((prevCart) => {
-        const products = prevCart?.products ?? [];
+    setCart(optimisticCart);
+    setCartTotalItems(getTotalCartQuantity(optimisticCart));
 
-        const updatedProducts = products.filter((p) => {
-          const v = p?.size_variants?.[0];
-          return !(p.id === productId && v?.id === variantId);
-        });
-        const cartUpdated = {
-          ...prevCart,
-          products: updatedProducts,
-          sub_total: calculateSubtotal(updatedProducts),
-          updated_at: new Date().toISOString(),
-        };
-        const total_items_qty = getTotalCartQuantity(cartUpdated);
-        setCartTotalItems(total_items_qty);
+    try {
+      const myCart = await removingCartItemRequest(
+        user_id,
+        productId,
+        variantId
+      );
 
-        return cartUpdated;
-      });
-      // Make the backend request
-      try {
-        const myCart = await removingCartItemRequest(
-          user_id,
-          productId,
-          variantId
-        );
-        console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
-        setCart(myCart); // Update the cart with the backend response
-      } catch (error) {
-        console.error("Error updating cart:", error);
+      if (myCart) {
+        setCart(myCart);
+        setCartTotalItems(getTotalCartQuantity(myCart));
+        return { ok: true, becameEmpty: (myCart?.products?.length ?? 0) === 0 };
       }
+
+      // if API didn't return a cart, fall back to optimistic result
+      return { ok: true, becameEmpty: optimisticEmpty };
+    } catch (error) {
+      console.error("Error updating cart:", error);
+
+      return { ok: false, becameEmpty: false };
+    } finally {
       setIsLoading(false);
-    }, 500);
+      removingRef.current = false;
+    }
   };
 
   return (

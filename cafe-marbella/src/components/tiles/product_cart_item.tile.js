@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Image } from "react-native";
 import { useTheme } from "styled-components/native";
+import { useNavigation } from "@react-navigation/native";
 
 import {
   Action_Container,
@@ -12,8 +13,10 @@ import { Text } from "../../infrastructure/typography/text.component";
 
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 import { GlobalContext } from "../../infrastructure/services/global/global.context";
+
 export const Product_Cart_Item_Tile = ({ product, image }) => {
   const theme = useTheme();
+  const navigation = useNavigation();
   const { increaseCartItemQty, decreaseCartItemQty, removingProductFromCart } =
     useContext(CartContext);
 
@@ -27,6 +30,14 @@ export const Product_Cart_Item_Tile = ({ product, image }) => {
   const cartCountry = product.originCountry;
   const cartDesc =
     product.grindType === "whole" ? "Whole bean coffee" : "Ground bean coffee";
+
+  const onTrashPress = async (item) => {
+    const res = await removingProductFromCart(item);
+    if (res?.ok && res?.becameEmpty) {
+      navigation.goBack(); // ✅ only happens once, on the correct screen
+    }
+  };
+
   return (
     <>
       <Container
@@ -74,7 +85,7 @@ export const Product_Cart_Item_Tile = ({ product, image }) => {
               color={theme.colors.ui.secondary}
               justify="flex-end"
               align="center"
-              onPress={() => removingProductFromCart(product)}
+              onPress={() => onTrashPress(product)}
             >
               <RemoveIcon width={20} height={20} fill={"#FFFFFF"} />
             </Action_Container>
