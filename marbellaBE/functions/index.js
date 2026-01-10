@@ -13,8 +13,10 @@ const usersRouter = require("./api/users/users.routes");
 const cartsRouter = require("./api/carts/cart.routes");
 const productsRouter = require("./api/products/products.routes");
 const warehousesRouter = require("./api/warehouses/warehouses.routes");
+const paymentsRouter = require("./api/payments/payments.routes");
 
 exports.usersendpoint = onRequest(usersRouter);
 exports.cartsendpoint = onRequest(cartsRouter);
 exports.productsendpoint = onRequest(productsRouter);
 exports.warehousesendpoint = onRequest(warehousesRouter);
+exports.paymentsendpoint = onRequest(paymentsRouter);
