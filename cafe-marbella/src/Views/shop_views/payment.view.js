@@ -15,13 +15,12 @@ import { Global_activity_indicator } from "../../components/activity indicators/
 
 import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
-import { GlobalContext } from "../../infrastructure/services/global/global.context";
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
 
 import SuccessIcon from "../../../assets/my_icons/success_check.svg";
 import { CheckIcon } from "../../../assets/modified_icons/success_icon";
 
-export default function Payment_Customer_Name_View() {
+export default function Payment_View() {
   const { nameOnCard, setNameOnCard, card, setCard, setIsLoading, isLoading } =
     useContext(PaymentsContext);
   const [cardIsLoading, setCardIsLoading] = useState(false);
@@ -36,7 +35,10 @@ export default function Payment_Customer_Name_View() {
   const { user } = useContext(AuthenticationContext);
 
   const navigation = useNavigation();
-  const onPay = async (nameOnCard, user, card) => {
+
+  console.log("MY ORDER AT PAYMENT VIEW:", JSON.stringify(myOrder, null, 2));
+
+  const onPay = async (nameOnCard, user, card, order) => {
     setIsLoading(true);
     console.log("onPay triggered with:", nameOnCard, user, card);
 
@@ -48,8 +50,13 @@ export default function Payment_Customer_Name_View() {
     }
 
     try {
-      const data = await paymentRequest(card.id, totalForStripe, nameOnCard);
-      console.log("Payment successful:", JSON.stringify(data, null, 2));
+      const data = await paymentRequest(
+        card.id,
+        totalForStripe,
+        nameOnCard,
+        order
+      );
+      console.log("Payment successful:", JSON.stringify(data.order, null, 2));
       return data.status;
     } catch (error) {
       console.error("Payment error:", error.response?.data || error.message);
@@ -173,7 +180,7 @@ export default function Payment_Customer_Name_View() {
             caption_text_variant="dm_sans_bold_20"
             action={async () => {
               console.log("Card state before onPay:", card); // Debugging log
-              const response = await onPay(nameOnCard, user, card);
+              const response = await onPay(nameOnCard, user, card, myOrder);
               console.log("onPay response:", response); // Debugging log
               if (response === 200) {
                 navigation.navigate("Order_Confirmation_View");

@@ -128,6 +128,7 @@ export default function Process_Shopping_Cart_View() {
                     address: address,
                     uid: uid,
                   },
+                  order_status: "In progress",
                 };
               });
               navigation.navigate("Shop_Delivery_Type_View");

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -23,7 +23,8 @@ import { OrdersContext } from "../../infrastructure/services/orders/orders.conte
 
 import AddIcon from "../../../assets/my_icons/addIcon.svg";
 export default function Shop_Delivery_Type_View() {
-  const [deliveryOption, setDeliveryOption] = React.useState(null);
+  const [deliveryOption, setDeliveryOption] = useState(null);
+  const [differentAddress, setDifferentAddress] = useState("");
   const theme = useTheme();
   const navigation = useNavigation();
   const { cart } = useContext(CartContext);
@@ -41,6 +42,14 @@ export default function Shop_Delivery_Type_View() {
   const { customer } = myOrder || {};
   const { address } = customer || {};
   console.log("DELIVERY TYPE OPTION:", deliveryOption);
+
+  useEffect(() => {
+    setMyOrder((prevOrder) => ({
+      ...prevOrder,
+      order_delivery_address:
+        differentAddress !== "" ? differentAddress : address,
+    }));
+  }, [differentAddress]);
 
   const settingMyOrderDeliveryType = (delivery_type) => {
     if (delivery_type === "delivery") {
@@ -63,15 +72,15 @@ export default function Shop_Delivery_Type_View() {
             discount: 0,
           },
           quantity: quantity,
-          warehouse_to_pickup: {
-            warehouse_id: "",
-            name: "",
-            address: "",
-            geo: {},
-            phone_number: "",
-            closing_time: "",
-            opening_time: "",
-          },
+          // warehouse_to_pickup: {
+          //   warehouse_id: "",
+          //   name: "",
+          //   address: "",
+          //   geo: {},
+          //   phone_number: "",
+          //   closing_time: "",
+          //   opening_time: "",
+          // },
         }));
         setIsLoading(false);
         // navigation.navigate("Shop_Order_Review_View");
@@ -108,6 +117,7 @@ export default function Shop_Delivery_Type_View() {
             closing_time: warehouse_information?.closing_time,
             opening_time: warehouse_information?.opening_time,
           },
+          order_delivery_address: "",
         }));
         setIsLoading(false);
         navigation.navigate("Shop_Order_Review_View");

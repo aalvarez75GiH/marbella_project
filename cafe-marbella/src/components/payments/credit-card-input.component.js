@@ -63,7 +63,7 @@ export const CreditCardInputComponent = ({
           payment_information: {
             method: "credit_card",
             card_id: card_from_stripe.id,
-            payment_status: "", // paid,unpaid, pending, failed, refunded, requires_payment
+            payment_status: "pending", // paid,unpaid, pending, failed, refunded, requires_payment
             transaction_id: "",
             billing_address: "",
             last_four: card_from_stripe.card.last4,

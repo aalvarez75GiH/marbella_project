@@ -41,6 +41,7 @@ export default function Shop_Order_Review_View() {
     customer,
     order_products,
     delivery_type,
+    quantity,
   } = myOrder || {};
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
   const { address: customer_address } = customer || {};
@@ -111,6 +112,7 @@ export default function Shop_Order_Review_View() {
                 taxes={taxes}
                 discount={discount}
                 total={total}
+                quantity={quantity}
               />
               <Splitter_Component
                 width="100%"
@@ -183,7 +185,7 @@ export default function Shop_Order_Review_View() {
               border_radius={"40px"}
               caption="Continue to payment"
               caption_text_variant="dm_sans_bold_20"
-              action={() => navigation.navigate("Payment_Customer_Name_View")}
+              action={() => navigation.navigate("Payment_View")}
             />
           </Container>
         </>

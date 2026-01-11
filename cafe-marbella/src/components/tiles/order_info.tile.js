@@ -12,7 +12,9 @@ export const Order_Info_Tile = ({
   taxes,
   discount,
   total,
+  quantity,
 }) => {
+  console.log("ORDER INFO TILE - QUANTITY:", quantity);
   const { formatCentsToUSD } = useContext(GlobalContext);
   const formatted_currency = formatCentsToUSD;
 
@@ -43,7 +45,8 @@ export const Order_Info_Tile = ({
             align="flex-start"
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_regular_18">Items:</Text>
+              {/* <Text variant="dm_sans_regular_18">Items:</Text> */}
+              <Text variant="dm_sans_regular_18">Items ({quantity}):</Text>
             </Spacer>
           </Container>
           <Spacer position="top" size="small" />

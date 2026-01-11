@@ -29,8 +29,6 @@ export const gettingCartByUserIDRequest = async (user_id) => {
 };
 export const updatingProductsCart = async (user_id, product) => {
   const { cartsEndPoint } = environment;
-  console.log("USER ID AT SERVICE:", user_id);
-  console.log("PRODUCT TO ADD AT SERVICE:", JSON.stringify(product, null, 2));
   const baseUrl = cartsEndPoint; // Replace with your backend base URL
   const endpoint = `${baseUrl}/products_cart`;
   try {
@@ -39,7 +37,7 @@ export const updatingProductsCart = async (user_id, product) => {
       timeout: 15000, // Optional timeout
     });
 
-    console.log("RESPONSE:", res.data);
+    // console.log("RESPONSE:", res.data);
     return res.data;
   } catch (error) {
     console.error("Error updating cart:", error);
