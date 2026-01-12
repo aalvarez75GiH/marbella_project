@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
 
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
@@ -10,78 +10,30 @@ import { Spacer } from "../../components/spacers and globals/optimized.spacer.co
 import { Text } from "../../infrastructure/typography/text.component";
 import { CreditCardInputComponent } from "../../components/payments/credit-card-input.component";
 import { Regular_CTA } from "../../components/ctas/regular.cta";
-import { paymentRequest } from "../../infrastructure/services/payments/payments.services";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 
 import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
-import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
 
-import SuccessIcon from "../../../assets/my_icons/success_check.svg";
 import { CheckIcon } from "../../../assets/modified_icons/success_icon";
 
 export default function Payment_View() {
-  const { nameOnCard, setNameOnCard, card, setCard, setIsLoading, isLoading } =
-    useContext(PaymentsContext);
-  const [cardIsLoading, setCardIsLoading] = useState(false);
-  const [pi_errorMessage, setPi_errorMessage] = useState(null);
-  //   const [paymentDone, setPaymentDone] = useState(false);
-  const [cardVerified, setCardVerified] = useState(false);
+  const {
+    nameOnCard,
+    setNameOnCard,
+    card,
+    isLoading,
+    onPay,
+    cardIsLoading,
+    cardVerified,
+    onSuccess,
+    whileIsSuccess,
+  } = useContext(PaymentsContext);
 
   const { myOrder } = useContext(OrdersContext);
-  const { pricing } = myOrder;
-  const { total: totalForStripe } = pricing || {};
-
-  const { user } = useContext(AuthenticationContext);
-
   const navigation = useNavigation();
 
-  console.log("MY ORDER AT PAYMENT VIEW:", JSON.stringify(myOrder, null, 2));
-
-  const onPay = async (nameOnCard, user, card, order) => {
-    setIsLoading(true);
-    console.log("onPay triggered with:", nameOnCard, user, card);
-
-    if (!card || !card.id) {
-      console.error("Card is null or missing ID");
-      setIsLoading(false);
-      setPi_errorMessage(true);
-      return;
-    }
-
-    try {
-      const data = await paymentRequest(
-        card.id,
-        totalForStripe,
-        nameOnCard,
-        order
-      );
-      console.log("Payment successful:", JSON.stringify(data.order, null, 2));
-      return data.status;
-    } catch (error) {
-      console.error("Payment error:", error.response?.data || error.message);
-      navigation.navigate("PaymentError", {
-        error: error.response?.data || "Unknown error",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const onSuccess = (card) => {
-    console.log("Card received in onSuccess:", card);
-    setPi_errorMessage(false);
-    if (card && card.id) {
-      setCardVerified(true);
-    } else {
-      setCardVerified(false);
-    }
-    setCard(card); // Update card state
-  };
-
-  const whileIsSuccess = (value) => {
-    setCardIsLoading(value);
-  };
+  console.log("MY ORDER IN PAYMENT VIEW:", JSON.stringify(myOrder, null, 2));
 
   return (
     <SafeArea background_color="#FFFFFF">
@@ -180,7 +132,7 @@ export default function Payment_View() {
             caption_text_variant="dm_sans_bold_20"
             action={async () => {
               console.log("Card state before onPay:", card); // Debugging log
-              const response = await onPay(nameOnCard, user, card, myOrder);
+              const response = await onPay(nameOnCard, card, myOrder);
               console.log("onPay response:", response); // Debugging log
               if (response === 200) {
                 navigation.navigate("Order_Confirmation_View");

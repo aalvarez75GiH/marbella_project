@@ -1,5 +1,6 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
 
+import { paymentRequest } from "./payments.services";
 export const PaymentsContext = createContext();
 
 export const Payments_Context_Provider = ({ children }) => {
@@ -7,13 +8,9 @@ export const Payments_Context_Provider = ({ children }) => {
   const [error, setError] = useState(null);
   const [nameOnCard, setNameOnCard] = useState("");
   const [card, setCard] = useState(null);
-  const [pi_errorMessage, setPi_ErrorMessage] = useState(null);
-
+  const [cardIsLoading, setCardIsLoading] = useState(false);
+  const [cardVerified, setCardVerified] = useState(false);
   console.log("CARD AT CONTEXT: ", JSON.stringify(card, null, 2));
-  //   const whileIsSuccess = (value) => {
-  //     console.log("VALUE AT PAYMENTS CONTEXT: ", JSON.stringify(value, null, 2));
-  //     setIsLoading(value);
-  //   };
 
   //   const onSuccess = (card) => {
   //     console.log("CARD AT PAYMENTS CONTEXT: ", JSON.stringify(card, null, 2));
@@ -21,7 +18,49 @@ export const Payments_Context_Provider = ({ children }) => {
   //     // setCard(card);
   //   };
 
+  const onSuccess = (card) => {
+    console.log("Card received in onSuccess:", card);
+    if (card && card.id) {
+      setCardVerified(true);
+    } else {
+      setCardVerified(false);
+    }
+    setCard(card); // Update card state
+  };
+
+  const whileIsSuccess = (value) => {
+    setCardIsLoading(value);
+  };
+
   console.log("NAME ON CARD AT PAYMENTS CONTEXT: ", nameOnCard);
+
+  const onPay = async (nameOnCard, card, myOrder) => {
+    setIsLoading(true);
+    const { pricing } = myOrder;
+    const { total: totalForStripe } = pricing || {};
+
+    if (!card || !card.id) {
+      console.error("Card is null or missing ID");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const data = await paymentRequest(
+        card.id,
+        totalForStripe,
+        nameOnCard,
+        myOrder
+      );
+      console.log("Payment successful:", JSON.stringify(data.order, null, 2));
+      return data.status;
+    } catch (error) {
+      console.error("Payment error:", error.response?.data || error.message);
+      setError(error.response?.data || error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <PaymentsContext.Provider
@@ -33,9 +72,13 @@ export const Payments_Context_Provider = ({ children }) => {
         setNameOnCard,
         nameOnCard,
         // onSuccess,
-        // whileIsSuccess,
+        whileIsSuccess,
         setCard,
         card,
+        onPay,
+        cardIsLoading,
+        cardVerified,
+        onSuccess,
       }}
     >
       {children}

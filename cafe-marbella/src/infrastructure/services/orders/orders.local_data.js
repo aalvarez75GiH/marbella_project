@@ -14,8 +14,8 @@ export const myOrder_schema = {
   order_products: [],
   currency: "USD",
   order_status: "",
-  created_at: "",
-  updated_at: "",
+  createdAt: "",
+  updatedAt: "",
   payment_information: {
     method: "",
     card_id: "",

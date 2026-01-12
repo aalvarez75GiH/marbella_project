@@ -17,4 +17,6 @@ export const environment = {
     "https://us-central1-cafe-marbella-be.cloudfunctions.net/warehousesendpoint",
   paymentsEndPoint:
     "https://us-central1-cafe-marbella-be.cloudfunctions.net/paymentsendpoint",
+  ordersEndPoint:
+    "https://us-central1-cafe-marbella-be.cloudfunctions.net/ordersendpoint",
 };
