@@ -9,6 +9,8 @@ const stripeClient = require("stripe")(process.env.STRIPE_KEY);
 paymentsRouter.post("/payments", async (req, res) => {
   const totalForStripe = req.body.totalForStripe;
   const card_token = req.body.card_id;
+  const order = req.body.order;
+  console.log("CUSTOMER ORDER AT PAYMENTS ROUTE:", order);
   const data = {
     token: req.body.card_id,
     amount: req.body.totalForStripe,
@@ -35,8 +37,13 @@ paymentsRouter.post("/payments", async (req, res) => {
       confirm: true,
     });
 
+    const dataToReturn = {
+      paymentIntentResponse,
+      order: order ?? null,
+    };
     //   console.log(paymentIntentResponse);
-    res.json(paymentIntentResponse);
+    // res.json(paymentIntentResponse);
+    res.json(dataToReturn);
     return;
   } catch (error) {
     console.log("ERROR CATCHED:", error);
@@ -87,10 +94,10 @@ paymentsRouter.post("/payments", async (req, res) => {
   }
 
   // Send response
-  res.status(201).json({
-    status: "Success",
-    data,
-  });
+  //   res.status(201).json({
+  //     status: "Success",
+  //     data,
+  //   });
 });
 
 module.exports = paymentsRouter;
