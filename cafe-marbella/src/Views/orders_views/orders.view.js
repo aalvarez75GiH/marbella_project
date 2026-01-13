@@ -72,43 +72,44 @@ export default function Orders_View() {
   };
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
-      {isLoading && (
-        <Global_activity_indicator
-          caption="Wait, we are loading your orders..."
-          caption_width="65%"
-          color={theme.colors.bg.elements_bg}
-        />
-      )}
-      {!isLoading && orders.length === 0 && <Empty_My_Orders_View />}
-      {!isLoading && orders.length > 0 && (
-        <Container
-          width="100%"
-          height="100%"
-          color={theme.colors.bg.elements_bg}
-          // color={"red"}
-          justify="flex-start"
-          align="center"
-        >
-          <Just_Caption_Header caption="My Orders" />
+      <Container
+        width="100%"
+        height="100%"
+        color={theme.colors.bg.screens_bg}
+        // color={"red"}
+        justify="flex-start"
+        align="center"
+      >
+        <Just_Caption_Header caption="My Orders" />
+        <Spacer position="top" size="small" />
 
-          <Spacer position="top" size="large" />
-
-          <FlatList
-            contentContainerStyle={{
-              alignItems: "center",
-              width: "100%",
-              paddingBottom: 24,
-              flexGrow: 1,
-            }}
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
-            data={orders}
-            renderItem={renderingOrdersFromBackendTile}
-            keyExtractor={(item, id) => item.order_id}
-            ItemSeparatorComponent={() => <View style={{ height: 15 }} />} // Adjust the height to control the gap
+        {isLoading && (
+          <Global_activity_indicator
+            caption="Wait, we are loading your orders..."
+            caption_width="65%"
+            color={theme.colors.bg.elements_bg}
           />
-        </Container>
-      )}
+        )}
+        {!isLoading && orders.length === 0 && <Empty_My_Orders_View />}
+        {!isLoading && orders.length > 0 && (
+          <>
+            <FlatList
+              contentContainerStyle={{
+                alignItems: "center",
+                width: "100%",
+                paddingBottom: 24,
+                flexGrow: 1,
+              }}
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
+              data={orders}
+              renderItem={renderingOrdersFromBackendTile}
+              keyExtractor={(item, id) => item.order_id}
+              ItemSeparatorComponent={() => <View style={{ height: 15 }} />} // Adjust the height to control the gap
+            />
+          </>
+        )}
+      </Container>
     </SafeArea>
   );
 }

@@ -15,36 +15,31 @@ import { Just_Caption_Header } from "../../components/headers/just_caption.heade
 export default function Empty_My_Orders_View() {
   const theme = useTheme();
   return (
-    <SafeArea background_color={theme.colors.bg.elements_bg}>
+    <Container
+      width="100%"
+      height="100%"
+      color={theme.colors.bg.elements_bg}
+      //color={"green"}
+      justify="flex-start"
+      align="center"
+    >
       <Container
         width="100%"
         height="100%"
-        color={theme.colors.bg.screens_bg}
-        //color={"green"}
-        justify="flex-start"
+        color={theme.colors.bg.elements_bg}
+        //   color={"red"}
+        justify="center"
         align="center"
       >
-        <Just_Caption_Header caption="My Cart" />
+        <Image source={SadCoffeeMaker} style={{ width: 350, height: 350 }} />
+        <Spacer position="top" size="large" />
+        <Text variant="raleway_bold_20">Start an order come on</Text>
 
-        <Spacer position="top" size="small" />
-        <Container
-          width="100%"
-          height="100%"
-          color={theme.colors.bg.elements_bg}
-          //   color={"red"}
-          justify="center"
-          align="center"
-        >
-          <Image source={SadCoffeeMaker} style={{ width: 350, height: 350 }} />
-          <Spacer position="top" size="large" />
-          <Text variant="raleway_bold_20">Start an order come on</Text>
-
-          <Text variant="raleway_medium_16">
-            as you make a purchase order at Shop section
-          </Text>
-          <Text variant="raleway_medium_16">it'll be shown up here</Text>
-        </Container>
+        <Text variant="raleway_medium_16">
+          as you make a purchase order at Shop section
+        </Text>
+        <Text variant="raleway_medium_16">it'll be shown up here</Text>
       </Container>
-    </SafeArea>
+    </Container>
   );
 }
