@@ -3,6 +3,7 @@
 const express = require("express");
 const paymentsRouter = express.Router();
 const stripeClient = require("stripe")(process.env.STRIPE_KEY);
+const ordersControllers = require("../orders/orders.controllers");
 // const { v4: uuidv4 } = require("uuid");
 // const paymentsControllers = require("./payments.controllers");
 
@@ -10,6 +11,7 @@ paymentsRouter.post("/payments", async (req, res) => {
   const totalForStripe = req.body.totalForStripe;
   const card_token = req.body.card_id;
   const order = req.body.order;
+  let createdOrder = null;
   console.log("CUSTOMER ORDER AT PAYMENTS ROUTE:", order);
   const data = {
     token: req.body.card_id,
@@ -36,10 +38,34 @@ paymentsRouter.post("/payments", async (req, res) => {
       },
       confirm: true,
     });
+    let stripe_payment_id = paymentIntentResponse.id;
+    if (paymentIntentResponse.status === "succeeded" && order) {
+      console.log(
+        "paymentIntentResponse STATUS:",
+        paymentIntentResponse.status
+      );
+      console.log("Payment succeeded, creating order...");
+
+      const orderWithPaidStatus = {
+        ...order,
+        payment_information: {
+          ...order.payment_information, // ✅ correct source
+          payment_status: "paid",
+          paid_at: new Date().toISOString(),
+        },
+      };
+
+      createdOrder = await ordersControllers.createOrder(
+        orderWithPaidStatus,
+        order.user_id,
+        stripe_payment_id
+      );
+      console.log("ORDER CREATED AT PAYMENTS ROUTE:", createdOrder);
+    }
 
     const dataToReturn = {
       paymentIntentResponse,
-      order: order ?? null,
+      order: createdOrder ?? null,
     };
     //   console.log(paymentIntentResponse);
     // res.json(paymentIntentResponse);
@@ -92,12 +118,6 @@ paymentsRouter.post("/payments", async (req, res) => {
           );
     }
   }
-
-  // Send response
-  //   res.status(201).json({
-  //     status: "Success",
-  //     data,
-  //   });
 });
 
 module.exports = paymentsRouter;
