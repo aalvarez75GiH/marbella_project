@@ -30,7 +30,7 @@ export default function Payment_View() {
     whileIsSuccess,
   } = useContext(PaymentsContext);
 
-  const { myOrder } = useContext(OrdersContext);
+  const { myOrder, setMyOrder } = useContext(OrdersContext);
   const navigation = useNavigation();
 
   console.log("MY ORDER IN PAYMENT VIEW:", JSON.stringify(myOrder, null, 2));
@@ -134,7 +134,8 @@ export default function Payment_View() {
               console.log("Card state before onPay:", card); // Debugging log
               const response = await onPay(nameOnCard, card, myOrder);
               console.log("onPay response:", response); // Debugging log
-              if (response === 200) {
+              if (response.status === 200) {
+                setMyOrder(response.order);
                 navigation.navigate("Order_Confirmation_View");
                 //   setPaymentDone(true);
               }

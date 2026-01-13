@@ -40,14 +40,14 @@ export default function Shop_Delivery_Type_View() {
     useContext(OrdersContext);
 
   const { customer } = myOrder || {};
-  const { address } = customer || {};
+  const { customer_address } = customer || {};
   console.log("DELIVERY TYPE OPTION:", deliveryOption);
 
   useEffect(() => {
     setMyOrder((prevOrder) => ({
       ...prevOrder,
       order_delivery_address:
-        differentAddress !== "" ? differentAddress : address,
+        differentAddress !== "" ? differentAddress : customer_address,
     }));
   }, [differentAddress]);
 
@@ -111,7 +111,7 @@ export default function Shop_Delivery_Type_View() {
           warehouse_to_pickup: {
             warehouse_id: warehouse_id,
             name: warehouse_name,
-            address: formatted_address,
+            warehouse_address: formatted_address,
             geo: geo,
             phone_number: phone,
             closing_time: warehouse_information?.closing_time,
@@ -201,18 +201,18 @@ export default function Shop_Delivery_Type_View() {
               </Container>
               {/* ********* Delivery address options components ******** */}
               <Delivery_Address_Option_Tile
-                address={address}
+                customer_address={customer_address}
                 address_option={"current_address"}
                 action={() => {
                   setMyOrder((prevOrder) => ({
                     ...prevOrder,
-                    order_delivery_address: address,
+                    order_delivery_address: customer_address,
                   }));
                   navigation.navigate("Shop_Order_Review_View");
                 }}
               />
               <Delivery_Address_Option_Tile
-                address={address}
+                address={customer_address}
                 address_option={"new_address"}
               />
             </>

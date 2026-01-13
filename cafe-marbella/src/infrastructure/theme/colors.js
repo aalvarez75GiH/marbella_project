@@ -1,7 +1,7 @@
 export const colors = {
   brand: {
     primary: "#247F35",
-    secondary: "#F7F2C9",
+    secondary: "#EAE4C9",
     tertiary: "#3A2F01",
     white: "#FFFFFF",
     black: "#000000",
@@ -11,7 +11,7 @@ export const colors = {
     secondary: "#3A2F01",
     tertiary: "#F7F2C9",
     disabled: "#898989",
-    error: "#FA462D",
+    error: "#CD491B",
     error_light: "#fc9588",
     success: "#247F35",
     business: "#FFBA08",
@@ -25,6 +25,7 @@ export const colors = {
   text: {
     black: "#000000",
     white: "#FFFFFF",
+    placeHolders: "#898989",
     not_active: "#",
     success: "#247F35",
     error: "#FA462D",
@@ -39,5 +40,10 @@ export const colors = {
     business: "#FFB400",
     error: "#D62828",
     operations: "#3A2F01",
+  },
+  status_orders: {
+    inProgress: "#FFBA08",
+    finished: "#247F35",
+    refunded: "#CD491B",
   },
 };

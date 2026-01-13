@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import Shopping_Cart_View from "../../Views/cart_views/shopping_cart.view";
@@ -11,7 +11,7 @@ import { CartContext } from "../services/cart/cart.context";
 const CartStack = createNativeStackNavigator();
 
 export const Cart_Navigator = () => {
-  const { cartTotalItems } = React.useContext(CartContext);
+  const { cartTotalItems } = useContext(CartContext);
   console.log(
     "CART TOTAL ITEMS AT NAVIGATOR: ",
     JSON.stringify(cartTotalItems, null, 2)

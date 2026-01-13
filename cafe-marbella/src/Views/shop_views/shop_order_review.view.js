@@ -44,11 +44,11 @@ export default function Shop_Order_Review_View() {
     quantity,
   } = myOrder || {};
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
-  const { address: customer_address } = customer || {};
+  const { customer_address } = customer || {};
 
   const {
     name: warehouse_name,
-    address: warehouse_address,
+    warehouse_address,
     closing_time,
     opening_time,
   } = warehouse_to_pickup || {};

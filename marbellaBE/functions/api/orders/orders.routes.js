@@ -21,7 +21,10 @@ ordersRouter.post("/", async (req, res) => {
   const order = req.body;
   const { user_id } = order;
   try {
-    const newOrder = await ordersControllers.createOrder(order, user_id);
+    const newOrder = await ordersControllers.createOrderWithNoPayment(
+      order,
+      user_id
+    );
     return res.status(201).json(newOrder);
   } catch (error) {
     console.log(error);

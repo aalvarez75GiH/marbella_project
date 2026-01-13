@@ -9,6 +9,7 @@ import { Container } from "../containers/general.containers.js";
 export const Global_activity_indicator = ({
   caption = "Wait...",
   caption_width = "45%",
+  color = theme.colors.bg.screens_bg,
 }) => {
   return (
     <>
@@ -17,7 +18,7 @@ export const Global_activity_indicator = ({
         height={"100%"}
         justify="space-between"
         align="center"
-        color={theme.colors.bg.screens_bg}
+        color={color}
         direction="column"
       >
         <Container
@@ -25,7 +26,7 @@ export const Global_activity_indicator = ({
           height={"88%"}
           justify="center"
           align="center"
-          color={theme.colors.bg.screens_bg}
+          color={color}
           direction="column"
         >
           <ActivityIndicator size="small" color="#000000" />

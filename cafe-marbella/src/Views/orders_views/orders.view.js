@@ -1,99 +1,111 @@
-import React, { useContext } from "react";
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, FlatList, View } from "react-native";
+import React, { useContext, useCallback } from "react";
+import { FlatList, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 
 import { useTheme } from "styled-components/native";
-import { fonts, fontWeights } from "../../infrastructure/theme/fonts";
 import { Container } from "../../components/containers/general.containers";
-import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { Exit_Header_With_Label } from "../../components/headers/exit_with_label.header";
+import { Just_Caption_Header } from "../../components/headers/just_caption.header.js";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 import { useEffect } from "react";
 import { Text } from "../../infrastructure/typography/text.component";
-import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
-import DeliveryIcon from "../../../assets/my_icons/deliveryTruckIcon.svg";
-import { Order_From_Backend_Tile } from "../../components/tiles/order.tile.js";
+import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
+import { My_Orders_Tile } from "../../components/tiles/my_orders.tile.js";
 
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
-import { Regular_CTA } from "../../components/ctas/regular.cta";
+import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
+import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 
 export default function Orders_View() {
-  useEffect(() => {
-    gettingAllOrdersByUserID("aaa09d45-24a9-4a3f-aca5-9658952172c2");
-  }, []);
-  const { orders, gettingAllOrdersByUserID } = useContext(OrdersContext);
+  const { orders, gettingAllOrdersByUserID, isLoading } =
+    useContext(OrdersContext);
   console.log("ORDERS AT VIEW :", JSON.stringify(orders, null, 2));
 
+  const { user } = useContext(AuthenticationContext);
+  const { user_id } = user || {};
+  const { formatDate } = useContext(GlobalContext);
   const theme = useTheme();
   const navigation = useNavigation();
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!user_id) return;
+      gettingAllOrdersByUserID(user_id);
+    }, [user_id]) // same idea: only react to user_id changes
+  );
 
   const renderingOrdersFromBackendTile = ({ item }) => {
     console.log(
       "ORDER ITEM IN RENDERING FUNCTION :",
       JSON.stringify(item, null, 2)
     );
-    const { pricing, warehouse_to_pickup, order_status } = item;
-    const { name, address } = warehouse_to_pickup;
+    const {
+      pricing,
+      warehouse_to_pickup,
+      order_status,
+      createdAt,
+      delivery_type,
+      customer,
+      order_number,
+    } = item;
+    const { name, warehouse_address } = warehouse_to_pickup;
     const { total } = pricing;
+    const { customer_address } = customer;
 
     return (
-      <Order_From_Backend_Tile
-        sub_total={item.sub_total}
+      <My_Orders_Tile
         warehouse_name={name}
-        warehouse_address={address}
+        warehouse_address={warehouse_address}
         order_status={order_status}
-        shipping={item.shipping}
-        taxes={item.taxes}
-        discount={item.discount}
         total={total}
-        quantity={item.quantity}
+        long_formatted_date={formatDate(createdAt).long}
+        short_formatted_date={formatDate(createdAt).short}
+        delivery_type={delivery_type}
+        customer_address={customer_address}
+        order_number={order_number}
       />
     );
   };
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
-      <Container
-        width="100%"
-        height="100%"
-        color={theme.colors.bg.elements_bg}
-        // color={"red"}
-        justify="flex-start"
-        align="center"
-      >
-        <Exit_Header_With_Label
-          // action={() => navigation.popToTop()}
-          action={() => null}
-          label="My Orders"
+      {isLoading ? (
+        <Global_activity_indicator
+          caption="Wait, we are loading your orders..."
+          caption_width="65%"
+          color={theme.colors.bg.elements_bg}
         />
-        <Spacer position="top" size="large" />
-        {/* <Order_From_Backend_Tile /> */}
+      ) : (
+        <Container
+          width="100%"
+          height="100%"
+          color={theme.colors.bg.elements_bg}
+          // color={"red"}
+          justify="flex-start"
+          align="center"
+        >
+          <Just_Caption_Header caption="My Orders" />
 
-        <FlatList
-          contentContainerStyle={{
-            alignItems: "center",
-            width: "100%",
-            paddingBottom: 24,
-            flexGrow: 1,
-          }}
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
-          data={orders}
-          renderItem={renderingOrdersFromBackendTile}
-          keyExtractor={(item, id) => item.order_id}
-          ItemSeparatorComponent={() => <View style={{ height: 15 }} />} // Adjust the height to control the gap
-        />
-      </Container>
+          <Spacer position="top" size="large" />
+          {/* <Order_From_Backend_Tile /> */}
+
+          <FlatList
+            contentContainerStyle={{
+              alignItems: "center",
+              width: "100%",
+              paddingBottom: 24,
+              flexGrow: 1,
+            }}
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+            data={orders}
+            renderItem={renderingOrdersFromBackendTile}
+            keyExtractor={(item, id) => item.order_id}
+            ItemSeparatorComponent={() => <View style={{ height: 15 }} />} // Adjust the height to control the gap
+          />
+        </Container>
+      )}
     </SafeArea>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

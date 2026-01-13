@@ -10,17 +10,8 @@ import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
 import DeliveryIcon from "../../../assets/my_icons/deliveryTruckIcon.svg";
 import CreditCardIcon from "../../../assets/my_icons/creaditCardIcon.svg";
 
-export const Payment_method_Info_Tile = ({
-  warehouse_name = "Warehouse",
-  warehouse_address = `2159 West Broad st suite B{"\n"}Athens GA, 30606`,
-  opening_time,
-  closing_time,
-  delivery_type,
-  distance_to_warehouse_mi,
-  customer_address = "",
-}) => {
-  console.log("Delivery_Information_Order_Tile delivery_type:", delivery_type);
-  return delivery_type === "pickup" ? (
+export const Payment_method_Info_Tile = ({ last_four = "242" }) => {
+  return (
     <Container
       width="100%"
       //   height="25%"
@@ -63,83 +54,13 @@ export const Payment_method_Info_Tile = ({
               <Text variant="dm_sans_bold_16">Payment method used</Text>
             </Spacer>
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_regular_14">Visa ending in 4242</Text>
-            </Spacer>
-          </Container>
-
-          <Spacer position="top" size="small" />
-        </Container>
-      </Container>
-    </Container>
-  ) : (
-    <Container
-      width="100%"
-      color={theme.colors.bg.elements_bg}
-      overflow="hidden"
-    >
-      <Container
-        padding_vertical="5%"
-        width="95%"
-        color={theme.colors.ui.tertiary}
-        // color={"green"}
-        justify="centers"
-        align="center"
-        border_radius="20px"
-        direction="row"
-        overflow="hidden"
-      >
-        <Container
-          padding_vertical="5%"
-          width="30%"
-          color={theme.colors.ui.tertiary}
-          // color={"lightgreen"}
-        >
-          {/* <StoreIcon width={60} height={60} fill={"#000000"} /> */}
-          <DeliveryIcon width={60} height={60} fill={"#000000"} />
-        </Container>
-        <Container
-          width="70%"
-          color={theme.colors.ui.tertiary}
-          //   color={"lightblue"}
-        >
-          <Container
-            width="100%"
-            justify="center"
-            padding_vertical="3%"
-            align="flex-start"
-            color="transparent"
-            //color={"lightblue"}
-          >
-            <Spacer position="left" size="large">
-              <Text variant="dm_sans_bold_22">Delivey at</Text>
-            </Spacer>
-          </Container>
-
-          <Container
-            width="100%"
-            justify="center"
-            align="flex-start"
-            color="transparent"
-            //color="yellow"
-          >
-            <Spacer position="left" size="large">
-              <Text variant="dm_sans_regular_14">{customer_address}</Text>
-            </Spacer>
-          </Container>
-          <Spacer position="top" size="small" />
-          <Container
-            width="100%"
-            color="transparent"
-            //color="purple"
-            justify="center"
-            align="flex-start"
-          >
-            <Spacer position="left" size="large">
               <Text variant="dm_sans_regular_14">
-                Delivery by USPS - 1 to 3 days
+                Visa ending in {last_four}
               </Text>
             </Spacer>
           </Container>
+
+          <Spacer position="top" size="small" />
         </Container>
       </Container>
     </Container>

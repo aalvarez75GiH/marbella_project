@@ -35,13 +35,6 @@ export default function Process_Shopping_Cart_View() {
   // *************
   const navigation = useNavigation();
 
-  // useEffect(() => {
-  //   // ⬅️ when cart becomes empty, go back
-  //   if (products.length === 0 && navigation.canGoBack()) {
-  //     navigation.goBack();
-  //   }
-  // }, [products.length, navigation]);
-
   // Hiding tab bar for this screen
   useLayoutEffect(() => {
     navigation.getParent()?.setOptions({
@@ -125,10 +118,10 @@ export default function Process_Shopping_Cart_View() {
                     last_name: last_name,
                     email: email,
                     phone_number: phone_number,
-                    address: address,
+                    customer_address: address,
                     uid: uid,
                   },
-                  order_status: "In progress",
+                  order_status: "In Progress",
                 };
               });
               navigation.navigate("Shop_Delivery_Type_View");

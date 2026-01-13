@@ -25,20 +25,22 @@ export const Orders_Context_Provider = ({ children }) => {
   }, []);
 
   const gettingAllOrdersByUserID = async (user_id) => {
+    setIsLoading(true);
     // Implement the logic to fetch all orders by user ID
     // This is a placeholder function
-    try {
-      setIsLoading(true);
-      // Simulate fetching data
-      const fetchedOrders = await gettingAllOrdersByUserIDRequest(user_id); // Replace with actual fetch logic
-      console.log("Fetched Orders:", JSON.stringify(fetchedOrders, null, 2));
-      setOrders(fetchedOrders);
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-      setError(error);
-    } finally {
-      setIsLoading(false);
-    }
+    setTimeout(async () => {
+      try {
+        // Simulate fetching data
+        const fetchedOrders = await gettingAllOrdersByUserIDRequest(user_id); // Replace with actual fetch logic
+        console.log("Fetched Orders:", JSON.stringify(fetchedOrders, null, 2));
+        setOrders(fetchedOrders);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        setError(error);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 1000); // Simulate network delay
   };
 
   return (

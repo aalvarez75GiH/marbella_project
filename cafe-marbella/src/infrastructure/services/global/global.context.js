@@ -33,6 +33,31 @@ export const Global_Context_Provider = ({ children }) => {
     gettingAllProductsCatalog();
   }, []);
 
+  const formatDate = (inputDate) => {
+    const date = new Date(inputDate);
+
+    if (isNaN(date)) {
+      throw new Error("Invalid date or timestamp");
+    }
+
+    const longFormat = date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    const shortFormat = date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+
+    return {
+      long: longFormat, // "November 15, 2025"
+      short: shortFormat, // "Nov 15, 2025"
+    };
+  };
+
   const formatCentsToUSD = (cents = 0) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -47,6 +72,7 @@ export const Global_Context_Provider = ({ children }) => {
         productsCatalog,
         formatCentsToUSD,
         error,
+        formatDate,
       }}
     >
       {children}

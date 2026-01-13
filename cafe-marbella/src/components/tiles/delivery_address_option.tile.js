@@ -14,7 +14,7 @@ import AddIcon from "../../../assets/my_icons/addIcon.svg";
 
 export const Delivery_Address_Option_Tile = ({
   address_option,
-  address,
+  customer_address,
   action,
 }) => {
   const theme = useTheme();
@@ -68,7 +68,7 @@ export const Delivery_Address_Option_Tile = ({
             //color="yellow"
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_regular_14">{address}</Text>
+              <Text variant="dm_sans_regular_14">{customer_address}</Text>
             </Spacer>
           </Container>
           <Spacer position="top" size="small" />

@@ -23,13 +23,14 @@ import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
 import { Delivery_Information_Order_Tile } from "../../components/tiles/delivery_information_order.tile";
 import { Splitter_Component } from "../../components/others/grey_splitter.component";
 import { Payment_method_Info_Tile } from "../../components/tiles/payment_method_used_info.tile";
+import { myOrder_schema } from "../../infrastructure/services/orders/orders.local_data";
 
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
 
 export default function Shop_Order_Receipt_View() {
   const theme = useTheme();
-  const { myOrder, isLoading } = useContext(OrdersContext);
+  const { myOrder, isLoading, setMyOrder } = useContext(OrdersContext);
   console.log(
     "myOrder in Shop_Order_Review_View:",
     JSON.stringify(myOrder, null, 2)
@@ -42,10 +43,11 @@ export default function Shop_Order_Receipt_View() {
     customer,
     order_products,
     delivery_type,
+    payment_information,
   } = myOrder || {};
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
-  const { address: customer_address } = customer || {};
-
+  const { customer_address } = customer || {};
+  const { last_four } = payment_information || {};
   const {
     name: warehouse_name,
     address: warehouse_address,
@@ -79,7 +81,7 @@ export default function Shop_Order_Receipt_View() {
         <>
           <Go_Back_Header
             action={() => navigation.goBack()}
-            label="Order review"
+            label="Order receipt"
           />
           <ScrollView
             contentContainerStyle={{
@@ -144,15 +146,7 @@ export default function Shop_Order_Receipt_View() {
                 customer_address={customer_address}
               />
               <Spacer position="top" size="large" />
-              <Payment_method_Info_Tile
-                warehouse_name={warehouse_name}
-                warehouse_address={warehouse_address}
-                opening_time={opening_time}
-                closing_time={closing_time}
-                distance_to_warehouse_mi={distance_in_miles}
-                delivery_type={delivery_type}
-                customer_address={customer_address}
-              />
+              <Payment_method_Info_Tile last_four={last_four} />
 
               <Spacer position="top" size="large" />
               <Container
@@ -191,7 +185,10 @@ export default function Shop_Order_Receipt_View() {
               border_radius={"40px"}
               caption="Done"
               caption_text_variant="dm_sans_bold_20_white"
-              action={() => navigation.popToTop()}
+              action={async () => {
+                await setMyOrder(myOrder_schema);
+                navigation.popToTop();
+              }}
             />
           </Container>
         </>

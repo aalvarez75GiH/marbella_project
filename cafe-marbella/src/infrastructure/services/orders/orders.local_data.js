@@ -4,7 +4,7 @@ export const myOrder_schema = {
     last_name: "",
     email: "",
     phone_number: "",
-    address: "",
+    customer_address: "",
     uid: "",
   },
   //   order_id: "",
@@ -32,7 +32,7 @@ export const myOrder_schema = {
   warehouse_to_pickup: {
     warehouse_id: "",
     name: "",
-    address: "",
+    warehouse_address: "",
     geo: {},
     phone_number: "",
     closing_time: "",

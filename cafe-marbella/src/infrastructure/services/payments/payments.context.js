@@ -53,7 +53,12 @@ export const Payments_Context_Provider = ({ children }) => {
         myOrder
       );
       console.log("Payment successful:", JSON.stringify(data.order, null, 2));
-      return data.status;
+
+      const response = {
+        status: data.status,
+        order: data.order,
+      };
+      return response;
     } catch (error) {
       console.error("Payment error:", error.response?.data || error.message);
       setError(error.response?.data || error.message);

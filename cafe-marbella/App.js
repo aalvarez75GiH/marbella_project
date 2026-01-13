@@ -9,6 +9,7 @@ import { theme } from "./src/infrastructure/theme";
 export default function App() {
   const [fontsLoaded] = useFonts({
     ralewayRegular: require("./assets/fonts/raleway/Raleway-Regular.ttf"),
+    ralewayMedium: require("./assets/fonts/raleway/Raleway-Medium.ttf"),
     ralewayBold: require("./assets/fonts/raleway/Raleway-Bold.ttf"),
     dmSansRegular: require("./assets/fonts/dm sans/DMSans-Regular.ttf"),
     dmSansBold: require("./assets/fonts/dm sans/DMSans-Bold.ttf"),
