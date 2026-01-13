@@ -59,6 +59,18 @@ export default function Shop_Order_Receipt_View() {
 
   const { setCardVerified } = useContext(PaymentsContext);
 
+  // Hiding tab bar for this screen
+  useLayoutEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: { display: "none" },
+    });
+
+    return () =>
+      navigation.getParent()?.setOptions({
+        tabBarStyle: undefined,
+      });
+  }, [navigation]);
+
   const navigation = useNavigation();
   //   let delivery_type = "pickup";
 

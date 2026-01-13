@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useLayoutEffect } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native";
@@ -21,6 +21,17 @@ import { Spacer } from "../../components/spacers and globals/optimized.spacer.co
 export default function Order_Confirmation_View({ route }) {
   const theme = useTheme();
   const navigation = useNavigation();
+  // Hiding tab bar for this screen
+  useLayoutEffect(() => {
+    navigation.getParent()?.setOptions({
+      tabBarStyle: { display: "none" },
+    });
+
+    return () =>
+      navigation.getParent()?.setOptions({
+        tabBarStyle: undefined,
+      });
+  }, [navigation]);
 
   return (
     <SafeArea
