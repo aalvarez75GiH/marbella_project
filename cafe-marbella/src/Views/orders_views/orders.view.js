@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import { Text } from "../../infrastructure/typography/text.component";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { My_Orders_Tile } from "../../components/tiles/my_orders.tile.js";
+import Empty_My_Orders_View from "./empty_my_orders.view.js";
 
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
@@ -31,9 +32,10 @@ export default function Orders_View() {
 
   useFocusEffect(
     useCallback(() => {
+      console.log("Orders screen fetch fired. user_id:", user_id);
       if (!user_id) return;
       gettingAllOrdersByUserID(user_id);
-    }, [user_id]) // same idea: only react to user_id changes
+    }, [user_id])
   );
 
   const renderingOrdersFromBackendTile = ({ item }) => {
@@ -70,13 +72,15 @@ export default function Orders_View() {
   };
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
-      {isLoading ? (
+      {isLoading && (
         <Global_activity_indicator
           caption="Wait, we are loading your orders..."
           caption_width="65%"
           color={theme.colors.bg.elements_bg}
         />
-      ) : (
+      )}
+      {!isLoading && orders.length === 0 && <Empty_My_Orders_View />}
+      {!isLoading && orders.length > 0 && (
         <Container
           width="100%"
           height="100%"
@@ -88,7 +92,6 @@ export default function Orders_View() {
           <Just_Caption_Header caption="My Orders" />
 
           <Spacer position="top" size="large" />
-          {/* <Order_From_Backend_Tile /> */}
 
           <FlatList
             contentContainerStyle={{

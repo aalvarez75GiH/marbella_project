@@ -104,6 +104,17 @@ cartsRouter.put("/adjust-qty", async (req, res) => {
   }
 });
 
+cartsRouter.put("/clear_shopping_cart", async (req, res) => {
+  const user_id = String(req.query.user_id || "").trim();
+  console.log("USER ID AT ADJUST QTY ENDPOINT:", user_id);
+  try {
+    const cart = await cartsControllers.resetCartByUserID(user_id);
+    res.status(200).json(cart);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 cartsRouter.delete("/item", async (req, res) => {
   const user_id = String(req.query.user_id || "").trim();
   const product_id = String(req.query.product_id || "").trim();

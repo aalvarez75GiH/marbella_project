@@ -156,10 +156,37 @@ const updateProductsCart = async (user_id, product) => {
   }
 };
 
+const resetCartByUserID = async (user_id) => {
+  if (!user_id) throw new Error("user_id is required to reset cart");
+
+  const cartRef = firebase_controller.db.collection("carts").doc(user_id);
+  const snap = await cartRef.get();
+
+  if (!snap.exists) {
+    // If you prefer: return null; or create an empty cart doc instead.
+    throw new Error(`Cart not found for user_id: ${user_id}`);
+  }
+
+  const resetPayload = {
+    products: [],
+    sub_total: 0,
+    taxes: 0,
+    total: 0,
+    quantity: 0,
+    updatedAt: new Date().toISOString(),
+  };
+
+  await cartRef.set(resetPayload, { merge: true });
+
+  const updatedSnap = await cartRef.get();
+  return updatedSnap.data();
+};
+
 module.exports = {
   getCartByUserID,
   createCart,
   updateProductsCart,
   updateCartByDocId,
   updateCartByUserID,
+  resetCartByUserID,
 };

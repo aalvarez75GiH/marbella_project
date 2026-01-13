@@ -27,6 +27,7 @@ import { myOrder_schema } from "../../infrastructure/services/orders/orders.loca
 
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
+import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
 
 export default function Shop_Order_Receipt_View() {
   const theme = useTheme();
@@ -44,6 +45,7 @@ export default function Shop_Order_Receipt_View() {
     order_products,
     delivery_type,
     payment_information,
+    quantity,
   } = myOrder || {};
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
   const { customer_address } = customer || {};
@@ -54,6 +56,8 @@ export default function Shop_Order_Receipt_View() {
     closing_time,
     opening_time,
   } = warehouse_to_pickup || {};
+
+  const { setCardVerified } = useContext(PaymentsContext);
 
   const navigation = useNavigation();
   //   let delivery_type = "pickup";
@@ -114,6 +118,7 @@ export default function Shop_Order_Receipt_View() {
                 taxes={taxes}
                 discount={discount}
                 total={total}
+                quantity={quantity}
               />
               <Splitter_Component
                 width="100%"
@@ -187,6 +192,7 @@ export default function Shop_Order_Receipt_View() {
               caption_text_variant="dm_sans_bold_20_white"
               action={async () => {
                 await setMyOrder(myOrder_schema);
+                await setCardVerified(false);
                 navigation.popToTop();
               }}
             />

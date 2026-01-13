@@ -32,7 +32,7 @@ export const Payments_Context_Provider = ({ children }) => {
     setCardIsLoading(value);
   };
 
-  console.log("NAME ON CARD AT PAYMENTS CONTEXT: ", nameOnCard);
+  //   console.log("NAME ON CARD AT PAYMENTS CONTEXT: ", nameOnCard);
 
   const onPay = async (nameOnCard, card, myOrder) => {
     setIsLoading(true);
@@ -40,7 +40,7 @@ export const Payments_Context_Provider = ({ children }) => {
     const { total: totalForStripe } = pricing || {};
 
     if (!card || !card.id) {
-      console.error("Card is null or missing ID");
+      //   console.error("Card is null or missing ID");
       setIsLoading(false);
       return;
     }
@@ -83,6 +83,7 @@ export const Payments_Context_Provider = ({ children }) => {
         onPay,
         cardIsLoading,
         cardVerified,
+        setCardVerified,
         onSuccess,
       }}
     >

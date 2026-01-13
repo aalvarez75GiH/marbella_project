@@ -10,6 +10,7 @@ import {
   updatingProductsCart,
   IncOrDecProductsCartQty,
   removingCartItemRequest,
+  resettingCartRequest,
 } from "./cart.services";
 
 import { AuthenticationContext } from "../authentication/authentication.context";
@@ -272,6 +273,17 @@ export const Cart_Context_Provider = ({ children }) => {
     }
   };
 
+  const resettingCart = async (user_id) => {
+    console.log("Resetting cart for user_id at context:", user_id);
+    try {
+      const cartReset = await resettingCartRequest(user_id);
+      cartReset && setCart(cartReset);
+    } catch (error) {
+      console.error("Error resetting cart:", error);
+      setError(error);
+    }
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -283,6 +295,8 @@ export const Cart_Context_Provider = ({ children }) => {
         decreaseCartItemQty,
         removingProductFromCart,
         cartTotalItems,
+        resettingCart,
+        setCart,
       }}
     >
       {children}

@@ -30,7 +30,7 @@ export const paymentRequest = async (
       nameOnCard: nameOnCard,
       order: order,
     });
-    console.log("REPONSE AT SERVICE:", JSON.stringify(response, null, 2));
+    // console.log("REPONSE AT SERVICE:", JSON.stringify(response, null, 2));
     return {
       status: response.status,
       paymentData: response.data,

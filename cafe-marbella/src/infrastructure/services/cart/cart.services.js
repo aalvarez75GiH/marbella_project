@@ -20,7 +20,7 @@ export const gettingCartByUserIDRequest = async (user_id) => {
       console.log("AXIOS data:", error.response?.data);
       throw error;
     }
-    console.log("RESPONSE:", response.data);
+    // console.log("RESPONSE:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching cart:", error);
@@ -73,6 +73,22 @@ export const removingCartItemRequest = async (
   const endpoint = `${baseUrl}/item?user_id=${user_id}&product_id=${productId}&variant_id=${variantId}`;
   try {
     const res = await axios.delete(endpoint);
+    console.log("RESPONSE:", res.data);
+    return res.data;
+  } catch (error) {
+    console.error("Error updating cart:", error);
+    throw error;
+  }
+};
+export const resettingCartRequest = async (user_id) => {
+  console.log("Resetting cart for user_id at services:", user_id);
+  const { cartsEndPoint } = environment;
+  console.log("USER ID AT SERVICE:", user_id);
+  // console.log("PRODUCT TO ADD AT SERVICE:", JSON.stringify(product, null, 2));
+  const endpoint = `${cartsEndPoint}/clear_shopping_cart?user_id=${user_id}`;
+  console.log("RESET CART ENDPOINT:", endpoint);
+  try {
+    const res = await axios.put(endpoint);
     console.log("RESPONSE:", res.data);
     return res.data;
   } catch (error) {

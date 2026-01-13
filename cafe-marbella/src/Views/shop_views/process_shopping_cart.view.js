@@ -3,10 +3,7 @@ import { FlatList } from "react-native";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 
-import {
-  Action_Container,
-  Container,
-} from "../../components/containers/general.containers";
+import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
@@ -27,7 +24,7 @@ export default function Process_Shopping_Cart_View() {
   const products = cart?.products ?? [];
   const sub_total = cart?.sub_total ?? 0;
 
-  const { myOrder, setMyOrder } = useContext(OrdersContext);
+  const { setMyOrder } = useContext(OrdersContext);
 
   const { user } = useContext(AuthenticationContext);
   const { first_name, last_name, email, phone_number, uid, address } =

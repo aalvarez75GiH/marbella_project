@@ -29,10 +29,10 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 export default function Shop_Order_Review_View() {
   const theme = useTheme();
   const { myOrder, isLoading } = useContext(OrdersContext);
-  console.log(
-    "myOrder in Shop_Order_Review_View:",
-    JSON.stringify(myOrder, null, 2)
-  );
+  //   console.log(
+  //     "myOrder in Shop_Order_Review_View:",
+  //     JSON.stringify(myOrder, null, 2)
+  //   );
   const { myWarehouse } = useContext(WarehouseContext);
   const { distance_in_miles } = myWarehouse || {};
   const {

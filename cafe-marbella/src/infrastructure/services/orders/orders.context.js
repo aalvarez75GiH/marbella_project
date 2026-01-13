@@ -14,7 +14,7 @@ export const Orders_Context_Provider = ({ children }) => {
   const [myOrder, setMyOrder] = useState(myOrder_schema);
   const [deliveryOption, setDeliveryOption] = useState(null);
 
-  console.log("MY ORDER AT ORDERS CONTEXT: ", JSON.stringify(myOrder, null, 2));
+  // console.log("MY ORDER AT ORDERS CONTEXT: ", JSON.stringify(myOrder, null, 2));
 
   useEffect(() => {
     // Fetch orders when the component mounts or when user_id changes
@@ -32,7 +32,7 @@ export const Orders_Context_Provider = ({ children }) => {
       try {
         // Simulate fetching data
         const fetchedOrders = await gettingAllOrdersByUserIDRequest(user_id); // Replace with actual fetch logic
-        console.log("Fetched Orders:", JSON.stringify(fetchedOrders, null, 2));
+        // console.log("Fetched Orders:", JSON.stringify(fetchedOrders, null, 2));
         setOrders(fetchedOrders);
       } catch (error) {
         console.error("Error fetching orders:", error);

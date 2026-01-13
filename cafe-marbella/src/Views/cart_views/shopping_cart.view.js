@@ -28,12 +28,12 @@ export default function Shopping_Cart_View() {
   const sub_total = cart?.sub_total ?? 0;
 
   // *************
-  useEffect(() => {
-    // ⬅️ when cart becomes empty, go back
-    if (products.length === 0) {
-      navigation.goBack();
-    }
-  }, [products.length]);
+  // useEffect(() => {
+  //   // ⬅️ when cart becomes empty, go back
+  //   if (products.length === 0) {
+  //     navigation.goBack();
+  //   }
+  // }, [products.length]);
 
   const navigation = useNavigation();
 
