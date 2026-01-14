@@ -24,9 +24,6 @@ export default function Empty_Shopping_Cart_View() {
         justify="flex-start"
         align="center"
       >
-        <Just_Caption_Header caption="My Cart" />
-
-        <Spacer position="top" size="small" />
         <Container
           width="100%"
           height="100%"

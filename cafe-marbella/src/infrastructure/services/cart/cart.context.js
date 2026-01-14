@@ -29,8 +29,19 @@ export const Cart_Context_Provider = ({ children }) => {
   const removingRef = useRef(false);
 
   useEffect(() => {
-    const gettingCartByUserID = async (userId) => {
-      setIsLoading(true);
+    if (user_id) {
+      gettingCartByUserID(user_id);
+    }
+  }, [user_id]);
+
+  useEffect(() => {
+    const total_items_qty = getTotalCartQuantity(cart);
+    setCartTotalItems(total_items_qty);
+  }, [cart]);
+
+  const gettingCartByUserID = async (userId) => {
+    setIsLoading(true);
+    setTimeout(async () => {
       try {
         console.log("Fetching cart for userId:", user_id);
         const myCart = await gettingCartByUserIDRequest(user_id);
@@ -42,18 +53,8 @@ export const Cart_Context_Provider = ({ children }) => {
       } finally {
         setIsLoading(false);
       }
-    };
-
-    if (user_id) {
-      gettingCartByUserID(user_id);
-    }
-  }, [user_id]);
-
-  useEffect(() => {
-    const total_items_qty = getTotalCartQuantity(cart);
-    setCartTotalItems(total_items_qty);
-  }, [cart]);
-
+    }, 1000);
+  };
   //Calculate subtotal of cart helper function
   const calculateSubtotal = (products) => {
     return products.reduce((sum, product) => {
@@ -300,6 +301,7 @@ export const Cart_Context_Provider = ({ children }) => {
         cartTotalItems,
         resettingCart,
         setCart,
+        gettingCartByUserID,
       }}
     >
       {children}

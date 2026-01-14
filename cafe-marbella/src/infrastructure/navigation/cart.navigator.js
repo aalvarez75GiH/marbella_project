@@ -27,9 +27,7 @@ export const Cart_Navigator = () => {
     >
       <CartStack.Screen
         name="Shopping_Cart_View"
-        component={
-          cartTotalItems > 0 ? Shopping_Cart_View : Empty_Shopping_Cart_View
-        }
+        component={Shopping_Cart_View}
       />
 
       <CartStack.Screen

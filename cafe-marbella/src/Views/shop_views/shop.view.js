@@ -26,7 +26,10 @@ export default function Shop_View() {
   const theme = useTheme();
 
   return (
-    <SafeArea background_color={theme.colors.bg.elements_bg}>
+    <SafeArea
+      background_color={theme.colors.bg.elements_bg}
+      style={{ flex: 1 }}
+    >
       <Container
         width="100%"
         height="100%"
