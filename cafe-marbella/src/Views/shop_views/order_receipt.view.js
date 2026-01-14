@@ -52,7 +52,7 @@ export default function Shop_Order_Receipt_View() {
   const { last_four } = payment_information || {};
   const {
     name: warehouse_name,
-    address: warehouse_address,
+    warehouse_address,
     closing_time,
     opening_time,
   } = warehouse_to_pickup || {};

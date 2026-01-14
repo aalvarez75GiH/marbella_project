@@ -1,8 +1,12 @@
 import React, { useContext } from "react";
 import { View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 import { Text } from "../../infrastructure/typography/text.component.js";
-import { Container } from "../containers/general.containers.js";
+import {
+  Action_Container,
+  Container,
+} from "../containers/general.containers.js";
 import { Spacer } from "../spacers and globals/optimized.spacer.component.js";
 import { theme } from "../../infrastructure/theme/index.js";
 import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
@@ -20,18 +24,26 @@ export const My_Orders_Tile = ({
   delivery_type,
   customer_address,
   order_number,
+  item,
 }) => {
   console.log("ORDER INFO TILE - QUANTITY:", quantity);
   const { formatCentsToUSD } = useContext(GlobalContext);
   const formatted_currency = formatCentsToUSD;
 
+  const navigation = useNavigation();
   return delivery_type === "pickup" ? (
     <>
-      <Container
+      <Action_Container
         width="95%"
         color="#E0E0E0"
         justify="flex-start"
         align="flex-start"
+        // onPress={() => navigation.navigate("Order_View")}
+        onPress={() =>
+          navigation.navigate("Order_View", {
+            item,
+          })
+        }
       >
         {/* SECTION 1 */}
         <Container
@@ -161,11 +173,11 @@ export const My_Orders_Tile = ({
           // border_color="black"
           align="stretch"
         ></Container>
-      </Container>
+      </Action_Container>
     </>
   ) : (
     <>
-      <Container
+      <Action_Container
         width="95%"
         color="#E0E0E0"
         justify="flex-start"
@@ -297,7 +309,7 @@ export const My_Orders_Tile = ({
             alignSelf: "stretch",
           }}
         />
-      </Container>
+      </Action_Container>
     </>
   );
 };

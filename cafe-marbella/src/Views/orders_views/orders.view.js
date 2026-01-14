@@ -80,6 +80,7 @@ export default function Orders_View() {
         delivery_type={delivery_type}
         customer_address={customer_address}
         order_number={order_number}
+        item={item}
       />
     );
   };

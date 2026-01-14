@@ -37,6 +37,7 @@ export const myOrder_schema = {
     phone_number: "",
     closing_time: "",
     opening_time: "",
+    distance_in_miles: 0,
   },
   delivery_type: "",
   order_delivery_address: "",

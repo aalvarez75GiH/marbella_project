@@ -31,8 +31,13 @@ export default function Shop_Delivery_Type_View() {
   const { user_id, sub_total, total, taxes, products, quantity, cart_id } =
     cart;
   const { myWarehouse } = useContext(WarehouseContext);
-  const { warehouse_id, warehouse_name, geo, warehouse_information } =
-    myWarehouse;
+  const {
+    warehouse_id,
+    warehouse_name,
+    geo,
+    warehouse_information,
+    distance_in_miles,
+  } = myWarehouse;
   const { formatted_address } = geo || {};
   const { phone } = warehouse_information || {};
 
@@ -116,6 +121,7 @@ export default function Shop_Delivery_Type_View() {
             phone_number: phone,
             closing_time: warehouse_information?.closing_time,
             opening_time: warehouse_information?.opening_time,
+            distance_in_miles: distance_in_miles,
           },
           order_delivery_address: "",
         }));
