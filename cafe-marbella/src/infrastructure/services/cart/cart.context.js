@@ -30,6 +30,7 @@ export const Cart_Context_Provider = ({ children }) => {
 
   useEffect(() => {
     const gettingCartByUserID = async (userId) => {
+      setIsLoading(true);
       try {
         console.log("Fetching cart for userId:", user_id);
         const myCart = await gettingCartByUserIDRequest(user_id);
@@ -38,6 +39,8 @@ export const Cart_Context_Provider = ({ children }) => {
         // Handle the fetched cart data (e.g., update state or context)
       } catch (error) {
         console.error("Error fetching cart:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 

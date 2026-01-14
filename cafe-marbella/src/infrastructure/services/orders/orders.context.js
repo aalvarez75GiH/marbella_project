@@ -3,12 +3,16 @@ import React, { useEffect, useState, createContext, useContext } from "react";
 // import { billing } from "firebase-functions/alerts";
 
 import { myOrder_schema } from "./orders.local_data";
-import { gettingAllOrdersByUserIDRequest } from "./orders.services";
+import {
+  gettingAllOrdersByUserIDRequest,
+  gettingAllOrdersByUserIDGroupedByMonthRequest,
+} from "./orders.services";
 
 export const OrdersContext = createContext();
 
 export const Orders_Context_Provider = ({ children }) => {
   const [orders, setOrders] = useState([]);
+  const [ordersGrouped, setOrdersGrouped] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [myOrder, setMyOrder] = useState(myOrder_schema);
@@ -21,6 +25,7 @@ export const Orders_Context_Provider = ({ children }) => {
     const user_id = "aaa09d45-24a9-4a3f-aca5-9658952172c2"; // Replace with actual user ID from context/authentication
     if (user_id) {
       gettingAllOrdersByUserID(user_id);
+      gettingAllOrdersByUserIDGroupedByMonth(user_id);
     }
   }, []);
 
@@ -42,6 +47,29 @@ export const Orders_Context_Provider = ({ children }) => {
       }
     }, 1000); // Simulate network delay
   };
+  const gettingAllOrdersByUserIDGroupedByMonth = async (user_id) => {
+    setIsLoading(true);
+    // Implement the logic to fetch all orders by user ID
+    // This is a placeholder function
+    setTimeout(async () => {
+      try {
+        // Simulate fetching data
+        const fetchedOrdersGrouped =
+          await gettingAllOrdersByUserIDGroupedByMonthRequest(user_id); // Replace with actual fetch logic
+        console.log(
+          "Fetched Orders Grouped:",
+          JSON.stringify(fetchedOrdersGrouped, null, 2)
+        );
+        // console.log("Fetched Orders:", JSON.stringify(fetchedOrders, null, 2));
+        setOrdersGrouped(fetchedOrdersGrouped);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        setError(error);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 1000); // Simulate network delay
+  };
 
   return (
     <OrdersContext.Provider
@@ -54,6 +82,8 @@ export const Orders_Context_Provider = ({ children }) => {
         setDeliveryOption,
         gettingAllOrdersByUserID,
         orders,
+        ordersGrouped,
+        gettingAllOrdersByUserIDGroupedByMonth,
       }}
     >
       {children}

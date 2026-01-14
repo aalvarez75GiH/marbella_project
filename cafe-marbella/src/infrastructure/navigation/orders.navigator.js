@@ -15,7 +15,7 @@ export const Orders_Navigator = () => {
         headerShown: false,
       }}
     >
-      <OrdersStack.Screen name="Home_View" component={Orders_View} />
+      <OrdersStack.Screen name="Orders_View" component={Orders_View} />
     </OrdersStack.Navigator>
   );
 };

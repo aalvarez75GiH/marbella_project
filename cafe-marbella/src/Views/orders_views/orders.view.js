@@ -1,5 +1,5 @@
 import React, { useContext, useCallback } from "react";
-import { FlatList, View } from "react-native";
+import { FlatList, View, SectionList } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -20,8 +20,13 @@ import { GlobalContext } from "../../infrastructure/services/global/global.conte
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 
 export default function Orders_View() {
-  const { orders, gettingAllOrdersByUserID, isLoading } =
-    useContext(OrdersContext);
+  const {
+    orders,
+    gettingAllOrdersByUserID,
+    isLoading,
+    ordersGrouped,
+    gettingAllOrdersByUserIDGroupedByMonth,
+  } = useContext(OrdersContext);
   console.log("ORDERS AT VIEW :", JSON.stringify(orders, null, 2));
 
   const { user } = useContext(AuthenticationContext);
@@ -30,11 +35,19 @@ export default function Orders_View() {
   const theme = useTheme();
   const navigation = useNavigation();
 
+  const sections =
+    (ordersGrouped || []).map((group) => ({
+      title: group.label, // "November, 2025"
+      data: group.orders || [], // array of orders for that month
+      monthKey: group.monthKey,
+    })) || [];
+
   useFocusEffect(
     useCallback(() => {
       console.log("Orders screen fetch fired. user_id:", user_id);
       if (!user_id) return;
-      gettingAllOrdersByUserID(user_id);
+      gettingAllOrdersByUserIDGroupedByMonth(user_id);
+      // gettingAllOrdersByUserID(user_id);
     }, [user_id])
   );
 
@@ -71,16 +84,30 @@ export default function Orders_View() {
     );
   };
   return (
-    <SafeArea background_color={theme.colors.bg.elements_bg}>
+    <SafeArea
+      background_color={theme.colors.bg.elements_bg}
+      style={{ flex: 1 }}
+    >
       <Container
         width="100%"
-        height="100%"
-        color={theme.colors.bg.screens_bg}
-        // color={"red"}
+        style={{ flex: 1 }}
+        // height="100%"
+        color={theme.colors.bg.elements_bg}
+        //color={"red"}
         justify="flex-start"
         align="center"
       >
         <Just_Caption_Header caption="My Orders" />
+        <View
+          style={{
+            width: "100%",
+            height: "0.5%",
+            backgroundColor: theme.colors.bg.screens_bg,
+
+            marginTop: 2,
+            alignSelf: "stretch",
+          }}
+        />
         <Spacer position="top" size="small" />
 
         {isLoading && (
@@ -91,23 +118,35 @@ export default function Orders_View() {
           />
         )}
         {!isLoading && orders.length === 0 && <Empty_My_Orders_View />}
-        {!isLoading && orders.length > 0 && (
-          <>
-            <FlatList
-              contentContainerStyle={{
-                alignItems: "center",
-                width: "100%",
-                paddingBottom: 24,
-                flexGrow: 1,
-              }}
-              showsHorizontalScrollIndicator={false}
-              showsVerticalScrollIndicator={false}
-              data={orders}
-              renderItem={renderingOrdersFromBackendTile}
-              keyExtractor={(item, id) => item.order_id}
-              ItemSeparatorComponent={() => <View style={{ height: 15 }} />} // Adjust the height to control the gap
-            />
-          </>
+
+        {!isLoading && sections.length > 0 && (
+          <SectionList
+            sections={sections}
+            keyExtractor={(item) => item.order_id}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              alignItems: "flex-start",
+              width: "100%",
+              paddingBottom: 24,
+              flexGrow: 1,
+              backgroundColor: theme.colors.bg.elements_bg,
+            }}
+            renderSectionHeader={({ section }) => (
+              <Container
+                width="100%"
+                margin_top="16px"
+                margin_bottom="8px"
+                // padding_horizontal="16px"
+                color={theme.colors.bg.screens_bg}
+              >
+                {/* <View style={{ width: "100%", marginTop: 16, marginBottom: 8 }}> */}
+                <Text variant="dm_sans_bold_16">{section.title}</Text>
+                {/* </View> */}
+              </Container>
+            )}
+            renderItem={({ item }) => renderingOrdersFromBackendTile({ item })}
+            ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
+          />
         )}
       </Container>
     </SafeArea>
