@@ -1,7 +1,11 @@
 import React, { useContext } from "react";
+import { Platform, Linking } from "react-native";
 
 import { Text } from "../../infrastructure/typography/text.component.js";
-import { Container } from "../containers/general.containers.js";
+import {
+  Container,
+  Action_Container,
+} from "../containers/general.containers.js";
 import { Spacer } from "../spacers and globals/optimized.spacer.component.js";
 import { theme } from "../../infrastructure/theme/index.js";
 import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
@@ -12,6 +16,8 @@ import DeliveryIcon from "../../../assets/my_icons/deliveryTruckIcon.svg";
 export const Delivery_Information_Order_Tile = ({
   warehouse_name = "Warehouse",
   warehouse_address = `2159 West Broad st suite B{"\n"}Athens GA, 30606`,
+  warehouse_lat,
+  warehouse_lng,
   opening_time,
   closing_time,
   delivery_type,
@@ -19,6 +25,21 @@ export const Delivery_Information_Order_Tile = ({
   customer_address = "",
 }) => {
   console.log("Delivery_Information_Order_Tile delivery_type:", delivery_type);
+  console.log("latitude inside tile:", warehouse_lat);
+  console.log("longitude inside tile:", warehouse_lng);
+
+  const openMapsToWarehouse = (latitude, longitude) => {
+    console.log("latitude inside function:", latitude);
+    console.log("longitude inside function:", longitude);
+    if (Platform.OS === "ios") {
+      const url = `maps://?daddr=${latitude},${longitude}&dirflg=d`;
+      Linking.openURL(url);
+    } else {
+      const url = `google.navigation:q=${latitude},${longitude}`;
+      Linking.openURL(url);
+    }
+  };
+
   return delivery_type === "pickup" ? (
     <Container
       width="100%"
@@ -26,16 +47,17 @@ export const Delivery_Information_Order_Tile = ({
       color={theme.colors.bg.elements_bg}
       align="center"
     >
-      <Container
+      <Action_Container
         width="90%"
         color={theme.colors.ui.tertiary}
-        // color={"pink"}
+        //color={"pink"}
         justify="centers"
         align="center"
         border_radius="20px"
         direction="row"
         overflow="hidden"
         padding_vertical="5%"
+        onPress={() => openMapsToWarehouse(warehouse_lat, warehouse_lng)}
       >
         <Container
           width="30%"
@@ -110,7 +132,7 @@ export const Delivery_Information_Order_Tile = ({
             </Spacer>
           </Container>
         </Container>
-      </Container>
+      </Action_Container>
     </Container>
   ) : (
     <Container
@@ -118,7 +140,7 @@ export const Delivery_Information_Order_Tile = ({
       color={theme.colors.bg.elements_bg}
       overflow="hidden"
     >
-      <Container
+      <Action_Container
         padding_vertical="5%"
         width="95%"
         color={theme.colors.ui.tertiary}
@@ -128,6 +150,14 @@ export const Delivery_Information_Order_Tile = ({
         border_radius="20px"
         direction="row"
         overflow="hidden"
+        onPress={() =>
+          openMapsToWarehouse(
+            warehouse_lat,
+            warehouse_lng,
+            warehouse_address,
+            warehouse_name
+          )
+        }
       >
         <Container
           padding_vertical="5%"
@@ -182,7 +212,7 @@ export const Delivery_Information_Order_Tile = ({
             </Spacer>
           </Container>
         </Container>
-      </Container>
+      </Action_Container>
     </Container>
   );
 };

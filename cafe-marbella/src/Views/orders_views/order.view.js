@@ -32,6 +32,7 @@ export default function Order_View() {
   const theme = useTheme();
   const route = useRoute();
   const { item } = route.params;
+  console.log("ORDER ITEM AT ORDER VIEW :", JSON.stringify(item, null, 2));
 
   //   const { myWarehouse } = useContext(WarehouseContext);
   //   const { distance_in_miles } = myWarehouse || {};
@@ -53,12 +54,13 @@ export default function Order_View() {
     closing_time,
     opening_time,
     distance_in_miles,
+    geo,
   } = warehouse_to_pickup || {};
+  const { lat, lng } = geo || {};
 
   const { setCardVerified } = useContext(PaymentsContext);
 
   const navigation = useNavigation();
-
   const renderingOrderProducts = () => {
     return order_products.map((item) => {
       return (
@@ -140,6 +142,8 @@ export default function Order_View() {
               distance_to_warehouse_mi={distance_in_miles}
               delivery_type={delivery_type}
               customer_address={customer_address}
+              warehouse_lat={lat}
+              warehouse_lng={lng}
             />
             <Spacer position="top" size="large" />
             <Payment_method_Info_Tile last_four={last_four} />

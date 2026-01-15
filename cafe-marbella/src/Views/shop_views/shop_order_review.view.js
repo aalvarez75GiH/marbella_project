@@ -11,15 +11,12 @@ import {
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
-import { Shopping_Cart_Title } from "../../components/titles/shopping_cart.title";
 import { Text } from "../../infrastructure/typography/text.component";
 import { Product_Cart_Item_Tile } from "../../components/tiles/product_cart_item.tile";
-import { Shopping_Cart_Sub_Total_Footer } from "../../components/footers/shopping_cart_sub_total.footer";
 import { Regular_CTA } from "../../components/ctas/regular.cta";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { Order_Info_Tile } from "../../components/tiles/order_info.tile";
 import { Delivery_type_Badge } from "../../components/others/delivery_type.badge";
-import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
 import { Delivery_Information_Order_Tile } from "../../components/tiles/delivery_information_order.tile";
 import { Splitter_Component } from "../../components/others/grey_splitter.component";
 
@@ -51,7 +48,9 @@ export default function Shop_Order_Review_View() {
     warehouse_address,
     closing_time,
     opening_time,
+    geo,
   } = warehouse_to_pickup || {};
+  const { lat, lng } = geo || {};
 
   const navigation = useNavigation();
   //   let delivery_type = "pickup";
@@ -140,6 +139,8 @@ export default function Shop_Order_Review_View() {
                 <Delivery_Information_Order_Tile
                   warehouse_name={warehouse_name}
                   warehouse_address={warehouse_address}
+                  warehouse_lat={lat}
+                  warehouse_lng={lng}
                   opening_time={opening_time}
                   closing_time={closing_time}
                   distance_to_warehouse_mi={distance_in_miles}

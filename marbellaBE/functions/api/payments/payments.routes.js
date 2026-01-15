@@ -38,6 +38,19 @@ paymentsRouter.post("/payments", async (req, res) => {
       },
       confirm: true,
     });
+
+    if (paymentIntentResponse.status !== "succeeded") {
+      return res.status(402).json({
+        status: "failed",
+        message:
+          "Payment requires additional action or a different payment method.",
+        code: "payment_intent_not_succeeded",
+        payment_intent: paymentIntentResponse.id,
+        payment_intent_status: paymentIntentResponse.status,
+        next_action: paymentIntentResponse.next_action || null,
+      });
+    }
+
     let stripe_payment_id = paymentIntentResponse.id;
     if (paymentIntentResponse.status === "succeeded" && order) {
       console.log(
@@ -109,6 +122,7 @@ paymentsRouter.post("/payments", async (req, res) => {
           .send(
             "Sorry, Your card was declined for unknown reasons. Don't worry, come back later...we'll be here waiting. "
           );
+        break;
       default:
         console.log("Your credit card was declined...");
         res

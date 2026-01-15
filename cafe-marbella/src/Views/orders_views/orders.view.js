@@ -52,10 +52,10 @@ export default function Orders_View() {
   );
 
   const renderingOrdersFromBackendTile = ({ item }) => {
-    console.log(
-      "ORDER ITEM IN RENDERING FUNCTION :",
-      JSON.stringify(item, null, 2)
-    );
+    // console.log(
+    //   "ORDER ITEM IN RENDERING FUNCTION :",
+    //   JSON.stringify(item, null, 2)
+    // );
     const {
       pricing,
       warehouse_to_pickup,
@@ -140,9 +140,7 @@ export default function Orders_View() {
                 // padding_horizontal="16px"
                 color={theme.colors.bg.screens_bg}
               >
-                {/* <View style={{ width: "100%", marginTop: 16, marginBottom: 8 }}> */}
                 <Text variant="dm_sans_bold_16">{section.title}</Text>
-                {/* </View> */}
               </Container>
             )}
             renderItem={({ item }) => renderingOrdersFromBackendTile({ item })}

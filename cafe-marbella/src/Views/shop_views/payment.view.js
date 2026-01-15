@@ -84,9 +84,10 @@ export default function Payment_View() {
             onSuccess={(response) => onSuccess(response)}
             whileIsSuccess={(value) => whileIsSuccess(value)}
             onError={(error_message) => {
-              navigation.navigate("PaymentError", {
-                error: error_message,
-              });
+              console.log("Card verification error:", error_message);
+              // navigation.navigate("PaymentError", {
+              //   error: error_message,
+              // });
             }}
             cardIsLoading={cardIsLoading}
           />

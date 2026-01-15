@@ -38,17 +38,6 @@ export default function Shopping_Cart_View() {
       // gettingAllOrdersByUserID(user_id);
     }, [user_id])
   );
-  // Hiding tab bar for this screen
-  // useLayoutEffect(() => {
-  //   navigation.getParent()?.setOptions({
-  //     tabBarStyle: { display: "none" },
-  //   });
-
-  //   return () =>
-  //     navigation.getParent()?.setOptions({
-  //       tabBarStyle: undefined,
-  //     });
-  // }, [navigation]);
 
   const navigation = useNavigation();
 
@@ -62,82 +51,78 @@ export default function Shopping_Cart_View() {
   };
 
   return (
-    // <SafeArea background_color="blue" style={{ flex: 1 }}>
-    <Container
+    <SafeArea
+      background_color={theme.colors.bg.elements_bg}
       style={{ flex: 1 }}
-      width="100%"
-      color={theme.colors.bg.screens_bg}
     >
       <Container
-        style={{
-          width: "100%",
-          height: 50, // ✅ fixed height, not %
-          backgroundColor: theme.colors.bg.screens_bg,
-          marginTop: 2,
-        }}
-      />
-      <Just_Caption_Header caption="My Cart" />
-
-      {/* Divider */}
-      <Container
-        style={{
-          width: "100%",
-          height: 1, // ✅ fixed height, not %
-          backgroundColor: theme.colors.bg.screens_bg,
-          marginTop: 2,
-        }}
-      />
-
-      {isLoading && (
-        <Global_activity_indicator
-          caption="Wait, we are updating shopping cart..."
-          caption_width="65%"
-          color={theme.colors.bg.elements_bg}
-        />
-      )}
-
-      {!isLoading && products.length === 0 && <Empty_Shopping_Cart_View />}
-
-      {!isLoading && products.length > 0 && (
+        style={{ flex: 1 }}
+        width="100%"
+        color={theme.colors.bg.elements_bg}
+      >
+        {/* Divider */}
         <Container
-          style={{ flex: 1 }} // ✅ THIS fills remaining SafeArea
-          width="100%"
-          // height="80%"
-          color={theme.colors.bg.screens_bg}
-          justify="center"
-          align="center"
-        >
-          <Spacer position="top" size="small" />
-          <Shopping_Cart_Title cartTotalItems={cartTotalItems} />
-          <Spacer position="top" size="small" />
+          style={{
+            width: "100%",
+            height: 1, // ✅ fixed height, not %
+            backgroundColor: theme.colors.bg.screens_bg,
+            marginTop: 2,
+          }}
+        />
 
-          {/* List should flex, not % height */}
-          <FlatList
-            style={{ flex: 1 }}
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
-            data={products}
-            renderItem={renderProductCartItemTile}
-            keyExtractor={(item, id) => {
-              return item.id;
-            }}
-            gap={"15px"}
+        {isLoading && (
+          <Global_activity_indicator
+            caption="Wait, we are updating shopping cart..."
+            caption_width="65%"
+            color={theme.colors.bg.elements_bg}
           />
+        )}
 
-          <Shopping_Cart_Sub_Total_Footer sub_total={sub_total} />
-          <Spacer position="top" size="medium" />
-          <Regular_CTA
-            width="95%"
-            height={70} // ✅ fixed height instead of %
-            color={theme.colors.ui.business}
-            border_radius="40px"
-            caption="Proceed to checkout"
-            caption_text_variant="dm_sans_bold_20"
-            action={() => navigation.navigate("Shop_Delivery_Type_View")}
-          />
-        </Container>
-      )}
-    </Container>
-    // </SafeArea>
+        {!isLoading && products.length === 0 && <Empty_Shopping_Cart_View />}
+
+        {!isLoading && products.length > 0 && (
+          <>
+            <Just_Caption_Header caption="My Cart" />
+            <Container
+              style={{ flex: 1 }} // ✅ THIS fills remaining SafeArea
+              width="100%"
+              // height="80%"
+              color={theme.colors.bg.screens_bg}
+              justify="center"
+              align="center"
+            >
+              <Spacer position="top" size="small" />
+              <Shopping_Cart_Title cartTotalItems={cartTotalItems} />
+              <Spacer position="top" size="small" />
+
+              {/* List should flex, not % height */}
+              <FlatList
+                style={{ flex: 1 }}
+                showsHorizontalScrollIndicator={false}
+                showsVerticalScrollIndicator={false}
+                data={products}
+                renderItem={renderProductCartItemTile}
+                keyExtractor={(item, id) => {
+                  return item.id;
+                }}
+                gap={"15px"}
+              />
+
+              <Shopping_Cart_Sub_Total_Footer sub_total={sub_total} />
+              <Spacer position="top" size="medium" />
+              <Regular_CTA
+                width="95%"
+                height={70} // ✅ fixed height instead of %
+                color={theme.colors.ui.business}
+                border_radius="40px"
+                caption="Proceed to checkout"
+                caption_text_variant="dm_sans_bold_20"
+                action={() => navigation.navigate("Shop_Delivery_Type_View")}
+              />
+            </Container>
+          </>
+        )}
+      </Container>
+    </SafeArea>
   );
 }

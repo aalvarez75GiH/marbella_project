@@ -9,6 +9,8 @@ import Shop_Order_Review_View from "../../Views/shop_views/shop_order_review.vie
 import Payment_View from "../../Views/shop_views/payment.view";
 import Order_Confirmation_View from "../../Views/shop_views/order_confirmation.view";
 import Shop_Order_Receipt_View from "../../Views/shop_views/order_receipt.view";
+import Menu_View from "../../Views/shop_views/menu.view";
+
 const ShopFlowStack = createNativeStackNavigator();
 
 export const Shop_Navigator = () => {
@@ -44,6 +46,7 @@ export const Shop_Navigator = () => {
         name="Shop_Order_Receipt_View"
         component={Shop_Order_Receipt_View}
       />
+      <ShopFlowStack.Screen name="Menu_View" component={Menu_View} />
     </ShopFlowStack.Navigator>
   );
 };

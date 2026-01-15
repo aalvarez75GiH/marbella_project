@@ -38,7 +38,6 @@ export const My_Orders_Tile = ({
         color="#E0E0E0"
         justify="flex-start"
         align="flex-start"
-        // onPress={() => navigation.navigate("Order_View")}
         onPress={() =>
           navigation.navigate("Order_View", {
             item,
@@ -51,6 +50,7 @@ export const My_Orders_Tile = ({
           padding_horizontal="12px"
           width="100%"
           color="#E0E0E0"
+          // color="red"
           direction="row"
           justify="center"
           align="center"
@@ -101,6 +101,7 @@ export const My_Orders_Tile = ({
                 ? theme.colors.ui.primary
                 : theme.colors.ui.error
             }
+            // color="red"
             padding_vertical="10px"
             style={{
               borderRadius: 999,
@@ -182,6 +183,11 @@ export const My_Orders_Tile = ({
         color="#E0E0E0"
         justify="flex-start"
         align="flex-start"
+        onPress={() =>
+          navigation.navigate("Order_View", {
+            item,
+          })
+        }
       >
         {/* SECTION 1 */}
         <Container

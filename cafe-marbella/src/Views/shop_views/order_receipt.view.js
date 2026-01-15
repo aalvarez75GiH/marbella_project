@@ -55,7 +55,9 @@ export default function Shop_Order_Receipt_View() {
     warehouse_address,
     closing_time,
     opening_time,
+    geo,
   } = warehouse_to_pickup || {};
+  const { lat, lng } = geo || {};
 
   const { setCardVerified } = useContext(PaymentsContext);
 
@@ -156,6 +158,8 @@ export default function Shop_Order_Receipt_View() {
               <Delivery_Information_Order_Tile
                 warehouse_name={warehouse_name}
                 warehouse_address={warehouse_address}
+                warehouse_lat={lat}
+                warehouse_lng={lng}
                 opening_time={opening_time}
                 closing_time={closing_time}
                 distance_to_warehouse_mi={distance_in_miles}

@@ -21,10 +21,6 @@ export const CreditCardInputComponent = ({
   // setCard,
   // card,
 }) => {
-  // const { orderInfo, setOrderInfo } = useContext(CartContext);
-  // const { payment_information } = orderInfo;
-  // const { shipping_address } = payment_information;
-
   const { myOrder, setMyOrder } = useContext(OrdersContext);
   const [isLoading, setIsLoading] = useState(false);
   const { card, setCard } = useContext(PaymentsContext);
@@ -75,19 +71,42 @@ export const CreditCardInputComponent = ({
           },
         }));
       } catch (error) {
-        onError("Take a look to your credit card information...");
+        console.log(
+          "STRIPE TOKEN ERROR (full):",
+          JSON.stringify(error, null, 2)
+        );
+
+        const stripeMessage =
+          error?.raw?.message ||
+          error?.message ||
+          "Your card could not be verified. Please try again.";
+
+        const stripeCode =
+          error?.raw?.code || error?.code || error?.decline_code || null;
+
+        const stripeParam = error?.raw?.param || error?.param || null;
+
+        onError({
+          message: stripeMessage,
+          code: stripeCode,
+          param: stripeParam,
+          raw: error,
+        });
+
         setIsLoading(false);
       }
+
+      // catch (error) {
+      //   onError("Take a look to your credit card information...");
+      //   setIsLoading(false);
+      // }
     }
   };
 
   return (
     <Spacer position="left" size="medium">
       <Container width="100%" height="auto" color={theme.colors.bg.elements_bg}>
-        <LiteCreditCardInput
-          onChange={onChange}
-          // style={{ backgroundColor: "red" }}
-        />
+        <LiteCreditCardInput onChange={onChange} />
       </Container>
     </Spacer>
   );
