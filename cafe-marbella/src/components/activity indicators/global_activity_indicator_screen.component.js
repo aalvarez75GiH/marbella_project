@@ -9,7 +9,7 @@ import { Container } from "../containers/general.containers.js";
 export const Global_activity_indicator = ({
   caption = "Wait...",
   caption_width = "45%",
-  color = theme.colors.bg.screens_bg,
+  color = theme.colors.bg.elements_bg,
 }) => {
   return (
     <>

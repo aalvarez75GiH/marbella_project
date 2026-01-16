@@ -17,7 +17,6 @@ import { OrdersContext } from "../../infrastructure/services/orders/orders.conte
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 
 import { CheckIcon } from "../../../assets/modified_icons/success_icon";
-import ErrorIcon from "../../../assets/my_icons/exitIcon_2.svg";
 
 export default function Payment_View() {
   const {
@@ -49,6 +48,7 @@ export default function Payment_View() {
         <Global_activity_indicator
           caption="Wait, we are making the payment..."
           caption_width="65%"
+          // color={"red"}
         />
       ) : (
         <Container
@@ -89,9 +89,6 @@ export default function Payment_View() {
             whileIsSuccess={(value) => whileIsSuccess(value)}
             onError={(error_message) => {
               console.log("Card verification error:", error_message);
-              // navigation.navigate("PaymentError", {
-              //   error: error_message,
-              // });
             }}
             cardIsLoading={cardIsLoading}
           />
@@ -110,7 +107,6 @@ export default function Payment_View() {
               color={theme.colors.bg.elements_bg}
               direction="row"
             >
-              {/* <Spacer position="top" size="small" /> */}
               <Spacer position="left" size="large">
                 <Text
                   variant="dm_sans_bold_14"
@@ -121,7 +117,6 @@ export default function Payment_View() {
               </Spacer>
               <Spacer position="left" size="large" />
               <CheckIcon size={25} color={"green"} />
-              {/* <SuccessIcon width={20} height={20} fill={"green"} /> */}
             </Container>
           )}
           {!cardVerified && cardError && (
@@ -132,17 +127,6 @@ export default function Payment_View() {
               justify="flex-start"
               color={theme.colors.bg.elements_bg}
             >
-              {/* <Container
-                width="15%"
-                align="flex-end"
-                color={theme.colors.bg.elements_bg}
-              >
-                <ErrorIcon
-                  width={20}
-                  height={20}
-                  color={theme.colors.ui.error_light}
-                />
-              </Container> */}
               <Container
                 width="100%"
                 // color="green"
@@ -168,36 +152,7 @@ export default function Payment_View() {
             align="center"
             color={theme.colors.bg.elements_bg}
           />
-          {/* {cardVerified && (
-            <Regular_CTA
-              width="95%"
-              height="8%"
-              color={theme.colors.ui.business}
-              border_radius={"40px"}
-              caption="Make the payment"
-              caption_text_variant="dm_sans_bold_20"
-              action={async () => {
-                console.log("Card state before onPay:", card); // Debugging log
-                const response = await onPay(nameOnCard, card, myOrder);
-                console.log("onPay response:", response); // Debugging log
-                if (response.status === 200) {
-                  try {
-                    await resettingCart(user_id);
-                  } catch (error) {
-                    console.log("Error resetting cart:", error);
-                  } finally {
-                    setMyOrder(response.order);
-                    navigation.navigate("Order_Confirmation_View");
-                  }
-                } else {
-                  console.log(
-                    "Payment failed with response:",
-                    JSON.stringify(response, null, 2)
-                  );
-                }
-              }}
-            />
-          )} */}
+
           {cardVerified && (
             <Regular_CTA
               width="95%"
