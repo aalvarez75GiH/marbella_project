@@ -13,6 +13,33 @@ export const cardTokenRequest = (card) => {
 };
 
 // ****** Request to firebase Payment end point in order to send info to Stripe
+// export const paymentRequest = async (
+//   card_id,
+//   totalForStripe,
+//   nameOnCard,
+//   order
+// ) => {
+//   console.log("CARD ID AT SERVICE:", card_id);
+//   console.log("TOTAL AT SERVICE:", totalForStripe);
+//   console.log("NAME ON CARD AT SERVICE:", nameOnCard);
+
+//   try {
+//     const response = await axios.post(`${paymentsEndPoint}/payments`, {
+//       card_id: card_id,
+//       totalForStripe: totalForStripe,
+//       nameOnCard: nameOnCard,
+//       order: order,
+//     });
+//     // console.log("REPONSE AT SERVICE:", JSON.stringify(response, null, 2));
+//     return {
+//       status: response.status,
+//       paymentData: response.data,
+//       order: response.data.order,
+//     };
+//   } catch (error) {
+//     return error;
+//   }
+// };
 export const paymentRequest = async (
   card_id,
   totalForStripe,
@@ -23,20 +50,24 @@ export const paymentRequest = async (
   console.log("TOTAL AT SERVICE:", totalForStripe);
   console.log("NAME ON CARD AT SERVICE:", nameOnCard);
 
-  try {
-    const response = await axios.post(`${paymentsEndPoint}/payments`, {
-      card_id: card_id,
-      totalForStripe: totalForStripe,
-      nameOnCard: nameOnCard,
-      order: order,
-    });
-    // console.log("REPONSE AT SERVICE:", JSON.stringify(response, null, 2));
-    return {
-      status: response.status,
-      paymentData: response.data,
-      order: response.data.order,
-    };
-  } catch (error) {
-    return error;
-  }
+  const response = await axios.post(
+    `${paymentsEndPoint}/payments`,
+    {
+      card_id,
+      totalForStripe,
+      nameOnCard,
+      order,
+    },
+    {
+      headers: { "Content-Type": "application/json" },
+      timeout: 20000, // optional
+    }
+  );
+
+  // Return a consistent success shape
+  return {
+    httpStatus: response.status,
+    paymentData: response.data,
+    order: response.data?.order ?? null,
+  };
 };

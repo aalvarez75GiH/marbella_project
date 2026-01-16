@@ -1,4 +1,4 @@
-import React, { useContext, useCallback, useLayoutEffect } from "react";
+import React, { useContext, useCallback } from "react";
 import { FlatList } from "react-native";
 import { useTheme } from "styled-components/native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
@@ -19,12 +19,14 @@ import { Just_Caption_Header } from "../../components/headers/just_caption.heade
 
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
-
+import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 export default function Shopping_Cart_View() {
   const theme = useTheme();
+  const { setMyOrder } = useContext(OrdersContext);
   // *************
   const { user } = useContext(AuthenticationContext);
-  const { user_id } = user || {};
+  const { user_id, first_name, last_name, email, phone_number, uid, address } =
+    user || {};
   const { cart, isLoading, cartTotalItems, gettingCartByUserID } =
     useContext(CartContext);
   const products = cart?.products ?? [];
@@ -117,7 +119,24 @@ export default function Shopping_Cart_View() {
                 border_radius="40px"
                 caption="Proceed to checkout"
                 caption_text_variant="dm_sans_bold_20"
-                action={() => navigation.navigate("Shop_Delivery_Type_View")}
+                // action={() => navigation.navigate("Shop_Delivery_Type_View")}
+                action={() => {
+                  setMyOrder((prevOrder) => {
+                    return {
+                      ...prevOrder,
+                      customer: {
+                        first_name: first_name,
+                        last_name: last_name,
+                        email: email,
+                        phone_number: phone_number,
+                        customer_address: address,
+                        uid: uid,
+                      },
+                      order_status: "In Progress",
+                    };
+                  });
+                  navigation.navigate("Shop_Delivery_Type_View");
+                }}
               />
             </Container>
           </>

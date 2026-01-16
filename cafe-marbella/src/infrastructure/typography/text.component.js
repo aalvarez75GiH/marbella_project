@@ -96,6 +96,7 @@ font-size: ${theme.fontSizes.text_18};
 font-family: ${theme.fonts.dmSansBold};
 color: ${theme.colors.text.black};
 `;
+
 const dm_sans_regular_18 = (theme) => `
 font-size: ${theme.fontSizes.text_18};
 font-family: ${theme.fonts.dmSansRegular};
@@ -139,6 +140,11 @@ const dm_sans_bold_14 = (theme) => `
 font-size: ${theme.fontSizes.text_14};
 font-family: ${theme.fonts.dmSansBold};
 color: ${theme.colors.text.black};
+`;
+const dm_sans_bold_14_error = (theme) => `
+font-size: ${theme.fontSizes.text_14};
+font-family: ${theme.fonts.dmSansBold};
+color: ${theme.colors.text.error};
 `;
 const dm_sans_regular_14 = (theme) => `
 font-size: ${theme.fontSizes.text_14};
@@ -283,6 +289,7 @@ const variants = {
   dm_sans_bold_16_white,
   dm_sans_bold_16_cta_disabled,
   dm_sans_bold_14,
+  dm_sans_bold_14_error,
   dm_sans_bold_14_white,
   dm_sans_regular_14,
   dm_sans_bold_12,

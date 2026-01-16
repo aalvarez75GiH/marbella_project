@@ -17,6 +17,7 @@ import { OrdersContext } from "../../infrastructure/services/orders/orders.conte
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 
 import { CheckIcon } from "../../../assets/modified_icons/success_icon";
+import ErrorIcon from "../../../assets/my_icons/exitIcon_2.svg";
 
 export default function Payment_View() {
   const {
@@ -29,6 +30,9 @@ export default function Payment_View() {
     cardVerified,
     onSuccess,
     whileIsSuccess,
+    setCardVerified,
+    cardError,
+    setCardError,
   } = useContext(PaymentsContext);
 
   const { myOrder, setMyOrder } = useContext(OrdersContext);
@@ -36,7 +40,7 @@ export default function Payment_View() {
   const { resettingCart, setCart } = useContext(CartContext);
 
   const navigation = useNavigation();
-
+  console.log("CARD VERIFIED STATE:", cardVerified);
   // console.log("MY ORDER IN PAYMENT VIEW:", JSON.stringify(myOrder, null, 2));
 
   return (
@@ -120,6 +124,43 @@ export default function Payment_View() {
               {/* <SuccessIcon width={20} height={20} fill={"green"} /> */}
             </Container>
           )}
+          {!cardVerified && cardError && (
+            <Container
+              width="100%"
+              align="center"
+              direction="row"
+              justify="flex-start"
+              color={theme.colors.bg.elements_bg}
+            >
+              {/* <Container
+                width="15%"
+                align="flex-end"
+                color={theme.colors.bg.elements_bg}
+              >
+                <ErrorIcon
+                  width={20}
+                  height={20}
+                  color={theme.colors.ui.error_light}
+                />
+              </Container> */}
+              <Container
+                width="100%"
+                // color="green"
+                color={theme.colors.bg.elements_bg}
+                justify="flex-start"
+                align="flex-start"
+              >
+                <Spacer position="left" size="large">
+                  <Text
+                    variant="dm_sans_bold_14_error"
+                    color={theme.colors.text.success_text}
+                  >
+                    {cardError}
+                  </Text>
+                </Spacer>
+              </Container>
+            </Container>
+          )}
           <Container
             width="100%"
             height="10%"
@@ -127,7 +168,7 @@ export default function Payment_View() {
             align="center"
             color={theme.colors.bg.elements_bg}
           />
-          {cardVerified && (
+          {/* {cardVerified && (
             <Regular_CTA
               width="95%"
               height="8%"
@@ -148,6 +189,105 @@ export default function Payment_View() {
                     setMyOrder(response.order);
                     navigation.navigate("Order_Confirmation_View");
                   }
+                } else {
+                  console.log(
+                    "Payment failed with response:",
+                    JSON.stringify(response, null, 2)
+                  );
+                }
+              }}
+            />
+          )} */}
+          {cardVerified && (
+            <Regular_CTA
+              width="95%"
+              height="8%"
+              color={theme.colors.ui.business}
+              border_radius={"40px"}
+              caption={isLoading ? "Processing..." : "Make the payment"}
+              caption_text_variant="dm_sans_bold_20"
+              disabled={isLoading} // ✅ prevent double taps if your CTA supports it
+              action={async () => {
+                // ✅ hard guard even if CTA doesn’t support disabled
+                if (isLoading) return;
+
+                try {
+                  console.log("Card state before onPay:", card);
+
+                  const response = await onPay(nameOnCard, card, myOrder);
+                  console.log("onPay response:", response);
+
+                  // ✅ Success
+                  if (response?.status === 200) {
+                    // If your backend might succeed but not create an order, guard it:
+                    if (!response?.order) {
+                      console.log(
+                        "Payment succeeded but order is null:",
+                        response
+                      );
+                      // Optional: show UI message
+                      // showToast("Payment succeeded, but we couldn't create the order. Please contact support.")
+                      return;
+                    }
+
+                    // Reset cart (best-effort)
+                    try {
+                      await resettingCart(user_id);
+                    } catch (err) {
+                      console.log("Error resetting cart:", err);
+                      // Optional: still proceed to confirmation even if cart reset fails
+                    }
+
+                    setMyOrder(response.order);
+                    navigation.navigate("Order_Confirmation_View");
+                    return;
+                  }
+
+                  // ✅ Failure handling
+                  const err = response?.error;
+                  const message =
+                    err?.message || "Payment failed. Please try again.";
+
+                  // Optional: if you want to hide "Card verified" after a decline:
+                  setCardVerified(false);
+
+                  // Handle specific payment-intent statuses (future-proof)
+                  if (err?.payment_intent_status === "requires_action") {
+                    // If you implement 3DS later, you can route to an auth screen here.
+                    // navigation.navigate("PaymentAuth", { clientSecret: err.client_secret })
+                    console.log(
+                      "Payment requires additional authentication:",
+                      err
+                    );
+                  } else if (
+                    err?.payment_intent_status === "requires_payment_method"
+                  ) {
+                    // Card declined — user should try another card
+                    console.log(
+                      "Payment requires a different payment method:",
+                      err
+                    );
+                  }
+
+                  setCardError(message);
+                  // ✅ Show the user something actionable (choose ONE approach)
+                  // 1) Navigate to an error screen:
+                  // navigation.navigate("PaymentError", { error: message, code: err?.code, decline_code: err?.decline_code });
+
+                  // 2) Or show a toast/snackbar:
+                  // showToast(message);
+
+                  // For now, at least log it:
+                  console.log("Payment failed:", {
+                    status: response?.status,
+                    message,
+                    code: err?.code,
+                    decline_code: err?.decline_code,
+                    payment_intent_status: err?.payment_intent_status,
+                  });
+                } catch (unexpected) {
+                  console.log("Unexpected CTA error:", unexpected);
+                  // showToast("Something went wrong. Please try again.");
                 }
               }}
             />

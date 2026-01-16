@@ -4,6 +4,7 @@ const express = require("express");
 const paymentsRouter = express.Router();
 const stripeClient = require("stripe")(process.env.STRIPE_KEY);
 const ordersControllers = require("../orders/orders.controllers");
+const { buildStripeErrorPayload } = require("./payments.handlers");
 // const { v4: uuidv4 } = require("uuid");
 // const paymentsControllers = require("./payments.controllers");
 
@@ -40,10 +41,13 @@ paymentsRouter.post("/payments", async (req, res) => {
     });
 
     if (paymentIntentResponse.status !== "succeeded") {
+      // treat as a payment failure / needs action
       return res.status(402).json({
         status: "failed",
         message:
-          "Payment requires additional action or a different payment method.",
+          paymentIntentResponse.status === "requires_action"
+            ? "This payment requires additional authentication."
+            : "Payment was not completed. Please try another card.",
         code: "payment_intent_not_succeeded",
         payment_intent: paymentIntentResponse.id,
         payment_intent_status: paymentIntentResponse.status,
@@ -85,52 +89,49 @@ paymentsRouter.post("/payments", async (req, res) => {
     res.json(dataToReturn);
     return;
   } catch (error) {
-    console.log("ERROR CATCHED:", error);
+    console.log("STRIPE ERROR:", {
+      message: error?.message,
+      code: error?.code,
+      decline_code: error?.decline_code,
+      type: error?.type,
+      rawType: error?.raw?.type,
+    });
+    // Default message (safe)
+    let msg = "Your card was declined. Please try another card.";
+    let httpStatus = 402; // Payment Required (common for card declines)
+
+    // Specific codes
     if (error.code === "incorrect_cvc") {
-      res
-        .status(402)
-        .send(
-          "We're sorry, it looks like your cvc number is not correct, try again.. "
-        );
+      msg = "The CVC number is incorrect. Please check it and try again.";
+    } else if (
+      error.code === "incorrect_number" ||
+      error.code === "invalid_number"
+    ) {
+      msg = "The card number is invalid. Please check it and try again.";
+    } else if (error.code === "expired_card") {
+      msg = "This card is expired. Please use a different card.";
+    } else if (error.code === "processing_error") {
+      msg = "There was a processing error. Please try again.";
     }
-    if (error.code === "incorrect_number") {
-      res.status(402).send("Sorry, Your card number is invalid, try again... ");
+
+    // decline_code-based messaging
+    if (error.decline_code === "insufficient_funds") {
+      msg = "Insufficient funds. Please use another card.";
+    } else if (error.decline_code === "lost_card") {
+      msg = "This card has been reported lost. Please use a different card.";
+    } else if (error.decline_code === "generic_decline") {
+      msg =
+        "Your card was declined. Please contact your bank or try another card.";
     }
-    switch (error.decline_code) {
-      case "insufficient_funds":
-        console.log("credit card declined - insufficient funds...");
-        res
-          .status(402)
-          .send(
-            "We're sorry, your card was declined. Don't worry, come back later... "
-          );
-        // res.send("Your credit card was declined for insufficient funds...");
-        break;
-      case "lost_card":
-        console.log("Credit card is lost");
-        res
-          .status(402)
-          .send(
-            "Sorry, this card has been lost, are you sure its the right card?"
-          );
-        // res.send("Your credit card is lost...");
-        break;
-      case "generic_decline":
-        console.log("Generic decline ");
-        res
-          .status(402)
-          .send(
-            "Sorry, Your card was declined for unknown reasons. Don't worry, come back later...we'll be here waiting. "
-          );
-        break;
-      default:
-        console.log("Your credit card was declined...");
-        res
-          .status(402)
-          .send(
-            "Sorry, Your card was declined. Come back soon, we'll be waiting..."
-          );
+
+    // If it’s NOT a card decline, use 400/500 appropriately
+    // (Example: bad parameters, Stripe misconfiguration, etc.)
+    if (error.type && error.type !== "StripeCardError") {
+      httpStatus = 400; // most non-card Stripe errors are request issues
+      msg = "Payment could not be processed due to a configuration error.";
     }
+
+    return res.status(httpStatus).json(buildStripeErrorPayload(error, msg));
   }
 });
 

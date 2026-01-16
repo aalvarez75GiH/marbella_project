@@ -1,6 +1,6 @@
 import React, { useContext, useCallback } from "react";
 import { FlatList, View, SectionList } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
 
 import { useTheme } from "styled-components/native";
@@ -27,7 +27,7 @@ export default function Orders_View() {
     ordersGrouped,
     gettingAllOrdersByUserIDGroupedByMonth,
   } = useContext(OrdersContext);
-  console.log("ORDERS AT VIEW :", JSON.stringify(orders, null, 2));
+  // console.log("ORDERS AT VIEW :", JSON.stringify(orders, null, 2));
 
   const { user } = useContext(AuthenticationContext);
   const { user_id } = user || {};
@@ -42,13 +42,13 @@ export default function Orders_View() {
       monthKey: group.monthKey,
     })) || [];
 
+  const route = useRoute();
+  const refresh = route.params?.refresh;
   useFocusEffect(
     useCallback(() => {
-      console.log("Orders screen fetch fired. user_id:", user_id);
       if (!user_id) return;
       gettingAllOrdersByUserIDGroupedByMonth(user_id);
-      // gettingAllOrdersByUserID(user_id);
-    }, [user_id])
+    }, [user_id, refresh])
   );
 
   const renderingOrdersFromBackendTile = ({ item }) => {
@@ -92,7 +92,6 @@ export default function Orders_View() {
       <Container
         width="100%"
         style={{ flex: 1 }}
-        // height="100%"
         color={theme.colors.bg.elements_bg}
         //color={"red"}
         justify="flex-start"

@@ -8,7 +8,7 @@ export const Authentication_Context_Provider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(user_authenticated);
-  console.log("USER AT AUTH CONTEXT: ", JSON.stringify(user, null, 2));
+  // console.log("USER AT AUTH CONTEXT: ", JSON.stringify(user, null, 2));
 
   useEffect(() => {}, []);
 

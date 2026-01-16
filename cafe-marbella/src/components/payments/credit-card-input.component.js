@@ -23,9 +23,12 @@ export const CreditCardInputComponent = ({
 }) => {
   const { myOrder, setMyOrder } = useContext(OrdersContext);
   const [isLoading, setIsLoading] = useState(false);
-  const { card, setCard } = useContext(PaymentsContext);
+  const { setCardError, setCardVerified } = useContext(PaymentsContext);
 
   const onChange = async (formData) => {
+    setCardError(null);
+    setCardVerified(false);
+
     console.log("FORM DATA:", formData);
     const { values, status } = formData;
     const isIncomplete = Object.values(status).includes("incomplete");

@@ -24,7 +24,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
   const { productsCatalog } = useContext(GlobalContext);
 
   const { deviceLat, deviceLng } = useContext(geolocationContext);
-  console.log("MY WAREHOUSE CONTEXT RERENDER", myWarehouse);
+  // console.log("MY WAREHOUSE CONTEXT AT CONTEXT", myWarehouse);
   useEffect(() => {
     if (typeof deviceLat !== "number" || typeof deviceLng !== "number") {
       console.log("Device location not ready yet:", deviceLat, deviceLng);

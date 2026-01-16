@@ -56,10 +56,10 @@ export const Orders_Context_Provider = ({ children }) => {
         // Simulate fetching data
         const fetchedOrdersGrouped =
           await gettingAllOrdersByUserIDGroupedByMonthRequest(user_id); // Replace with actual fetch logic
-        console.log(
-          "Fetched Orders Grouped:",
-          JSON.stringify(fetchedOrdersGrouped, null, 2)
-        );
+        // console.log(
+        //   "Fetched Orders Grouped:",
+        //   JSON.stringify(fetchedOrdersGrouped, null, 2)
+        // );
         // console.log("Fetched Orders:", JSON.stringify(fetchedOrders, null, 2));
         setOrdersGrouped(fetchedOrdersGrouped);
       } catch (error) {
