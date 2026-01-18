@@ -45,4 +45,32 @@ const reserveUniqueOrderNumber = async (
   );
 };
 
-module.exports = { reserveUniqueOrderNumber };
+const buildSkuQtyFromOrderProducts = (order_products = []) => {
+  const skuQty = {};
+
+  for (const product of order_products) {
+    const productId = product?.id;
+    if (!productId) continue;
+
+    const variants = Array.isArray(product.size_variants)
+      ? product.size_variants
+      : [];
+
+    for (const variant of variants) {
+      const variantId = String(variant?.id ?? "");
+      if (!variantId) continue;
+
+      const qtyOrdered = Number(variant?.quantity ?? 0); // ✅ order uses quantity
+      if (qtyOrdered <= 0) continue;
+
+      const sku = `${productId}:${variantId}`;
+
+      // ✅ if same sku appears twice, accumulate
+      skuQty[sku] = Number(skuQty[sku] ?? 0) + qtyOrdered;
+    }
+  }
+
+  return skuQty;
+};
+
+module.exports = { reserveUniqueOrderNumber, buildSkuQtyFromOrderProducts };

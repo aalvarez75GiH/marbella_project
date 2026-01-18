@@ -6,6 +6,7 @@ const {
   forwardGeocodeAddress,
 } = require("./warehouses.handlers");
 const key = process.env.GOOGLE_MAPS_API_KEY;
+const { buildSkuQtyFromOrderProducts } = require("../orders/orders.handlers");
 // const warehouses = require("./warehouses.model"); // Assuming you have a model or data source for warehouses
 
 const getWarehouseById = async (warehouse_id) => {
@@ -37,21 +38,6 @@ const getActiveWarehouses = async () => {
 
   return snap.docs.map((d) => d.data());
 };
-
-// const getWarehouseById = async (warehouse_id) => {
-//   try {
-//     // Fetch the warehouse by ID from the database or data source
-//     const warehouse = warehouses.find(
-//       (warehouse) => warehouse.warehouse_id === warehouse_id
-//     );
-
-//     // Return the warehouse if found, otherwise return null
-//     return warehouse || null;
-//   } catch (error) {
-//     // Throw an error if something goes wrong
-//     throw new Error(`Error fetching warehouse by ID: ${error.message}`);
-//   }
-// };
 
 const createWarehouse = async (warehouse) => {
   //   if (!warehouse?.warehouse_id) throw new Error("Warehouse missing id");
@@ -121,9 +107,57 @@ const createWarehouse = async (warehouse) => {
   return snap.data();
 };
 
+const decrementWarehouseInventoryFromOrder = async ({
+  warehouse_id,
+  order_products,
+}) => {
+  if (!warehouse_id) throw new Error("warehouse_id is required");
+
+  const skuQty = buildSkuQtyFromOrderProducts(order_products);
+  const skus = Object.keys(skuQty);
+
+  if (!skus.length) throw new Error("No order items to decrement");
+
+  const whRef = firebase_controller.db
+    .collection("warehouses")
+    .doc(warehouse_id);
+
+  await firebase_controller.db.runTransaction(async (tx) => {
+    const whSnap = await tx.get(whRef);
+    if (!whSnap.exists) throw new Error("Warehouse not found");
+
+    const inventory = whSnap.data()?.inventory || {};
+
+    // ✅ final validation (source of truth)
+    for (const sku of skus) {
+      const current = Number(inventory[sku] ?? 0);
+      const qty = Number(skuQty[sku] ?? 0);
+      if (current < qty) {
+        throw new Error(
+          `Out of stock for ${sku}. Have ${current}, need ${qty}`
+        );
+      }
+    }
+
+    // ✅ apply decrements
+    const newInventory = { ...inventory };
+    for (const sku of skus) {
+      newInventory[sku] = Number(newInventory[sku] ?? 0) - Number(skuQty[sku]);
+    }
+
+    tx.update(whRef, {
+      inventory: newInventory,
+      updatedAt: new Date().toISOString(),
+    });
+  });
+
+  return { ok: true };
+};
+
 module.exports = {
   getAllWarehouses,
   getActiveWarehouses,
   createWarehouse,
   getWarehouseById,
+  decrementWarehouseInventoryFromOrder,
 };

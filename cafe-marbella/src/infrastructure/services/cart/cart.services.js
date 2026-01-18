@@ -29,8 +29,7 @@ export const gettingCartByUserIDRequest = async (user_id) => {
 };
 export const updatingProductsCart = async (user_id, product) => {
   const { cartsEndPoint } = environment;
-  const baseUrl = cartsEndPoint; // Replace with your backend base URL
-  const endpoint = `${baseUrl}/products_cart`;
+  const endpoint = `${cartsEndPoint}/products_cart`;
   try {
     const res = await axios.put(endpoint, product, {
       params: { user_id },
@@ -47,10 +46,7 @@ export const updatingProductsCart = async (user_id, product) => {
 
 export const IncOrDecProductsCartQty = async (user_id, product, task) => {
   const { cartsEndPoint } = environment;
-  console.log("USER ID AT SERVICE:", user_id);
-  console.log("PRODUCT TO ADD AT SERVICE:", JSON.stringify(product, null, 2));
-  const baseUrl = cartsEndPoint; // Replace with your backend base URL
-  const endpoint = `${baseUrl}/adjust-qty?user_id=${user_id}&task=${task}`;
+  const endpoint = `${cartsEndPoint}/adjust-qty?user_id=${user_id}&task=${task}`;
   try {
     const res = await axios.put(endpoint, product);
     console.log("RESPONSE:", res.data);
@@ -67,10 +63,7 @@ export const removingCartItemRequest = async (
   variantId
 ) => {
   const { cartsEndPoint } = environment;
-  console.log("USER ID AT SERVICE:", user_id);
-  // console.log("PRODUCT TO ADD AT SERVICE:", JSON.stringify(product, null, 2));
-  const baseUrl = cartsEndPoint; // Replace with your backend base URL
-  const endpoint = `${baseUrl}/item?user_id=${user_id}&product_id=${productId}&variant_id=${variantId}`;
+  const endpoint = `${cartsEndPoint}/item?user_id=${user_id}&product_id=${productId}&variant_id=${variantId}`;
   try {
     const res = await axios.delete(endpoint);
     console.log("RESPONSE:", res.data);
@@ -83,8 +76,6 @@ export const removingCartItemRequest = async (
 export const resettingCartRequest = async (user_id) => {
   console.log("Resetting cart for user_id at services:", user_id);
   const { cartsEndPoint } = environment;
-  console.log("USER ID AT SERVICE:", user_id);
-  // console.log("PRODUCT TO ADD AT SERVICE:", JSON.stringify(product, null, 2));
   const endpoint = `${cartsEndPoint}/clear_shopping_cart?user_id=${user_id}`;
   console.log("RESET CART ENDPOINT:", endpoint);
   try {

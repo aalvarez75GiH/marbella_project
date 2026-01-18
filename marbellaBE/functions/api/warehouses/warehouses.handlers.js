@@ -61,59 +61,6 @@ const forwardGeocodeAddress = async (address, key) => {
   };
 };
 
-// const gettingMostClosestWarehouse = (allWarehouses) => {
-//         const warehouses_with_distance_from_google = await Promise.all(
-//             allWarehouses.map(async (warehouse, index) => {
-//             const { geometry } = warehouse;
-//             const { location } = geometry;
-//             const { lat: wLat, lng: wLng } = location;
-//             console.log(wLat, wLng);
-
-//             let customerDistanceToWarehouse;
-//             let customerDistanceToWarehouse_in_miles;
-//             let customer_distance_time;
-
-//             const dest = {
-//               lat: wLat,
-//               lng: wLng,
-//             };
-
-//             var config = {
-//               method: "get",
-//               url: `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${origin.lat}%2C${origin.lng}&destinations=${dest.lat}%2C${dest.lng}%7C${dest.lat}%2C${dest.lng}%7C${dest.lat}%2C${dest.lng}%7C${dest.lat}%2C${dest.lng}&key=${process.env.GOOGLE_KEY}`,
-//               headers: {},
-//             };
-
-//             await axios(config).then((responseFromGoogle) => {
-//               // console.log(responseFromGoogle);
-//               const distance_in_miles =
-//                    .data.rows[0].elements[0].distance.text;
-//               customerDistanceToWarehouse_in_miles = distance_in_miles;
-//               console.log(
-//                 "DISTANCE IN MILES:",
-//                 customerDistanceToWarehouse_in_miles
-//               );
-//               const distance_in_meters =
-//                 responseFromGoogle.data.rows[0].elements[0].distance.value;
-//               customerDistanceToWarehouse = distance_in_meters;
-//               console.log("DISTANCE IN METERS:", customerDistanceToWarehouse);
-//               const distance_in_time =
-//                 responseFromGoogle.data.rows[0].elements[0].duration.text;
-//               customer_distance_time = distance_in_time;
-//               console.log("DISTANCE IN Time:", customer_distance_time);
-//             });
-//             warehouse["customer_distance_to_warehouse"] =
-//               customerDistanceToWarehouse;
-//             warehouse["distance_in_miles"] =
-//               customerDistanceToWarehouse_in_miles;
-//             warehouse["distance_time"] = customer_distance_time;
-//             available_warehouses.push(warehouse);
-//             // console.log("AVAILABLE WAREHOUSES:", available_warehouses);
-//             return warehouse;
-//           })
-//         );
-// };
-
 // origin = { lat, lng }
 const gettingMostClosestWarehouse = async (allWarehouses, origin) => {
   if (!origin?.lat || !origin?.lng) {

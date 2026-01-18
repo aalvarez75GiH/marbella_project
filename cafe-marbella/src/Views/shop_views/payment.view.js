@@ -40,7 +40,7 @@ export default function Payment_View() {
 
   const navigation = useNavigation();
   console.log("CARD VERIFIED STATE:", cardVerified);
-  // console.log("MY ORDER IN PAYMENT VIEW:", JSON.stringify(myOrder, null, 2));
+  console.log("MY ORDER IN PAYMENT VIEW:", JSON.stringify(myOrder, null, 2));
 
   return (
     <SafeArea background_color="#FFFFFF">

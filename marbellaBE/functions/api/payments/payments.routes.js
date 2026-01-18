@@ -3,8 +3,12 @@
 const express = require("express");
 const paymentsRouter = express.Router();
 const stripeClient = require("stripe")(process.env.STRIPE_KEY);
+
 const ordersControllers = require("../orders/orders.controllers");
 const { buildStripeErrorPayload } = require("./payments.handlers");
+const {
+  decrementWarehouseInventoryFromOrder,
+} = require("../warehouses/warehouses.controllers");
 // const { v4: uuidv4 } = require("uuid");
 // const paymentsControllers = require("./payments.controllers");
 
@@ -14,6 +18,9 @@ paymentsRouter.post("/payments", async (req, res) => {
   const order = req.body.order;
   let createdOrder = null;
   console.log("CUSTOMER ORDER AT PAYMENTS ROUTE:", order);
+  const { warehouse_to_pickup } = order || {};
+  const warehouse_id = warehouse_to_pickup?.warehouse_id || null;
+
   const data = {
     token: req.body.card_id,
     amount: req.body.totalForStripe,
@@ -62,6 +69,11 @@ paymentsRouter.post("/payments", async (req, res) => {
         paymentIntentResponse.status
       );
       console.log("Payment succeeded, creating order...");
+
+      await decrementWarehouseInventoryFromOrder({
+        warehouse_id,
+        order_products: order.order_products,
+      });
 
       const orderWithPaidStatus = {
         ...order,

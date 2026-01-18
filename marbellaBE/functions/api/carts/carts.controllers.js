@@ -3,22 +3,6 @@
 const firebase_controller = require("../../fb");
 const { calculateSubtotal, getTotalCartQuantity } = require("./carts.utils");
 
-// const getCartByUserUID = async (user_id) => {
-//   console.log("USER ID AT CONTROLLER:", user_id);
-//   let carts = [];
-//   return await firebase_controller.db
-//     .collection("carts")
-//     .where(`user_id`, "==", user_id)
-//     .get()
-//     // .then((orders) => orders.data());
-//     .then((querySnapshot) => {
-//       querySnapshot.forEach((doc) => {
-//         carts.push(doc.data());
-//       });
-//       return carts;
-//     });
-// };
-
 const getCartByUserID = async (user_id) => {
   const ref = firebase_controller.db.collection("carts").doc(user_id);
   const snap = await ref.get();
