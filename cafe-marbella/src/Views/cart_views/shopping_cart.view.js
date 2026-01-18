@@ -135,7 +135,9 @@ export default function Shopping_Cart_View() {
                       order_status: "In Progress",
                     };
                   });
-                  navigation.navigate("Shop_Delivery_Type_View");
+                  navigation.navigate("Shop_Delivery_Type_View", {
+                    coming_from: "Shopping_Cart_View",
+                  });
                 }}
               />
             </Container>

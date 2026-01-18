@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useTheme } from "styled-components/native";
-import { useNavigation } from "@react-navigation/native";
-
+import { useNavigation, useRoute } from "@react-navigation/native";
 import {
   Container,
   Action_Container,
@@ -25,6 +24,9 @@ import AddIcon from "../../../assets/my_icons/addIcon.svg";
 export default function Shop_Delivery_Type_View() {
   const [deliveryOption, setDeliveryOption] = useState(null);
   const [differentAddress, setDifferentAddress] = useState("");
+
+  const route = useRoute();
+  const { coming_from } = route.params || {};
   const theme = useTheme();
   const navigation = useNavigation();
   const { cart } = useContext(CartContext);
@@ -138,6 +140,7 @@ export default function Shop_Delivery_Type_View() {
                 formatted_address,
                 distance_in_miles,
                 distance_time,
+                coming_from: coming_from,
               }
         );
       }, 500); // Simulate a brief loading period

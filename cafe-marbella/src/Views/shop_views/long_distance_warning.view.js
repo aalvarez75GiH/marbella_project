@@ -1,6 +1,11 @@
 import React, { useContext } from "react";
 import { useTheme } from "styled-components/native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  useNavigation,
+  useRoute,
+  StackActions,
+} from "@react-navigation/native";
+import { InteractionManager } from "react-native";
 
 import { Container } from "../../components/containers/general.containers";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -19,7 +24,7 @@ export default function Long_Distance_Warning_View() {
   const theme = useTheme();
   const navigation = useNavigation();
   const route = useRoute();
-  const { formatted_address, distance_in_miles, distance_time } =
+  const { formatted_address, distance_in_miles, distance_time, coming_from } =
     route.params || {};
 
   return (
@@ -83,13 +88,7 @@ export default function Long_Distance_Warning_View() {
             border_width="0px"
             caption={"No, it's very far away"}
             caption_text_variant="dm_sans_bold_20_underlined"
-            // disabled={isLoading} // ✅ prevent double taps if your CTA supports it
-            action={() =>
-              navigation.reset({
-                index: 0,
-                routes: [{ name: "Shopping_Cart_View" }],
-              })
-            }
+            action={() => navigation.dispatch(StackActions.popToTop())}
           />
         </Container>
       </Container>
