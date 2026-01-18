@@ -37,9 +37,15 @@ export default function Shop_Delivery_Type_View() {
     geo,
     warehouse_information,
     distance_in_miles,
+    distance_time,
+    max_limit_pickup_ratio,
   } = myWarehouse;
+  console.log("DISTANCE IN MILES:", distance_in_miles);
   const { formatted_address } = geo || {};
   const { phone } = warehouse_information || {};
+  const distanceMilesNumber = parseFloat(distance_in_miles);
+  const warehouse_distance_range_positive =
+    distanceMilesNumber < max_limit_pickup_ratio;
 
   const { myOrder, setMyOrder, isLoading, setIsLoading } =
     useContext(OrdersContext);
@@ -77,15 +83,6 @@ export default function Shop_Delivery_Type_View() {
             discount: 0,
           },
           quantity: quantity,
-          // warehouse_to_pickup: {
-          //   warehouse_id: "",
-          //   name: "",
-          //   address: "",
-          //   geo: {},
-          //   phone_number: "",
-          //   closing_time: "",
-          //   opening_time: "",
-          // },
         }));
         setIsLoading(false);
         // navigation.navigate("Shop_Order_Review_View");
@@ -126,7 +123,23 @@ export default function Shop_Delivery_Type_View() {
           order_delivery_address: "",
         }));
         setIsLoading(false);
-        navigation.navigate("Shop_Order_Review_View");
+        // navigation.navigate(
+        //   warehouse_distance_range_positive
+        //     ? "Shop_Order_Review_View"
+        //     : "Long_Distance_Warning_View"
+        // );
+        navigation.navigate(
+          warehouse_distance_range_positive
+            ? "Shop_Order_Review_View"
+            : "Long_Distance_Warning_View",
+          warehouse_distance_range_positive
+            ? undefined
+            : {
+                formatted_address,
+                distance_in_miles,
+                distance_time,
+              }
+        );
       }, 500); // Simulate a brief loading period
     }
   };

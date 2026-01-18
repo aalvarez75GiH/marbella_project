@@ -40,8 +40,8 @@ export const Warehouse_Context_Provider = ({ children }) => {
 
         setMyWarehouse(closestWarehouse);
         console.log(
-          "DISTANCE IN MILES AT CONTEXT:",
-          closestWarehouse.distance_in_miles
+          "CLOSEST WAREHOUSE AT CONTEXT:",
+          JSON.stringify(closestWarehouse, null, 2)
         );
       } catch (error) {
         console.error("Error fetching closest warehouse:", error);

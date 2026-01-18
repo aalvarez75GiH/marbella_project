@@ -90,11 +90,22 @@ font-size: ${theme.fontSizes.text_20};
 font-family: ${theme.fonts.dmSansBold};
 color: ${theme.colors.text.white};
 `;
+const dm_sans_bold_20_underlined = (theme) => `
+font-size: ${theme.fontSizes.text_20};
+font-family: ${theme.fonts.dmSansBold};
+color: ${theme.colors.text.black};
+text-decoration: underline;
+`;
 
 const dm_sans_bold_18 = (theme) => `
 font-size: ${theme.fontSizes.text_18};
 font-family: ${theme.fonts.dmSansBold};
 color: ${theme.colors.text.black};
+`;
+const dm_sans_bold_18_red = (theme) => `
+font-size: ${theme.fontSizes.text_18};
+font-family: ${theme.fonts.dmSansBold};
+color: ${theme.colors.text.error};
 `;
 
 const dm_sans_regular_18 = (theme) => `
@@ -278,11 +289,13 @@ const variants = {
   dm_sans_bold_24_white,
   dm_sans_bold_22,
   dm_sans_bold_20,
+  dm_sans_bold_20_underlined,
   dm_sans_regular_20,
   dm_sans_bold_20_white,
   dm_sans_bold_18,
   dm_sans_regular_18,
   dm_sans_bold_18_white,
+  dm_sans_bold_18_red,
   dm_sans_bold_16,
   dm_sans_semiBold_16,
   dm_sans_regular_16,
