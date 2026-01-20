@@ -175,6 +175,24 @@ const getOrdersGroupedByMonth = async (user_id) => {
   return grouped;
 };
 
+const markOrderAsRefunded = async (order_id, internal_reason) => {
+  const orderRef = firebase_controller.db
+    .collection("orders")
+    .doc(String(order_id));
+
+  await orderRef.set(
+    {
+      order_status: "Refunded",
+      refund_details: internal_reason,
+      updatedAt: new Date().toISOString(),
+    },
+    { merge: true }
+  );
+
+  const updatedSnap = await orderRef.get();
+  return updatedSnap.exists ? updatedSnap.data() : null;
+};
+
 module.exports = {
   getOrdersGroupedByMonth,
 };
@@ -211,4 +229,5 @@ module.exports = {
   getAllOrdersByUserID,
   createOrderWithNoPayment,
   getOrdersGroupedByMonth,
+  markOrderAsRefunded,
 };

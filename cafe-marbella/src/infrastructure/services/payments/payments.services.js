@@ -49,6 +49,7 @@ export const paymentRequest = async (
   console.log("CARD ID AT SERVICE:", card_id);
   console.log("TOTAL AT SERVICE:", totalForStripe);
   console.log("NAME ON CARD AT SERVICE:", nameOnCard);
+  console.log("ORDER AT SERVICE:", JSON.stringify(order, null, 2));
 
   const response = await axios.post(
     `${paymentsEndPoint}/payments`,

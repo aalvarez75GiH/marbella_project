@@ -95,7 +95,9 @@ export const Payments_Context_Provider = ({ children }) => {
         setError(e);
         return { status: e.status, order: null, error: e };
       }
-
+      console.log("Card state before request:", JSON.stringify(card, null, 2));
+      console.log("NAME ON CARD:", nameOnCard);
+      console.log("MY ORDER BEFORE REQUEST:", JSON.stringify(myOrder, null, 2));
       const result = await paymentRequest(
         card.id,
         totalForStripe,

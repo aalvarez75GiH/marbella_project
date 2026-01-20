@@ -108,6 +108,7 @@ paymentsRouter.post("/payments", async (req, res) => {
       type: error?.type,
       rawType: error?.raw?.type,
     });
+
     // Default message (safe)
     let msg = "Your card was declined. Please try another card.";
     let httpStatus = 402; // Payment Required (common for card declines)
@@ -147,66 +148,72 @@ paymentsRouter.post("/payments", async (req, res) => {
   }
 });
 paymentsRouter.post("/refundOrder", async (req, res) => {
-  const payment_intent_id = req.query.stripe_id;
-  const order_id = req.query.order_id;
-  const reason = req.body.reason || "No reason provided";
-  const refunded_by = req.body.refunded_by || "admin_panel";
-  const internal_reason =
-    req.body.internal_reason || "No internal reason provided";
-  console.log("PAYMENT INTENT ID:", payment_intent_id);
-  console.log("ORDER ID", order_id);
-  console.log("REASON:", reason);
+  const {
+    stripe_payment_id: stripe_payment_id,
+    order_id,
+    reason, // expects Stripe enum OR your app value
+    refund_details,
+    refunded_by,
+    amount, // optional: cents for partial refund
+  } = req.body;
 
   try {
-    // const refundIntentResponse = await stripeClient.refunds.create({
-    //   payment_intent: payment_intent_id,
-    //   reason: reason,
-    // });
-    const refundIntentResponse = await stripeClient.refunds.create({
-      payment_intent: payment_intent_id,
-      reason: "requested_by_customer",
-      metadata: {
-        internal_reason: internal_reason,
-        order_id: order_id,
-        refunded_by: refunded_by,
-      },
-    });
-    console.log(
-      "REFUND RESPONSE FROM STRIPE:",
-      JSON.stringify(refundIntentResponse, null, 2)
-    );
-    if (refundIntentResponse.status !== "succeeded") {
-      return res.status(500).json({
+    if (!stripe_payment_id) {
+      return res.status(400).json({
         status: "failed",
-        msg: `Refund for payment_intent_id: ${payment_intent_id} could not be processed.`,
-        refund_intent_status: refundIntentResponse.status,
+        msg: "stripe_id (payment_intent_id) is required",
       });
     }
-    // await ordersControllers.markOrderAsRefunded(
-    //   order_id,
-    //   payment_intent_id,
-    //   reason
-    // );
+    // Stripe only allows these:
+    const ALLOWED_REASONS = new Set([
+      "duplicate",
+      "fraudulent",
+      "requested_by_customer",
+    ]);
 
-    res.json({
+    // If caller sends a custom reason, keep Stripe reason undefined and store custom in metadata
+    const stripeReason = ALLOWED_REASONS.has(reason) ? reason : undefined;
+    const internal_reason =
+      refund_details || reason || "No internal reason provided";
+    const refundedBy = refunded_by || "admin_panel";
+
+    const createParams = {
+      payment_intent: stripe_payment_id,
+      ...(stripeReason ? { reason: stripeReason } : {}),
+      ...(Number.isInteger(amount) ? { amount } : {}), // partial refund support
+      metadata: {
+        internal_reason,
+        order_id: order_id || "",
+        refunded_by: refundedBy,
+        // helpful for debugging:
+        reason_received: reason || "",
+      },
+    };
+
+    const refund = await stripeClient.refunds.create(createParams);
+
+    // Optional: update order even if refund is pending
+    let order_updated = null;
+    if (order_id) {
+      order_updated = await ordersControllers.markOrderAsRefunded(
+        order_id,
+        internal_reason
+      );
+    }
+
+    return res.status(200).json({
       status: "success",
-      msg: `Refund processed for payment_intent_id: ${payment_intent_id}, order_id: ${order_id}`,
+      refund,
+      order_updated,
     });
-    return;
   } catch (error) {
     console.log("ERROR CATCHED:", error);
-    // if (error.code === "incorrect_cvc") {
-    //   res
-    //     .status(402)
-    //     .send(
-    //       "We're sorry, it looks like your cvc number is not correct, try again.. "
-    //     );
-    // }
-    // if (error.code === "incorrect_number") {
-    //   res
-    //     .status(402)
-    //     .send("Sorry, Your card number is invalid, try again... ");
-    // }
+    return res.status(error?.statusCode || 500).json({
+      status: "failed",
+      msg: error?.message || "Refund failed",
+      code: error?.code || null,
+      type: error?.type || null,
+    });
   }
 });
 

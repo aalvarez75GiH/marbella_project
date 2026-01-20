@@ -133,7 +133,7 @@ export const RT_Delivery_Information_Order_Tile = ({
           color={theme.colors.ui.tertiary}
           // color={"lightgreen"}
         >
-          <StoreIcon width={60} height={60} fill={"#000000"} />
+          <StoreIcon width={50} height={50} fill={"#000000"} />
         </Container>
         <Container
           width="70%"
@@ -242,7 +242,7 @@ export const RT_Delivery_Information_Order_Tile = ({
           // color={"lightgreen"}
         >
           {/* <StoreIcon width={60} height={60} fill={"#000000"} /> */}
-          <DeliveryIcon width={60} height={60} fill={"#000000"} />
+          <DeliveryIcon width={50} height={50} fill={"#000000"} />
         </Container>
         <Container
           width="70%"

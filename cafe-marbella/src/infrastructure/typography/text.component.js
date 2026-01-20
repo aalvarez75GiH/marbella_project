@@ -75,6 +75,11 @@ font-size: ${theme.fontSizes.text_22};
 font-family: ${theme.fonts.dmSansBold};
 color: ${theme.colors.text.black};
 `;
+const dm_sans_bold_22_white = (theme) => `
+font-size: ${theme.fontSizes.text_22};
+font-family: ${theme.fonts.dmSansBold};
+color: ${theme.colors.text.white};
+`;
 const dm_sans_bold_20 = (theme) => `
 font-size: ${theme.fontSizes.text_20};
 font-family: ${theme.fonts.dmSansBold};
@@ -161,6 +166,11 @@ const dm_sans_regular_14 = (theme) => `
 font-size: ${theme.fontSizes.text_14};
 font-family: ${theme.fonts.dmSansRegular};
 color: ${theme.colors.text.black};
+`;
+const dm_sans_regular_14_white = (theme) => `
+font-size: ${theme.fontSizes.text_14};
+font-family: ${theme.fonts.dmSansRegular};
+color: ${theme.colors.text.white};
 `;
 const dm_sans_bold_14_white = (theme) => `
 font-size: ${theme.fontSizes.text_14};
@@ -288,6 +298,7 @@ const variants = {
   dm_sans_bold_24,
   dm_sans_bold_24_white,
   dm_sans_bold_22,
+  dm_sans_bold_22_white,
   dm_sans_bold_20,
   dm_sans_bold_20_underlined,
   dm_sans_regular_20,
@@ -305,6 +316,7 @@ const variants = {
   dm_sans_bold_14_error,
   dm_sans_bold_14_white,
   dm_sans_regular_14,
+  dm_sans_regular_14_white,
   dm_sans_bold_12,
   dm_sans_bold_12_white,
   dm_sans_bold_10,

@@ -260,7 +260,11 @@ export const My_Orders_Tile = ({
             }}
           >
             <Text
-              variant="dm_sans_bold_14"
+              variant={
+                order_status === "Refunded"
+                  ? "dm_sans_bold_14_white"
+                  : "dm_sans_bold_14"
+              }
               // color={theme.colors.text.success_text}
               color={
                 order_status === "Refunded"

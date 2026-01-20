@@ -85,6 +85,16 @@ export default function Shop_Delivery_Type_View() {
             discount: 0,
           },
           quantity: quantity,
+          warehouse_to_pickup: {
+            warehouse_id: warehouse_id,
+            name: warehouse_name,
+            warehouse_address: formatted_address,
+            geo: geo,
+            phone_number: phone,
+            closing_time: warehouse_information?.closing_time,
+            opening_time: warehouse_information?.opening_time,
+            distance_in_miles: distance_in_miles,
+          },
         }));
         setIsLoading(false);
         // navigation.navigate("Shop_Order_Review_View");

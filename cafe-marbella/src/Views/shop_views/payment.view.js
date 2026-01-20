@@ -168,7 +168,8 @@ export default function Payment_View() {
 
                 try {
                   console.log("Card state before onPay:", card);
-
+                  console.log("NAME ON CARD:", nameOnCard);
+                  console.log("MY ORDER BEFORE PAYMENT:", myOrder);
                   const response = await onPay(nameOnCard, card, myOrder);
                   console.log("onPay response:", response);
 
