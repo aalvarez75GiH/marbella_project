@@ -11,7 +11,7 @@ export const colors = {
     secondary: "#3A2F01",
     tertiary: "#F7F2C9",
     disabled: "#898989",
-    error: "#CD491B",
+    error: "#FA462D",
     error_light: "#fc9588",
     success: "#247F35",
     business: "#FFBA08",

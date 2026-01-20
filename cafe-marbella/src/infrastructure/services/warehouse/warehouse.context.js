@@ -8,10 +8,11 @@ import React, {
 import {
   gettingWarehouseByIDRequest,
   gettingClosestWarehouseForDeviceRequest,
+  gettingRealTimeDistanceToOrderWHRequest,
 } from "./warehouse.services";
 
 import { GlobalContext } from "../global/global.context";
-import { geolocationContext } from "../geolocation/geolocation.context";
+import { GeolocationContext } from "../geolocation/geolocation.context";
 
 export const WarehouseContext = createContext();
 
@@ -23,7 +24,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
   // later you’ll set this based on geolocation
   const { productsCatalog } = useContext(GlobalContext);
 
-  const { deviceLat, deviceLng } = useContext(geolocationContext);
+  const { deviceLat, deviceLng } = useContext(GeolocationContext);
   // console.log("MY WAREHOUSE CONTEXT AT CONTEXT", myWarehouse);
   useEffect(() => {
     if (typeof deviceLat !== "number" || typeof deviceLng !== "number") {
@@ -91,6 +92,28 @@ export const Warehouse_Context_Provider = ({ children }) => {
       .filter((p) => p.inStock);
   };
 
+  const gettingRealTimeDistanceToOrderWH = async (
+    deviceLat,
+    deviceLng,
+    warehouse_lat,
+    warehouse_lng
+  ) => {
+    setIsLoading(true);
+    try {
+      const response = await gettingRealTimeDistanceToOrderWHRequest(
+        deviceLat,
+        deviceLng,
+        warehouse_lat,
+        warehouse_lng
+      );
+      console.log("RESPONSE BY REAL TIME SHIT:", response);
+      return response;
+    } catch (error) {
+      console.error("Error fetching real-time distance:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
   // Getting all products of the closest warehouse not matter stock
   const getWarehouseProductsAll = (catalogProducts, warehouse, grindType) => {
     return catalogProducts
@@ -162,6 +185,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
 
         makeSku,
         getStock,
+        gettingRealTimeDistanceToOrderWH,
       }}
     >
       {children}

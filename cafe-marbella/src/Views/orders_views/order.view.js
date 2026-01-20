@@ -22,6 +22,7 @@ import { Order_Info_Tile } from "../../components/tiles/order_info.tile";
 import { Delivery_type_Badge } from "../../components/others/delivery_type.badge";
 import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
 import { Delivery_Information_Order_Tile } from "../../components/tiles/delivery_information_order.tile";
+import { RT_Delivery_Information_Order_Tile } from "../../components/tiles/rt_delivery_information_order_tile";
 import { Splitter_Component } from "../../components/others/grey_splitter.component";
 import { Payment_method_Info_Tile } from "../../components/tiles/payment_method_used_info.tile";
 
@@ -134,7 +135,7 @@ export default function Order_View() {
               </Spacer>
             </Container>
 
-            <Delivery_Information_Order_Tile
+            <RT_Delivery_Information_Order_Tile
               warehouse_name={warehouse_name}
               warehouse_address={warehouse_address}
               opening_time={opening_time}

@@ -15,6 +15,7 @@ const productsRouter = require("./api/products/products.routes");
 const warehousesRouter = require("./api/warehouses/warehouses.routes");
 const paymentsRouter = require("./api/payments/payments.routes");
 const ordersRouter = require("./api/orders/orders.routes");
+const geolocationRouter = require("./api/geolocation/geolocation.routes");
 
 exports.usersendpoint = onRequest(usersRouter);
 exports.cartsendpoint = onRequest(cartsRouter);
@@ -22,3 +23,4 @@ exports.productsendpoint = onRequest(productsRouter);
 exports.warehousesendpoint = onRequest(warehousesRouter);
 exports.paymentsendpoint = onRequest(paymentsRouter);
 exports.ordersendpoint = onRequest(ordersRouter);
+exports.geolocationendpoint = onRequest(geolocationRouter);

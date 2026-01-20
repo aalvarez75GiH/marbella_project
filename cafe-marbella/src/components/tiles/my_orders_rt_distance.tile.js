@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -9,11 +9,12 @@ import {
 } from "../containers/general.containers.js";
 import { Spacer } from "../spacers and globals/optimized.spacer.component.js";
 import { theme } from "../../infrastructure/theme/index.js";
-import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
 import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
 import DeliveryIcon from "../../../assets/my_icons/deliveryTruckIcon.svg";
 
-export const My_Orders_Tile = ({
+import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
+import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context.js";
+export const My_Orders_RT_Distance_Tile = ({
   total,
   warehouse_name,
   warehouse_address,
@@ -30,7 +31,21 @@ export const My_Orders_Tile = ({
   const { formatCentsToUSD } = useContext(GlobalContext);
   const formatted_currency = formatCentsToUSD;
 
+  const { gettingRealTimeDistanceToOrderWH, isLoading } =
+    useContext(WarehouseContext);
   const navigation = useNavigation();
+  useEffect(async () => {
+    try {
+      const response = await gettingRealTimeDistanceToOrderWH(
+        warehouse_address
+      );
+    } catch (error) {
+      console.log(
+        "Error getting real-time distance to order warehouse:",
+        error
+      );
+    }
+  }, []);
   return delivery_type === "pickup" ? (
     <>
       <Action_Container
@@ -114,11 +129,8 @@ export const My_Orders_Tile = ({
             }}
           >
             <Text
-              variant={
-                order_status === "Refunded"
-                  ? "dm_sans_bold_14_white"
-                  : "dm_sans_bold_14"
-              }
+              variant="dm_sans_bold_14"
+              color={theme.colors.text.success_text}
             >
               {order_status}
             </Text>
@@ -261,12 +273,7 @@ export const My_Orders_Tile = ({
           >
             <Text
               variant="dm_sans_bold_14"
-              // color={theme.colors.text.success_text}
-              color={
-                order_status === "Refunded"
-                  ? theme.colors.text.white
-                  : theme.colors.text.black
-              }
+              color={theme.colors.text.success_text}
             >
               {order_status}
             </Text>

@@ -120,7 +120,8 @@ const gettingMostClosestWarehouse = async (allWarehouses, origin) => {
 
       return {
         ...warehouse,
-        customer_distance_to_warehouse_meters: element.distance.value, // number
+        // customer_distance_to_warehouse_meters: element.distance.value, // number
+        distance_in_meters: element.distance.value, // number
         distance_in_miles: element.distance.text, // e.g. "4.2 mi"
         distance_time: element.duration.text, // e.g. "11 mins"
       };
@@ -129,7 +130,7 @@ const gettingMostClosestWarehouse = async (allWarehouses, origin) => {
 
   // ✅ keep only valid ones
   const valid = warehousesWithDistance.filter(
-    (w) => typeof w.customer_distance_to_warehouse_meters === "number"
+    (w) => typeof w.distance_in_meters === "number"
   );
 
   // If none valid, return what we have
@@ -148,8 +149,41 @@ const gettingMostClosestWarehouse = async (allWarehouses, origin) => {
   return { closest, warehouses: warehousesWithDistance };
 };
 
+const gettingRealTimeOrderWHDistanceToOrigin = async (origin, destination) => {
+  const lat = origin.lat;
+  const lng = origin.lng;
+  const wLat = destination.lat;
+  const wLng = destination.lng;
+  const { data } = await axios.get(
+    "https://maps.googleapis.com/maps/api/distancematrix/json",
+    {
+      params: {
+        units: "imperial",
+        origins: `${lat},${lng}`,
+        destinations: `${wLat},${wLng}`,
+        key,
+      },
+      timeout: 10000,
+    }
+  );
+  const element = data?.rows?.[0]?.elements?.[0];
+  if (!element || element.status !== "OK") {
+    return {
+      ...warehouse,
+      distance_error:
+        element?.status || data?.status || "DistanceMatrix failed",
+    };
+  }
+  return {
+    distance_in_meters: element.distance.value, // number
+    distance_in_miles: element.distance.text, // e.g. "4.2 mi"
+    distance_time: element.duration.text, // e.g. "11 mins"
+  };
+};
+
 module.exports = {
   buildInventoryFromWarehouseProducts,
   forwardGeocodeAddress,
   gettingMostClosestWarehouse,
+  gettingRealTimeOrderWHDistanceToOrigin,
 };
