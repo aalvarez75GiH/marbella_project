@@ -22,6 +22,7 @@ export const Cart_Context_Provider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [cartTotalItems, setCartTotalItems] = useState(0);
+  const [isUpdatingQty, setIsUpdatingQty] = useState(false);
 
   const { user } = useContext(AuthenticationContext);
   const { user_id } = user || {};
@@ -151,14 +152,21 @@ export const Cart_Context_Provider = ({ children }) => {
       setCartTotalItems(total_items_qty);
       return updatedCart;
     });
-
+    setIsUpdatingQty(true);
     // Make the backend request
     try {
       const myCart = await IncOrDecProductsCartQty(user_id, item, "increase");
       console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
-      setCart(myCart); // Update the cart with the backend response
+      // setCart(myCart); // Update the cart with the backend response
+      setCart((prev) => ({
+        ...prev,
+        ...myCart,
+        products: prev.products, // keep optimistic quantities
+      }));
     } catch (error) {
       console.error("Error updating cart:", error);
+    } finally {
+      setIsUpdatingQty(false);
     }
   };
 
@@ -186,14 +194,21 @@ export const Cart_Context_Provider = ({ children }) => {
       setCartTotalItems(total_items_qty);
       return updatedCart;
     });
-
+    setIsUpdatingQty(true);
     // Make the backend request
     try {
       const myCart = await IncOrDecProductsCartQty(user_id, item, "decrease");
       console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
-      setCart(myCart); // Update the cart with the backend response
+      setCart((prev) => ({
+        ...prev,
+        ...myCart,
+        products: prev.products, // keep optimistic quantities
+      }));
+      // setCart(myCart); // Update the cart with the backend response
     } catch (error) {
       console.error("Error updating cart:", error);
+    } finally {
+      setIsUpdatingQty(false);
     }
   };
 
@@ -302,6 +317,7 @@ export const Cart_Context_Provider = ({ children }) => {
         resettingCart,
         setCart,
         gettingCartByUserID,
+        isUpdatingQty,
       }}
     >
       {children}

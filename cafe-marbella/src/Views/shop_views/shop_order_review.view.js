@@ -1,7 +1,7 @@
 import React, { useContext, useLayoutEffect, useEffect } from "react";
 import { FlatList } from "react-native";
 import { useTheme } from "styled-components/native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
 
 import {
@@ -25,11 +25,10 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 
 export default function Shop_Order_Review_View() {
   const theme = useTheme();
-  const { myOrder, isLoading } = useContext(OrdersContext);
-  //   console.log(
-  //     "myOrder in Shop_Order_Review_View:",
-  //     JSON.stringify(myOrder, null, 2)
-  //   );
+  const route = useRoute();
+  const { order } = route.params;
+  const { isLoading } = useContext(OrdersContext);
+  console.log("MY ORDER AT REVIEW VIEW:", JSON.stringify(order, null, 2));
   const { myWarehouse } = useContext(WarehouseContext);
   const { distance_in_miles } = myWarehouse || {};
   const {
@@ -39,7 +38,7 @@ export default function Shop_Order_Review_View() {
     order_products,
     delivery_type,
     quantity,
-  } = myOrder || {};
+  } = order || {};
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
   const { customer_address } = customer || {};
 

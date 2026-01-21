@@ -3,7 +3,7 @@ export const user_authenticated = {
   last_name: "Alvarez",
   email: "arnoldo.alvarez75@yahoo.com",
   phone_number: "(706)612.4602",
-  address: "265 Auburn ParkWay Athens GA 30606",
+  address: "265 Auburn ParkWay, Athens, GA 30606, USA",
   role: "user",
   uid: "0wvojF6ItNfuYN32UcL3s1rrSXn2",
   createdAt: "",

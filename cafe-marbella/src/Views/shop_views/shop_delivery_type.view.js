@@ -19,6 +19,7 @@ import { Delivery_Address_Option_Tile } from "../../components/tiles/delivery_ad
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
+import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
 
 import AddIcon from "../../../assets/my_icons/addIcon.svg";
 export default function Shop_Delivery_Type_View() {
@@ -42,7 +43,7 @@ export default function Shop_Delivery_Type_View() {
     distance_time,
     max_limit_pickup_ratio,
   } = myWarehouse;
-  console.log("DISTANCE IN MILES:", distance_in_miles);
+  // console.log("DISTANCE IN MILES:", distance_in_miles);
   const { formatted_address } = geo || {};
   const { phone } = warehouse_information || {};
   const distanceMilesNumber = parseFloat(distance_in_miles);
@@ -54,7 +55,14 @@ export default function Shop_Delivery_Type_View() {
 
   const { customer } = myOrder || {};
   const { customer_address } = customer || {};
-  console.log("DELIVERY TYPE OPTION:", deliveryOption);
+  // console.log("DELIVERY TYPE OPTION:", deliveryOption);
+
+  console.log(
+    "MY ORDER AT DELIVERY TYPE VIEW:",
+    JSON.stringify(myOrder, null, 2)
+  );
+
+  const { onTaxes } = useContext(PaymentsContext);
 
   useEffect(() => {
     setMyOrder((prevOrder) => ({
@@ -64,103 +72,326 @@ export default function Shop_Delivery_Type_View() {
     }));
   }, [differentAddress]);
 
-  const settingMyOrderDeliveryType = (delivery_type) => {
+  const settingMyOrderDeliveryType = async (delivery_type) => {
+    // if (delivery_type === "delivery") {
+    //   setDeliveryOption("delivery");
+    //   try {
+    //     const taxesResults = await onTaxes(myOrder);
+    //     console.log("Taxes Results:", JSON.stringify(taxesResults, null, 2));
+    //   } catch (error) {
+    //     console.log("Error calculating taxes:", error);
+    //   }
+    //   setTimeout(() => {
+    //     setMyOrder((prevOrder) => ({
+    //       ...prevOrder,
+    //       delivery_type: delivery_type,
+    //       user_id: user_id,
+    //       cart_id: cart_id,
+    //       order_products: products,
+    //       pricing: {
+    //         sub_total: sub_total,
+    //         taxes: Math.round(0.08 * sub_total),
+    //         total:
+    //           sub_total +
+    //           Math.round(0.08 * sub_total) +
+    //           (delivery_type === "delivery" ? 500 : 0),
+    //         shipping: delivery_type === "delivery" ? 500 : 0,
+    //         discount: 0,
+    //       },
+    //       quantity: quantity,
+    //       warehouse_to_pickup: {
+    //         warehouse_id: warehouse_id,
+    //         name: warehouse_name,
+    //         warehouse_address: formatted_address,
+    //         geo: geo,
+    //         phone_number: phone,
+    //         closing_time: warehouse_information?.closing_time,
+    //         opening_time: warehouse_information?.opening_time,
+    //         distance_in_miles: distance_in_miles,
+    //       },
+    //     }));
+    //     setIsLoading(false);
+    //     // navigation.navigate("Shop_Order_Review_View");
+    //   }, 500); // Simulate a brief loading period
+    // }
+
     if (delivery_type === "delivery") {
+      setIsLoading(true);
       setDeliveryOption("delivery");
-      setTimeout(() => {
-        setMyOrder((prevOrder) => ({
-          ...prevOrder,
-          delivery_type: delivery_type,
-          user_id: user_id,
-          cart_id: cart_id,
+
+      try {
+        // 1) Build the order first (use the latest products/pricing/etc)
+        const nextOrder = {
+          ...myOrder,
+          delivery_type,
+          user_id,
+          cart_id,
           order_products: products,
           pricing: {
-            sub_total: sub_total,
-            taxes: Math.round(0.08 * sub_total),
-            total:
-              sub_total +
-              Math.round(0.08 * sub_total) +
-              (delivery_type === "delivery" ? 500 : 0),
-            shipping: delivery_type === "delivery" ? 500 : 0,
+            sub_total,
+            taxes: 0, // placeholder; Stripe will return real taxes
+            shipping: 500, // cents
             discount: 0,
+            total: sub_total + 500, // placeholder; Stripe will return real total
           },
-          quantity: quantity,
+          quantity,
           warehouse_to_pickup: {
-            warehouse_id: warehouse_id,
+            warehouse_id,
             name: warehouse_name,
             warehouse_address: formatted_address,
-            geo: geo,
+            geo,
             phone_number: phone,
             closing_time: warehouse_information?.closing_time,
             opening_time: warehouse_information?.opening_time,
-            distance_in_miles: distance_in_miles,
+            distance_in_miles,
           },
-        }));
+          // ✅ MUST be set for delivery
+          order_delivery_address:
+            myOrder?.order_delivery_address ||
+            myOrder?.customer?.customer_address || // fallback if you store it there
+            "",
+        };
+
+        console.log(
+          "NEXT ORDER SENT TO TAX (DELIVERY):",
+          JSON.stringify(nextOrder, null, 2)
+        );
+
+        // 2) Call taxes with the order you JUST built
+        const taxesResults = await onTaxes(nextOrder);
+        console.log(
+          "Taxes Results (DELIVERY):",
+          JSON.stringify(taxesResults, null, 2)
+        );
+
+        // Optional: guard if your onTaxes returns an error shape instead of throwing
+        if (taxesResults?.error || taxesResults?.status === "failed") {
+          throw new Error(taxesResults?.error?.message || "Tax quote failed");
+        }
+
+        // 3) Build final order with Stripe totals
+        const orderWithTaxes = {
+          ...nextOrder,
+          pricing: {
+            ...nextOrder.pricing,
+            taxes: taxesResults.tax_amount,
+            total: taxesResults.total_amount,
+          },
+          tax_calculation_id: taxesResults.calculation_id,
+        };
+
+        // 4) Set it once
+        setMyOrder(orderWithTaxes);
+
+        // 5) Navigate (same style as pickup)
+        navigation.navigate("Shop_Order_Review_View", {
+          order: orderWithTaxes,
+        });
+      } catch (error) {
+        console.log("DELIVERY TAX FLOW ERROR:", error?.message || error);
+        // show alert/toast if you want
+      } finally {
+        // 6) Always stop loader
         setIsLoading(false);
-        // navigation.navigate("Shop_Order_Review_View");
-      }, 500); // Simulate a brief loading period
+      }
+
+      return;
     }
 
     if (delivery_type === "pickup") {
-      setDeliveryOption("pickup");
       setIsLoading(true);
-      setTimeout(() => {
-        setMyOrder((prevOrder) => ({
-          ...prevOrder,
-          delivery_type: delivery_type,
-          user_id: user_id,
-          cart_id: cart_id,
+      setDeliveryOption("pickup");
+
+      try {
+        const nextOrder = {
+          ...myOrder,
+          delivery_type,
+          user_id,
+          cart_id,
           order_products: products,
           pricing: {
-            sub_total: sub_total,
-            taxes: Math.round(0.08 * sub_total),
-            total:
-              sub_total +
-              Math.round(0.08 * sub_total) +
-              (delivery_type === "delivery" ? 500 : 0),
-            shipping: delivery_type === "delivery" ? 500 : 0,
+            sub_total,
+            taxes: Math.round(0.08 * sub_total), // placeholder
+            shipping: 0,
             discount: 0,
+            total: sub_total + Math.round(0.08 * sub_total),
           },
-          quantity: quantity,
+          quantity,
           warehouse_to_pickup: {
-            warehouse_id: warehouse_id,
+            warehouse_id,
             name: warehouse_name,
             warehouse_address: formatted_address,
-            geo: geo,
+            geo,
             phone_number: phone,
             closing_time: warehouse_information?.closing_time,
             opening_time: warehouse_information?.opening_time,
-            distance_in_miles: distance_in_miles,
+            distance_in_miles,
           },
           order_delivery_address: "",
-        }));
-        setIsLoading(false);
-        // navigation.navigate(
-        //   warehouse_distance_range_positive
-        //     ? "Shop_Order_Review_View"
-        //     : "Long_Distance_Warning_View"
-        // );
-        navigation.navigate(
-          warehouse_distance_range_positive
-            ? "Shop_Order_Review_View"
-            : "Long_Distance_Warning_View",
-          warehouse_distance_range_positive
-            ? undefined
-            : {
-                formatted_address,
-                distance_in_miles,
-                distance_time,
-                coming_from: coming_from,
-              }
+        };
+
+        console.log(
+          "NEXT ORDER SENT TO TAX:",
+          JSON.stringify(nextOrder, null, 2)
         );
-      }, 500); // Simulate a brief loading period
+
+        const taxesResults = await onTaxes(nextOrder);
+        console.log("Taxes Results:", JSON.stringify(taxesResults, null, 2));
+
+        // If your onTaxes returns { ok: false } or { status !== 200 }, handle it:
+        if (taxesResults?.error || taxesResults?.status === "failed") {
+          throw new Error(taxesResults?.error?.message || "Tax quote failed");
+        }
+
+        const orderWithTaxes = {
+          ...nextOrder,
+          pricing: {
+            ...nextOrder.pricing,
+            taxes: taxesResults.tax_amount,
+            total: taxesResults.total_amount,
+          },
+          tax_calculation_id: taxesResults.calculation_id,
+        };
+
+        setMyOrder(orderWithTaxes);
+
+        if (warehouse_distance_range_positive) {
+          navigation.navigate("Shop_Order_Review_View", {
+            order: orderWithTaxes,
+          });
+        } else {
+          navigation.navigate("Long_Distance_Warning_View", {
+            formatted_address,
+            distance_in_miles,
+            distance_time,
+            coming_from,
+            order: orderWithTaxes,
+          });
+        }
+      } catch (e) {
+        console.log("PICKUP TAX FLOW ERROR:", e?.message || e);
+        // optionally show a toast/alert here
+      } finally {
+        setIsLoading(false);
+      }
+
+      return;
     }
+
+    // if (delivery_type === "pickup") {
+    //   setIsLoading(true);
+    //   setDeliveryOption("pickup");
+
+    //   setTimeout(() => {
+    //     setMyOrder((prevOrder) => ({
+    //       ...prevOrder,
+    //       delivery_type: delivery_type,
+    //       user_id: user_id,
+    //       cart_id: cart_id,
+    //       order_products: products,
+    //       pricing: {
+    //         sub_total: sub_total,
+    //         taxes: Math.round(0.08 * sub_total),
+    //         total:
+    //           sub_total +
+    //           Math.round(0.08 * sub_total) +
+    //           (delivery_type === "delivery" ? 500 : 0),
+    //         shipping: delivery_type === "delivery" ? 500 : 0,
+    //         discount: 0,
+    //       },
+    //       quantity: quantity,
+    //       warehouse_to_pickup: {
+    //         warehouse_id: warehouse_id,
+    //         name: warehouse_name,
+    //         warehouse_address: formatted_address,
+    //         geo: geo,
+    //         phone_number: phone,
+    //         closing_time: warehouse_information?.closing_time,
+    //         opening_time: warehouse_information?.opening_time,
+    //         distance_in_miles: distance_in_miles,
+    //       },
+    //       order_delivery_address: "",
+    //     }));
+    //     // setIsLoading(false);
+
+    //     navigation.navigate(
+    //       warehouse_distance_range_positive
+    //         ? "Shop_Order_Review_View"
+    //         : "Long_Distance_Warning_View",
+    //       warehouse_distance_range_positive
+    //         ? undefined
+    //         : {
+    //             formatted_address,
+    //             distance_in_miles,
+    //             distance_time,
+    //             coming_from: coming_from,
+    //           }
+    //     );
+    //     try {
+    //       console.log(
+    //         "MY ORDER BEFORE TAXES CALL:",
+    //         JSON.stringify(myOrder, null, 2)
+    //       );
+    //       // const taxesResults = onTaxes(myOrder);
+    //       // console.log("Taxes Results:", JSON.stringify(taxesResults, null, 2));
+    //     } catch (error) {
+    //       console.log("Error calculating taxes:", error);
+    //     }
+    //   }, 500); // Simulate a brief loading period
+
+    //   // setTimeout(() => {
+    //   //   setMyOrder((prevOrder) => ({
+    //   //     ...prevOrder,
+    //   //     delivery_type: delivery_type,
+    //   //     user_id: user_id,
+    //   //     cart_id: cart_id,
+    //   //     order_products: products,
+    //   //     pricing: {
+    //   //       sub_total: sub_total,
+    //   //       taxes: Math.round(0.08 * sub_total),
+    //   //       total:
+    //   //         sub_total +
+    //   //         Math.round(0.08 * sub_total) +
+    //   //         (delivery_type === "delivery" ? 500 : 0),
+    //   //       shipping: delivery_type === "delivery" ? 500 : 0,
+    //   //       discount: 0,
+    //   //     },
+    //   //     quantity: quantity,
+    //   //     warehouse_to_pickup: {
+    //   //       warehouse_id: warehouse_id,
+    //   //       name: warehouse_name,
+    //   //       warehouse_address: formatted_address,
+    //   //       geo: geo,
+    //   //       phone_number: phone,
+    //   //       closing_time: warehouse_information?.closing_time,
+    //   //       opening_time: warehouse_information?.opening_time,
+    //   //       distance_in_miles: distance_in_miles,
+    //   //     },
+    //   //     order_delivery_address: "",
+    //   //   }));
+    //   //   setIsLoading(false);
+
+    //   //   navigation.navigate(
+    //   //     warehouse_distance_range_positive
+    //   //       ? "Shop_Order_Review_View"
+    //   //       : "Long_Distance_Warning_View",
+    //   //     warehouse_distance_range_positive
+    //   //       ? undefined
+    //   //       : {
+    //   //           formatted_address,
+    //   //           distance_in_miles,
+    //   //           distance_time,
+    //   //           coming_from: coming_from,
+    //   //         }
+    //   //   );
+    //   // }, 500); // Simulate a brief loading period
+    // }
   };
 
-  console.log(
-    "My Order in Delivery Type View:",
-    JSON.stringify(myOrder, null, 2)
-  );
+  // console.log(
+  //   "My Order in Delivery Type View:",
+  //   JSON.stringify(myOrder, null, 2)
+  // );
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
       {isLoading ? (

@@ -133,6 +133,7 @@ export default function Shopping_Cart_View() {
                         uid: uid,
                       },
                       order_status: "In Progress",
+                      order_products: cart?.products ?? [], // ✅ always latest
                     };
                   });
                   navigation.navigate("Shop_Delivery_Type_View", {

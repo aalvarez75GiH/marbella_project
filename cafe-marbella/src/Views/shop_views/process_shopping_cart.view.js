@@ -16,13 +16,16 @@ import { Global_activity_indicator } from "../../components/activity indicators/
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
-
+import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
 export default function Process_Shopping_Cart_View() {
   const theme = useTheme();
   // *************
-  const { cart, isLoading, cartTotalItems } = useContext(CartContext);
-  const products = cart?.products ?? [];
-  const sub_total = cart?.sub_total ?? 0;
+  const { cart, isLoading, cartTotalItems, isUpdatingQty } =
+    useContext(CartContext);
+  const { user_id, sub_total, total, taxes, products, quantity, cart_id } =
+    cart || {};
+  // const products = cart?.products ?? [];
+  // const sub_total = cart?.sub_total ?? 0;
 
   const { setMyOrder } = useContext(OrdersContext);
 
@@ -98,34 +101,42 @@ export default function Process_Shopping_Cart_View() {
           <Spacer position="top" size="large" />
           <Shopping_Cart_Sub_Total_Footer sub_total={sub_total} />
           <Spacer position="top" size="medium" />
-          <Regular_CTA
-            width="95%"
-            height="10%"
-            color={theme.colors.ui.business}
-            border_radius={"40px"}
-            caption="Proceed to checkout"
-            caption_text_variant="dm_sans_bold_20"
-            // action={() => navigation.navigate("Shop_Delivery_Type_View")}
-            action={() => {
-              setMyOrder((prevOrder) => {
-                return {
+          {isUpdatingQty ? (
+            <Global_activity_indicator
+              caption="Updating cart..."
+              caption_width="60%"
+            />
+          ) : (
+            <Regular_CTA
+              width="95%"
+              height="10%"
+              color={theme.colors.ui.business}
+              border_radius={"40px"}
+              caption="Proceed to checkout"
+              caption_text_variant="dm_sans_bold_20"
+              action={() => {
+                const latestProducts = cart?.products ?? [];
+
+                setMyOrder((prevOrder) => ({
                   ...prevOrder,
                   customer: {
-                    first_name: first_name,
-                    last_name: last_name,
-                    email: email,
-                    phone_number: phone_number,
+                    first_name,
+                    last_name,
+                    email,
+                    phone_number,
                     customer_address: address,
-                    uid: uid,
+                    uid,
                   },
                   order_status: "In Progress",
-                };
-              });
-              navigation.navigate("Shop_Delivery_Type_View", {
-                coming_from: "Process_Shopping_Cart_View",
-              });
-            }}
-          />
+                  order_products: latestProducts, // ✅ always latest
+                }));
+
+                navigation.navigate("Shop_Delivery_Type_View", {
+                  coming_from: "Process_Shopping_Cart_View",
+                });
+              }}
+            />
+          )}
         </Container>
       )}
     </SafeArea>

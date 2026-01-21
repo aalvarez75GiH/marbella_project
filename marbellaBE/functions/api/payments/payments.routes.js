@@ -5,7 +5,11 @@ const paymentsRouter = express.Router();
 const stripeClient = require("stripe")(process.env.STRIPE_KEY);
 
 const ordersControllers = require("../orders/orders.controllers");
-const { buildStripeErrorPayload } = require("./payments.handlers");
+const {
+  buildStripeErrorPayload,
+  parseUSAddressString,
+  buildStripeAddress,
+} = require("./payments.handlers");
 const {
   decrementWarehouseInventoryFromOrder,
 } = require("../warehouses/warehouses.controllers");
@@ -216,5 +220,253 @@ paymentsRouter.post("/refundOrder", async (req, res) => {
     });
   }
 });
+// ***************************************************************
+// payments.routes.js (or tax.routes.js)
+
+// Helper: normalize a raw address string -> Stripe address object
+function normalizeAddressOrThrow(rawAddress) {
+  const parsed = parseUSAddressString(rawAddress);
+  return buildStripeAddress(parsed);
+}
+
+// Helper: build Stripe Tax line items from your Marbella order_products
+function buildLineItemsFromOrderProducts(order_products = []) {
+  // IMPORTANT:
+  // Stripe Tax expects amount = unit amount in cents
+  // quantity is required if you want correct totals
+  return order_products.flatMap((p) => {
+    const productId = p?.id || p?.product_id || p?.title || "item";
+
+    // Your items store quantity at variant-level in size_variants[0].quantity
+    const variants = Array.isArray(p?.size_variants) ? p.size_variants : [];
+
+    return variants
+      .filter((v) => Number(v?.quantity) > 0)
+      .map((v) => {
+        const variantId = v?.id || v?.sizeLabel || v?.sizeGrams || "variant";
+        const unitAmount = Number(v?.price);
+
+        if (!Number.isInteger(unitAmount)) {
+          throw new Error(`Invalid unit price for ${productId}/${variantId}`);
+        }
+
+        return {
+          amount: unitAmount,
+          quantity: Number(v.quantity),
+          reference: `${productId}-${variantId}`,
+          // ✅ Coffee Beans / Ground Coffee (you can also store this per product)
+          tax_code: "txcd_41050006",
+        };
+      });
+  });
+}
+
+paymentsRouter.post("/tax", async (req, res) => {
+  const order = req.body;
+  console.log("TAX QUOTE REQUEST ORDER:", order);
+  try {
+    if (!order) {
+      return res
+        .status(400)
+        .json({ status: "failed", msg: "order is required" });
+    }
+
+    const order_products = order?.order_products || [];
+    const pricing = order?.pricing || {};
+
+    // Required addresses:
+    const warehouseAddressString =
+      order?.warehouse_to_pickup?.warehouse_address ||
+      order?.warehouse_to_pickup?.address ||
+      order?.warehouse_address;
+
+    if (!warehouseAddressString) {
+      return res.status(400).json({
+        status: "failed",
+        msg: "warehouse address is required (order.warehouse_to_pickup.warehouse_address)",
+      });
+    }
+
+    // Build line items
+    const line_items = buildLineItemsFromOrderProducts(order_products);
+
+    if (!line_items.length) {
+      return res.status(400).json({
+        status: "failed",
+        msg: "No line items found (check order_products size_variants.quantity)",
+      });
+    }
+
+    // Normalize warehouse address
+    const warehouseAddress = normalizeAddressOrThrow(warehouseAddressString);
+
+    // Determine delivery type
+    // const finalDeliveryType = delivery_type || order?.delivery_type || "pickup";
+    const finalDeliveryType = order?.delivery_type || "pickup";
+
+    // Shipping cost (delivery only)
+    const shippingCents =
+      finalDeliveryType === "delivery" ? Number(pricing?.shipping || 0) : 0;
+
+    // Destination address
+    // pickup -> destination is warehouse (customer comes there)
+    // delivery -> destination is customer delivery address
+    let customerAddress;
+
+    if (finalDeliveryType === "delivery") {
+      const customerAddressString =
+        order?.order_delivery_address ||
+        order?.customer?.customer_address ||
+        order?.customer_address;
+
+      if (!customerAddressString) {
+        return res.status(400).json({
+          status: "failed",
+          msg: "customer delivery address is required for delivery orders (order.order_delivery_address)",
+        });
+      }
+
+      customerAddress = normalizeAddressOrThrow(customerAddressString);
+    } else {
+      customerAddress = warehouseAddress;
+    }
+
+    // ✅ Build Stripe Tax Calculation payload
+    const calculationPayload = {
+      currency: "usd",
+      customer_details: {
+        address: customerAddress,
+        // Stripe wants to know what kind of address this is
+        // (it’s fine to use "shipping" for pickup too since it’s the "customer location")
+        address_source: "shipping",
+      },
+      line_items,
+      expand: ["line_items"],
+      //   metadata: {
+      //     delivery_type: finalDeliveryType,
+      //     order_id: order?.order_number || order?.cart_id || "",
+      //   },
+    };
+
+    // Include ship_from_details + shipping_cost only for delivery
+    if (finalDeliveryType === "delivery") {
+      calculationPayload.ship_from_details = { address: warehouseAddress };
+
+      if (Number.isInteger(shippingCents) && shippingCents > 0) {
+        calculationPayload.shipping_cost = { amount: shippingCents };
+      }
+    }
+    console.log(
+      "LINE ITEMS SENT TO STRIPE:",
+      JSON.stringify(line_items, null, 2)
+    );
+    const calculation = await stripeClient.tax.calculations.create(
+      calculationPayload
+    );
+
+    // Stripe returns totals in cents:
+    // const tax_amount =
+    //   calculation?.tax_amount_exclusive ?? calculation?.tax_amount ?? 0;
+    // const total_amount = calculation?.amount_total ?? 0;
+
+    const li = calculation?.line_items?.data || [];
+    const shipping = calculation?.shipping_cost || null;
+
+    const items_subtotal = li.reduce(
+      (sum, x) => sum + (Number(x.amount) || 0) * (Number(x.quantity) || 0),
+      0
+    );
+
+    const items_tax = li.reduce(
+      (sum, x) => sum + (Number(x.amount_tax) || 0) * (Number(x.quantity) || 0),
+      0
+    );
+
+    const shipping_amount = shipping?.amount ? Number(shipping.amount) : 0;
+    const shipping_tax = shipping?.amount_tax ? Number(shipping.amount_tax) : 0;
+
+    const tax_amount = items_tax + shipping_tax;
+    const total_amount = items_subtotal + shipping_amount + tax_amount;
+
+    return res.status(200).json({
+      status: "success",
+      calculation_id: calculation.id,
+      tax_amount,
+      total_amount,
+      currency: calculation.currency,
+      // Optional: helpful during development
+      line_items: calculation.line_items || null,
+      shipping_cost: calculation.shipping_cost || null,
+    });
+  } catch (error) {
+    console.log("TAX QUOTE ERROR:", {
+      message: error?.message,
+      type: error?.type,
+      code: error?.code,
+      raw: error?.raw,
+    });
+
+    return res.status(error?.statusCode || 500).json({
+      status: "failed",
+      msg: error?.message || "Tax quote failed",
+      type: error?.type || null,
+      code: error?.code || null,
+    });
+  }
+});
+
+module.exports = { paymentsRouter };
+
+// paymentsRouter.post("/calculatingTaxes", async (req, res) => {
+//   const {
+//     customer_address,
+//     warehouse_address, // optional: cents for partial refund
+//   } = req.body;
+
+//   try {
+//     console.log("CUSTOMER ADDRESS:", customer_address);
+//     console.log("WAREHOUSE ADDRESS:", warehouse_address);
+//     const part_1 = parseUSAddressString(warehouse_address);
+//     const part_2 = buildStripeAddress(part_1);
+//     console.log("RESULT ADDRESS:", JSON.stringify(part_2, null, 2));
+
+//     const calculation = await stripe.tax.calculations.create({
+//       currency: "usd",
+//       // Destination (customer)
+//       customer_details: {
+//         address: customerAddress, // <-- delivery address (structured)
+//         address_source: "shipping",
+//       },
+//       // Origin (warehouse)
+//       ship_from_details: {
+//         address: warehouseAddress, // <-- the Athens warehouse above
+//       },
+//       line_items: [
+//         {
+//           amount: 949, // unit price in cents
+//           quantity: 1,
+//           reference: "mex-medium-ground-250",
+//           tax_code: "txcd_41050006", // coffee beans/ground coffee (your use case)
+//         },
+//       ],
+//       // Shipping cost (delivery only)
+//       shipping_cost: { amount: 500 },
+//       expand: ["line_items"],
+//     });
+//     return res.status(200).json({
+//       status: "success",
+//       refund,
+//       order_updated,
+//     });
+//   } catch (error) {
+//     console.log("ERROR CATCHED:", error);
+//     return res.status(error?.statusCode || 500).json({
+//       status: "failed",
+//       msg: error?.message || "Refund failed",
+//       code: error?.code || null,
+//       type: error?.type || null,
+//     });
+//   }
+// });
 
 module.exports = paymentsRouter;

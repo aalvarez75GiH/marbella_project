@@ -1,6 +1,9 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
 
-import { paymentRequest } from "./payments.services";
+import {
+  paymentRequest,
+  calculatingOrderTaxesRequest,
+} from "./payments.services";
 export const PaymentsContext = createContext();
 
 export const Payments_Context_Provider = ({ children }) => {
@@ -128,6 +131,45 @@ export const Payments_Context_Provider = ({ children }) => {
       setIsLoading(false);
     }
   };
+  const onTaxes = async (myOrder) => {
+    setIsLoading(true);
+
+    try {
+      if (!myOrder) {
+        const e = {
+          status: 400,
+          message: "Please send the order.",
+          code: "missing_order",
+        };
+        setError(e);
+        return { status: e.status, order: null, error: e };
+      }
+
+      const result = await calculatingOrderTaxesRequest(myOrder);
+
+      return {
+        status: result.status ?? 200,
+        calculation_id: result.calculation_id,
+        tax_amount: result.tax_amount,
+        total_amount: result.total_amount,
+      };
+    } catch (err) {
+      const e = normalizePaymentError(err);
+      setError(e);
+
+      //   console.log("PAYMENT ERROR:", {
+      //     status: e.status,
+      //     code: e.code,
+      //     decline_code: e.decline_code,
+      //     message: e.message,
+      //     raw: e.raw,
+      //   });
+
+      return { status: e.status || 500, order: null, error: e };
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <PaymentsContext.Provider
@@ -149,6 +191,7 @@ export const Payments_Context_Provider = ({ children }) => {
         onSuccess,
         cardError,
         setCardError,
+        onTaxes,
       }}
     >
       {children}
