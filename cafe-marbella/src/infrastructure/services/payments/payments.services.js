@@ -15,9 +15,13 @@ export const cardTokenRequest = (card) => {
 // ****** Request to firebase Payment end point in order to send info to Stripe
 
 export const calculatingOrderTaxesRequest = async (order) => {
-  const response = await axios.post(`${paymentsEndPoint}/tax`, order, {
-    headers: { "Content-Type": "application/json" },
-  });
+  const response = await axios.post(
+    `${paymentsEndPoint}/calculatingtaxes`,
+    order,
+    {
+      headers: { "Content-Type": "application/json" },
+    }
+  );
   return response.data;
 };
 export const paymentRequest = async (

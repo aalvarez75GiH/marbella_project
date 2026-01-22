@@ -261,7 +261,7 @@ function buildLineItemsFromOrderProducts(order_products = []) {
   });
 }
 
-paymentsRouter.post("/tax", async (req, res) => {
+paymentsRouter.post("/calculatingtaxes", async (req, res) => {
   const order = req.body;
   console.log("TAX QUOTE REQUEST ORDER:", order);
   try {
@@ -360,10 +360,11 @@ paymentsRouter.post("/tax", async (req, res) => {
       "LINE ITEMS SENT TO STRIPE:",
       JSON.stringify(line_items, null, 2)
     );
-    const calculation = await stripeClient.tax.calculations.create(
-      calculationPayload
-    );
-
+    const calculation = await stripeClient.tax.calculations.create({
+      ...calculationPayload,
+      expand: ["line_items", "tax_breakdown"],
+    });
+    console.log("CALC:", JSON.stringify(calculation, null, 2));
     // Stripe returns totals in cents:
     // const tax_amount =
     //   calculation?.tax_amount_exclusive ?? calculation?.tax_amount ?? 0;
@@ -416,57 +417,5 @@ paymentsRouter.post("/tax", async (req, res) => {
 });
 
 module.exports = { paymentsRouter };
-
-// paymentsRouter.post("/calculatingTaxes", async (req, res) => {
-//   const {
-//     customer_address,
-//     warehouse_address, // optional: cents for partial refund
-//   } = req.body;
-
-//   try {
-//     console.log("CUSTOMER ADDRESS:", customer_address);
-//     console.log("WAREHOUSE ADDRESS:", warehouse_address);
-//     const part_1 = parseUSAddressString(warehouse_address);
-//     const part_2 = buildStripeAddress(part_1);
-//     console.log("RESULT ADDRESS:", JSON.stringify(part_2, null, 2));
-
-//     const calculation = await stripe.tax.calculations.create({
-//       currency: "usd",
-//       // Destination (customer)
-//       customer_details: {
-//         address: customerAddress, // <-- delivery address (structured)
-//         address_source: "shipping",
-//       },
-//       // Origin (warehouse)
-//       ship_from_details: {
-//         address: warehouseAddress, // <-- the Athens warehouse above
-//       },
-//       line_items: [
-//         {
-//           amount: 949, // unit price in cents
-//           quantity: 1,
-//           reference: "mex-medium-ground-250",
-//           tax_code: "txcd_41050006", // coffee beans/ground coffee (your use case)
-//         },
-//       ],
-//       // Shipping cost (delivery only)
-//       shipping_cost: { amount: 500 },
-//       expand: ["line_items"],
-//     });
-//     return res.status(200).json({
-//       status: "success",
-//       refund,
-//       order_updated,
-//     });
-//   } catch (error) {
-//     console.log("ERROR CATCHED:", error);
-//     return res.status(error?.statusCode || 500).json({
-//       status: "failed",
-//       msg: error?.message || "Refund failed",
-//       code: error?.code || null,
-//       type: error?.type || null,
-//     });
-//   }
-// });
 
 module.exports = paymentsRouter;
