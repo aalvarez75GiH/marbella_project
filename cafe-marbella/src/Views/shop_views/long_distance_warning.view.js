@@ -16,6 +16,7 @@ import { Text } from "../../infrastructure/typography/text.component";
 import { Long_Distance_Warning_Tile } from "../../components/tiles/long_distance_warning.tile";
 import { Regular_CTA } from "../../components/ctas/regular.cta";
 
+import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
 import TimeIcon from "../../../assets/my_icons/time_icon.svg";
 import DistanceIcon from "../../../assets/my_icons/distance_icon.svg";
@@ -24,6 +25,7 @@ export default function Long_Distance_Warning_View() {
   const theme = useTheme();
   const navigation = useNavigation();
   const route = useRoute();
+  const { myOrder, setMyOrder } = useContext(OrdersContext);
   const { formatted_address, distance_in_miles, distance_time, coming_from } =
     route.params || {};
 
@@ -76,7 +78,11 @@ export default function Long_Distance_Warning_View() {
             caption={"Yes, continue with purchase"}
             caption_text_variant="dm_sans_bold_20"
             // disabled={isLoading} // ✅ prevent double taps if your CTA supports it
-            action={() => navigation.navigate("Shop_Order_Review_View")}
+            action={() =>
+              navigation.navigate("Shop_Order_Review_View", {
+                order: myOrder,
+              })
+            }
           />
           <Spacer position="top" size="extraLarge" />
           {/* <Spacer position="top" size="extraLarge" /> */}

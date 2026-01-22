@@ -22,18 +22,15 @@ import { AuthenticationContext } from "../../infrastructure/services/authenticat
 export default function Orders_View() {
   const {
     orders,
-    gettingAllOrdersByUserID,
     isLoading,
     ordersGrouped,
     gettingAllOrdersByUserIDGroupedByMonth,
   } = useContext(OrdersContext);
-  // console.log("ORDERS AT VIEW :", JSON.stringify(orders, null, 2));
 
   const { user } = useContext(AuthenticationContext);
   const { user_id } = user || {};
   const { formatDate } = useContext(GlobalContext);
   const theme = useTheme();
-  const navigation = useNavigation();
 
   const sections =
     (ordersGrouped || []).map((group) => ({
@@ -52,10 +49,6 @@ export default function Orders_View() {
   );
 
   const renderingOrdersFromBackendTile = ({ item }) => {
-    // console.log(
-    //   "ORDER ITEM IN RENDERING FUNCTION :",
-    //   JSON.stringify(item, null, 2)
-    // );
     const {
       pricing,
       warehouse_to_pickup,
@@ -78,7 +71,6 @@ export default function Orders_View() {
         long_formatted_date={formatDate(createdAt).long}
         short_formatted_date={formatDate(createdAt).short}
         delivery_type={delivery_type}
-        customer_address={customer_address}
         order_number={order_number}
         item={item}
       />

@@ -38,9 +38,9 @@ export default function Shop_Order_Review_View() {
     order_products,
     delivery_type,
     quantity,
+    order_delivery_address,
   } = order || {};
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
-  const { customer_address } = customer || {};
 
   const {
     name: warehouse_name,
@@ -144,7 +144,7 @@ export default function Shop_Order_Review_View() {
                   closing_time={closing_time}
                   distance_to_warehouse_mi={distance_in_miles}
                   delivery_type={delivery_type}
-                  customer_address={customer_address}
+                  order_delivery_address={order_delivery_address}
                 />
               </>
 

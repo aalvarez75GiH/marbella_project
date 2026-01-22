@@ -24,7 +24,9 @@ export const Warehouse_Context_Provider = ({ children }) => {
   // later you’ll set this based on geolocation
   const { productsCatalog } = useContext(GlobalContext);
 
-  const { deviceLat, deviceLng } = useContext(GeolocationContext);
+  // const { deviceLat, deviceLng } = useContext(GeolocationContext);
+  let deviceLat = 36.1060631;
+  let deviceLng = -86.74432890000001;
   // console.log("MY WAREHOUSE CONTEXT AT CONTEXT", myWarehouse);
   useEffect(() => {
     if (typeof deviceLat !== "number" || typeof deviceLng !== "number") {

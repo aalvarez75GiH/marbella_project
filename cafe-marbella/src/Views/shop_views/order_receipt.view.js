@@ -41,14 +41,13 @@ export default function Shop_Order_Receipt_View() {
   const {
     pricing,
     warehouse_to_pickup,
-    customer,
     order_products,
     delivery_type,
     payment_information,
     quantity,
+    order_delivery_address,
   } = myOrder || {};
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
-  const { customer_address } = customer || {};
   const { last_four } = payment_information || {};
   const {
     name: warehouse_name,
@@ -164,7 +163,7 @@ export default function Shop_Order_Receipt_View() {
                 closing_time={closing_time}
                 distance_to_warehouse_mi={distance_in_miles}
                 delivery_type={delivery_type}
-                customer_address={customer_address}
+                order_delivery_address={order_delivery_address}
               />
               <Spacer position="top" size="large" />
               <Payment_method_Info_Tile last_four={last_four} />

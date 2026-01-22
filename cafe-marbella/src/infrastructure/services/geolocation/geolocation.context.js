@@ -9,32 +9,6 @@ export const Geolocation_Context_Provider = ({ children }) => {
   const [deviceLat, setDeviceLat] = useState(null);
   const [deviceLng, setDeviceLng] = useState(null);
 
-  // useEffect(() => {
-  //   const requestLocationPermission = async () => {
-  //     setIsLoading(true);
-  //     try {
-  //       let { status } = await Location.requestForegroundPermissionsAsync();
-  //       if (status !== "granted") {
-  //         setError("Permission to access location was denied");
-  //         setIsLoading(false);
-  //         return;
-  //       }
-
-  //       let userLocation = await Location.getCurrentPositionAsync({});
-  //       console.log("USER LOCATION:", JSON.stringify(userLocation, null, 2));
-  //       setDeviceLat(userLocation.coords.latitude);
-  //       setDeviceLng(userLocation.coords.longitude);
-  //       // You can use userLocation.coords.latitude and userLocation.coords.longitude as needed
-  //       setIsLoading(false);
-  //     } catch (err) {
-  //       setError(err.message);
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   requestLocationPermission();
-  // }, []);
-
   useEffect(() => {
     let subscription = null;
     let appStateSub = null;
@@ -53,6 +27,8 @@ export const Geolocation_Context_Provider = ({ children }) => {
         const initial = await Location.getCurrentPositionAsync({});
         setDeviceLat(initial.coords.latitude);
         setDeviceLng(initial.coords.longitude);
+        // setDeviceLat("36.1060631");
+        // setDeviceLng("-86.74432890000001");
 
         // 2) Live updates while app is open
         subscription = await Location.watchPositionAsync(
@@ -64,6 +40,8 @@ export const Geolocation_Context_Provider = ({ children }) => {
           (loc) => {
             setDeviceLat(loc.coords.latitude);
             setDeviceLng(loc.coords.longitude);
+            // setDeviceLat("36.1060631");
+            // setDeviceLng("-86.74432890000001");
           }
         );
 
@@ -74,6 +52,8 @@ export const Geolocation_Context_Provider = ({ children }) => {
               const latest = await Location.getCurrentPositionAsync({});
               setDeviceLat(latest.coords.latitude);
               setDeviceLng(latest.coords.longitude);
+              // setDeviceLat("36.1060631");
+              // setDeviceLng("-86.74432890000001");
             } catch (e) {
               // ignore, keep last known location
             }

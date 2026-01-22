@@ -128,7 +128,14 @@ export default function Process_Shopping_Cart_View() {
                     uid,
                   },
                   order_status: "In Progress",
-                  order_products: latestProducts, // ✅ always latest
+                  order_products: latestProducts,
+                  pricing: {
+                    sub_total,
+                    taxes,
+                    discount: 0,
+                    shipping: 0,
+                    total,
+                  }, // ✅ always latest
                 }));
 
                 navigation.navigate("Shop_Delivery_Type_View", {

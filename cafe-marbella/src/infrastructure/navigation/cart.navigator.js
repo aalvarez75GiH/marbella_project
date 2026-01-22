@@ -9,6 +9,7 @@ import Payment_View from "../../Views/shop_views/payment.view";
 import Order_Confirmation_View from "../../Views/shop_views/order_confirmation.view";
 import Shop_Order_Receipt_View from "../../Views/shop_views/order_receipt.view";
 import Long_Distance_Warning_View from "../../Views/shop_views/long_distance_warning.view";
+import Different_Delivery_Address_View from "../../Views/shop_views/different_delivery_address.view";
 
 import { CartContext } from "../services/cart/cart.context";
 
@@ -55,6 +56,10 @@ export const Cart_Navigator = () => {
       <CartStack.Screen
         name="Long_Distance_Warning_View"
         component={Long_Distance_Warning_View}
+      />
+      <CartStack.Screen
+        name="Different_Delivery_Address_View"
+        component={Different_Delivery_Address_View}
       />
     </CartStack.Navigator>
   );

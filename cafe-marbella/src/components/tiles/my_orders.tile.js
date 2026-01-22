@@ -22,13 +22,13 @@ export const My_Orders_Tile = ({
   long_formatted_date,
   short_formatted_date,
   delivery_type,
-  customer_address,
   order_number,
   item,
 }) => {
   console.log("ORDER INFO TILE - QUANTITY:", quantity);
   const { formatCentsToUSD } = useContext(GlobalContext);
   const formatted_currency = formatCentsToUSD;
+  const { order_delivery_address } = item || {};
 
   const navigation = useNavigation();
   return delivery_type === "pickup" ? (
@@ -307,7 +307,9 @@ export const My_Orders_Tile = ({
               <Text variant="dm_sans_bold_14">
                 Deliver between 20 - 25 Dec, 2025
               </Text>
-              <Text variant="dm_sans_regular_14">at {customer_address}</Text>
+              <Text variant="dm_sans_regular_14">
+                at {order_delivery_address}
+              </Text>
             </Spacer>
           </Container>
         </Container>

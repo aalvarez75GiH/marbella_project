@@ -29,8 +29,7 @@ export default function Shopping_Cart_View() {
     user || {};
   const { cart, isLoading, cartTotalItems, gettingCartByUserID } =
     useContext(CartContext);
-  const products = cart?.products ?? [];
-  const sub_total = cart?.sub_total ?? 0;
+  const { sub_total, total, taxes, products } = cart || {};
 
   useFocusEffect(
     useCallback(() => {
@@ -121,21 +120,27 @@ export default function Shopping_Cart_View() {
                 caption_text_variant="dm_sans_bold_20"
                 // action={() => navigation.navigate("Shop_Delivery_Type_View")}
                 action={() => {
-                  setMyOrder((prevOrder) => {
-                    return {
-                      ...prevOrder,
-                      customer: {
-                        first_name: first_name,
-                        last_name: last_name,
-                        email: email,
-                        phone_number: phone_number,
-                        customer_address: address,
-                        uid: uid,
-                      },
-                      order_status: "In Progress",
-                      order_products: cart?.products ?? [], // ✅ always latest
-                    };
-                  });
+                  const latestProducts = cart?.products ?? [];
+                  setMyOrder((prevOrder) => ({
+                    ...prevOrder,
+                    customer: {
+                      first_name,
+                      last_name,
+                      email,
+                      phone_number,
+                      customer_address: address,
+                      uid,
+                    },
+                    order_status: "In Progress",
+                    order_products: latestProducts,
+                    pricing: {
+                      sub_total,
+                      taxes,
+                      discount: 0,
+                      shipping: 0,
+                      total,
+                    }, // ✅ always latest
+                  }));
                   navigation.navigate("Shop_Delivery_Type_View", {
                     coming_from: "Shopping_Cart_View",
                   });

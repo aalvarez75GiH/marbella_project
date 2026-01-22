@@ -28,6 +28,7 @@ export const RT_Delivery_Information_Order_Tile = ({
   delivery_type,
   distance_to_warehouse_mi,
   customer_address = "",
+  order_delivery_address,
 }) => {
   const [realTimeDistanceInformation, setRealTimeDistanceInformation] =
     useState(null);
@@ -270,7 +271,7 @@ export const RT_Delivery_Information_Order_Tile = ({
             //color="yellow"
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_regular_14">{customer_address}</Text>
+              <Text variant="dm_sans_regular_14">{order_delivery_address}</Text>
             </Spacer>
           </Container>
           <Spacer position="top" size="small" />

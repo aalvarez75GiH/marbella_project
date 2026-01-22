@@ -11,6 +11,7 @@ import Order_Confirmation_View from "../../Views/shop_views/order_confirmation.v
 import Shop_Order_Receipt_View from "../../Views/shop_views/order_receipt.view";
 import Long_Distance_Warning_View from "../../Views/shop_views/long_distance_warning.view";
 import Menu_View from "../../Views/shop_views/menu.view";
+import Different_Delivery_Address_View from "../../Views/shop_views/different_delivery_address.view";
 
 const ShopFlowStack = createNativeStackNavigator();
 
@@ -50,6 +51,10 @@ export const Shop_Navigator = () => {
       <ShopFlowStack.Screen
         name="Long_Distance_Warning_View"
         component={Long_Distance_Warning_View}
+      />
+      <ShopFlowStack.Screen
+        name="Different_Delivery_Address_View"
+        component={Different_Delivery_Address_View}
       />
       <ShopFlowStack.Screen name="Menu_View" component={Menu_View} />
     </ShopFlowStack.Navigator>

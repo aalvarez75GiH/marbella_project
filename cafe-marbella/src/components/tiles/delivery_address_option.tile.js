@@ -88,7 +88,7 @@ export const Delivery_Address_Option_Tile = ({
         // border_radius="20px"
         direction="row"
         overflow="hidden"
-        onPress={() => null}
+        onPress={action}
       >
         <Container
           padding_vertical="5%"
@@ -103,7 +103,7 @@ export const Delivery_Address_Option_Tile = ({
           color={theme.colors.ui.tertiary}
           //   color={"lightblue"}
         >
-          <Action_Container
+          <Container
             width="100%"
             justify="center"
             padding_vertical="3%"
@@ -116,7 +116,7 @@ export const Delivery_Address_Option_Tile = ({
                 Add a different delivery address
               </Text>
             </Spacer>
-          </Action_Container>
+          </Container>
 
           <Spacer position="top" size="small" />
         </Container>

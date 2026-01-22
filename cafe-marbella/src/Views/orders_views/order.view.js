@@ -34,7 +34,6 @@ export default function Order_View() {
   const {
     pricing,
     warehouse_to_pickup,
-    customer,
     order_products,
     delivery_type,
     payment_information,
@@ -43,9 +42,9 @@ export default function Order_View() {
     updatedAt,
     refund_details = "Refunded",
     order_number,
+    order_delivery_address,
   } = item || {};
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
-  const { customer_address } = customer || {};
   const { last_four } = payment_information || {};
   const {
     warehouse_name,
@@ -56,8 +55,6 @@ export default function Order_View() {
     geo,
   } = warehouse_to_pickup || {};
   const { lat, lng } = geo || {};
-
-  const { setCardVerified } = useContext(PaymentsContext);
 
   const navigation = useNavigation();
   const renderingOrderProducts = () => {
@@ -140,7 +137,7 @@ export default function Order_View() {
                 closing_time={closing_time}
                 distance_to_warehouse_mi={distance_in_miles}
                 delivery_type={delivery_type}
-                customer_address={customer_address}
+                order_delivery_address={order_delivery_address}
                 warehouse_lat={lat}
                 warehouse_lng={lng}
               />

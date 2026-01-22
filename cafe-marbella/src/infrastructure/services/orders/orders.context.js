@@ -8,6 +8,8 @@ import {
   gettingAllOrdersByUserIDGroupedByMonthRequest,
 } from "./orders.services";
 
+import { onTaxes } from "../payments/payments.services";
+
 export const OrdersContext = createContext();
 
 export const Orders_Context_Provider = ({ children }) => {
@@ -17,6 +19,7 @@ export const Orders_Context_Provider = ({ children }) => {
   const [error, setError] = useState(null);
   const [myOrder, setMyOrder] = useState(myOrder_schema);
   const [deliveryOption, setDeliveryOption] = useState(null);
+  const [differentAddress, setDifferentAddress] = useState("");
 
   // console.log("MY ORDER AT ORDERS CONTEXT: ", JSON.stringify(myOrder, null, 2));
 
@@ -71,6 +74,66 @@ export const Orders_Context_Provider = ({ children }) => {
     }, 1000); // Simulate network delay
   };
 
+  console.log(
+    "DIFFERENT ADDRESS AT ORDERS CONTEXT: ",
+    JSON.stringify(differentAddress, null, 2)
+  );
+  const handlingDeliveryOption = async ({
+    navigation,
+    onTaxes,
+    differentAddress,
+    customer_address,
+  }) => {
+    setIsLoading(true);
+    // setDeliveryOption("delivery");
+
+    try {
+      // 1) Prepare nextOrder with changes
+      const nextOrder = {
+        ...myOrder,
+        order_delivery_address: differentAddress || customer_address,
+      };
+      // 2) Call taxes with the order you JUST built
+      const taxesResults = await onTaxes(nextOrder);
+      console.log(
+        "Taxes Results (DELIVERY):",
+        JSON.stringify(taxesResults, null, 2)
+      );
+
+      // Optional: guard if your onTaxes returns an error shape instead of throwing
+      if (taxesResults?.error || taxesResults?.status === "failed") {
+        throw new Error(taxesResults?.error?.message || "Tax quote failed");
+      }
+
+      // 3) Build final order with Stripe totals
+      const orderWithTaxes = {
+        ...nextOrder,
+        pricing: {
+          ...nextOrder.pricing,
+          taxes: taxesResults.tax_amount,
+          total: taxesResults.total_amount,
+        },
+        tax_calculation_id: taxesResults.calculation_id,
+      };
+
+      // 4) Set it once
+      setMyOrder(orderWithTaxes);
+
+      // 5) Navigate (same style as pickup)
+      navigation.navigate("Shop_Order_Review_View", {
+        order: orderWithTaxes,
+      });
+    } catch (error) {
+      console.log("DELIVERY TAX FLOW ERROR:", error?.message || error);
+      // show alert/toast if you want
+    } finally {
+      // 6) Always stop loader
+      setIsLoading(false);
+    }
+
+    return;
+  };
+
   return (
     <OrdersContext.Provider
       value={{
@@ -84,6 +147,9 @@ export const Orders_Context_Provider = ({ children }) => {
         orders,
         ordersGrouped,
         gettingAllOrdersByUserIDGroupedByMonth,
+        setDifferentAddress,
+        differentAddress,
+        handlingDeliveryOption,
       }}
     >
       {children}
