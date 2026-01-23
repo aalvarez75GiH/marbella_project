@@ -238,15 +238,15 @@ export const RT_Delivery_Information_Order_Tile = ({
       >
         <Container
           padding_vertical="5%"
-          width="30%"
+          width="25%"
           color={theme.colors.ui.tertiary}
           // color={"lightgreen"}
         >
           {/* <StoreIcon width={60} height={60} fill={"#000000"} /> */}
-          <DeliveryIcon width={50} height={50} fill={"#000000"} />
+          <DeliveryIcon width={45} height={45} fill={"#000000"} />
         </Container>
         <Container
-          width="70%"
+          width="75%"
           color={theme.colors.ui.tertiary}
           //   color={"lightblue"}
         >
