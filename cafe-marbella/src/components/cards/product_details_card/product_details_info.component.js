@@ -18,6 +18,11 @@ export const Product_Details_Info_Component = ({
   selectedVariant,
   product_to_add_to_cart,
 }) => {
+  console.log(
+    "SELECTED VARIANT AT INFO COMPONENT:",
+    JSON.stringify(selectedVariant, null, 2)
+  );
+  const isSoldOut = selectedVariant?.stock === 0;
   const navigation = useNavigation();
   const { addingProductToCart } = useContext(CartContext);
   const { price, sizeLabel, sizeLabel_ounces } = selectedVariant || {};
@@ -89,10 +94,18 @@ export const Product_Details_Info_Component = ({
             width="65%"
             height="44px" // ✅ fixed button height
             border_radius="30px"
-            color={theme.colors.ui.success}
+            // color={theme.colors.ui.success}
+            color={
+              isSoldOut
+                ? theme.colors.bg.screens_bg // Set to grey or a disabled color
+                : theme.colors.ui.primary
+            }
             justify="center"
             align="center"
             onPress={() => {
+              if (isSoldOut) {
+                return; // Do nothing if sold out
+              }
               addingProductToCart(
                 product_to_add_to_cart,
                 navigation,
@@ -101,7 +114,17 @@ export const Product_Details_Info_Component = ({
               );
             }}
           >
-            <Text variant="dm_sans_bold_16_white">Add to cart</Text>
+            <Text
+              // variant="dm_sans_bold_16_white"
+              variant={
+                isSoldOut
+                  ? "dm_sans_bold_16_cta_disabled" // Optional: Use a disabled text style
+                  : // Optional: Use a disabled text style
+                    "dm_sans_bold_16_white"
+              }
+            >
+              Add to cart
+            </Text>
           </Pressable_Container>
         </Container>
       </Container>

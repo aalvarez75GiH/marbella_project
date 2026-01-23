@@ -20,7 +20,7 @@ export const Orders_Context_Provider = ({ children }) => {
   const [myOrder, setMyOrder] = useState(myOrder_schema);
   const [deliveryOption, setDeliveryOption] = useState(null);
   const [differentAddress, setDifferentAddress] = useState("");
-
+  // const [deliveryOption, setDeliveryOption] = useState(null);
   // console.log("MY ORDER AT ORDERS CONTEXT: ", JSON.stringify(myOrder, null, 2));
 
   useEffect(() => {
@@ -84,6 +84,10 @@ export const Orders_Context_Provider = ({ children }) => {
     differentAddress,
     customer_address,
   }) => {
+    console.log(
+      "DIFFERENT ADDRESS AT HANDLING: ",
+      JSON.stringify(differentAddress, null, 2)
+    );
     setIsLoading(true);
     // setDeliveryOption("delivery");
 

@@ -23,7 +23,7 @@ import { PaymentsContext } from "../../infrastructure/services/payments/payments
 
 import AddIcon from "../../../assets/my_icons/addIcon.svg";
 export default function Shop_Delivery_Type_View() {
-  const [deliveryOption, setDeliveryOption] = useState(null);
+  // const [deliveryOption, setDeliveryOption] = useState(null);
   // const [differentAddress, setDifferentAddress] = useState("");
 
   const route = useRoute();
@@ -58,6 +58,8 @@ export default function Shop_Delivery_Type_View() {
     setDifferentAddress,
     differentAddress,
     handlingDeliveryOption,
+    setDeliveryOption,
+    deliveryOption,
   } = useContext(OrdersContext);
 
   const { customer } = myOrder || {};
@@ -106,6 +108,7 @@ export default function Shop_Delivery_Type_View() {
           opening_time: warehouse_information?.opening_time,
           distance_in_miles: distance_in_miles,
         },
+        order_delivery_address: customer_address,
       }));
     }, 500); // Simulate a brief loading period
   };
@@ -189,57 +192,6 @@ export default function Shop_Delivery_Type_View() {
 
     return;
   };
-
-  // const handlingDeliveryOption = async () => {
-  //   setIsLoading(true);
-  //   // setDeliveryOption("delivery");
-
-  //   try {
-  //     // 1) Prepare nextOrder with changes
-  //     const nextOrder = {
-  //       ...myOrder,
-  //       order_delivery_address: differentAddress || customer_address,
-  //     };
-  //     // 2) Call taxes with the order you JUST built
-  //     const taxesResults = await onTaxes(nextOrder);
-  //     console.log(
-  //       "Taxes Results (DELIVERY):",
-  //       JSON.stringify(taxesResults, null, 2)
-  //     );
-
-  //     // Optional: guard if your onTaxes returns an error shape instead of throwing
-  //     if (taxesResults?.error || taxesResults?.status === "failed") {
-  //       throw new Error(taxesResults?.error?.message || "Tax quote failed");
-  //     }
-
-  //     // 3) Build final order with Stripe totals
-  //     const orderWithTaxes = {
-  //       ...nextOrder,
-  //       pricing: {
-  //         ...nextOrder.pricing,
-  //         taxes: taxesResults.tax_amount,
-  //         total: taxesResults.total_amount,
-  //       },
-  //       tax_calculation_id: taxesResults.calculation_id,
-  //     };
-
-  //     // 4) Set it once
-  //     setMyOrder(orderWithTaxes);
-
-  //     // 5) Navigate (same style as pickup)
-  //     navigation.navigate("Shop_Order_Review_View", {
-  //       order: orderWithTaxes,
-  //     });
-  //   } catch (error) {
-  //     console.log("DELIVERY TAX FLOW ERROR:", error?.message || error);
-  //     // show alert/toast if you want
-  //   } finally {
-  //     // 6) Always stop loader
-  //     setIsLoading(false);
-  //   }
-
-  //   return;
-  // };
 
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>

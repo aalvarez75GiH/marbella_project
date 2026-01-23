@@ -27,14 +27,14 @@ export default function Shop_Order_Review_View() {
   const theme = useTheme();
   const route = useRoute();
   const { order } = route.params;
-  const { isLoading } = useContext(OrdersContext);
+  const { isLoading, setDeliveryOption, setDifferentAddress } =
+    useContext(OrdersContext);
   console.log("MY ORDER AT REVIEW VIEW:", JSON.stringify(order, null, 2));
   const { myWarehouse } = useContext(WarehouseContext);
   const { distance_in_miles } = myWarehouse || {};
   const {
     pricing,
     warehouse_to_pickup,
-    customer,
     order_products,
     delivery_type,
     quantity,
@@ -76,7 +76,26 @@ export default function Shop_Order_Review_View() {
       ) : (
         <>
           <Go_Back_Header
-            action={() => navigation.goBack()}
+            action={() => {
+              setDeliveryOption(null);
+              setDifferentAddress("");
+              const state = navigation.getState();
+              const hasDeliveryType = state.routes.some(
+                (r) => r.name === "Shop_Delivery_Type_View"
+              );
+
+              if (hasDeliveryType) {
+                // keep popping until it's on top
+                while (
+                  navigation.getState().routes.at(-1)?.name !==
+                  "Shop_Delivery_Type_View"
+                ) {
+                  navigation.goBack();
+                }
+              } else {
+                navigation.navigate("Shop_Delivery_Type_View");
+              }
+            }}
             label="Order review"
           />
           <ScrollView

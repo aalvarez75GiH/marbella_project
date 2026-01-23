@@ -42,6 +42,7 @@ export const Product_Size_Options_Component = ({
         color={theme.colors.bg.elements_bg}
       >
         {item.size_variants.map((variant) => {
+          console.log("VARIANT STOCK:", variant.sizeLabel, variant.stock);
           const isActive = selectedVariantId === variant.id;
           return (
             <Size_Options_CTA

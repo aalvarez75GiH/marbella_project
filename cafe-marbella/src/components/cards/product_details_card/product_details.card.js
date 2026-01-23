@@ -46,8 +46,8 @@ export const Product_Details_Card = ({ item = null }) => {
       //color={"red"}
     >
       <Product_Details_Avail_Promotion_Component
-        qty={selectedVariant.quantity}
         promotion={selectedVariant.promotion}
+        stock={selectedVariant.stock}
       />
       <Product_Image_Component
         image={selectedVariant.images[selectedImageIndex]}

@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
+import { Platform, KeyboardAvoidingView, ScrollView, View } from "react-native";
 
 import { Container } from "../../components/containers/general.containers";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -22,77 +23,120 @@ export default function Different_Delivery_Address_View() {
     handlingDeliveryOption,
     myOrder,
   } = useContext(OrdersContext);
+  console.log(
+    "MY ORDER AT DIFFERENT DELIVERY ADDRESS VIEW:",
+    JSON.stringify(myOrder, null, 2)
+  );
   const { customer_address } = myOrder || {};
+  const CTA_HEIGHT = 65; // ✅ fixed height so it never shrinks
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
       style={{ flex: 1 }}
     >
-      <Container
-        width="100%"
-        height="100%"
-        color={theme.colors.bg.screens_bg}
-        // color={"green"}
-        justify="flex-start"
-        align="center"
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
       >
-        <Exit_Header_With_Label
-          label="Delivery Address"
-          action={() => navigation.goBack()}
-        />
         <Container
           width="100%"
-          height="15%"
-          color="red"
-          justify="center"
-          align="flex-start"
-        >
-          <Spacer position="left" size="large">
-            <Text variant="raleway_bold_18">Enter a different address:</Text>
-          </Spacer>
-        </Container>
-        <Container
-          width="100%"
-          height="15%"
-          color="red"
-          justify="center"
+          height="100%"
+          color={theme.colors.bg.elements_bg}
+          justify="flex-start"
           align="center"
         >
-          <DataInput
-            label="New address for delivery"
-            // onChangeText={(value) => setNameOnCard(value)}
-            onChangeText={(value) => setDifferentAddress(value)}
-            value={differentAddress}
-            underlineColor={theme.colors.inputs.bottom_lines}
-            activeUnderlineColor={"#3A2F01"}
+          <Exit_Header_With_Label
+            label="Delivery Address"
+            action={() => navigation.goBack()}
           />
-        </Container>
-        <Container
-          width="100%"
-          height="15%"
-          color="red"
-          justify="center"
-          align="center"
-        >
-          <Regular_CTA
-            width="95%"
-            height="70%"
-            color={theme.colors.brand.primary}
-            border_radius={"40px"}
-            caption="Continue"
-            caption_text_variant="dm_sans_bold_20_white"
-            action={async () => {
-              await handlingDeliveryOption({
-                navigation,
-                onTaxes,
-                differentAddress,
-                customer_address,
-              });
+
+          {/* ✅ Scrollable content */}
+          <ScrollView
+            style={{ flex: 1, width: "100%" }}
+            contentContainerStyle={{
+              flexGrow: 1,
+              paddingTop: 44, // ✅ space from header
+              paddingBottom: 16,
             }}
-          />
+            keyboardShouldPersistTaps="handled"
+          >
+            <Container
+              width="100%"
+              //   color="green"
+              color={theme.colors.bg.elements_bg}
+              justify="flex-start" // ✅
+              align="flex-start"
+              style={{ paddingVertical: 12 }}
+            >
+              <Spacer position="left" size="large">
+                <Text variant="raleway_bold_20">
+                  Do you want to enter a new delivery address?
+                </Text>
+                <Spacer position="top" size="medium" />
+                <Text variant="raleway_medium_18">Go ahead!</Text>
+              </Spacer>
+            </Container>
+
+            {/* ✅ SPACE BETWEEN BLOCKS */}
+            <Spacer position="top" size="large" />
+            <Spacer position="top" size="large" />
+            <Spacer position="top" size="large" />
+
+            <Container
+              width="100%"
+              //   color="red"
+              color={theme.colors.bg.elements_bg}
+              justify="flex-start" // ✅
+              align="center"
+              style={{ paddingVertical: 10 }}
+            >
+              <DataInput
+                label="New address for delivery"
+                onChangeText={(value) => setDifferentAddress(value)}
+                value={differentAddress}
+                underlineColor={theme.colors.inputs.bottom_lines}
+                activeUnderlineColor={"#3A2F01"}
+              />
+            </Container>
+
+            {/* filler pushes CTA down */}
+            <View style={{ flex: 1 }} />
+          </ScrollView>
+
+          {/* ✅ Fixed footer CTA (outside ScrollView) */}
+          <Container
+            width="100%"
+            color={theme.colors.bg.elements_bg}
+            justify="center"
+            align="center"
+            style={{
+              paddingBottom: 16,
+              paddingTop: 8,
+              // optional: subtle separation
+              // borderTopWidth: 1,
+              // borderTopColor: "#00000010",
+            }}
+          >
+            <Regular_CTA
+              width="95%"
+              height={CTA_HEIGHT} // ✅ FIXED height (number)
+              color={theme.colors.brand.primary}
+              border_radius={"40px"}
+              caption="Continue"
+              caption_text_variant="dm_sans_bold_20_white"
+              action={async () => {
+                await handlingDeliveryOption({
+                  navigation,
+                  onTaxes,
+                  differentAddress,
+                  customer_address,
+                });
+              }}
+            />
+          </Container>
         </Container>
-        <Spacer position="top" size="large" />
-      </Container>
+      </KeyboardAvoidingView>
     </SafeArea>
   );
 }

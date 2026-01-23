@@ -16,16 +16,21 @@ export const Size_Options_CTA = ({ action, isActive, sizeLabel, disabled }) => {
         disabled
           ? theme.colors.bg.screens_bg // Set to grey or a disabled color
           : isActive
-          ? theme.colors.ui.secondary
+          ? theme.colors.ui.primary
           : theme.colors.bg.screens_bg
       }
-      padding_vertical="12px"
+      padding_vertical="10px"
+      border_color={"transparent"}
+      style={{
+        borderBottomWidth: disabled ? 0 : 2,
+      }}
     >
       <Text
         variant={
           disabled
             ? "dm_sans_bold_16_cta_disabled" // Optional: Use a disabled text style
-            : isActive
+            : // Optional: Use a disabled text style
+            isActive
             ? "dm_sans_bold_16_white"
             : "dm_sans_bold_16"
         }
