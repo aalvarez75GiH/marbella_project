@@ -15,10 +15,15 @@ import { Global_activity_indicator } from "../../components/activity indicators/
 
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
+import { GeolocationContext } from "../../infrastructure/services/geolocation/geolocation.context";
 export default function Different_Delivery_Address_View() {
   const theme = useTheme();
   const navigation = useNavigation();
   const [scrollEnabled, setScrollEnabled] = React.useState(true);
+  const [selectedAddress, setSelectedAddress] = React.useState(null);
+  // selectedAddress = { formatted_address, lat, lng, place_id }
+
+  const { deviceLat, deviceLng } = useContext(GeolocationContext);
   const { onTaxes } = useContext(PaymentsContext);
   const {
     differentAddress,
@@ -31,6 +36,7 @@ export default function Different_Delivery_Address_View() {
     "MY ORDER AT DIFFERENT DELIVERY ADDRESS VIEW:",
     JSON.stringify(myOrder, null, 2)
   );
+  console.log("SELECTED ADDRESS :", JSON.stringify(selectedAddress, null, 2));
   const { customer_address } = myOrder || {};
   const CTA_HEIGHT = 65; // ✅ fixed height so it never shrinks
   return (
@@ -82,7 +88,7 @@ export default function Different_Delivery_Address_View() {
               >
                 <Spacer position="left" size="large">
                   <Text variant="raleway_bold_20">
-                    Do you want to enter a new delivery address?
+                    Do you want to enter a different delivery address?
                   </Text>
                   <Spacer position="top" size="medium" />
                   <Text variant="raleway_medium_18">Go ahead!</Text>
@@ -109,12 +115,41 @@ export default function Different_Delivery_Address_View() {
                       key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
                       language: "en",
                       components: "country:us",
+                      location: `${deviceLat},${deviceLng}`,
+                      radius: 50000, // meters (~31 miles)
+                      types: "geocode",
                     }}
                     fetchDetails
                     onPress={(data, details = null) => {
-                      setDifferentAddress(
-                        details?.formatted_address ?? data.description
-                      );
+                      const formatted =
+                        details?.formatted_address ?? data.description;
+
+                      const lat = details?.geometry?.location?.lat;
+                      const lng = details?.geometry?.location?.lng;
+
+                      // consider valid only if we have formatted + coords
+                      if (
+                        formatted &&
+                        typeof lat === "number" &&
+                        typeof lng === "number"
+                      ) {
+                        setDifferentAddress(formatted);
+
+                        setSelectedAddress({
+                          formatted_address: formatted,
+                          lat,
+                          lng,
+                          place_id: details?.place_id ?? data?.place_id,
+                        });
+                      } else {
+                        setSelectedAddress(null);
+                      }
+                    }}
+                    textInputProps={{
+                      onChangeText: () => {
+                        // user is typing again -> invalidate selection until they tap a suggestion
+                        setSelectedAddress(null);
+                      },
                     }}
                     styles={{
                       textInput: {
@@ -133,6 +168,7 @@ export default function Different_Delivery_Address_View() {
                     }}
                     enablePoweredByContainer={false}
                     keyboardShouldPersistTaps="handled"
+                    minLength={1}
                   />
                 </View>
               </Container>
@@ -152,22 +188,30 @@ export default function Different_Delivery_Address_View() {
                 paddingTop: 8,
               }}
             >
-              <Regular_CTA
-                width="95%"
-                height={CTA_HEIGHT} // ✅ FIXED height (number)
-                color={theme.colors.brand.primary}
-                border_radius={"40px"}
-                caption="Continue"
-                caption_text_variant="dm_sans_bold_20_white"
-                action={async () => {
-                  await handlingDeliveryOption({
-                    navigation,
-                    onTaxes,
-                    differentAddress,
-                    customer_address,
-                  });
-                }}
-              />
+              {selectedAddress ? (
+                <Regular_CTA
+                  width="95%"
+                  height={CTA_HEIGHT}
+                  color={theme.colors.brand.primary}
+                  border_radius={"40px"}
+                  caption="Continue"
+                  caption_text_variant="dm_sans_bold_20_white"
+                  action={async () => {
+                    await handlingDeliveryOption({
+                      navigation,
+                      onTaxes,
+                      differentAddress: selectedAddress.formatted_address,
+                      customer_address,
+                      // optional: pass geo too if you want
+                      // delivery_geo: { lat: selectedAddress.lat, lng: selectedAddress.lng },
+                      // place_id: selectedAddress.place_id,
+                    });
+                  }}
+                />
+              ) : (
+                // optional: keep spacing so layout doesn't jump
+                <View style={{ height: CTA_HEIGHT }} />
+              )}
             </Container>
           </Container>
         </KeyboardAvoidingView>
