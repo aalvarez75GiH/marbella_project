@@ -1,10 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import {
-  Container,
-  Action_Container,
-} from "../../components/containers/general.containers";
+import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Text } from "../../infrastructure/typography/text.component";
@@ -12,8 +9,6 @@ import { Delivery_Type_CTA } from "../../components/ctas/delivery_type.cta";
 import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
 import DeliveryTruckIcon from "../../../assets/my_icons/deliveryTruckIcon.svg";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
-import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
-import LocationIcon from "../../../assets/my_icons/distance_icon.svg";
 import { Delivery_Address_Option_Tile } from "../../components/tiles/delivery_address_option.tile";
 
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
@@ -21,11 +16,7 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
 
-import AddIcon from "../../../assets/my_icons/addIcon.svg";
 export default function Shop_Delivery_Type_View() {
-  // const [deliveryOption, setDeliveryOption] = useState(null);
-  // const [differentAddress, setDifferentAddress] = useState("");
-
   const route = useRoute();
   const { coming_from } = route.params || {};
   const theme = useTheme();
@@ -54,12 +45,11 @@ export default function Shop_Delivery_Type_View() {
     myOrder,
     setMyOrder,
     isLoading,
-    setIsLoading,
-    setDifferentAddress,
     differentAddress,
     handlingDeliveryOption,
     setDeliveryOption,
     deliveryOption,
+    handlingPickupOption,
   } = useContext(OrdersContext);
 
   const { customer } = myOrder || {};
@@ -80,118 +70,6 @@ export default function Shop_Delivery_Type_View() {
         differentAddress !== "" ? differentAddress : customer_address,
     }));
   }, [differentAddress]);
-
-  const settingMyOrderDeliveryType = async (delivery_type) => {
-    setDeliveryOption("delivery");
-
-    setTimeout(() => {
-      setMyOrder((prevOrder) => ({
-        ...prevOrder,
-        delivery_type: delivery_type,
-        user_id: user_id,
-        cart_id: cart_id,
-        pricing: {
-          sub_total: sub_total,
-          taxes: 0,
-          total: 0,
-          shipping: delivery_type === "delivery" ? 500 : 0,
-          discount: 0,
-        },
-        quantity: quantity,
-        warehouse_to_pickup: {
-          warehouse_id: warehouse_id,
-          name: warehouse_name,
-          warehouse_address: formatted_address,
-          geo: geo,
-          phone_number: phone,
-          closing_time: warehouse_information?.closing_time,
-          opening_time: warehouse_information?.opening_time,
-          distance_in_miles: distance_in_miles,
-        },
-        order_delivery_address: customer_address,
-      }));
-    }, 500); // Simulate a brief loading period
-  };
-
-  const handlingPickupOption = async (delivery_type) => {
-    setIsLoading(true);
-    setDeliveryOption("pickup");
-
-    try {
-      const nextOrder = {
-        ...myOrder,
-        delivery_type,
-        user_id,
-        cart_id,
-        order_products: products,
-        pricing: {
-          sub_total: sub_total,
-          taxes: 0,
-          total: 0,
-          shipping: delivery_type === "delivery" ? 500 : 0,
-          discount: 0,
-        },
-        quantity,
-        warehouse_to_pickup: {
-          warehouse_id,
-          name: warehouse_name,
-          warehouse_address: formatted_address,
-          geo,
-          phone_number: phone,
-          closing_time: warehouse_information?.closing_time,
-          opening_time: warehouse_information?.opening_time,
-          distance_in_miles,
-        },
-        order_delivery_address: "",
-      };
-
-      console.log(
-        "NEXT ORDER SENT TO TAX:",
-        JSON.stringify(nextOrder, null, 2)
-      );
-
-      const taxesResults = await onTaxes(nextOrder);
-      console.log("Taxes Results:", JSON.stringify(taxesResults, null, 2));
-
-      // If your onTaxes returns { ok: false } or { status !== 200 }, handle it:
-      if (taxesResults?.error || taxesResults?.status === "failed") {
-        throw new Error(taxesResults?.error?.message || "Tax quote failed");
-      }
-
-      const orderWithTaxes = {
-        ...nextOrder,
-        pricing: {
-          ...nextOrder.pricing,
-          taxes: taxesResults.tax_amount,
-          total: taxesResults.total_amount,
-        },
-        tax_calculation_id: taxesResults.calculation_id,
-      };
-
-      setMyOrder(orderWithTaxes);
-
-      if (warehouse_distance_range_positive) {
-        navigation.navigate("Shop_Order_Review_View", {
-          order: orderWithTaxes,
-        });
-      } else {
-        navigation.navigate("Long_Distance_Warning_View", {
-          formatted_address,
-          distance_in_miles,
-          distance_time,
-          coming_from,
-          order: orderWithTaxes,
-        });
-      }
-    } catch (e) {
-      console.log("PICKUP TAX FLOW ERROR:", e?.message || e);
-      // optionally show a toast/alert here
-    } finally {
-      setIsLoading(false);
-    }
-
-    return;
-  };
 
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
@@ -238,8 +116,35 @@ export default function Shop_Delivery_Type_View() {
               Icon={StoreIcon}
               type="pickup"
               border_radius="10px"
-              // action={() => settingMyOrderDeliveryType("pickup")}
-              action={() => handlingPickupOption("pickup")}
+              action={() => {
+                const nextOrder = {
+                  ...myOrder,
+                  delivery_type: "pickup",
+                };
+
+                setMyOrder(nextOrder);
+
+                handlingPickupOption({
+                  navigation,
+                  onTaxes,
+                  user_id,
+                  cart_id,
+                  products,
+                  sub_total,
+                  quantity,
+                  warehouse_id,
+                  warehouse_name,
+                  formatted_address,
+                  geo,
+                  phone,
+                  warehouse_information,
+                  distance_in_miles,
+                  distance_time,
+                  coming_from,
+                  warehouse_distance_range_positive,
+                  nextOrder, // ✅ pass it
+                });
+              }}
             />
             <Delivery_Type_CTA
               width={"40%"}
@@ -250,7 +155,37 @@ export default function Shop_Delivery_Type_View() {
               type="delivery"
               border_radius="10px"
               delivery_fee=""
-              action={() => settingMyOrderDeliveryType("delivery")}
+              // action={() => settingMyOrderDeliveryType("delivery")}
+              action={() => {
+                setDeliveryOption("delivery");
+                setTimeout(() => {
+                  setMyOrder((prevOrder) => ({
+                    ...prevOrder,
+                    delivery_type: "delivery",
+                    user_id: user_id,
+                    cart_id: cart_id,
+                    pricing: {
+                      sub_total: sub_total,
+                      taxes: 0,
+                      total: 0,
+                      shipping: 500,
+                      discount: 0,
+                    },
+                    quantity: quantity,
+                    warehouse_to_pickup: {
+                      warehouse_id: warehouse_id,
+                      name: warehouse_name,
+                      warehouse_address: formatted_address,
+                      geo: geo,
+                      phone_number: phone,
+                      closing_time: warehouse_information?.closing_time,
+                      opening_time: warehouse_information?.opening_time,
+                      distance_in_miles: distance_in_miles,
+                    },
+                    order_delivery_address: customer_address,
+                  }));
+                }, 500); // Simulate a brief loading period
+              }}
             />
           </Container>
           {deliveryOption === "delivery" && (

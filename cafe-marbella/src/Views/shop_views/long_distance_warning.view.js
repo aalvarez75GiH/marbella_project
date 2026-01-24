@@ -5,21 +5,15 @@ import {
   useRoute,
   StackActions,
 } from "@react-navigation/native";
-import { InteractionManager } from "react-native";
 
 import { Container } from "../../components/containers/general.containers";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
-import { Exit_Header_With_Label } from "../../components/headers/exit_with_label.header";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
-import { Text } from "../../infrastructure/typography/text.component";
 import { Long_Distance_Warning_Tile } from "../../components/tiles/long_distance_warning.tile";
 import { Regular_CTA } from "../../components/ctas/regular.cta";
 
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
-import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
-import TimeIcon from "../../../assets/my_icons/time_icon.svg";
-import DistanceIcon from "../../../assets/my_icons/distance_icon.svg";
 
 export default function Long_Distance_Warning_View() {
   const theme = useTheme();

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 import { Platform, KeyboardAvoidingView, ScrollView, View } from "react-native";
@@ -16,27 +16,20 @@ import { Global_activity_indicator } from "../../components/activity indicators/
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
 import { GeolocationContext } from "../../infrastructure/services/geolocation/geolocation.context";
+
 export default function Different_Delivery_Address_View() {
   const theme = useTheme();
   const navigation = useNavigation();
-  const [scrollEnabled, setScrollEnabled] = React.useState(true);
-  const [selectedAddress, setSelectedAddress] = React.useState(null);
+
+  const [scrollEnabled, setScrollEnabled] = useState(true);
+  const [selectedAddress, setSelectedAddress] = useState(null);
   // selectedAddress = { formatted_address, lat, lng, place_id }
 
   const { deviceLat, deviceLng } = useContext(GeolocationContext);
   const { onTaxes } = useContext(PaymentsContext);
-  const {
-    differentAddress,
-    setDifferentAddress,
-    handlingDeliveryOption,
-    myOrder,
-    isLoading,
-  } = useContext(OrdersContext);
-  console.log(
-    "MY ORDER AT DIFFERENT DELIVERY ADDRESS VIEW:",
-    JSON.stringify(myOrder, null, 2)
-  );
-  console.log("SELECTED ADDRESS :", JSON.stringify(selectedAddress, null, 2));
+  const { setDifferentAddress, handlingDeliveryOption, myOrder, isLoading } =
+    useContext(OrdersContext);
+
   const { customer_address } = myOrder || {};
   const CTA_HEIGHT = 65; // ✅ fixed height so it never shrinks
   return (

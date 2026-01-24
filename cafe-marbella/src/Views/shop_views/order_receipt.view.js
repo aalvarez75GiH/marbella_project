@@ -87,6 +87,7 @@ export default function Shop_Order_Receipt_View() {
       );
     });
   };
+
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
       {isLoading ? (

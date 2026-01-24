@@ -137,6 +137,104 @@ export const Orders_Context_Provider = ({ children }) => {
 
     return;
   };
+  const handlingPickupOption = async ({
+    navigation,
+    onTaxes,
+    user_id,
+    cart_id,
+    products,
+    sub_total,
+    quantity,
+    warehouse_id,
+    warehouse_name,
+    formatted_address,
+    geo,
+    phone,
+    warehouse_information,
+    distance_in_miles,
+    distance_time,
+    coming_from,
+    warehouse_distance_range_positive,
+    nextOrder,
+  }) => {
+    setIsLoading(true);
+    setDeliveryOption("pickup");
+
+    try {
+      const enrichedOrder = {
+        ...nextOrder,
+        // delivery_type,
+        user_id,
+        cart_id,
+        order_products: products,
+        pricing: {
+          sub_total: sub_total,
+          taxes: 0,
+          total: 0,
+          shipping: 0,
+          discount: 0,
+        },
+        quantity,
+        warehouse_to_pickup: {
+          warehouse_id,
+          name: warehouse_name,
+          warehouse_address: formatted_address,
+          geo,
+          phone_number: phone,
+          closing_time: warehouse_information?.closing_time,
+          opening_time: warehouse_information?.opening_time,
+          distance_in_miles,
+        },
+        order_delivery_address: "",
+      };
+
+      console.log(
+        "NEXT ORDER SENT TO TAX:",
+        JSON.stringify(nextOrder, null, 2)
+      );
+
+      const taxesResults = await onTaxes(enrichedOrder);
+      console.log("Taxes Results:", JSON.stringify(taxesResults, null, 2));
+
+      // If your onTaxes returns { ok: false } or { status !== 200 }, handle it:
+      if (taxesResults?.error || taxesResults?.status === "failed") {
+        throw new Error(taxesResults?.error?.message || "Tax quote failed");
+      }
+
+      const orderWithTaxes = {
+        ...nextOrder,
+        pricing: {
+          ...nextOrder.pricing,
+          taxes: taxesResults.tax_amount,
+          total: taxesResults.total_amount,
+        },
+        tax_calculation_id: taxesResults.calculation_id,
+      };
+
+      setMyOrder(orderWithTaxes);
+
+      if (warehouse_distance_range_positive) {
+        navigation.navigate("Shop_Order_Review_View", {
+          order: orderWithTaxes,
+        });
+      } else {
+        navigation.navigate("Long_Distance_Warning_View", {
+          formatted_address,
+          distance_in_miles,
+          distance_time,
+          coming_from,
+          order: orderWithTaxes,
+        });
+      }
+    } catch (e) {
+      console.log("PICKUP TAX FLOW ERROR:", e?.message || e);
+      // optionally show a toast/alert here
+    } finally {
+      setIsLoading(false);
+    }
+
+    return;
+  };
 
   return (
     <OrdersContext.Provider
@@ -154,6 +252,7 @@ export const Orders_Context_Provider = ({ children }) => {
         setDifferentAddress,
         differentAddress,
         handlingDeliveryOption,
+        handlingPickupOption,
       }}
     >
       {children}
