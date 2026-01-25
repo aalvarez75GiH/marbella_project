@@ -7,45 +7,53 @@ import {
 } from "../containers/general.containers.js";
 import { theme } from "../../infrastructure/theme/index.js";
 
-export const Exit_Header_With_Label = ({ action, label = "" }) => {
+export const Exit_Header_With_Label = ({
+  action,
+  label = "",
+  orientation = "left", // "left" | "right"
+}) => {
+  const bg = theme.colors.bg.elements_bg;
+
+  const ExitButton = (
+    <Action_Container
+      width="20%"
+      height="100%"
+      color={bg}
+      onPress={action}
+      accessibilityRole="button"
+      accessibilityLabel="Exit"
+      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+    >
+      <ExitIcon width={30} height={30} color="#000000" />
+    </Action_Container>
+  );
+
+  const Spacer = <Container width="20%" height="100%" color={bg} />;
+
   return (
     <Container
       width="100%"
       height="8%"
       align="center"
       direction="row"
-      justify="space-between"
-      color={theme.colors.bg.elements_bg}
+      justify="flex-start"
+      color={bg}
     >
-      <Action_Container
-        width="20%"
-        height="100%"
-        color={theme.colors.bg.elements_bg}
-        //color={"red"}
-        onPress={action}
-      >
-        <ExitIcon width={30} height={30} color={"#000000"} />
-      </Action_Container>
+      {orientation === "left" ? ExitButton : Spacer}
+
       <Container
         width="60%"
         height="100%"
-        color={theme.colors.bg.elements_bg}
-        //color={"blue"}
+        color={bg}
         justify="center"
         align="center"
-        style={{ paddingRight: "5%" }}
       >
-        <Text variant="dm_sans_bold_18">{label}</Text>
+        <Text variant="dm_sans_bold_18" numberOfLines={1}>
+          {label}
+        </Text>
       </Container>
-      <Container
-        width="12%"
-        height="100%"
-        color={theme.colors.bg.elements_bg}
-        //color={"lightblue"}
-        justify="center"
-        align="center"
-        style={{ paddingRight: "5%" }}
-      ></Container>
+
+      {orientation === "right" ? ExitButton : Spacer}
     </Container>
   );
 };

@@ -141,31 +141,11 @@ export const Warehouse_Context_Provider = ({ children }) => {
   };
 
   // ✅ compute data for shop
-  // const shopProductsGround = useMemo(() => {
-  //   if (!myWarehouse) return [];
-  //   // return getWarehouseShopProductsAll(productsCatalog, myWarehouse, "ground");
-  //   return getWarehouseProductsWithPositiveStock(
-  //     productsCatalog,
-  //     myWarehouse,
-  //     "ground"
-  //   );
-  // }, [myWarehouse, productsCatalog]);
-  // ✅ compute data for shop
   const shopProductsGround = useMemo(() => {
     if (!myWarehouse) return [];
     // return getWarehouseShopProductsAll(productsCatalog, myWarehouse, "ground");
     return getWarehouseProductsAll(productsCatalog, myWarehouse, "ground");
   }, [myWarehouse, productsCatalog]);
-
-  // const shopProductsWhole = useMemo(() => {
-  //   if (!myWarehouse) return [];
-  //   return getWarehouseProductsWithPositiveStock(
-  //     productsCatalog,
-  //     myWarehouse,
-  //     "whole"
-  //   );
-  //   // return getWarehouseShopProductsAll(productsCatalog, myWarehouse, "whole");
-  // }, [myWarehouse, productsCatalog]);
 
   const shopProductsWhole = useMemo(() => {
     if (!myWarehouse) return [];

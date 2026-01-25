@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigation } from "@react-navigation/native";
 
 import { Text } from "../../../infrastructure/typography/text.component.js";
 import { Container } from "../../containers/general.containers.js";
@@ -8,6 +9,7 @@ import { Regular_CTA } from "../../ctas/regular.cta.js";
 
 export const Product_Details_Description_Component = ({ item = null }) => {
   const { description } = item || {};
+  const navigation = useNavigation();
   return (
     <Container
       width="100%"
@@ -50,7 +52,11 @@ export const Product_Details_Description_Component = ({ item = null }) => {
           border_width={"1px"}
           border_color={theme.colors.ui.white}
           border_radius={"8px"}
-          action={() => null}
+          action={() =>
+            navigation.navigate("Product_Specifications_View", {
+              item: item,
+            })
+          }
         />
         <Regular_CTA
           width={"40%"}

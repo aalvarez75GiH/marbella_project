@@ -45,7 +45,7 @@ const bulkCreateProducts = async (products = []) => {
 
 const getProductById = async (id) => {
   const snap = await firebase_controller.db
-    .collection("products")
+    .collection("productsCatalog")
     .doc(String(id))
     .get();
   return snap.exists ? snap.data() : null;
@@ -69,13 +69,17 @@ const getAllProducts = async ({ grindType, originCountry } = {}) => {
 };
 
 const updateProductById = async (id, updates) => {
-  const ref = firebase_controller.db.collection("products").doc(String(id));
+  const ref = firebase_controller.db
+    .collection("productsCatalog")
+    .doc(String(id));
+
   await ref.set(
     { ...updates, updatedAt: new Date().toISOString() },
     { merge: true }
   );
+
   const snap = await ref.get();
-  return snap.data();
+  return snap.exists ? snap.data() : null;
 };
 
 const deleteProductById = async (id) => {

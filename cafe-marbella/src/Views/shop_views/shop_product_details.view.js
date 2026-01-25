@@ -14,6 +14,7 @@ export default function Shop_Product_Details_View({ route }) {
   const theme = useTheme();
   const navigation = useNavigation();
   const { item } = route.params;
+  console.log("Product Details View - item:", JSON.stringify(item, null, 2));
   const { isLoading } = useContext(CartContext);
   return (
     <SafeArea
