@@ -67,7 +67,11 @@ export const Product_Details_Description_Component = ({ item = null }) => {
           border_width={"1px"}
           border_color={theme.colors.ui.white}
           border_radius={"8px"}
-          action={() => null}
+          action={() =>
+            navigation.navigate("Product_Ingredients_View", {
+              item: item,
+            })
+          }
         />
       </Container>
     </Container>
