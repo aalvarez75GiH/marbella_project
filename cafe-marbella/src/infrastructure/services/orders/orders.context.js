@@ -1,6 +1,4 @@
-import React, { useEffect, useState, createContext, useContext } from "react";
-
-// import { billing } from "firebase-functions/alerts";
+import React, { useEffect, useState, createContext } from "react";
 
 import { myOrder_schema } from "./orders.local_data";
 import {
@@ -20,8 +18,6 @@ export const Orders_Context_Provider = ({ children }) => {
   const [myOrder, setMyOrder] = useState(myOrder_schema);
   const [deliveryOption, setDeliveryOption] = useState(null);
   const [differentAddress, setDifferentAddress] = useState("");
-  // const [deliveryOption, setDeliveryOption] = useState(null);
-  // console.log("MY ORDER AT ORDERS CONTEXT: ", JSON.stringify(myOrder, null, 2));
 
   useEffect(() => {
     // Fetch orders when the component mounts or when user_id changes
@@ -163,7 +159,6 @@ export const Orders_Context_Provider = ({ children }) => {
     try {
       const enrichedOrder = {
         ...nextOrder,
-        // delivery_type,
         user_id,
         cart_id,
         order_products: products,
@@ -190,7 +185,7 @@ export const Orders_Context_Provider = ({ children }) => {
 
       console.log(
         "NEXT ORDER SENT TO TAX:",
-        JSON.stringify(nextOrder, null, 2)
+        JSON.stringify(enrichedOrder, null, 2)
       );
 
       const taxesResults = await onTaxes(enrichedOrder);
@@ -202,9 +197,9 @@ export const Orders_Context_Provider = ({ children }) => {
       }
 
       const orderWithTaxes = {
-        ...nextOrder,
+        ...enrichedOrder,
         pricing: {
-          ...nextOrder.pricing,
+          ...enrichedOrder.pricing,
           taxes: taxesResults.tax_amount,
           total: taxesResults.total_amount,
         },

@@ -5,8 +5,8 @@ import { useFocusEffect } from "@react-navigation/native";
 
 import { useTheme } from "styled-components/native";
 import { Container } from "../../components/containers/general.containers";
-import { Exit_Header_With_Label } from "../../components/headers/exit_with_label.header";
 import { Just_Caption_Header } from "../../components/headers/just_caption.header.js";
+import { Exit_Header_With_Label } from "../../components/headers/exit_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 import { useEffect } from "react";
@@ -26,6 +26,7 @@ export default function Orders_View() {
     ordersGrouped,
     gettingAllOrdersByUserIDGroupedByMonth,
   } = useContext(OrdersContext);
+  const navigation = useNavigation();
 
   const { user } = useContext(AuthenticationContext);
   const { user_id } = user || {};
@@ -89,7 +90,10 @@ export default function Orders_View() {
         justify="flex-start"
         align="center"
       >
-        <Just_Caption_Header caption="My Orders" />
+        <Exit_Header_With_Label
+          label="My Orders"
+          action={() => navigation.goBack()}
+        />
         <View
           style={{
             width: "100%",

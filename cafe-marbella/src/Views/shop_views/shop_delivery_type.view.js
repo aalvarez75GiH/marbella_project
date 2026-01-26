@@ -122,8 +122,6 @@ export default function Shop_Delivery_Type_View() {
                   delivery_type: "pickup",
                 };
 
-                setMyOrder(nextOrder);
-
                 handlingPickupOption({
                   navigation,
                   onTaxes,

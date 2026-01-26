@@ -23,6 +23,10 @@ export default function Long_Distance_Warning_View() {
   const { formatted_address, distance_in_miles, distance_time, coming_from } =
     route.params || {};
 
+  console.log(
+    "MY ORDER AT LONG DISTANCE WARNING VIEW:",
+    JSON.stringify(myOrder, null, 2)
+  );
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
