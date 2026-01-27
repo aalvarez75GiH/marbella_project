@@ -57,12 +57,16 @@ export default function Order_View() {
   const { lat, lng } = geo || {};
 
   const navigation = useNavigation();
+
   const renderingOrderProducts = () => {
     return order_products.map((item) => {
+      const variantId = item?.size_variants?.[0]?.id ?? "no-variant";
+      const key = `${item.id}:${variantId}`;
+
       return (
-        <Spacer position="bottom" size="medium" key={item.id}>
+        <Spacer position="bottom" size="medium" key={key}>
           <Product_Cart_Item_Tile
-            image={item.size_variants[0].images[0]}
+            image={item?.size_variants?.[0]?.images?.[0]}
             product={item}
           />
         </Spacer>
