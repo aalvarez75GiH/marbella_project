@@ -33,7 +33,7 @@ export default function Shop_Order_Receipt_View() {
   const theme = useTheme();
   const { myOrder, isLoading, setMyOrder } = useContext(OrdersContext);
   console.log(
-    "myOrder in Shop_Order_Review_View:",
+    "myOrder in Shop_Order_Receipt_View:",
     JSON.stringify(myOrder, null, 2)
   );
   const { myWarehouse } = useContext(WarehouseContext);

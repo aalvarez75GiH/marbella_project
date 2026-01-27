@@ -4,6 +4,10 @@ const express = require("express");
 const paymentsRouter = express.Router();
 const stripeClient = require("stripe")(process.env.STRIPE_KEY);
 
+const {
+  sendingEmailToUserWhenOrderIsCreated,
+} = require("../orders/orders.handlers");
+
 const ordersControllers = require("../orders/orders.controllers");
 const {
   buildStripeErrorPayload,
@@ -95,6 +99,9 @@ paymentsRouter.post("/payments", async (req, res) => {
       );
       console.log("ORDER CREATED AT PAYMENTS ROUTE:", createdOrder);
     }
+
+    const emailSent = await sendingEmailToUserWhenOrderIsCreated(createdOrder);
+    console.log("Order confirmation email sent:", emailSent.message);
 
     const dataToReturn = {
       paymentIntentResponse,

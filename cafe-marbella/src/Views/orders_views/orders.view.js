@@ -28,6 +28,8 @@ export default function Orders_View() {
   } = useContext(OrdersContext);
   const navigation = useNavigation();
 
+  console.log("ORDERS VIEW RERENDERED", JSON.stringify(orders, null, 2));
+
   const { user } = useContext(AuthenticationContext);
   const { user_id } = user || {};
   const { formatDate } = useContext(GlobalContext);
@@ -113,7 +115,7 @@ export default function Orders_View() {
             color={theme.colors.bg.elements_bg}
           />
         )}
-        {!isLoading && orders.length === 0 && <Empty_My_Orders_View />}
+        {!isLoading && sections.length === 0 && <Empty_My_Orders_View />}
 
         {!isLoading && sections.length > 0 && (
           <SectionList

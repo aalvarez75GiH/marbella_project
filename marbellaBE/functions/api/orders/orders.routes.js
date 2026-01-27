@@ -2,6 +2,7 @@
 
 const express = require("express");
 const ordersRouter = express.Router();
+const { sendingEmailToUserWhenOrderIsCreated } = require("./orders.handlers");
 
 const ordersControllers = require("./orders.controllers");
 
@@ -36,7 +37,33 @@ ordersRouter.post("/", async (req, res) => {
       order,
       user_id
     );
+    const emailSent = await sendingEmailToUserWhenOrderIsCreated(newOrder);
     return res.status(201).json(newOrder);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({
+      status: "Failed",
+      msg: "Something went wrong saving Data...",
+    });
+  }
+});
+
+//this is just for testing email functionality & email style
+ordersRouter.post("/testingEmail", async (req, res) => {
+  const order = req.body;
+  const { user_id } = order;
+  try {
+    // const newOrder = await ordersControllers.createOrderWithNoPayment(
+    //   order,
+    //   user_id
+    // );
+    const emailSent = await sendingEmailToUserWhenOrderIsCreated(order);
+    return res.status(201).json({
+      order_id: order.order_id,
+      msg: emailSent
+        ? emailSent.message
+        : "There was an error sending the email...",
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).send({

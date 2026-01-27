@@ -1,6 +1,7 @@
-import React, { useLayoutEffect } from "react";
+import React, { useLayoutEffect, useContext } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
+import { ScrollView } from "react-native-gesture-handler";
 
 import { Container } from "../../components/containers/general.containers";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -10,11 +11,14 @@ import { Text } from "../../infrastructure/typography/text.component";
 import { Menu_Sub_Title_Title } from "../../components/titles/menu_sub_titles.title";
 import { Menu_Tile } from "../../components/tiles/menu_tiles.tile";
 
-import { ScrollView } from "react-native-gesture-handler";
+import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
 
 export default function Menu_View() {
   const theme = useTheme();
   const navigation = useNavigation();
+
+  const { user } = useContext(AuthenticationContext);
+  const { first_name, last_name, email, display_name } = user || {};
   // Hiding tab bar for this screen
   useLayoutEffect(() => {
     navigation.getParent()?.setOptions({
@@ -68,11 +72,11 @@ export default function Menu_View() {
           align="flex-start"
         >
           <Spacer position="left" size="extraLarge">
-            <Text variant="raleway_bold_24">Arnoldo Alvarez</Text>
+            <Text variant="raleway_bold_24">{display_name}</Text>
           </Spacer>
           <Spacer position="top" size="small" />
           <Spacer position="left" size="extraLarge">
-            <Text variant="raleway_medium_16">arnoldo.alvarez75@yahoo.com</Text>
+            <Text variant="raleway_medium_16">{email}</Text>
           </Spacer>
         </Container>
         {/* <Spacer position="top" size="large" /> */}
