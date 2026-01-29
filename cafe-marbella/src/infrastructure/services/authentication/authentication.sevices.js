@@ -16,7 +16,13 @@ export const gettingUserByEmailRequest = async (email) => {
     // console.log("RESPONSE:", res.data);
     return res.data;
   } catch (error) {
-    console.error("Error fetching user by email:", error);
+    const status = error?.response?.status;
+
+    // 404 is an expected business case (user doesn't exist)
+    if (status !== 404) {
+      console.error("Error fetching user by email:", error);
+    }
+
     throw error;
   }
 };

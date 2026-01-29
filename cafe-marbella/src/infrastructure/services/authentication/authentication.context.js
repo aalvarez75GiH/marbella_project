@@ -65,8 +65,26 @@ export const Authentication_Context_Provider = ({ children }) => {
 
       return { ok: true, user: normalized };
     } catch (e) {
-      console.error("Error fetching user by email:", e);
-      return { ok: false, error: String(e) };
+      // ✅ IMPORTANT: handle 404 cleanly
+      const status = e?.response?.status;
+      const msgFromApi =
+        e?.response?.data?.status === "NotFound"
+          ? "User not found."
+          : e?.response?.data?.msg;
+
+      if (status === 404) {
+        return {
+          ok: false,
+          code: "NOT_FOUND",
+          message: msgFromApi || "User not found.",
+        };
+      }
+
+      return {
+        ok: false,
+        code: "REQUEST_FAILED",
+        message: msgFromApi || String(e),
+      };
     } finally {
       const elapsed = Date.now() - startTime;
       const remaining = Math.max(MIN_LOADING_TIME - elapsed, 0);

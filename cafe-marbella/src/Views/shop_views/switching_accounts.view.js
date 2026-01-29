@@ -31,6 +31,7 @@ export default function Switching_Accounts_View() {
   const navigation = useNavigation();
   const [userSwitched, setUserSwitched] = React.useState(false);
   const [emailTouched, setEmailTouched] = React.useState(false);
+  const [error, setError] = React.useState(null);
 
   const isValidEmail = (email = "") =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
@@ -61,14 +62,36 @@ export default function Switching_Accounts_View() {
                   email
                 );
                 if (userSwitched?.ok) {
-                  console.log("Successfully switched to user:", email);
+                  console.log("Successfully switched to user:", emailToSwitch);
                   setEmailToSwitch("");
                   setUserSwitched(true);
+                  setEmailTouched(false); // optional: clear error state
+                  return;
                 }
+                setUserSwitched(false);
+                setError(
+                  result?.message || "This user was not found. Sign up?"
+                );
               } catch (error) {
+                setUserSwitched(false);
+                setError("This user was not found. Sign up?");
                 console.log("Error switching user account:", error);
               }
             }}
+            // action={async () => {
+            //   try {
+            //     const userSwitched = await gettingUserByEmailToAuthenticated(
+            //       email
+            //     );
+            //     if (userSwitched?.ok) {
+            //       console.log("Successfully switched to user:", email);
+            //       setEmailToSwitch("");
+            //       setUserSwitched(true);
+            //     }
+            //   } catch (error) {
+            //     console.log("Error switching user account:", error);
+            //   }
+            // }}
           />
         </Spacer>
       );
@@ -110,7 +133,33 @@ export default function Switching_Accounts_View() {
           />
         </Container>
       )}
-      {!isLoading && !userSwitched && (
+      {!isLoading && error && (
+        <Container
+          width="100%"
+          height="100%"
+          color={theme.colors.bg.elements_bg}
+          justify="center"
+          align="center"
+        >
+          <Text variant="dm_sans_bold_18"> {error} </Text>
+          <Spacer position="top" size="large"></Spacer>
+          <Regular_CTA
+            width="50%"
+            height="8%"
+            color={theme.colors.ui.primary}
+            border_radius={"40px"}
+            caption="Sign Up"
+            caption_text_variant="dm_sans_bold_20_white"
+            action={() =>
+              navigation.reset({
+                index: 0,
+                routes: [{ name: "Home_View" }],
+              })
+            }
+          />
+        </Container>
+      )}
+      {!isLoading && !userSwitched && !error && (
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -142,6 +191,7 @@ export default function Switching_Accounts_View() {
               onChangeText={(value) => {
                 setEmailToSwitch(value);
                 if (emailTouched) setEmailTouched(false);
+                if (error) setError(null);
               }}
               underlineColor={theme.colors.inputs.bottom_lines}
               activeUnderlineColor="#3A2F01"
@@ -234,8 +284,16 @@ export default function Switching_Accounts_View() {
                       setEmailToSwitch("");
                       setUserSwitched(true);
                       setEmailTouched(false); // optional: clear error state
+                      return;
                     }
+                    // ✅ show error from backend (not found / failed)
+                    setUserSwitched(false);
+                    setError(
+                      result?.message || "This user was not found. Sign up?"
+                    );
                   } catch (error) {
+                    setUserSwitched(false);
+                    setError("This user was not found. Sign up?");
                     console.log("Error switching user account:", error);
                   }
                 }}
