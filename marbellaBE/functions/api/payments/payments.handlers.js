@@ -20,7 +20,8 @@ const buildStripeErrorPayload = (error, fallbackMessage) => {
   };
 };
 
-function parseUSAddressString(addressString) {
+// this parses a US address string into its components needed for Stripe
+const parseUSAddressString = (addressString) => {
   if (!addressString || typeof addressString !== "string") {
     throw new Error("Invalid address string");
   }
@@ -71,16 +72,17 @@ function parseUSAddressString(addressString) {
     postal_code,
     country: country === "USA" ? "US" : country,
   };
-}
+};
 
-function buildStripeAddress({
+//this function builds a Stripe-compatible address object from components
+const buildStripeAddress = ({
   line1,
   line2,
   city,
   state,
   postal_code,
   country = "US",
-}) {
+}) => {
   if (!line1 || !city || !state || !postal_code) {
     throw new Error("Invalid address: missing required fields");
   }
@@ -93,10 +95,48 @@ function buildStripeAddress({
     postal_code: String(postal_code).trim(),
     country: String(country).trim().toUpperCase(),
   };
+};
+
+// Helper: normalize a raw address string -> Stripe address object
+const normalizeRawAddressIntoStripeAddress = (rawAddress) => {
+  const parsed = parseUSAddressString(rawAddress);
+  return buildStripeAddress(parsed);
+};
+
+// Helper: build Stripe Tax line items from your Order's order_products
+function buildLineItemsFromOrderProducts(order_products = []) {
+  // IMPORTANT:
+  // Stripe Tax expects amount = unit amount in cents
+  // quantity is required if you want correct totals
+  return order_products.flatMap((p) => {
+    const productId = p?.id || p?.product_id || p?.title || "item";
+
+    // Your items store quantity at variant-level in size_variants[0].quantity
+    const variants = Array.isArray(p?.size_variants) ? p.size_variants : [];
+
+    return variants
+      .filter((v) => Number(v?.quantity) > 0)
+      .map((v) => {
+        const variantId = v?.id || v?.sizeLabel || v?.sizeGrams || "variant";
+        const unitAmount = Number(v?.price);
+
+        if (!Number.isInteger(unitAmount)) {
+          throw new Error(`Invalid unit price for ${productId}/${variantId}`);
+        }
+
+        return {
+          amount: unitAmount,
+          quantity: Number(v.quantity),
+          reference: `${productId}-${variantId}`,
+          // ✅ Coffee Beans / Ground Coffee (you can also store this per product)
+          tax_code: "txcd_41050006",
+        };
+      });
+  });
 }
 
 module.exports = {
   buildStripeErrorPayload,
-  parseUSAddressString,
-  buildStripeAddress,
+  normalizeRawAddressIntoStripeAddress,
+  buildLineItemsFromOrderProducts,
 };

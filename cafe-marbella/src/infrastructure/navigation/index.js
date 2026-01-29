@@ -6,7 +6,7 @@ import { AppNavigator } from "./app.navigator";
 
 export const Navigation = () => {
   const { user } = useContext(AuthenticationContext);
-  // console.log("USER AT NAVIGATION: ", JSON.stringify(user, null, 2));
+  console.log("USER AT NAVIGATION: ", JSON.stringify(user, null, 2));
 
   return (
     <NavigationContainer>

@@ -23,6 +23,41 @@ usersRouter.get("/userByUID", async (req, res) => {
     return res.status(500).json({ status: "Failed", msg: String(error) });
   }
 });
+// usersRouter.get("/userByEmail", async (req, res) => {
+//   const email = req.body.email;
+//   try {
+//     const user = await usersControllers.getUserByEmail(email);
+
+//     if (!user) {
+//       return res.status(404).json({ status: "NotFound", email });
+//     }
+
+//     return res.status(200).json(user);
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json({ status: "Failed", msg: String(error) });
+//   }
+// });
+usersRouter.post("/userByEmail", async (req, res) => {
+  const email = req.body?.email?.trim();
+
+  if (!email) {
+    return res
+      .status(400)
+      .json({ status: "BadRequest", msg: "email is required" });
+  }
+
+  try {
+    const user = await usersControllers.getUserByEmail(email);
+
+    if (!user) return res.status(404).json({ status: "NotFound", email });
+
+    return res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ status: "Failed", msg: String(error) });
+  }
+});
 
 usersRouter.post("/", async (req, res) => {
   const user_id = uuidv4();

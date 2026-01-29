@@ -13,12 +13,12 @@ const {
   buildStripeErrorPayload,
   parseUSAddressString,
   buildStripeAddress,
+  buildLineItemsFromOrderProducts,
+  normalizeRawAddressIntoStripeAddress,
 } = require("./payments.handlers");
 const {
   decrementWarehouseInventoryFromOrder,
 } = require("../warehouses/warehouses.controllers");
-// const { v4: uuidv4 } = require("uuid");
-// const paymentsControllers = require("./payments.controllers");
 
 paymentsRouter.post("/payments", async (req, res) => {
   const totalForStripe = req.body.totalForStripe;
@@ -228,45 +228,6 @@ paymentsRouter.post("/refundOrder", async (req, res) => {
   }
 });
 // ***************************************************************
-// payments.routes.js (or tax.routes.js)
-
-// Helper: normalize a raw address string -> Stripe address object
-function normalizeAddressOrThrow(rawAddress) {
-  const parsed = parseUSAddressString(rawAddress);
-  return buildStripeAddress(parsed);
-}
-
-// Helper: build Stripe Tax line items from your Marbella order_products
-function buildLineItemsFromOrderProducts(order_products = []) {
-  // IMPORTANT:
-  // Stripe Tax expects amount = unit amount in cents
-  // quantity is required if you want correct totals
-  return order_products.flatMap((p) => {
-    const productId = p?.id || p?.product_id || p?.title || "item";
-
-    // Your items store quantity at variant-level in size_variants[0].quantity
-    const variants = Array.isArray(p?.size_variants) ? p.size_variants : [];
-
-    return variants
-      .filter((v) => Number(v?.quantity) > 0)
-      .map((v) => {
-        const variantId = v?.id || v?.sizeLabel || v?.sizeGrams || "variant";
-        const unitAmount = Number(v?.price);
-
-        if (!Number.isInteger(unitAmount)) {
-          throw new Error(`Invalid unit price for ${productId}/${variantId}`);
-        }
-
-        return {
-          amount: unitAmount,
-          quantity: Number(v.quantity),
-          reference: `${productId}-${variantId}`,
-          // ✅ Coffee Beans / Ground Coffee (you can also store this per product)
-          tax_code: "txcd_41050006",
-        };
-      });
-  });
-}
 
 paymentsRouter.post("/calculatingtaxes", async (req, res) => {
   const order = req.body;
@@ -305,7 +266,9 @@ paymentsRouter.post("/calculatingtaxes", async (req, res) => {
     }
 
     // Normalize warehouse address
-    const warehouseAddress = normalizeAddressOrThrow(warehouseAddressString);
+    const warehouseAddress = normalizeRawAddressIntoStripeAddress(
+      warehouseAddressString
+    );
 
     // Determine delivery type
     // const finalDeliveryType = delivery_type || order?.delivery_type || "pickup";
@@ -333,7 +296,9 @@ paymentsRouter.post("/calculatingtaxes", async (req, res) => {
         });
       }
 
-      customerAddress = normalizeAddressOrThrow(customerAddressString);
+      customerAddress = normalizeRawAddressIntoStripeAddress(
+        customerAddressString
+      );
     } else {
       customerAddress = warehouseAddress;
     }

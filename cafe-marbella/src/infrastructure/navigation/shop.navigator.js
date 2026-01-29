@@ -15,6 +15,7 @@ import Different_Delivery_Address_View from "../../Views/shop_views/different_de
 import Product_Specifications_View from "../../Views/shop_views/product_specifications.view";
 import Product_Ingredients_View from "../../Views/shop_views/product_ingredients.view";
 import Orders_View from "../../Views/orders_views/orders.view";
+import Switching_Accounts_View from "../../Views/shop_views/switching_accounts.view";
 const ShopFlowStack = createNativeStackNavigator();
 
 export const Shop_Navigator = () => {
@@ -67,6 +68,10 @@ export const Shop_Navigator = () => {
         component={Product_Ingredients_View}
       />
       <ShopFlowStack.Screen name="Orders_View" component={Orders_View} />
+      <ShopFlowStack.Screen
+        name="Switching_Accounts_View"
+        component={Switching_Accounts_View}
+      />
       <ShopFlowStack.Screen name="Menu_View" component={Menu_View} />
     </ShopFlowStack.Navigator>
   );

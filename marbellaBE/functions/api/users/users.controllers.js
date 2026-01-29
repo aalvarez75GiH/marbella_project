@@ -18,6 +18,42 @@ const getUserByUID = async (uid) => {
       return shadowUser;
     });
 };
+// const getUserByEmail = async (email) => {
+//   console.log("EMAIL AT CONTROLLER:", email);
+//   return await firebase_controller.db
+//     .collection("users")
+//     .where(`email`, "==", email)
+//     .get()
+//     .then((querySnapshot) => {
+//       querySnapshot.forEach((doc) => {
+//         console.log(doc.id, " => ", doc.data());
+//         return doc.data();
+//       });
+//       return null;
+//     });
+// };
+const getUserByEmail = async (email) => {
+  console.log("EMAIL AT CONTROLLER:", email);
+  try {
+    const querySnapshot = await firebase_controller.db
+      .collection("users")
+      .where("email", "==", email)
+      .get();
+
+    if (!querySnapshot.empty) {
+      // Assuming you only want the first matching document
+      const userDoc = querySnapshot.docs[0];
+      console.log(userDoc.id, " => ", userDoc.data());
+      return userDoc.data();
+    } else {
+      console.log("No user found with the given email.");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching user by email:", error);
+    throw error;
+  }
+};
 
 const createUser = async (user) => {
   const {
@@ -97,6 +133,7 @@ const updateUser = async (data, uid) => {
 
 module.exports = {
   getUserByUID,
+  getUserByEmail,
   createUser,
   updateUser,
 };

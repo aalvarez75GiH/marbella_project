@@ -94,9 +94,12 @@ export default function Menu_View() {
           <Menu_Tile caption="Account ID" action={() => null} />
 
           {/* ***************************************** */}
-          <Menu_Sub_Title_Title label="Security" />
-          <Menu_Tile caption="2-fa Auth" action={() => null} />
-          <Menu_Tile caption="Face ID" action={() => null} />
+          <Menu_Sub_Title_Title label="Credentials" />
+          <Menu_Tile caption="Get a new PIN" action={() => null} />
+          <Menu_Tile
+            caption="Switch to another account"
+            action={() => navigation.navigate("Switching_Accounts_View")}
+          />
           <Menu_Sub_Title_Title label="Help & Support" />
           <Menu_Tile caption="Help & Support" action={() => null} />
         </ScrollView>
