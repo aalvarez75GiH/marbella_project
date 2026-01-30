@@ -18,20 +18,7 @@ const getUserByUID = async (uid) => {
       return shadowUser;
     });
 };
-// const getUserByEmail = async (email) => {
-//   console.log("EMAIL AT CONTROLLER:", email);
-//   return await firebase_controller.db
-//     .collection("users")
-//     .where(`email`, "==", email)
-//     .get()
-//     .then((querySnapshot) => {
-//       querySnapshot.forEach((doc) => {
-//         console.log(doc.id, " => ", doc.data());
-//         return doc.data();
-//       });
-//       return null;
-//     });
-// };
+
 const getUserByEmail = async (email) => {
   console.log("EMAIL AT CONTROLLER:", email);
   try {
