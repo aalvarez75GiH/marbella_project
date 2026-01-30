@@ -47,6 +47,7 @@ usersRouter.post("/userByEmail", async (req, res) => {
 
 usersRouter.post("/", async (req, res) => {
   const user_id = uuidv4();
+
   const user = {
     first_name: req.body.first_name,
     last_name: req.body.last_name,
@@ -60,10 +61,11 @@ usersRouter.post("/", async (req, res) => {
     display_name: req.body.display_name,
     user_id,
   };
+
   try {
     const newUser = await usersControllers.createUser(user);
     if (newUser) {
-      const newCart = cartsControllers.createCart({
+      const newCart = await cartsControllers.createCart({
         user_id: user.user_id,
         cart_id: uuidv4(),
         createdAt: new Date().toISOString(),
