@@ -4,21 +4,40 @@ import {
   usersInTheDevice,
 } from "../../local_data/authentication";
 import { gettingUserByEmailRequest } from "./authentication.sevices";
+import { createdAt } from "expo-updates";
 
 export const AuthenticationContext = createContext();
 
 export const Authentication_Context_Provider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [first_name, setFirst_name] = useState("");
-  const [last_name, setLast_name] = useState("");
-  const [email, setEmail] = useState("");
-  const [address, setAddress] = useState("");
+  // const [first_name, setFirst_name] = useState("");
+  // const [last_name, setLast_name] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [address, setAddress] = useState("");
   const [emailError, setEmailError] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState("");
+  // const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // ✅ THIS is the user you use everywhere
-  const [user, setUser] = useState(usersInTheDevice[0] ?? null);
+  const [user, setUser] = useState(null);
+  const [userToDB, setUserToDB] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    address: "",
+    createdAt: "",
+    updatedAt: "",
+    display_name: "",
+    phone_number: "",
+    uid: "",
+  });
+
+  console.log(
+    "USER TO DB IN AUTH CONTEXT: ",
+    JSON.stringify(userToDB, null, 2)
+  );
+  const isAuthenticated = !!user;
 
   const [emailToSwitch, setEmailToSwitch] = useState("");
 
@@ -44,6 +63,12 @@ export const Authentication_Context_Provider = ({ children }) => {
     }, 500);
   }, []);
 
+  const loginDevUser = (userData) => {
+    setUser(user_authenticated);
+  };
+  const logout = () => {
+    setUser(null);
+  };
   const gettingUserByEmailToAuthenticated = async (email) => {
     const MIN_LOADING_TIME = 800; // ms (tweak: 600–1200 feels good)
     console.log("EMAIL TO SWITCH:", email);
@@ -106,6 +131,11 @@ export const Authentication_Context_Provider = ({ children }) => {
         emailToSwitch,
         setEmailToSwitch,
         gettingUserByEmailToAuthenticated,
+        isAuthenticated,
+        loginDevUser,
+        logout,
+        setUserToDB,
+        userToDB,
       }}
     >
       {children}

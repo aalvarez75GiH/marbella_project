@@ -64,7 +64,9 @@ export const Global_Context_Provider = ({ children }) => {
       currency: "USD",
     }).format(cents / 100);
   };
-
+  const isValidEmail = (email = "") =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  //   const emailOk = isValidEmail(emailToSwitch);
   return (
     <GlobalContext.Provider
       value={{
@@ -73,6 +75,7 @@ export const Global_Context_Provider = ({ children }) => {
         formatCentsToUSD,
         error,
         formatDate,
+        isValidEmail,
       }}
     >
       {children}

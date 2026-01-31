@@ -34,6 +34,7 @@ export const colors = {
   inputs: {
     bg: "#FFFFFF",
     bottom_lines: "#3A2F01",
+    bottom_lines_disabled: "#D9D9D9",
     placeHolders: "#898989",
   },
   ctas: {

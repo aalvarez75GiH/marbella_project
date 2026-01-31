@@ -102,17 +102,17 @@ export const AppNavigator = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Global_Context_Provider>
-        <Geolocation_Context_Provider>
-          <Warehouse_Context_Provider>
-            <Cart_Context_Provider>
-              <Orders_Context_Provider>
-                <Payments_Context_Provider>
-                  <Tabs />
-                </Payments_Context_Provider>
-              </Orders_Context_Provider>
-            </Cart_Context_Provider>
-          </Warehouse_Context_Provider>
-        </Geolocation_Context_Provider>
+        {/* <Geolocation_Context_Provider> */}
+        <Warehouse_Context_Provider>
+          <Cart_Context_Provider>
+            <Orders_Context_Provider>
+              <Payments_Context_Provider>
+                <Tabs />
+              </Payments_Context_Provider>
+            </Orders_Context_Provider>
+          </Cart_Context_Provider>
+        </Warehouse_Context_Provider>
+        {/* </Geolocation_Context_Provider> */}
       </Global_Context_Provider>
     </GestureHandlerRootView>
   );

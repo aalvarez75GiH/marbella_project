@@ -4,6 +4,7 @@ import { ThemeProvider } from "styled-components/native";
 import { useFonts } from "expo-font";
 
 import { Authentication_Context_Provider } from "./src/infrastructure/services/authentication/authentication.context";
+import { Geolocation_Context_Provider } from "./src/infrastructure/services/geolocation/geolocation.context";
 import { theme } from "./src/infrastructure/theme";
 
 export default function App() {
@@ -23,9 +24,11 @@ export default function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Authentication_Context_Provider>
-        <Navigation />
-      </Authentication_Context_Provider>
+      <Geolocation_Context_Provider>
+        <Authentication_Context_Provider>
+          <Navigation />
+        </Authentication_Context_Provider>
+      </Geolocation_Context_Provider>
     </ThemeProvider>
   );
 }

@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 
 import { AuthenticationContext } from "../services/authentication/authentication.context";
 import { AppNavigator } from "./app.navigator";
+import { RootNavigator } from "./root.navigator";
 
 export const Navigation = () => {
   const { user } = useContext(AuthenticationContext);
@@ -10,7 +11,11 @@ export const Navigation = () => {
 
   return (
     <NavigationContainer>
-      {user.authenticated === true ? <AppNavigator /> : null}
+      <RootNavigator />
+      {/* <AppNavigator /> */}
     </NavigationContainer>
+    // <NavigationContainer>
+    //   {user.authenticated === true ? <AppNavigator /> : null}
+    // </NavigationContainer>
   );
 };

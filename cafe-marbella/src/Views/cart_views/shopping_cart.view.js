@@ -121,6 +121,14 @@ export default function Shopping_Cart_View() {
                 // action={() => navigation.navigate("Shop_Delivery_Type_View")}
                 action={() => {
                   const latestProducts = cart?.products ?? [];
+
+                  if (!user_id) {
+                    navigation.navigate("Auth_Navigator", {
+                      nextView: "Shop_Delivery_Type_View",
+                    });
+
+                    return;
+                  }
                   setMyOrder((prevOrder) => ({
                     ...prevOrder,
                     customer: {

@@ -1,3 +1,9 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { v4 as uuidv4 } from "uuid";
+import * as Crypto from "expo-crypto";
+
+export const generateUUID = () => Crypto.randomUUID();
+
 import React, {
   useEffect,
   useState,
@@ -29,10 +35,64 @@ export const Cart_Context_Provider = ({ children }) => {
 
   const removingRef = useRef(false);
 
+  // useEffect(() => {
+  //   const handlingCartAtInitial = async () => {
+  //     if (user_id) {
+  //       gettingCartByUserID(user_id);
+  //     }
+  //     if (!user_id) {
+  //       const id = uuidv4();
+  //       await AsyncStorage.setItem(GUEST_CART_KEY, id);
+  //       return id;
+  //     }
+  //   };
+  //   handlingCartAtInitial();
+  // }, [user_id]);
+
+  const GUEST_CART_KEY = "@marbella/guest_cart";
+  const createEmptyGuestCart = () => ({
+    cart_id: generateUUID(),
+    user_id: "", // stays empty for guest
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    products: [],
+    sub_total: 0,
+    taxes: 0,
+    total: 0,
+  });
+
   useEffect(() => {
-    if (user_id) {
-      gettingCartByUserID(user_id);
-    }
+    let cancelled = false;
+
+    const handlingCartAtInitial = async () => {
+      try {
+        if (user_id) {
+          await gettingCartByUserID(user_id);
+          return;
+        }
+
+        const raw = await AsyncStorage.getItem(GUEST_CART_KEY);
+        if (cancelled) return;
+
+        if (!raw) {
+          const fresh = createEmptyGuestCart();
+          await AsyncStorage.setItem(GUEST_CART_KEY, JSON.stringify(fresh));
+          if (cancelled) return;
+          setCart(fresh);
+        } else {
+          const parsed = JSON.parse(raw);
+          setCart(parsed);
+        }
+      } catch (e) {
+        console.log("handlingCartAtInitial error:", e);
+      }
+    };
+
+    handlingCartAtInitial();
+
+    return () => {
+      cancelled = true;
+    };
   }, [user_id]);
 
   useEffect(() => {
@@ -56,6 +116,7 @@ export const Cart_Context_Provider = ({ children }) => {
       }
     }, 1000);
   };
+
   //Calculate subtotal of cart helper function
   const calculateSubtotal = (products) => {
     return products.reduce((sum, product) => {
@@ -129,39 +190,55 @@ export const Cart_Context_Provider = ({ children }) => {
   };
 
   const increaseCartItemQty = async (item) => {
-    // Optimistically update the cart locally
+    setIsUpdatingQty(true);
+
+    let nextCartForGuest = null;
+
     setCart((prev) => {
       const products = prev?.products ?? [];
-
       const updatedProducts = updatingProductsQtyAtCart(
         item,
         products,
         "increase"
       );
+
       const updatedCart = {
         ...prev,
         products: updatedProducts,
         sub_total: calculateSubtotal(updatedProducts),
         updated_at: new Date().toISOString(),
       };
-      console.log(
-        "UPDATED CART AFTER INCREASE (Optimistic):",
-        JSON.stringify(updatedCart, null, 2)
-      );
+
       const total_items_qty = getTotalCartQuantity(updatedCart);
       setCartTotalItems(total_items_qty);
+
+      // ✅ capture for guest persistence
+      nextCartForGuest = updatedCart;
+
       return updatedCart;
     });
-    setIsUpdatingQty(true);
-    // Make the backend request
+
     try {
+      // ✅ GUEST: save and stop
+      if (!user_id) {
+        // wait one tick so nextCartForGuest is set
+        await new Promise((r) => setTimeout(r, 0));
+        if (nextCartForGuest) {
+          await AsyncStorage.setItem(
+            GUEST_CART_KEY,
+            JSON.stringify(nextCartForGuest)
+          );
+        }
+        return;
+      }
+
+      // ✅ USER: backend update
       const myCart = await IncOrDecProductsCartQty(user_id, item, "increase");
-      console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
-      // setCart(myCart); // Update the cart with the backend response
+
       setCart((prev) => ({
         ...prev,
         ...myCart,
-        products: prev.products, // keep optimistic quantities
+        products: prev?.products ?? myCart?.products ?? [],
       }));
     } catch (error) {
       console.error("Error updating cart:", error);
@@ -171,6 +248,10 @@ export const Cart_Context_Provider = ({ children }) => {
   };
 
   const decreaseCartItemQty = async (item) => {
+    setIsUpdatingQty(true);
+
+    let nextCartForGuest = null;
+
     // Optimistically update the cart locally
     setCart((prev) => {
       const products = prev?.products ?? [];
@@ -180,31 +261,54 @@ export const Cart_Context_Provider = ({ children }) => {
         products,
         "decrease"
       );
+
+      const sub_total = calculateSubtotal(updatedProducts);
+      const taxes = Number(prev?.taxes ?? 0);
+
       const updatedCart = {
         ...prev,
         products: updatedProducts,
-        sub_total: calculateSubtotal(updatedProducts),
+        sub_total,
+        total: sub_total + taxes, // ✅ keeps total correct
         updated_at: new Date().toISOString(),
       };
+
       console.log(
-        "UPDATED CART AFTER INCREASE (Optimistic):",
+        "UPDATED CART AFTER DECREASE (Optimistic):",
         JSON.stringify(updatedCart, null, 2)
       );
+
       const total_items_qty = getTotalCartQuantity(updatedCart);
       setCartTotalItems(total_items_qty);
+
+      nextCartForGuest = updatedCart; // capture for AsyncStorage
+
       return updatedCart;
     });
-    setIsUpdatingQty(true);
-    // Make the backend request
+
     try {
+      // ✅ GUEST: persist + stop (no backend)
+      if (!user_id) {
+        await new Promise((r) => setTimeout(r, 0)); // let nextCartForGuest get assigned
+        if (nextCartForGuest) {
+          await AsyncStorage.setItem(
+            GUEST_CART_KEY,
+            JSON.stringify(nextCartForGuest)
+          );
+        }
+        return;
+      }
+
+      // ✅ USER: backend request
       const myCart = await IncOrDecProductsCartQty(user_id, item, "decrease");
+
       console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
+
       setCart((prev) => ({
         ...prev,
         ...myCart,
-        products: prev.products, // keep optimistic quantities
+        products: prev?.products, // keep optimistic quantities
       }));
-      // setCart(myCart); // Update the cart with the backend response
     } catch (error) {
       console.error("Error updating cart:", error);
     } finally {
@@ -212,7 +316,19 @@ export const Cart_Context_Provider = ({ children }) => {
     }
   };
 
-  //   *** ADD product to cart in the cloud ***
+  const calculateTotals = (products = []) => {
+    const sub_total = products.reduce(
+      (sum, p) => sum + p.price_cents * p.quantity,
+      0
+    );
+    const taxes = 0; // later
+    return {
+      sub_total,
+      taxes,
+      total: sub_total + taxes,
+    };
+  };
+
   const addingProductToCart = (
     product_to_add_to_cart,
     navigation,
@@ -222,25 +338,104 @@ export const Cart_Context_Provider = ({ children }) => {
 
     setTimeout(async () => {
       try {
-        console.log("Fetching cart for userId:", user_id);
-        const myCart = await updatingProductsCart(
-          user_id,
-          product_to_add_to_cart
-        );
-        console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
-        setCart(myCart);
-        setCartTotalItems(myCart.quantity || 0);
-        // Handle the fetched cart data (e.g., update state or context)
+        if (user_id) {
+          const myCart = await updatingProductsCart(
+            user_id,
+            product_to_add_to_cart
+          );
+          setCart(myCart);
+          setCartTotalItems(myCart.quantity || 0);
+        } else {
+          const raw = await AsyncStorage.getItem(GUEST_CART_KEY);
+          let cart = raw
+            ? JSON.parse(raw)
+            : {
+                cart_id: Crypto.randomUUID(),
+                user_id: "",
+                products: [],
+                sub_total: 0,
+                taxes: 0,
+                total: 0,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+              };
+
+          const incomingVariant = product_to_add_to_cart?.size_variants?.[0];
+          const incomingVariantId = incomingVariant?.id;
+
+          const existingIndex = cart.products.findIndex((p) => {
+            const v = p?.size_variants?.[0];
+            return (
+              p?.id === product_to_add_to_cart?.id &&
+              v?.id === incomingVariantId
+            );
+          });
+
+          const addQty = Number(incomingVariant?.quantity) || 1;
+
+          if (existingIndex >= 0) {
+            // ✅ increment VARIANT quantity (what your UI shows)
+            const existingVariant =
+              cart.products[existingIndex].size_variants?.[0];
+            const currentQty = Number(existingVariant?.quantity) || 0;
+
+            cart.products[existingIndex].size_variants[0] = {
+              ...existingVariant,
+              quantity: currentQty + addQty,
+            };
+          } else {
+            // ✅ ensure the new item has a variant quantity set
+            cart.products.push({
+              ...product_to_add_to_cart,
+              size_variants: [
+                {
+                  ...incomingVariant,
+                  quantity: addQty,
+                },
+              ],
+            });
+          }
+
+          // ✅ totals from variant.price * variant.quantity
+          const sub_total = cart.products.reduce((sum, p) => {
+            const v = p?.size_variants?.[0];
+            const price = Number(v?.price) || 0;
+            const qty = Number(v?.quantity) || 0;
+            return sum + price * qty;
+          }, 0);
+
+          const taxes = 0;
+          const total = sub_total + taxes;
+
+          const nextCart = {
+            ...cart,
+            sub_total,
+            taxes,
+            total,
+            updatedAt: new Date().toISOString(),
+          };
+
+          await AsyncStorage.setItem(GUEST_CART_KEY, JSON.stringify(nextCart));
+
+          setCart(nextCart);
+
+          // ✅ cart badge count should be sum of variant quantities
+          const totalItems = nextCart.products.reduce((sum, p) => {
+            const v = p?.size_variants?.[0];
+            return sum + (Number(v?.quantity) || 0);
+          }, 0);
+          setCartTotalItems(totalItems);
+        }
       } catch (error) {
         console.error("Error fetching cart:", error);
+      } finally {
+        setIsLoading(false);
+        navigation.navigate(nextView); // ✅ only once
       }
-      setIsLoading(false);
-      navigation.navigate(nextView);
     }, 1000);
   };
 
-  //   *** REMOVE product from cart ***
-
+  // *** REMOVE product from cart ***
   const removingProductFromCart = async (item) => {
     if (removingRef.current) return { ok: false, becameEmpty: false };
     removingRef.current = true;
@@ -254,10 +449,14 @@ export const Cart_Context_Provider = ({ children }) => {
       return !(p.id === productId && v?.id === variantId);
     });
 
+    const sub_total = calculateSubtotal(updatedProducts);
+    const taxes = Number(cart?.taxes ?? 0);
+
     const optimisticCart = {
       ...cart,
       products: updatedProducts,
-      sub_total: calculateSubtotal(updatedProducts),
+      sub_total,
+      total: sub_total + taxes, // ✅ keep total updated
       updated_at: new Date().toISOString(),
     };
 
@@ -268,6 +467,16 @@ export const Cart_Context_Provider = ({ children }) => {
     setCartTotalItems(getTotalCartQuantity(optimisticCart));
 
     try {
+      // ✅ GUEST: persist + stop (no backend call)
+      if (!user_id) {
+        await AsyncStorage.setItem(
+          GUEST_CART_KEY,
+          JSON.stringify(optimisticCart)
+        );
+        return { ok: true, becameEmpty: optimisticEmpty };
+      }
+
+      // ✅ USER: backend request
       const myCart = await removingCartItemRequest(
         user_id,
         productId,
@@ -284,7 +493,6 @@ export const Cart_Context_Provider = ({ children }) => {
       return { ok: true, becameEmpty: optimisticEmpty };
     } catch (error) {
       console.error("Error updating cart:", error);
-
       return { ok: false, becameEmpty: false };
     } finally {
       setIsLoading(false);
@@ -292,16 +500,55 @@ export const Cart_Context_Provider = ({ children }) => {
     }
   };
 
+  // const resettingCart = async (user_id) => {
+  //   console.log("Resetting cart for user_id at context:", user_id);
+  //   try {
+  //     const cartReset = await resettingCartRequest(user_id);
+  //     cartReset && setCart(cartReset);
+  //   } catch (error) {
+  //     console.error("Error resetting cart:", error);
+  //     setError(error);
+  //   }
+  // };
   const resettingCart = async (user_id) => {
     console.log("Resetting cart for user_id at context:", user_id);
+
     try {
+      // ✅ GUEST: reset AsyncStorage cart
+      if (!user_id) {
+        const emptyGuestCart = {
+          cart_id: Crypto.randomUUID(),
+          user_id: "",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          products: [],
+          sub_total: 0,
+          taxes: 0,
+          total: 0,
+        };
+
+        await AsyncStorage.setItem(
+          GUEST_CART_KEY,
+          JSON.stringify(emptyGuestCart)
+        );
+        setCart(emptyGuestCart);
+        setCartTotalItems(0);
+        return;
+      }
+
+      // ✅ USER: reset in backend
       const cartReset = await resettingCartRequest(user_id);
-      cartReset && setCart(cartReset);
+      if (cartReset) {
+        setCart(cartReset);
+        setCartTotalItems(getTotalCartQuantity(cartReset)); // optional but recommended
+      }
     } catch (error) {
       console.error("Error resetting cart:", error);
       setError(error);
     }
   };
+
+  console.log("CART AT CONTEXT:", JSON.stringify(cart, null, 2));
 
   return (
     <CartContext.Provider

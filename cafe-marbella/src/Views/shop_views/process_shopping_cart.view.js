@@ -12,6 +12,7 @@ import { Product_Cart_Item_Tile } from "../../components/tiles/product_cart_item
 import { Shopping_Cart_Sub_Total_Footer } from "../../components/footers/shopping_cart_sub_total.footer";
 import { Regular_CTA } from "../../components/ctas/regular.cta";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
+import { Auth_Navigator } from "../../infrastructure/navigation/auth.navigator";
 
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
@@ -117,6 +118,13 @@ export default function Process_Shopping_Cart_View() {
               action={() => {
                 const latestProducts = cart?.products ?? [];
 
+                if (!user_id) {
+                  navigation.navigate("Auth_Navigator", {
+                    nextView: "Shop_Delivery_Type_View",
+                  });
+
+                  return;
+                }
                 setMyOrder((prevOrder) => ({
                   ...prevOrder,
                   customer: {

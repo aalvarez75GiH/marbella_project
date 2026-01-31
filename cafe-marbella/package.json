@@ -31,7 +31,8 @@
     "react-native-screens": "~4.16.0",
     "react-native-svg": "15.12.1",
     "stripe-client": "^1.1.5",
-    "styled-components": "^6.1.19"
+    "styled-components": "^6.1.19",
+    "expo-crypto": "~15.0.8"
   },
   "private": true,
   "devDependencies": {

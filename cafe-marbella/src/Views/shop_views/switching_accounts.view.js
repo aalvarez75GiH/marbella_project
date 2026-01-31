@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { KeyboardAvoidingView, Platform, Keyboard } from "react-native";
 
@@ -29,9 +29,9 @@ export default function Switching_Accounts_View() {
   console.log("Current authenticated user in Switching Accounts View:", user);
 
   const navigation = useNavigation();
-  const [userSwitched, setUserSwitched] = React.useState(false);
-  const [emailTouched, setEmailTouched] = React.useState(false);
-  const [error, setError] = React.useState(null);
+  const [userSwitched, setUserSwitched] = useState(false);
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [error, setError] = useState(null);
 
   const isValidEmail = (email = "") =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
@@ -78,20 +78,6 @@ export default function Switching_Accounts_View() {
                 console.log("Error switching user account:", error);
               }
             }}
-            // action={async () => {
-            //   try {
-            //     const userSwitched = await gettingUserByEmailToAuthenticated(
-            //       email
-            //     );
-            //     if (userSwitched?.ok) {
-            //       console.log("Successfully switched to user:", email);
-            //       setEmailToSwitch("");
-            //       setUserSwitched(true);
-            //     }
-            //   } catch (error) {
-            //     console.log("Error switching user account:", error);
-            //   }
-            // }}
           />
         </Spacer>
       );
