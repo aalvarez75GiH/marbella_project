@@ -20,12 +20,9 @@ export default function Enter_Address_View() {
 
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [selectedAddress, setSelectedAddress] = useState(null);
-  // selectedAddress = { formatted_address, lat, lng, place_id }
 
   const { setUserToDB, userToDB } = useContext(AuthenticationContext);
   const { deviceLat, deviceLng } = useContext(GeolocationContext);
-  //   let deviceLat = "33.9499447";
-  //   let deviceLng = "-83.4071522";
   const CTA_HEIGHT = 65; // ✅ fixed height so it never shrinks
   return (
     <SafeArea
@@ -175,7 +172,9 @@ export default function Enter_Address_View() {
                 border_radius={"40px"}
                 caption="Continue"
                 caption_text_variant="dm_sans_bold_20_white"
-                action={async () => null}
+                action={async () =>
+                  navigation.navigate("Enter_Phone_Number_View")
+                }
               />
             ) : (
               // optional: keep spacing so layout doesn't jump
