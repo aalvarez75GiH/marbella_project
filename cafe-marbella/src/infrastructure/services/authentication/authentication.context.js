@@ -1,26 +1,72 @@
 import React, { useState, createContext, useEffect, useMemo } from "react";
+import { Platform } from "react-native";
 import {
   user_authenticated,
   usersInTheDevice,
 } from "../../local_data/authentication";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  getReactNativePersistence,
+  initializeAuth,
+  createUserWithEmailAndPassword,
+  updatePassword,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+} from "firebase/auth";
+import { initializeApp, getApps } from "firebase/app";
 import { gettingUserByEmailRequest } from "./authentication.sevices";
-import { createdAt } from "expo-updates";
+import { post_user_Request } from "./authentication.sevices";
+import { STORAGE_KEYS } from "../../services/authentication/authentication.handlers";
 
 export const AuthenticationContext = createContext();
+
+// Firebase configuration
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA7fPadDf73WRg1tkQPt7n2H-b5pV8ew70",
+  authDomain: "cafe-marbella-be.firebaseapp.com",
+  projectId: "cafe-marbella-be",
+  storageBucket: "cafe-marbella-be.firebasestorage.app",
+  messagingSenderId: "957235778708",
+  appId: "1:957235778708:web:091e323e18096833dc5081",
+};
+
+let app;
+if (!getApps().length) {
+  app = initializeApp(firebaseConfig);
+} else {
+  app = getApps()[0]; // Use the already initialized app
+}
+
+// Auth singleton (RN vs Web)
+let auth;
+if (Platform.OS === "web") {
+  // web can use getAuth (browser persistence)
+  auth = getAuth(app);
+} else {
+  // React Native: ensure AsyncStorage persistence
+  try {
+    auth = initializeAuth(app, {
+      persistence: getReactNativePersistence(AsyncStorage),
+    });
+  } catch (e) {
+    // If already initialized (Fast Refresh), just grab it
+    auth = getAuth(app);
+  }
+}
+export { app, auth };
 
 export const Authentication_Context_Provider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  // const [first_name, setFirst_name] = useState("");
-  // const [last_name, setLast_name] = useState("");
-  // const [email, setEmail] = useState("");
-  // const [address, setAddress] = useState("");
   const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState("");
-  // const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  // ✅ THIS is the user you use everywhere
   const [user, setUser] = useState(null);
+  const [authInitializing, setAuthInitializing] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [comingFrom, setComingFrom] = useState(null);
   const [userToDB, setUserToDB] = useState({
     first_name: "",
     last_name: "",
@@ -30,13 +76,84 @@ export const Authentication_Context_Provider = ({ children }) => {
     updatedAt: "",
     display_name: "",
     phone_number: "",
-    uid: "",
   });
+
+  const { CURRENT_USER_KEY, USERS_ON_DEVICE_KEY } = STORAGE_KEYS;
+  //**************** */ Local user persistency logic
+  // 1) Rehydrate user on app start
+  useEffect(() => {
+    let cancelled = false;
+
+    const boot = async () => {
+      try {
+        const raw = await AsyncStorage.getItem(CURRENT_USER_KEY);
+        if (cancelled) return;
+
+        if (!raw) {
+          setUser(null);
+          setCurrentUser(null); // optional if you keep it
+        } else {
+          const parsed = JSON.parse(raw);
+          setUser(parsed); // ✅ THIS fixes reload
+          setCurrentUser(parsed); // optional
+        }
+      } catch (e) {
+        console.log("Auth boot error:", e);
+        setUser(null);
+        setCurrentUser(null);
+      } finally {
+        if (!cancelled) setAuthInitializing(false);
+      }
+    };
+
+    boot();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // 2) Register (create user locally + persist)
+  const registerLocalUser = async (newUser) => {
+    setError(null);
+    try {
+      if (!newUser?.uid) throw new Error("User uid is required");
+
+      await AsyncStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
+
+      setCurrentUser(newUser); // optional
+      setUser(newUser); // ✅ important
+
+      // users on device list (optional keep)
+      const rawUsers = await AsyncStorage.getItem(USERS_ON_DEVICE_KEY);
+      const users = rawUsers ? JSON.parse(rawUsers) : [];
+
+      const exists = users.some((u) => u?.uid === newUser.uid);
+      const nextUsers = exists ? users : [newUser, ...users];
+
+      await AsyncStorage.setItem(
+        USERS_ON_DEVICE_KEY,
+        JSON.stringify(nextUsers)
+      );
+
+      return { ok: true };
+    } catch (e) {
+      setError(e.message || "Register failed");
+      return { ok: false, error: e.message };
+    }
+  };
+
+  // 3) Logout
+  const logout = async () => {
+    await AsyncStorage.removeItem(CURRENT_USER_KEY);
+    setUser(null);
+    setCurrentUser(null); // optional
+  };
 
   console.log(
     "USER TO DB IN AUTH CONTEXT: ",
     JSON.stringify(userToDB, null, 2)
   );
+  console.log("USER IN AUTH CONTEXT: ", JSON.stringify(user, null, 2));
   const isAuthenticated = !!user;
 
   const [emailToSwitch, setEmailToSwitch] = useState("");
@@ -47,28 +164,10 @@ export const Authentication_Context_Provider = ({ children }) => {
     return usersInTheDevice.filter((u) => u?.user_id !== user.user_id);
   }, [user]);
 
-  // initial “auth check”
-  useEffect(() => {
-    setIsLoading(true);
-    setTimeout(() => {
-      try {
-        if (!user_authenticated) {
-          setUser(null);
-        }
-      } catch (e) {
-        setError(e);
-      } finally {
-        setIsLoading(false);
-      }
-    }, 500);
-  }, []);
-
   const loginDevUser = (userData) => {
     setUser(user_authenticated);
   };
-  const logout = () => {
-    setUser(null);
-  };
+
   const gettingUserByEmailToAuthenticated = async (email) => {
     const MIN_LOADING_TIME = 800; // ms (tweak: 600–1200 feels good)
     console.log("EMAIL TO SWITCH:", email);
@@ -120,6 +219,49 @@ export const Authentication_Context_Provider = ({ children }) => {
     }
   };
 
+  // ********************* LOGIN USER LOGIC *************************
+  //We generate a random 6-digit PIN
+  const generatePin = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  };
+
+  const registerUser = async (userToDB, cartPayload) => {
+    const pinGenerated = generatePin();
+    const email = userToDB.email;
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        pinGenerated
+      );
+
+      const payload = {
+        ...userToDB,
+        encrypted_pin: pinGenerated, // ideally remove later
+        uid: userCredential.user.uid,
+      };
+
+      const res = await post_user_Request(payload, cartPayload);
+
+      if (res?.user?.[0] && res?.cart?.[0]) {
+        await registerLocalUser(res.user[0]); // ✅ persist & set user state
+        return { ok: true, user: res.user[0], cart: res.cart[0] };
+      }
+
+      return { ok: false, error: "invalid-response-shape", raw: res };
+    } catch (error) {
+      console.log("REGISTER USER ERROR:", error?.message ?? error);
+
+      if (error?.message === "Firebase: Error (auth/email-already-in-use).") {
+        setEmailError("Esta cuenta ya existe");
+        return { ok: false, error: "email-already-in-use" };
+      }
+
+      return { ok: false, error: error?.message ?? "unknown-error" };
+    }
+  };
+
   return (
     <AuthenticationContext.Provider
       value={{
@@ -136,6 +278,11 @@ export const Authentication_Context_Provider = ({ children }) => {
         logout,
         setUserToDB,
         userToDB,
+        registerUser,
+        authInitializing,
+        registerLocalUser,
+        comingFrom,
+        setComingFrom,
       }}
     >
       {children}

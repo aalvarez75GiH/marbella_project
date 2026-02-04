@@ -20,11 +20,12 @@ import { Just_Caption_Header } from "../../components/headers/just_caption.heade
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
+
 export default function Shopping_Cart_View() {
   const theme = useTheme();
   const { setMyOrder } = useContext(OrdersContext);
   // *************
-  const { user } = useContext(AuthenticationContext);
+  const { user, setComingFrom } = useContext(AuthenticationContext);
   const { user_id, first_name, last_name, email, phone_number, uid, address } =
     user || {};
   const { cart, isLoading, cartTotalItems, gettingCartByUserID } =
@@ -113,7 +114,7 @@ export default function Shopping_Cart_View() {
               <Spacer position="top" size="medium" />
               <Regular_CTA
                 width="95%"
-                height={70} // ✅ fixed height instead of %
+                height={"12%"} // ✅ fixed height instead of %
                 color={theme.colors.ui.business}
                 border_radius="40px"
                 caption="Proceed to checkout"
@@ -123,12 +124,14 @@ export default function Shopping_Cart_View() {
                   const latestProducts = cart?.products ?? [];
 
                   if (!user_id) {
+                    setComingFrom("Shopping_Cart_View");
                     navigation.navigate("Auth_Navigator", {
                       nextView: "Shop_Delivery_Type_View",
                     });
 
                     return;
                   }
+                  setComingFrom("Shopping_Cart_View");
                   setMyOrder((prevOrder) => ({
                     ...prevOrder,
                     customer: {
@@ -149,9 +152,7 @@ export default function Shopping_Cart_View() {
                       total,
                     }, // ✅ always latest
                   }));
-                  navigation.navigate("Shop_Delivery_Type_View", {
-                    coming_from: "Shopping_Cart_View",
-                  });
+                  navigation.navigate("Shop_Delivery_Type_View");
                 }}
               />
             </Container>

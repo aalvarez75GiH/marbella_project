@@ -88,13 +88,10 @@ export default function Enter_Names_View() {
                   first_name: value,
                   display_name: value,
                 });
-                //   if (emailTouched) setEmailTouched(false);
-                //   if (error) setError(null);
               }}
-              // underlineColor={theme.colors.inputs.bottom_lines_disabled}
               border_color={theme.colors.inputs.bottom_lines_disabled}
               underlineColor={theme.colors.inputs.bottom_lines_disabled}
-              border_width={1}
+              border_width={"0.3px"}
               activeUnderlineColor={theme.colors.ui.primary}
               keyboardType="default"
               autoCapitalize="words"
@@ -112,13 +109,10 @@ export default function Enter_Names_View() {
                   ...userToDB,
                   last_name: value,
                 });
-                //   if (emailTouched) setEmailTouched(false);
-                //   if (error) setError(null);
               }}
-              // underlineColor={theme.colors.inputs.bottom_lines_disabled}
               border_color={theme.colors.inputs.bottom_lines_disabled}
               underlineColor={theme.colors.inputs.bottom_lines_disabled}
-              border_width={1}
+              border_width={"0.3px"}
               activeUnderlineColor={theme.colors.ui.primary}
               keyboardType="default"
               autoCapitalize="words"

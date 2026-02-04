@@ -1,7 +1,7 @@
-import React, { useContext, useLayoutEffect, useEffect } from "react";
+import React, { useContext, useCallback } from "react";
 import { FlatList } from "react-native";
 import { useTheme } from "styled-components/native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
@@ -17,7 +17,6 @@ import { Auth_Navigator } from "../../infrastructure/navigation/auth.navigator";
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
-import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
 export default function Process_Shopping_Cart_View() {
   const theme = useTheme();
   // *************
@@ -36,17 +35,16 @@ export default function Process_Shopping_Cart_View() {
   // *************
   const navigation = useNavigation();
 
-  // Hiding tab bar for this screen
-  useLayoutEffect(() => {
-    navigation.getParent()?.setOptions({
-      tabBarStyle: { display: "none" },
-    });
+  useFocusEffect(
+    useCallback(() => {
+      const parent = navigation.getParent();
+      parent?.setOptions({ tabBarStyle: { display: "none" } });
 
-    return () =>
-      navigation.getParent()?.setOptions({
-        tabBarStyle: undefined,
-      });
-  }, [navigation]);
+      return () => {
+        parent?.setOptions({ tabBarStyle: { display: "flex" } });
+      };
+    }, [navigation])
+  );
 
   const renderProductCartItemTile = ({ item }) => {
     const image = item?.size_variants?.[0]?.images?.[0]; // ✅ safe

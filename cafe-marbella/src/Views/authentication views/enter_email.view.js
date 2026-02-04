@@ -100,7 +100,7 @@ export default function Enter_Email_View() {
               // underlineColor={theme.colors.inputs.bottom_lines_disabled}
               border_color={theme.colors.inputs.bottom_lines_disabled}
               underlineColor={theme.colors.inputs.bottom_lines_disabled}
-              border_width={1}
+              border_width={"0.3px"}
               activeUnderlineColor={theme.colors.ui.primary}
               keyboardType="email"
               autoCapitalize="none"

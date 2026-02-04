@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
 
 import {
@@ -14,6 +14,8 @@ import { FLAGS_BY_KEY } from "../../../infrastructure/local_data/images_mapping/
 import { Text } from "../../../infrastructure/typography/text.component.js";
 import { Product_Initial_OOS_Info_Component } from "./product_initial_oos_info.component.js";
 
+import { AuthenticationContext } from "../../../infrastructure/services/authentication/authentication.context.js";
+
 export const Product_Initial_Card = ({ item = null }) => {
   const {
     // flag_image: FlagImage,
@@ -24,6 +26,8 @@ export const Product_Initial_Card = ({ item = null }) => {
     size_variants,
     totalStock,
   } = item || {};
+
+  const { comingFrom, setComingFrom } = useContext(AuthenticationContext);
 
   console.log("TOTAL STOCK:", totalStock);
   // console.log("Product_Initial_Card ITEM:", JSON.stringify(item, null, 2));
@@ -40,6 +44,7 @@ export const Product_Initial_Card = ({ item = null }) => {
   const navigation = useNavigation();
 
   const handleNavigate = (item) => {
+    setComingFrom("Product_Initial_Card");
     const { flag_image, ...itemWithoutFlagImage } = item; // Exclude flag_image
     navigation.navigate("Shop_Product_Details_View", {
       item: itemWithoutFlagImage,

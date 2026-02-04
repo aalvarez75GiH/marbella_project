@@ -59,7 +59,7 @@ export default function Shop_Order_Review_View() {
       return (
         <Spacer position="bottom" size="medium" key={item.id}>
           <Product_Cart_Item_Tile
-            image={item.size_variants[0].images[0]}
+            image={item?.size_variants?.[0]?.images?.[0]}
             product={item}
           />
         </Spacer>

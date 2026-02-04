@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import { Image } from "react-native";
 
 import { useTheme } from "styled-components/native";
@@ -12,7 +13,11 @@ import Doodle from "../../../assets/doodles/doodle_1_transparent.png";
 import { Text } from "../../infrastructure/typography/text.component";
 import { Just_Caption_Header } from "../../components/headers/just_caption.header";
 
+import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
+
 export default function Empty_Shopping_Cart_View() {
+  const { user } = useContext(AuthenticationContext);
+  const { user_id } = user || {};
   const theme = useTheme();
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
@@ -35,13 +40,28 @@ export default function Empty_Shopping_Cart_View() {
           {/* <CleaningIcon width={150} height={150} /> */}
           <Image source={Doodle} style={{ width: 350, height: 350 }} />
           <Spacer position="top" size="large" />
-          <Text variant="raleway_bold_20">Start filling your cart </Text>
-          <Text variant="raleway_medium_16">
-            as you add coffee products at Shop section
-          </Text>
-          <Text variant="raleway_medium_16">
-            your cart will be shown up here...
-          </Text>
+          {user_id === undefined && (
+            <>
+              <Text variant="raleway_bold_20">You are not logged in!</Text>
+              <Text variant="raleway_medium_16">
+                Go to menu and Sign in or Sign up
+              </Text>
+              <Text variant="raleway_medium_16">
+                then go ahead and start filling your cart!!
+              </Text>
+            </>
+          )}
+          {user_id !== undefined && (
+            <>
+              <Text variant="raleway_bold_20">Start filling your cart </Text>
+              <Text variant="raleway_medium_16">
+                as you add coffee products at Shop section
+              </Text>
+              <Text variant="raleway_medium_16">
+                your cart will be shown up here...
+              </Text>
+            </>
+          )}
         </Container>
       </Container>
     </SafeArea>

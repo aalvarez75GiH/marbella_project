@@ -2,12 +2,19 @@ import { StyleSheet } from "react-native";
 import { Navigation } from "./src/infrastructure/navigation";
 import { ThemeProvider } from "styled-components/native";
 import { useFonts } from "expo-font";
+import { useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { Authentication_Context_Provider } from "./src/infrastructure/services/authentication/authentication.context";
 import { Geolocation_Context_Provider } from "./src/infrastructure/services/geolocation/geolocation.context";
 import { theme } from "./src/infrastructure/theme";
 
 export default function App() {
+  // useEffect(() => {
+  //   AsyncStorage.clear().then(() => {
+  //     console.log("🧹 AsyncStorage cleared (dev reset)");
+  //   });
+  // }, []);
   const [fontsLoaded] = useFonts({
     ralewayRegular: require("./assets/fonts/raleway/Raleway-Regular.ttf"),
     ralewayMedium: require("./assets/fonts/raleway/Raleway-Medium.ttf"),

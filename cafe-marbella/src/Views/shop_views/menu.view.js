@@ -18,7 +18,8 @@ export default function Menu_View() {
   const navigation = useNavigation();
 
   const { user } = useContext(AuthenticationContext);
-  const { first_name, last_name, email, display_name } = user || {};
+  const { first_name, last_name, email, display_name, user_id } = user || {};
+  console.log("Menu_View user:", user);
   // Hiding tab bar for this screen
   useLayoutEffect(() => {
     navigation.getParent()?.setOptions({
@@ -34,76 +35,106 @@ export default function Menu_View() {
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
-      //background_color={"lightblue"}
       style={{ flex: 1 }}
     >
-      <Container
-        width="100%"
-        height="100%"
-        color={theme.colors.bg.screens_bg}
-        // color={"green"}
-        justify="flex-start"
-        align="center"
-      >
-        <Exit_Header_With_Label
-          label=""
-          action={() => navigation.goBack()}
-          orientation="right"
-        />
+      {user_id !== undefined ? (
         <Container
           width="100%"
-          height="10%"
-          color={theme.colors.bg.elements_bg}
+          height="100%"
+          color={theme.colors.bg.screens_bg}
           // color={"green"}
-          justify="center"
-          align="flex-start"
+          justify="flex-start"
+          align="center"
         >
-          <Spacer position="left" size="extraLarge">
-            <Text variant="raleway_bold_26">Account</Text>
-          </Spacer>
-        </Container>
-        <Spacer position="top" size="small" />
-        <Container
-          width="100%"
-          height="15%"
-          color={theme.colors.bg.elements_bg}
-          // color={"green"}
-          justify="center"
-          align="flex-start"
-        >
-          <Spacer position="left" size="extraLarge">
-            <Text variant="raleway_bold_24">{display_name}</Text>
-          </Spacer>
+          <Exit_Header_With_Label
+            label=""
+            action={() => navigation.goBack()}
+            orientation="right"
+          />
+          <Container
+            width="100%"
+            height="10%"
+            color={theme.colors.bg.elements_bg}
+            // color={"green"}
+            justify="center"
+            align="flex-start"
+          >
+            <Spacer position="left" size="extraLarge">
+              <Text variant="raleway_bold_26">Account</Text>
+            </Spacer>
+          </Container>
           <Spacer position="top" size="small" />
-          <Spacer position="left" size="extraLarge">
-            <Text variant="raleway_medium_16">{email}</Text>
-          </Spacer>
-        </Container>
-        {/* <Spacer position="top" size="large" /> */}
-        <ScrollView
-          style={{ flex: 1, width: "100%" }}
-          contentContainerStyle={{ flexGrow: 1, alignItems: "center" }}
-        >
-          <Menu_Sub_Title_Title label="Profile" />
-          {/* ***************************************** */}
-          <Menu_Tile caption="Personal info" action={() => null} />
-          <Menu_Tile
-            caption="Transactions history"
-            action={() => navigation.navigate("Orders_View")}
-          />
-          <Menu_Tile caption="Account ID" action={() => null} />
+          <Container
+            width="100%"
+            height="15%"
+            color={theme.colors.bg.elements_bg}
+            // color={"green"}
+            justify="center"
+            align="flex-start"
+          >
+            <Spacer position="left" size="extraLarge">
+              <Text variant="raleway_bold_24">{display_name}</Text>
+            </Spacer>
+            <Spacer position="top" size="small" />
+            <Spacer position="left" size="extraLarge">
+              <Text variant="raleway_medium_16">{email}</Text>
+            </Spacer>
+          </Container>
+          {/* <Spacer position="top" size="large" /> */}
+          <ScrollView
+            style={{ flex: 1, width: "100%" }}
+            contentContainerStyle={{ flexGrow: 1, alignItems: "center" }}
+          >
+            <Menu_Sub_Title_Title label="Profile" />
+            {/* ***************************************** */}
+            <Menu_Tile caption="Personal info" action={() => null} />
+            <Menu_Tile
+              caption="Transactions history"
+              action={() => navigation.navigate("Orders_View")}
+            />
+            <Menu_Tile caption="Account ID" action={() => null} />
 
-          {/* ***************************************** */}
-          <Menu_Sub_Title_Title label="Credentials" />
-          <Menu_Tile caption="Get a new PIN" action={() => null} />
-          <Menu_Tile
-            caption="Switch to another account"
-            action={() => navigation.navigate("Switching_Accounts_View")}
+            {/* ***************************************** */}
+            <Menu_Sub_Title_Title label="Credentials" />
+            <Menu_Tile caption="Get a new PIN" action={() => null} />
+            <Menu_Tile
+              caption="Switch to another account"
+              action={() => navigation.navigate("Switching_Accounts_View")}
+            />
+            <Menu_Sub_Title_Title label="Help & Support" />
+            <Menu_Tile caption="Help & Support" action={() => null} />
+          </ScrollView>
+        </Container>
+      ) : (
+        <Container
+          width="100%"
+          height="100%"
+          color={theme.colors.bg.screens_bg}
+          // color={"green"}
+          justify="flex-start"
+          align="center"
+        >
+          <Exit_Header_With_Label
+            label=""
+            action={() => navigation.goBack()}
+            orientation="right"
           />
-          <Menu_Sub_Title_Title label="Help & Support" />
-          <Menu_Tile caption="Help & Support" action={() => null} />
-        </ScrollView>
-      </Container>
+          <Container
+            width="100%"
+            height="10%"
+            color={theme.colors.bg.elements_bg}
+            // color={"green"}
+            justify="center"
+            align="flex-start"
+          >
+            <Spacer position="left" size="extraLarge">
+              <Text variant="raleway_bold_26">Sign in or Sign up </Text>
+            </Spacer>
+          </Container>
+          <Spacer position="top" size="small" />
+          <Container />
+        </Container>
+      )}
     </SafeArea>
   );
 }

@@ -12,6 +12,10 @@ export const gettingWarehouseByIDRequest = async (warehouse_id) => {
         timeout: 15000,
       });
       // console.log("RESPONSE:", res.data);
+      console.log(
+        "WAREHOUSE BY ID AFTER REQUEST FUNCTION:",
+        JSON.stringify(res.data, null, 2)
+      );
       return res.data;
     } catch (error) {
       console.log("AXIOS message:", error.message);
@@ -73,26 +77,18 @@ export const gettingRealTimeDistanceToOrderWHRequest = async (
   return res.data;
 };
 
-// export const gettingRealTimeDistanceToOrderWHRequest = async (
-//   lat,
-//   lng,
-//   wLat,
-//   wLng
-// ) => {
+// const gettingWarehouseByIDRequest = async (warehouse_id) => {
 //   const { warehouseEndPoint } = environment;
+//   // console.log("WAREHOUSE ID AT SERVICE:", warehouse_id);
 
 //   try {
 //     try {
-//       const res = await axios.get(
-//         `${warehouseEndPoint}/realTimeSpecificWHDistance`,
-//         {
-//           params: { lat, lng },
-//           timeout: 15000,
-//           body: { wLat, wLng },
-//         }
-//       );
+//       const res = await axios.get(`${warehouseEndPoint}/getWarehouse`, {
+//         params: { warehouse_id },
+//         timeout: 15000,
+//       });
 //       // console.log("RESPONSE:", res.data);
-//       return res.data.closest;
+//       return res.data;
 //     } catch (error) {
 //       console.log("AXIOS message:", error.message);
 //       console.log("AXIOS code:", error.code);

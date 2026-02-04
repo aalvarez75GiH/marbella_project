@@ -70,20 +70,20 @@ export const Orders_Context_Provider = ({ children }) => {
     }, 1000); // Simulate network delay
   };
 
-  console.log(
-    "DIFFERENT ADDRESS AT ORDERS CONTEXT: ",
-    JSON.stringify(differentAddress, null, 2)
-  );
+  // console.log(
+  //   "DIFFERENT ADDRESS AT ORDERS CONTEXT: ",
+  //   JSON.stringify(differentAddress, null, 2)
+  // );
   const handlingDeliveryOption = async ({
     navigation,
     onTaxes,
     differentAddress,
     customer_address,
   }) => {
-    console.log(
-      "DIFFERENT ADDRESS AT HANDLING: ",
-      JSON.stringify(differentAddress, null, 2)
-    );
+    // console.log(
+    //   "DIFFERENT ADDRESS AT HANDLING: ",
+    //   JSON.stringify(differentAddress, null, 2)
+    // );
     setIsLoading(true);
     // setDeliveryOption("delivery");
 
@@ -183,10 +183,10 @@ export const Orders_Context_Provider = ({ children }) => {
         order_delivery_address: "",
       };
 
-      console.log(
-        "NEXT ORDER SENT TO TAX:",
-        JSON.stringify(enrichedOrder, null, 2)
-      );
+      // console.log(
+      //   "NEXT ORDER SENT TO TAX:",
+      //   JSON.stringify(enrichedOrder, null, 2)
+      // );
 
       const taxesResults = await onTaxes(enrichedOrder);
       console.log("Taxes Results:", JSON.stringify(taxesResults, null, 2));
@@ -217,7 +217,6 @@ export const Orders_Context_Provider = ({ children }) => {
           formatted_address,
           distance_in_miles,
           distance_time,
-          coming_from,
           order: orderWithTaxes,
         });
       }
@@ -229,6 +228,38 @@ export const Orders_Context_Provider = ({ children }) => {
     }
 
     return;
+  };
+
+  // orders.context.js
+  const prepareOrderFromCart = (cart, user) => {
+    const latestProducts = cart?.products ?? [];
+
+    const nextOrder = {
+      ...myOrder, // or your initialOrder template
+      customer: {
+        first_name: user?.first_name ?? "",
+        last_name: user?.last_name ?? "",
+        email: user?.email ?? "",
+        phone_number: user?.phone_number ?? "",
+        customer_address: user?.address ?? "",
+        uid: user?.uid ?? "",
+      },
+      user_id: user?.user_id ?? "",
+      cart_id: cart?.cart_id ?? "",
+      order_status: "In Progress",
+      order_products: latestProducts,
+      pricing: {
+        sub_total: Number(cart?.sub_total ?? 0),
+        taxes: Number(cart?.taxes ?? 0),
+        discount: 0,
+        shipping: 0,
+        total: Number(cart?.total ?? 0),
+      },
+      updatedAt: new Date().toISOString(),
+    };
+
+    setMyOrder(nextOrder);
+    return nextOrder;
   };
 
   return (
@@ -248,6 +279,7 @@ export const Orders_Context_Provider = ({ children }) => {
         differentAddress,
         handlingDeliveryOption,
         handlingPickupOption,
+        prepareOrderFromCart,
       }}
     >
       {children}

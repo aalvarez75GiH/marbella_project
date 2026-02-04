@@ -2,6 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { v4 as uuidv4 } from "uuid";
 import * as Crypto from "expo-crypto";
 
+import { STORAGE_KEYS } from "../../services/authentication/authentication.handlers";
+
 export const generateUUID = () => Crypto.randomUUID();
 
 import React, {
@@ -30,26 +32,12 @@ export const Cart_Context_Provider = ({ children }) => {
   const [cartTotalItems, setCartTotalItems] = useState(0);
   const [isUpdatingQty, setIsUpdatingQty] = useState(false);
 
-  const { user } = useContext(AuthenticationContext);
+  const { user, authInitializing } = useContext(AuthenticationContext);
   const { user_id } = user || {};
 
   const removingRef = useRef(false);
 
-  // useEffect(() => {
-  //   const handlingCartAtInitial = async () => {
-  //     if (user_id) {
-  //       gettingCartByUserID(user_id);
-  //     }
-  //     if (!user_id) {
-  //       const id = uuidv4();
-  //       await AsyncStorage.setItem(GUEST_CART_KEY, id);
-  //       return id;
-  //     }
-  //   };
-  //   handlingCartAtInitial();
-  // }, [user_id]);
-
-  const GUEST_CART_KEY = "@marbella/guest_cart";
+  const { GUEST_CART_KEY } = STORAGE_KEYS;
   const createEmptyGuestCart = () => ({
     cart_id: generateUUID(),
     user_id: "", // stays empty for guest
@@ -61,16 +49,64 @@ export const Cart_Context_Provider = ({ children }) => {
     total: 0,
   });
 
+  // useEffect(() => {
+  //   let cancelled = false;
+
+  //   const handlingCartAtInitial = async () => {
+  //     try {
+  //       if (user_id) {
+  //         await gettingCartByUserID(user_id);
+  //         return;
+  //       }
+
+  //       console.log("Cart init user_id:", user_id);
+  //       const raw = await AsyncStorage.getItem(GUEST_CART_KEY);
+  //       if (cancelled) return;
+
+  //       if (!raw) {
+  //         const fresh = createEmptyGuestCart();
+  //         await AsyncStorage.setItem(GUEST_CART_KEY, JSON.stringify(fresh));
+  //         console.log("Guest cart raw exists?", !!raw);
+  //         if (cancelled) return;
+  //         setCart(fresh);
+  //       } else {
+  //         const parsed = JSON.parse(raw);
+  //         setCart(parsed);
+  //       }
+  //     } catch (e) {
+  //       console.log("handlingCartAtInitial error:", e);
+  //     }
+  //   };
+
+  //   handlingCartAtInitial();
+
+  //   return () => {
+  //     cancelled = true;
+  //   };
+  // }, [user_id]);
+
+  useEffect(() => {
+    const total_items_qty = getTotalCartQuantity(cart);
+    setCartTotalItems(total_items_qty);
+  }, [cart]);
+
+  // ✅ 1) Boot cart AFTER auth is ready
   useEffect(() => {
     let cancelled = false;
 
-    const handlingCartAtInitial = async () => {
+    const init = async () => {
+      if (authInitializing) return;
+
       try {
+        console.log("Cart init user_id:", user_id);
+
         if (user_id) {
           await gettingCartByUserID(user_id);
+
           return;
         }
 
+        // guest cart path
         const raw = await AsyncStorage.getItem(GUEST_CART_KEY);
         if (cancelled) return;
 
@@ -80,25 +116,46 @@ export const Cart_Context_Provider = ({ children }) => {
           if (cancelled) return;
           setCart(fresh);
         } else {
-          const parsed = JSON.parse(raw);
-          setCart(parsed);
+          setCart(JSON.parse(raw));
         }
       } catch (e) {
-        console.log("handlingCartAtInitial error:", e);
+        console.log("Cart init error:", e);
       }
     };
 
-    handlingCartAtInitial();
+    init();
 
     return () => {
       cancelled = true;
     };
-  }, [user_id]);
+  }, [user_id, authInitializing]);
 
+  // ✅ 2) When a user appears, clear guest cart
   useEffect(() => {
-    const total_items_qty = getTotalCartQuantity(cart);
-    setCartTotalItems(total_items_qty);
-  }, [cart]);
+    const clearGuest = async () => {
+      if (authInitializing) return;
+      if (!user_id) return;
+
+      // If you want to migrate guest items, do it here BEFORE removing
+      await AsyncStorage.removeItem(GUEST_CART_KEY);
+      console.log("✅ Guest cart cleared because user is logged in");
+    };
+
+    clearGuest();
+  }, [user_id, authInitializing]);
+
+  // ✅ 3) Persist guest cart only when guest
+  useEffect(() => {
+    const persistGuest = async () => {
+      if (!cart) return;
+      if (authInitializing) return;
+      if (user_id) return; // signed-in -> don't write guest cart
+
+      await AsyncStorage.setItem(GUEST_CART_KEY, JSON.stringify(cart));
+    };
+
+    persistGuest();
+  }, [cart, user_id, authInitializing]);
 
   const gettingCartByUserID = async (userId) => {
     setIsLoading(true);
@@ -500,16 +557,6 @@ export const Cart_Context_Provider = ({ children }) => {
     }
   };
 
-  // const resettingCart = async (user_id) => {
-  //   console.log("Resetting cart for user_id at context:", user_id);
-  //   try {
-  //     const cartReset = await resettingCartRequest(user_id);
-  //     cartReset && setCart(cartReset);
-  //   } catch (error) {
-  //     console.error("Error resetting cart:", error);
-  //     setError(error);
-  //   }
-  // };
   const resettingCart = async (user_id) => {
     console.log("Resetting cart for user_id at context:", user_id);
 
@@ -550,6 +597,10 @@ export const Cart_Context_Provider = ({ children }) => {
 
   console.log("CART AT CONTEXT:", JSON.stringify(cart, null, 2));
 
+  const clearGuestCart = async () => {
+    await AsyncStorage.removeItem(GUEST_CART_KEY);
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -557,14 +608,17 @@ export const Cart_Context_Provider = ({ children }) => {
         setIsLoading,
         addingProductToCart,
         cart,
+        setCart,
         increaseCartItemQty,
         decreaseCartItemQty,
         removingProductFromCart,
         cartTotalItems,
+        setCartTotalItems,
         resettingCart,
-        setCart,
         gettingCartByUserID,
         isUpdatingQty,
+        clearGuestCart,
+        getTotalCartQuantity,
       }}
     >
       {children}

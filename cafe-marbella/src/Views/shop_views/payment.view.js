@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
@@ -37,6 +37,19 @@ export default function Payment_View() {
   const { myOrder, setMyOrder } = useContext(OrdersContext);
   const { user_id } = myOrder || {};
   const { resettingCart, setCart } = useContext(CartContext);
+
+  useEffect(() => {
+    setMyOrder((prev) => ({
+      ...prev,
+      payment_information: {
+        ...prev.payment_information,
+        card_id: "",
+        last_four: "",
+        payment_status: "pending",
+        transaction_id: "",
+      },
+    }));
+  }, []);
 
   const navigation = useNavigation();
   console.log("CARD VERIFIED STATE:", cardVerified);

@@ -131,7 +131,7 @@ export default function Enter_Address_View() {
                     textInput: {
                       width: "100%",
                       height: 50,
-                      borderBottomWidth: 1,
+                      borderBottomWidth: 0.5,
                       borderBottomColor: theme.colors.inputs.bottom_lines,
                       backgroundColor: "transparent",
 

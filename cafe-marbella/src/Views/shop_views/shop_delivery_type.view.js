@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { useTheme } from "styled-components/native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -17,8 +17,6 @@ import { OrdersContext } from "../../infrastructure/services/orders/orders.conte
 import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
 
 export default function Shop_Delivery_Type_View() {
-  const route = useRoute();
-  const { coming_from } = route.params || {};
   const theme = useTheme();
   const navigation = useNavigation();
   const { cart } = useContext(CartContext);
@@ -138,7 +136,6 @@ export default function Shop_Delivery_Type_View() {
                   warehouse_information,
                   distance_in_miles,
                   distance_time,
-                  coming_from,
                   warehouse_distance_range_positive,
                   nextOrder, // ✅ pass it
                 });

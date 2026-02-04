@@ -1,7 +1,13 @@
-import React, { useContext, useLayoutEffect, useEffect } from "react";
+import React, {
+  useContext,
+  useLayoutEffect,
+  useEffect,
+  useCallback,
+} from "react";
 import { FlatList } from "react-native";
 import { useTheme } from "styled-components/native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { rootNavigate } from "../../infrastructure/navigation/navigation_ref";
 import { ScrollView } from "react-native-gesture-handler";
 
 import {
@@ -28,16 +34,18 @@ import { myOrder_schema } from "../../infrastructure/services/orders/orders.loca
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
 import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
+import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
 
 export default function Shop_Order_Receipt_View() {
   const theme = useTheme();
-  const { myOrder, isLoading, setMyOrder } = useContext(OrdersContext);
+  const { myOrder, setMyOrder } = useContext(OrdersContext);
   console.log(
     "myOrder in Shop_Order_Receipt_View:",
     JSON.stringify(myOrder, null, 2)
   );
-  const { myWarehouse } = useContext(WarehouseContext);
-  const { distance_in_miles } = myWarehouse || {};
+  const { myWarehouse, gettingWarehouseByID, isLoading } =
+    useContext(WarehouseContext);
+  const { distance_in_miles, warehouse_id } = myWarehouse || {};
   const {
     pricing,
     warehouse_to_pickup,
@@ -60,20 +68,19 @@ export default function Shop_Order_Receipt_View() {
 
   const { setCardVerified } = useContext(PaymentsContext);
 
-  // Hiding tab bar for this screen
-  useLayoutEffect(() => {
-    navigation.getParent()?.setOptions({
-      tabBarStyle: { display: "none" },
-    });
-
-    return () =>
-      navigation.getParent()?.setOptions({
-        tabBarStyle: undefined,
-      });
-  }, [navigation]);
+  const { comingFrom } = useContext(AuthenticationContext);
 
   const navigation = useNavigation();
-  //   let delivery_type = "pickup";
+  useFocusEffect(
+    useCallback(() => {
+      const parent = navigation.getParent();
+      parent?.setOptions({ tabBarStyle: { display: "none" } });
+
+      return () => {
+        parent?.setOptions({ tabBarStyle: { display: "flex" } });
+      };
+    }, [navigation])
+  );
 
   const renderingOrderProducts = () => {
     return order_products.map((item) => {
@@ -88,11 +95,16 @@ export default function Shop_Order_Receipt_View() {
     });
   };
 
+  console.log(
+    "Parent route names:",
+    navigation.getParent()?.getState()?.routeNames
+  );
+
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
       {isLoading ? (
         <Global_activity_indicator
-          caption="Wait, we are updating shopping cart..."
+          caption="Wait, we are coming back to Shop..."
           caption_width="65%"
         />
       ) : (
@@ -207,9 +219,27 @@ export default function Shop_Order_Receipt_View() {
               caption="Done"
               caption_text_variant="dm_sans_bold_20_white"
               action={async () => {
-                await setMyOrder(myOrder_schema);
-                await setCardVerified(false);
-                navigation.popToTop();
+                setMyOrder(myOrder_schema);
+                setCardVerified(false);
+                const warehouse_by_id = await gettingWarehouseByID(
+                  warehouse_id
+                );
+                console.log(
+                  "MY WAREHOUSE BEFORE NAVIGATING BACK TO HOME: ",
+                  JSON.stringify(warehouse_by_id, null, 2)
+                );
+
+                if (comingFrom === "Shopping_Cart_View") {
+                  rootNavigate("App", {
+                    screen: "Cart",
+                    params: { screen: "Shopping_Cart_View" }, // <-- exact Cart navigator screen name
+                  });
+                } else {
+                  rootNavigate("App", {
+                    screen: "Shop",
+                    params: { screen: "Home_View" },
+                  });
+                }
               }}
             />
           </Container>

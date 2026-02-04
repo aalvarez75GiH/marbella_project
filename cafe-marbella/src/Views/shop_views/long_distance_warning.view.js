@@ -20,7 +20,7 @@ export default function Long_Distance_Warning_View() {
   const navigation = useNavigation();
   const route = useRoute();
   const { myOrder, setMyOrder } = useContext(OrdersContext);
-  const { formatted_address, distance_in_miles, distance_time, coming_from } =
+  const { formatted_address, distance_in_miles, distance_time } =
     route.params || {};
 
   console.log(

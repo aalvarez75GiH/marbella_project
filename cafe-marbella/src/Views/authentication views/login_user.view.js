@@ -27,6 +27,7 @@ export default function Login_Users_View() {
     password,
     setUserToDB,
     userToDB,
+    comingFrom,
   } = useContext(AuthenticationContext);
   const { user_id } = user || {};
   const theme = useTheme();
@@ -36,6 +37,7 @@ export default function Login_Users_View() {
 
   const route = useRoute();
 
+  console.log("COMING TO LOGIN VIEW FROM:", comingFrom);
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -95,7 +97,7 @@ export default function Login_Users_View() {
             // underlineColor={theme.colors.inputs.bottom_lines_disabled}
             border_color={theme.colors.inputs.bottom_lines_disabled}
             underlineColor={theme.colors.inputs.bottom_lines_disabled}
-            border_width={1}
+            border_width={"0.5px"}
             activeUnderlineColor={theme.colors.ui.primary}
             keyboardType="email-address"
             autoCapitalize="none"
@@ -119,7 +121,7 @@ export default function Login_Users_View() {
             }}
             underlineColor={theme.colors.inputs.bottom_lines_disabled}
             border_color={theme.colors.inputs.bottom_lines_disabled}
-            border_width={1}
+            border_width={"0.5px"}
             activeUnderlineColor={theme.colors.ui.primary}
             keyboardType="password"
             autoCapitalize="none"

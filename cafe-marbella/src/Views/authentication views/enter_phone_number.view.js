@@ -103,12 +103,6 @@ export default function Enter_Phone_Number_View() {
             <DataInput
               label="Phone Number"
               value={userToDB?.phone_number || ""}
-              //   onChangeText={(value) => {
-              //     setUserToDB({ ...userToDB, phone_number: value });
-
-              //     // Hide error while user is fixing it
-              //     if (phoneError) setPhoneError(null);
-              //   }}
               onChangeText={(value) => {
                 const formatted = formatPhone(value);
 
@@ -118,7 +112,7 @@ export default function Enter_Phone_Number_View() {
               }}
               border_color={theme.colors.inputs.bottom_lines_disabled}
               underlineColor={theme.colors.inputs.bottom_lines_disabled}
-              border_width={1}
+              border_width={"0.3px"}
               activeUnderlineColor={theme.colors.ui.primary}
               keyboardType={Platform.OS === "ios" ? "number-pad" : "phone-pad"}
               autoCapitalize="none"
@@ -168,7 +162,7 @@ export default function Enter_Phone_Number_View() {
             {showCTA && (
               <Regular_CTA
                 width="55%"
-                height={60}
+                height={"35%"}
                 color={theme.colors.ui.primary}
                 border_radius={"40px"}
                 caption="Next"
