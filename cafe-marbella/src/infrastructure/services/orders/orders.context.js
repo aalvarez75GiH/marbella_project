@@ -91,6 +91,7 @@ export const Orders_Context_Provider = ({ children }) => {
       // 1) Prepare nextOrder with changes
       const nextOrder = {
         ...myOrder,
+        order_products: myOrder.order_products, // ✅ force keep products
         order_delivery_address: differentAddress || customer_address,
       };
       // 2) Call taxes with the order you JUST built
@@ -138,7 +139,6 @@ export const Orders_Context_Provider = ({ children }) => {
     onTaxes,
     user_id,
     cart_id,
-    products,
     sub_total,
     quantity,
     warehouse_id,
@@ -149,7 +149,6 @@ export const Orders_Context_Provider = ({ children }) => {
     warehouse_information,
     distance_in_miles,
     distance_time,
-    coming_from,
     warehouse_distance_range_positive,
     nextOrder,
   }) => {
@@ -161,7 +160,8 @@ export const Orders_Context_Provider = ({ children }) => {
         ...nextOrder,
         user_id,
         cart_id,
-        order_products: products,
+        // order_products: products,
+        order_products: nextOrder.order_products ?? products,
         pricing: {
           sub_total: sub_total,
           taxes: 0,
@@ -232,6 +232,10 @@ export const Orders_Context_Provider = ({ children }) => {
 
   // orders.context.js
   const prepareOrderFromCart = (cart, user) => {
+    console.log(
+      "CART RECEIVED BY prepareOrderFromCart:",
+      JSON.stringify(cart.products, null, 2)
+    );
     const latestProducts = cart?.products ?? [];
 
     const nextOrder = {

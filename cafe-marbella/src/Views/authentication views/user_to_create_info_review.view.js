@@ -12,10 +12,42 @@ import { Text } from "../../infrastructure/typography/text.component.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component.js";
 import { rootReset } from "../../infrastructure/navigation/navigation_ref";
+import { normalizeCartFromBackend } from "../../infrastructure/local_data/images_mapping/normalize_cart_from_backend.js";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { CartContext } from "../../infrastructure/services/cart/cart.context.js";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context.js";
+import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
+
+// export const hydrateCartProducts = (cart, productsCatalog) => {
+//   if (!cart?.products?.length) return cart;
+
+//   const hydratedProducts = cart.products
+//     .map((ci) => {
+//       const product = productsCatalog?.find((p) => p.id === ci.productId);
+//       if (!product) return null;
+
+//       const variant = product.size_variants?.find((v) => v.id === ci.variantId);
+//       if (!variant) return null;
+
+//       // Build a "product object" like your guest cart uses (product + only selected variant w/ quantity)
+//       return {
+//         ...product,
+//         size_variants: [
+//           {
+//             ...variant,
+//             quantity: ci.quantity, // ✅ carry quantity into the variant like your guest cart does
+//           },
+//         ],
+//       };
+//     })
+//     .filter(Boolean);
+
+//   return {
+//     ...cart,
+//     products: hydratedProducts,
+//   };
+// };
 
 export default function User_To_Create_Info_Review_View() {
   const navigation = useNavigation();
@@ -41,20 +73,37 @@ export default function User_To_Create_Info_Review_View() {
     setCartTotalItems,
     getTotalCartQuantity,
   } = useContext(CartContext);
+  const { productsCatalog } = useContext(GlobalContext);
 
+  // const cartPayload = {
+  //   products: (cart?.products ?? [])
+  //     .map((p) => ({
+  //       productId: p.id,
+  //       variantId: p.size_variants?.[0]?.id,
+  //       quantity: Number(p.size_variants?.[0]?.quantity ?? 0),
+  //     }))
+  //     .filter((x) => x.productId && x.variantId && x.quantity > 0),
+  // };
   const cartPayload = {
-    products: (cart?.products ?? [])
-      .map((p) => ({
+    products: cart.products.map((p) => {
+      const v = p.size_variants[0]; // your cart stores selected variant at index 0
+      return {
         productId: p.id,
-        variantId: p.size_variants?.[0]?.id,
-        quantity: Number(p.size_variants?.[0]?.quantity ?? 0),
-      }))
-      .filter((x) => x.productId && x.variantId && x.quantity > 0),
+        variantId: v.id,
+        quantity: v.quantity,
+        images: v.images ?? [],
+        image_keys: v.image_keys ?? [],
+      };
+    }),
   };
 
   console.log(
     "CART PAYLOAD AT REVIEW VIEW:",
     JSON.stringify(cartPayload, null, 2)
+  );
+  console.log(
+    "RAW CART PAYLOAD AT REVIEW VIEW:",
+    JSON.stringify(cart, null, 2)
   );
 
   return (
@@ -328,15 +377,21 @@ export default function User_To_Create_Info_Review_View() {
                 // (This should setUser internally too. If not, keep setUser below.)
 
                 // ✅ 2) Update contexts (safe to keep even if registerLocalUser sets user)
+                const hydratedCart = normalizeCartFromBackend(nextCart);
                 setUser(nextUser);
-                setCart(nextCart);
-                setCartTotalItems(getTotalCartQuantity(nextCart));
+                setCart(hydratedCart);
+                setCartTotalItems(getTotalCartQuantity(hydratedCart));
 
                 // ✅ 3) Clear guest cart storage
                 await clearGuestCart();
 
                 // ✅ 4) Build order BEFORE navigating
-                prepareOrderFromCart(nextCart, nextUser);
+                console.log(
+                  "HYDRATED CART PRODUCTS:",
+                  JSON.stringify(hydratedCart.products, null, 2)
+                );
+
+                prepareOrderFromCart(hydratedCart, nextUser);
 
                 // ✅ 5) One reset only
                 rootReset({
@@ -370,83 +425,6 @@ export default function User_To_Create_Info_Review_View() {
                 setIsLoading(false);
               }
             }}
-
-            // action={async () => await registerUser(userToDB, cartPayload)}
-
-            // action={async () => {
-            //   setIsLoading(true);
-            //   try {
-            //     const result = await registerUser(userToDB, cartPayload);
-            //     console.log(
-            //       "REGISTER RESULT:",
-            //       JSON.stringify(result, null, 2)
-            //     );
-
-            //     if (!result?.ok) {
-            //       console.log("Register failed:", result);
-            //       return;
-            //     }
-            //     // ✅ update contexts
-            //     const nextUser = { ...result.user, authenticated: true };
-            //     const nextCart = { ...result.cart };
-            //     console.log("NEXT USER:", JSON.stringify(nextUser, null, 2));
-            //     console.log("NEXT CART:", JSON.stringify(nextCart, null, 2));
-            //     setUser(nextUser);
-            //     setCart(result.cart);
-            //     setCartTotalItems(getTotalCartQuantity(result.cart));
-            //     await clearGuestCart();
-
-            //     // ✅ 1) dismiss Auth stack (go back to App tabs)
-            //     rootReset({
-            //       index: 0,
-            //       routes: [{ name: "App" }],
-            //     });
-
-            //     // ✅ 2) jump to the nested Shop screen
-            //     setTimeout(() => {
-            //       rootNavigate("App", {
-            //         screen: "Shop",
-            //         params: {
-            //           screen: "Shop_Delivery_Type_View",
-            //           params: { coming_from: "Shopping_Cart_View" },
-            //         },
-            //       });
-            //     }, 0);
-
-            //     console.log("ABOUT TO NAVIGATE...");
-            //     // after you setUser + setCart...
-            //     prepareOrderFromCart(nextCart, nextUser);
-            //     rootReset({
-            //       index: 0,
-            //       routes: [
-            //         {
-            //           name: "App",
-            //           state: {
-            //             index: 0,
-            //             routes: [
-            //               {
-            //                 name: "Shop",
-            //                 state: {
-            //                   index: 0,
-            //                   routes: [
-            //                     {
-            //                       name: "Shop_Delivery_Type_View",
-            //                       params: { coming_from: "Shopping_Cart_View" },
-            //                     },
-            //                   ],
-            //                 },
-            //               },
-            //             ],
-            //           },
-            //         },
-            //       ],
-            //     });
-            //   } catch (e) {
-            //     console.log("Finish registration action error:", e);
-            //   } finally {
-            //     setIsLoading(false);
-            //   }
-            // }}
           />
         </Container>
       </Container>

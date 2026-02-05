@@ -55,6 +55,7 @@ const createUser = async (user) => {
     uid,
     display_name,
     user_id,
+    encrypted_pin,
   } = user;
   await firebase_controller.db.collection("users").doc(`/${user_id}/`).create({
     first_name,
@@ -68,6 +69,7 @@ const createUser = async (user) => {
     uid,
     display_name,
     user_id,
+    encrypted_pin,
   });
   let newUser = [];
   return await firebase_controller.db

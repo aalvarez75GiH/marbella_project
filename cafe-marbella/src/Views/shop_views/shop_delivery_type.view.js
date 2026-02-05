@@ -125,7 +125,6 @@ export default function Shop_Delivery_Type_View() {
                   onTaxes,
                   user_id,
                   cart_id,
-                  products,
                   sub_total,
                   quantity,
                   warehouse_id,
@@ -137,7 +136,7 @@ export default function Shop_Delivery_Type_View() {
                   distance_in_miles,
                   distance_time,
                   warehouse_distance_range_positive,
-                  nextOrder, // ✅ pass it
+                  nextOrder,
                 });
               }}
             />
@@ -153,33 +152,35 @@ export default function Shop_Delivery_Type_View() {
               // action={() => settingMyOrderDeliveryType("delivery")}
               action={() => {
                 setDeliveryOption("delivery");
-                setTimeout(() => {
-                  setMyOrder((prevOrder) => ({
-                    ...prevOrder,
-                    delivery_type: "delivery",
-                    user_id: user_id,
-                    cart_id: cart_id,
-                    pricing: {
-                      sub_total: sub_total,
-                      taxes: 0,
-                      total: 0,
-                      shipping: 500,
-                      discount: 0,
-                    },
-                    quantity: quantity,
-                    warehouse_to_pickup: {
-                      warehouse_id: warehouse_id,
-                      name: warehouse_name,
-                      warehouse_address: formatted_address,
-                      geo: geo,
-                      phone_number: phone,
-                      closing_time: warehouse_information?.closing_time,
-                      opening_time: warehouse_information?.opening_time,
-                      distance_in_miles: distance_in_miles,
-                    },
-                    order_delivery_address: customer_address,
-                  }));
-                }, 500); // Simulate a brief loading period
+                // setTimeout(() => {
+                setMyOrder((prevOrder) => ({
+                  ...prevOrder,
+                  delivery_type: "delivery",
+                  user_id: user_id,
+                  cart_id: cart_id,
+                  pricing: {
+                    sub_total: sub_total,
+                    taxes: 0,
+                    total: 0,
+                    shipping: 500,
+                    discount: 0,
+                  },
+                  quantity: quantity,
+                  warehouse_to_pickup: {
+                    warehouse_id: warehouse_id,
+                    name: warehouse_name,
+                    warehouse_address: formatted_address,
+                    geo: geo,
+                    phone_number: phone,
+                    closing_time: warehouse_information?.closing_time,
+                    opening_time: warehouse_information?.opening_time,
+                    distance_in_miles: distance_in_miles,
+                  },
+                  order_delivery_address: customer_address,
+                  // ✅ explicitly preserve products (optional but makes intent clear)
+                  order_products: prevOrder.order_products,
+                }));
+                // }, 500); // Simulate a brief loading period
               }}
             />
           </Container>

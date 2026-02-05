@@ -12,7 +12,6 @@ import {
 } from "./warehouse.services";
 
 import { GlobalContext } from "../global/global.context";
-import { GeolocationContext } from "../geolocation/geolocation.context";
 
 export const WarehouseContext = createContext();
 

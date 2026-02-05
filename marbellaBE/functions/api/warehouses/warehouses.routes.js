@@ -12,7 +12,7 @@ const {
   gettingRealTimeOrderWHDistanceToOrigin,
 } = require("./warehouses.handlers");
 
-// Get all warehouses
+// Get warehouses by ID
 warehousesRouter.get("/getWarehouse", async (req, res) => {
   try {
     const warehouse_id = req.query.warehouse_id;
