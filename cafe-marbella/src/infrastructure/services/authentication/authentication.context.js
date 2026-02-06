@@ -220,6 +220,7 @@ export const Authentication_Context_Provider = ({ children }) => {
   };
 
   const registerUser = async (userToDB, cartPayload) => {
+    setIsLoading(true);
     const pinGenerated = generatePin();
     const email = userToDB.email;
 
@@ -229,14 +230,14 @@ export const Authentication_Context_Provider = ({ children }) => {
         email,
         pinGenerated
       );
-
+      const idToken = await userCredential.user.getIdToken();
+      console.log("USER ID TOKEN:", idToken);
       const payload = {
         ...userToDB,
         encrypted_pin: pinGenerated, // ideally remove later
-        uid: userCredential.user.uid,
       };
 
-      const res = await post_user_Request(payload, cartPayload);
+      const res = await post_user_Request(payload, cartPayload, idToken);
 
       if (res?.user?.[0] && res?.cart?.[0]) {
         await registerLocalUser(res.user[0]); // ✅ persist & set user state
@@ -253,6 +254,8 @@ export const Authentication_Context_Provider = ({ children }) => {
       }
 
       return { ok: false, error: error?.message ?? "unknown-error" };
+    } finally {
+      setIsLoading(false);
     }
   };
   // ********************* LOG OUT USER LOGIC *************************

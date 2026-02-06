@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 const { v4: uuidv4 } = require("uuid");
+const admin = require("firebase-admin");
 
 const express = require("express");
 const usersRouter = express.Router();
@@ -46,11 +47,26 @@ usersRouter.post("/userByEmail", async (req, res) => {
   }
 });
 
-usersRouter.post("/", async (req, res) => {
+async function requireAuth(req, res, next) {
+  try {
+    const header = req.headers.authorization || "";
+    const token = header.startsWith("Bearer ") ? header.slice(7) : null;
+    if (!token) return res.status(401).json({ status: "Unauthorized" });
+
+    const decoded = await admin.auth().verifyIdToken(token);
+    req.auth = decoded; // contains uid
+    return next();
+  } catch (err) {
+    return res.status(401).json({ status: "Unauthorized", msg: String(err) });
+  }
+}
+
+usersRouter.post("/", requireAuth, async (req, res) => {
   console.log("BODY KEYS:", Object.keys(req.body));
   console.log("CART:", JSON.stringify(req.body.cart, null, 2));
   console.log("CART_PAYLOAD:", JSON.stringify(req.body.cart_payload, null, 2));
 
+  const uidFromToken = req.auth.uid;
   const user_id = uuidv4();
   const cart_payload = req.body.cart_payload; // expecting { products: [...] }
 
@@ -62,7 +78,8 @@ usersRouter.post("/", async (req, res) => {
     address: req.body.address,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    uid: req.body.uid,
+    uid: uidFromToken,
+    // uid: req.body.uid,
     display_name: req.body.display_name,
     user_id,
     role: "user",

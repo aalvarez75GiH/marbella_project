@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigation, CommonActions } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -23,11 +23,10 @@ export default function User_To_Create_Info_Review_View() {
   const navigation = useNavigation();
   const theme = useTheme();
 
-  const [isLoading, setIsLoading] = React.useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
-  const { userToDB, registerUser, setUser, registerLocalUser } = useContext(
-    AuthenticationContext
-  );
+  const { userToDB, registerUser, setUser, registerLocalUser, isLoading } =
+    useContext(AuthenticationContext);
   const { first_name, last_name, email, address, phone_number } =
     userToDB || {};
 
@@ -316,7 +315,6 @@ export default function User_To_Create_Info_Review_View() {
             caption="Finish registration"
             caption_text_variant="dm_sans_bold_20_white"
             action={async () => {
-              setIsLoading(true);
               try {
                 const result = await registerUser(userToDB, cartPayload);
                 console.log(
@@ -375,8 +373,6 @@ export default function User_To_Create_Info_Review_View() {
                 });
               } catch (e) {
                 console.log("Finish registration action error:", e);
-              } finally {
-                setIsLoading(false);
               }
             }}
           />

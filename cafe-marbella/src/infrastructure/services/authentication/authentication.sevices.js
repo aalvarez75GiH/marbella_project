@@ -29,24 +29,33 @@ export const gettingUserByEmailRequest = async (email) => {
 
 export const post_user_Request = async (
   userToCreateAtFirebaseAndDB,
-  cart_payload
+  cart_payload,
+  idToken
 ) => {
   console.log(
     "USER TO DB BEFORE REQUEST:",
     JSON.stringify(userToCreateAtFirebaseAndDB, null, 2)
   );
+
   const { usersEndPoint } = environment;
   const endpoint = `${usersEndPoint}/`;
+
   try {
     const res = await axios.post(
       endpoint,
-      { ...userToCreateAtFirebaseAndDB, cart_payload },
       {
-        timeout: 15000, // Optional timeout
+        ...userToCreateAtFirebaseAndDB,
+        cart_payload,
+      },
+      {
+        timeout: 15000,
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+        },
       }
     );
 
-    // console.log("RESPONSE:", res.data);
     return res.data;
   } catch (error) {
     console.error("Error creating user:", {
@@ -58,3 +67,41 @@ export const post_user_Request = async (
     throw error;
   }
 };
+
+// export const post_user_Request = async (
+//   userToCreateAtFirebaseAndDB,
+//   cart_payload,
+//   idToken
+// ) => {
+//   console.log(
+//     "USER TO DB BEFORE REQUEST:",
+//     JSON.stringify(userToCreateAtFirebaseAndDB, null, 2)
+//   );
+//   const { usersEndPoint } = environment;
+//   const endpoint = `${usersEndPoint}/`;
+//   try {
+//     const res = await axios.post(
+//       endpoint,
+//       { ...userToCreateAtFirebaseAndDB, cart_payload },
+//       {
+//         timeout: 15000, // Optional timeout
+//       },
+//       {
+//         headers: {
+//           Authorization: `Bearer ${idToken}`,
+//         },
+//       }
+//     );
+
+//     // console.log("RESPONSE:", res.data);
+//     return res.data;
+//   } catch (error) {
+//     console.error("Error creating user:", {
+//       message: error.message,
+//       status: error.response?.status,
+//       data: error.response?.data,
+//       endpoint,
+//     });
+//     throw error;
+//   }
+// };
