@@ -103,6 +103,10 @@ export default function Menu_View() {
             />
             <Menu_Sub_Title_Title label="Help & Support" />
             <Menu_Tile caption="Help & Support" action={() => null} />
+            <Menu_Tile
+              caption="Sign out"
+              action={() => navigation.navigate("Sign_Out_Overlay_View")}
+            />
           </ScrollView>
         </Container>
       ) : (

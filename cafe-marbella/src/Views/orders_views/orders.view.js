@@ -28,7 +28,10 @@ export default function Orders_View() {
   } = useContext(OrdersContext);
   const navigation = useNavigation();
 
-  console.log("ORDERS VIEW RERENDERED", JSON.stringify(orders, null, 2));
+  console.log(
+    "ORDERS GROUPED BY DATES:",
+    JSON.stringify(ordersGrouped, null, 2)
+  );
 
   const { user } = useContext(AuthenticationContext);
   const { user_id } = user || {};

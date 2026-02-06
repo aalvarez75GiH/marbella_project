@@ -49,48 +49,11 @@ export const Cart_Context_Provider = ({ children }) => {
     total: 0,
   });
 
-  // useEffect(() => {
-  //   let cancelled = false;
-
-  //   const handlingCartAtInitial = async () => {
-  //     try {
-  //       if (user_id) {
-  //         await gettingCartByUserID(user_id);
-  //         return;
-  //       }
-
-  //       console.log("Cart init user_id:", user_id);
-  //       const raw = await AsyncStorage.getItem(GUEST_CART_KEY);
-  //       if (cancelled) return;
-
-  //       if (!raw) {
-  //         const fresh = createEmptyGuestCart();
-  //         await AsyncStorage.setItem(GUEST_CART_KEY, JSON.stringify(fresh));
-  //         console.log("Guest cart raw exists?", !!raw);
-  //         if (cancelled) return;
-  //         setCart(fresh);
-  //       } else {
-  //         const parsed = JSON.parse(raw);
-  //         setCart(parsed);
-  //       }
-  //     } catch (e) {
-  //       console.log("handlingCartAtInitial error:", e);
-  //     }
-  //   };
-
-  //   handlingCartAtInitial();
-
-  //   return () => {
-  //     cancelled = true;
-  //   };
-  // }, [user_id]);
-
   useEffect(() => {
     const total_items_qty = getTotalCartQuantity(cart);
     setCartTotalItems(total_items_qty);
   }, [cart]);
 
-  // ✅ 1) Boot cart AFTER auth is ready
   useEffect(() => {
     let cancelled = false;
 
@@ -102,11 +65,21 @@ export const Cart_Context_Provider = ({ children }) => {
 
         if (user_id) {
           await gettingCartByUserID(user_id);
-
           return;
         }
 
-        // guest cart path
+        // ✅ immediate UI reset (stable)
+        setCart({
+          cart_id: "",
+          user_id: "",
+          createdAt: "",
+          updatedAt: "",
+          products: [],
+          sub_total: 0,
+          taxes: 0,
+          total: 0,
+        });
+
         const raw = await AsyncStorage.getItem(GUEST_CART_KEY);
         if (cancelled) return;
 
@@ -124,25 +97,24 @@ export const Cart_Context_Provider = ({ children }) => {
     };
 
     init();
-
     return () => {
       cancelled = true;
     };
   }, [user_id, authInitializing]);
 
-  // ✅ 2) When a user appears, clear guest cart
-  useEffect(() => {
-    const clearGuest = async () => {
-      if (authInitializing) return;
-      if (!user_id) return;
+  // // ✅ 2) When a user appears, clear guest cart
+  // useEffect(() => {
+  //   const clearGuest = async () => {
+  //     if (authInitializing) return;
+  //     if (!user_id) return;
 
-      // If you want to migrate guest items, do it here BEFORE removing
-      await AsyncStorage.removeItem(GUEST_CART_KEY);
-      console.log("✅ Guest cart cleared because user is logged in");
-    };
+  //     // If you want to migrate guest items, do it here BEFORE removing
+  //     await AsyncStorage.removeItem(GUEST_CART_KEY);
+  //     console.log("✅ Guest cart cleared because user is logged in");
+  //   };
 
-    clearGuest();
-  }, [user_id, authInitializing]);
+  //   clearGuest();
+  // }, [user_id, authInitializing]);
 
   // ✅ 3) Persist guest cart only when guest
   useEffect(() => {
@@ -373,19 +345,6 @@ export const Cart_Context_Provider = ({ children }) => {
     }
   };
 
-  const calculateTotals = (products = []) => {
-    const sub_total = products.reduce(
-      (sum, p) => sum + p.price_cents * p.quantity,
-      0
-    );
-    const taxes = 0; // later
-    return {
-      sub_total,
-      taxes,
-      total: sub_total + taxes,
-    };
-  };
-
   const addingProductToCart = (
     product_to_add_to_cart,
     navigation,
@@ -601,6 +560,13 @@ export const Cart_Context_Provider = ({ children }) => {
     await AsyncStorage.removeItem(GUEST_CART_KEY);
   };
 
+  const resetCartContext = () => {
+    setCart(null);
+    setCartTotalItems(0);
+    setIsLoading(false);
+    setIsUpdatingQty(false);
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -619,6 +585,7 @@ export const Cart_Context_Provider = ({ children }) => {
         isUpdatingQty,
         clearGuestCart,
         getTotalCartQuantity,
+        resetCartContext,
       }}
     >
       {children}

@@ -19,36 +19,6 @@ import { CartContext } from "../../infrastructure/services/cart/cart.context.js"
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context.js";
 import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
 
-// export const hydrateCartProducts = (cart, productsCatalog) => {
-//   if (!cart?.products?.length) return cart;
-
-//   const hydratedProducts = cart.products
-//     .map((ci) => {
-//       const product = productsCatalog?.find((p) => p.id === ci.productId);
-//       if (!product) return null;
-
-//       const variant = product.size_variants?.find((v) => v.id === ci.variantId);
-//       if (!variant) return null;
-
-//       // Build a "product object" like your guest cart uses (product + only selected variant w/ quantity)
-//       return {
-//         ...product,
-//         size_variants: [
-//           {
-//             ...variant,
-//             quantity: ci.quantity, // ✅ carry quantity into the variant like your guest cart does
-//           },
-//         ],
-//       };
-//     })
-//     .filter(Boolean);
-
-//   return {
-//     ...cart,
-//     products: hydratedProducts,
-//   };
-// };
-
 export default function User_To_Create_Info_Review_View() {
   const navigation = useNavigation();
   const theme = useTheme();
@@ -68,22 +38,12 @@ export default function User_To_Create_Info_Review_View() {
   const {
     cart,
     setCart,
-    gettingCartByUserID,
     clearGuestCart,
     setCartTotalItems,
     getTotalCartQuantity,
   } = useContext(CartContext);
   const { productsCatalog } = useContext(GlobalContext);
 
-  // const cartPayload = {
-  //   products: (cart?.products ?? [])
-  //     .map((p) => ({
-  //       productId: p.id,
-  //       variantId: p.size_variants?.[0]?.id,
-  //       quantity: Number(p.size_variants?.[0]?.quantity ?? 0),
-  //     }))
-  //     .filter((x) => x.productId && x.variantId && x.quantity > 0),
-  // };
   const cartPayload = {
     products: cart.products.map((p) => {
       const v = p.size_variants[0]; // your cart stores selected variant at index 0
@@ -113,7 +73,7 @@ export default function User_To_Create_Info_Review_View() {
     >
       {isLoading && (
         <Global_activity_indicator
-          caption="Wait, we are updating shopping cart..."
+          caption="Wait, we are registering your account..."
           caption_width="65%"
           color={theme.colors.bg.elements_bg}
         />
@@ -378,7 +338,6 @@ export default function User_To_Create_Info_Review_View() {
 
                 // ✅ 2) Update contexts (safe to keep even if registerLocalUser sets user)
                 const hydratedCart = normalizeCartFromBackend(nextCart);
-                setUser(nextUser);
                 setCart(hydratedCart);
                 setCartTotalItems(getTotalCartQuantity(hydratedCart));
 
@@ -386,11 +345,6 @@ export default function User_To_Create_Info_Review_View() {
                 await clearGuestCart();
 
                 // ✅ 4) Build order BEFORE navigating
-                console.log(
-                  "HYDRATED CART PRODUCTS:",
-                  JSON.stringify(hydratedCart.products, null, 2)
-                );
-
                 prepareOrderFromCart(hydratedCart, nextUser);
 
                 // ✅ 5) One reset only

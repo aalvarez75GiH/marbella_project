@@ -15,6 +15,22 @@ export default function App() {
   //     console.log("🧹 AsyncStorage cleared (dev reset)");
   //   });
   // }, []);
+  useEffect(() => {
+    const logAsyncStorageKeys = async () => {
+      try {
+        const keys = await AsyncStorage.getAllKeys();
+        console.log("📦 AsyncStorage KEYS:", JSON.stringify(keys, null, 2));
+        // const entries = await AsyncStorage.multiGet(keys);
+        // entries.forEach(([key, value]) => {
+        //   console.log(`🧩 ${key}:`, JSON.stringify(value, null, 2));
+        // });
+      } catch (e) {
+        console.log("❌ Error reading AsyncStorage keys:", e);
+      }
+    };
+
+    logAsyncStorageKeys();
+  }, []);
   const [fontsLoaded] = useFonts({
     ralewayRegular: require("./assets/fonts/raleway/Raleway-Regular.ttf"),
     ralewayMedium: require("./assets/fonts/raleway/Raleway-Medium.ttf"),

@@ -16,6 +16,8 @@ import Product_Specifications_View from "../../Views/shop_views/product_specific
 import Product_Ingredients_View from "../../Views/shop_views/product_ingredients.view";
 import Orders_View from "../../Views/orders_views/orders.view";
 import Switching_Accounts_View from "../../Views/shop_views/switching_accounts.view";
+import Sign_Out_Overlay_View from "../../Views/shop_views/sign_out_overlay.view";
+
 const ShopFlowStack = createNativeStackNavigator();
 
 export const Shop_Navigator = () => {
@@ -71,6 +73,20 @@ export const Shop_Navigator = () => {
       <ShopFlowStack.Screen
         name="Switching_Accounts_View"
         component={Switching_Accounts_View}
+      />
+      {/* <ShopFlowStack.Screen
+        name="Sign_Out_Overlay_View"
+        component={Sign_Out_Overlay_View}
+      /> */}
+      <ShopFlowStack.Screen
+        name="Sign_Out_Overlay_View"
+        component={Sign_Out_Overlay_View}
+        options={{
+          presentation: "transparentModal",
+          animation: "slide_from_bottom",
+          headerShown: false,
+          contentStyle: { backgroundColor: "transparent" },
+        }}
       />
       <ShopFlowStack.Screen name="Menu_View" component={Menu_View} />
     </ShopFlowStack.Navigator>

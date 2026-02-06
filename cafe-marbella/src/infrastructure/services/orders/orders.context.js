@@ -1,12 +1,11 @@
-import React, { useEffect, useState, createContext } from "react";
+import React, { useEffect, useState, createContext, useContext } from "react";
 
 import { myOrder_schema } from "./orders.local_data";
 import {
   gettingAllOrdersByUserIDRequest,
   gettingAllOrdersByUserIDGroupedByMonthRequest,
 } from "./orders.services";
-
-import { onTaxes } from "../payments/payments.services";
+import { AuthenticationContext } from "../authentication/authentication.context";
 
 export const OrdersContext = createContext();
 
@@ -19,14 +18,19 @@ export const Orders_Context_Provider = ({ children }) => {
   const [deliveryOption, setDeliveryOption] = useState(null);
   const [differentAddress, setDifferentAddress] = useState("");
 
+  const { user } = useContext(AuthenticationContext);
+  const user_id = user?.user_id;
   useEffect(() => {
     // Fetch orders when the component mounts or when user_id changes
-    const user_id = "aaa09d45-24a9-4a3f-aca5-9658952172c2"; // Replace with actual user ID from context/authentication
+    // const user_id = "aaa09d45-24a9-4a3f-aca5-9658952172c2"; // Replace with actual user ID from context/authentication
     if (user_id) {
-      gettingAllOrdersByUserID(user_id);
+      // gettingAllOrdersByUserID(user_id);
       gettingAllOrdersByUserIDGroupedByMonth(user_id);
     }
-  }, []);
+    if (!user_id) {
+      setOrdersGrouped([]);
+    }
+  }, [user_id]);
 
   const gettingAllOrdersByUserID = async (user_id) => {
     setIsLoading(true);
@@ -52,14 +56,12 @@ export const Orders_Context_Provider = ({ children }) => {
     // This is a placeholder function
     setTimeout(async () => {
       try {
-        // Simulate fetching data
         const fetchedOrdersGrouped =
           await gettingAllOrdersByUserIDGroupedByMonthRequest(user_id); // Replace with actual fetch logic
         // console.log(
         //   "Fetched Orders Grouped:",
         //   JSON.stringify(fetchedOrdersGrouped, null, 2)
         // );
-        // console.log("Fetched Orders:", JSON.stringify(fetchedOrders, null, 2));
         setOrdersGrouped(fetchedOrdersGrouped);
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -70,10 +72,6 @@ export const Orders_Context_Provider = ({ children }) => {
     }, 1000); // Simulate network delay
   };
 
-  // console.log(
-  //   "DIFFERENT ADDRESS AT ORDERS CONTEXT: ",
-  //   JSON.stringify(differentAddress, null, 2)
-  // );
   const handlingDeliveryOption = async ({
     navigation,
     onTaxes,
@@ -266,6 +264,13 @@ export const Orders_Context_Provider = ({ children }) => {
     return nextOrder;
   };
 
+  const resetOrdersContext = () => {
+    setIsLoading(false);
+    setMyOrder(myOrder_schema);
+    setDeliveryOption(null);
+    setDifferentAddress("");
+  };
+
   return (
     <OrdersContext.Provider
       value={{
@@ -284,6 +289,7 @@ export const Orders_Context_Provider = ({ children }) => {
         handlingDeliveryOption,
         handlingPickupOption,
         prepareOrderFromCart,
+        resetOrdersContext,
       }}
     >
       {children}

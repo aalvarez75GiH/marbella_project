@@ -19,6 +19,7 @@ import { initializeApp, getApps } from "firebase/app";
 import { gettingUserByEmailRequest } from "./authentication.sevices";
 import { post_user_Request } from "./authentication.sevices";
 import { STORAGE_KEYS } from "../../services/authentication/authentication.handlers";
+import { rootReset } from "../../../infrastructure/navigation/navigation_ref";
 
 export const AuthenticationContext = createContext();
 
@@ -62,10 +63,8 @@ export const Authentication_Context_Provider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [emailError, setEmailError] = useState("");
-  const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
   const [authInitializing, setAuthInitializing] = useState(true);
-  const [currentUser, setCurrentUser] = useState(null);
   const [comingFrom, setComingFrom] = useState(null);
   const [userToDB, setUserToDB] = useState({
     first_name: "",
@@ -91,16 +90,13 @@ export const Authentication_Context_Provider = ({ children }) => {
 
         if (!raw) {
           setUser(null);
-          setCurrentUser(null); // optional if you keep it
         } else {
           const parsed = JSON.parse(raw);
           setUser(parsed); // ✅ THIS fixes reload
-          setCurrentUser(parsed); // optional
         }
       } catch (e) {
         console.log("Auth boot error:", e);
         setUser(null);
-        setCurrentUser(null);
       } finally {
         if (!cancelled) setAuthInitializing(false);
       }
@@ -120,7 +116,6 @@ export const Authentication_Context_Provider = ({ children }) => {
 
       await AsyncStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
 
-      setCurrentUser(newUser); // optional
       setUser(newUser); // ✅ important
 
       // users on device list (optional keep)
@@ -146,7 +141,6 @@ export const Authentication_Context_Provider = ({ children }) => {
   const logout = async () => {
     await AsyncStorage.removeItem(CURRENT_USER_KEY);
     setUser(null);
-    setCurrentUser(null); // optional
   };
 
   console.log(
@@ -261,6 +255,59 @@ export const Authentication_Context_Provider = ({ children }) => {
       return { ok: false, error: error?.message ?? "unknown-error" };
     }
   };
+  // ********************* LOG OUT USER LOGIC *************************
+  const AUTH_KEYS_TO_CLEAR = [
+    "@marbella/current_user",
+    // "@marbella/cart",
+    // "@marbella/my_order",
+    // "@marbella/tax_calculation_id",
+  ];
+
+  const signOut = async () => {
+    setIsLoading(true);
+    try {
+      // 1) Firebase auth sign out (clears firebase:authUser key)
+      await auth.signOut();
+
+      // 2) Clear only auth-session keys (keep users_on_device, keep guest_cart)
+      await AsyncStorage.multiRemove(AUTH_KEYS_TO_CLEAR);
+
+      //3 ) Reset the states at context
+      resetAuthContext();
+
+      // 4) Reset navigation to the normal guest experience: App Tabs -> Shop -> Home_View
+      rootReset({
+        index: 0,
+        routes: [
+          {
+            name: "App",
+            state: {
+              index: 0,
+              routes: [
+                {
+                  name: "Shop",
+                  state: {
+                    index: 0,
+                    routes: [{ name: "Home_View" }],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      });
+    } catch (e) {
+      console.log("SIGN OUT ERROR:", e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resetAuthContext = () => {
+    setUser(null);
+    setIsLoading(false);
+    setError(null);
+  };
 
   return (
     <AuthenticationContext.Provider
@@ -283,6 +330,7 @@ export const Authentication_Context_Provider = ({ children }) => {
         registerLocalUser,
         comingFrom,
         setComingFrom,
+        signOut,
       }}
     >
       {children}
