@@ -23,6 +23,7 @@ export default function Orders_View() {
   const {
     orders,
     isLoading,
+    isOrdersLoading,
     ordersGrouped,
     gettingAllOrdersByUserIDGroupedByMonth,
   } = useContext(OrdersContext);
@@ -111,16 +112,16 @@ export default function Orders_View() {
         />
         <Spacer position="top" size="small" />
 
-        {isLoading && (
+        {isOrdersLoading && (
           <Global_activity_indicator
             caption="Wait, we are loading your orders..."
             caption_width="65%"
             color={theme.colors.bg.elements_bg}
           />
         )}
-        {!isLoading && sections.length === 0 && <Empty_My_Orders_View />}
+        {!isOrdersLoading && sections.length === 0 && <Empty_My_Orders_View />}
 
-        {!isLoading && sections.length > 0 && (
+        {!isOrdersLoading && sections.length > 0 && (
           <SectionList
             sections={sections}
             keyExtractor={(item) => item.order_id}

@@ -13,6 +13,8 @@ export const Orders_Context_Provider = ({ children }) => {
   const [orders, setOrders] = useState([]);
   const [ordersGrouped, setOrdersGrouped] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isOrdersLoading, setIsOrdersLoading] = useState(false);
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const [error, setError] = useState(null);
   const [myOrder, setMyOrder] = useState(myOrder_schema);
   const [deliveryOption, setDeliveryOption] = useState(null);
@@ -51,25 +53,24 @@ export const Orders_Context_Provider = ({ children }) => {
     }, 1000); // Simulate network delay
   };
   const gettingAllOrdersByUserIDGroupedByMonth = async (user_id) => {
-    setIsLoading(true);
-    // Implement the logic to fetch all orders by user ID
-    // This is a placeholder function
-    setTimeout(async () => {
-      try {
-        const fetchedOrdersGrouped =
-          await gettingAllOrdersByUserIDGroupedByMonthRequest(user_id); // Replace with actual fetch logic
-        // console.log(
-        //   "Fetched Orders Grouped:",
-        //   JSON.stringify(fetchedOrdersGrouped, null, 2)
-        // );
-        setOrdersGrouped(fetchedOrdersGrouped);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-        setError(error);
-      } finally {
-        setIsLoading(false);
-      }
-    }, 1000); // Simulate network delay
+    setIsOrdersLoading(true);
+    // setTimeout(async () => {
+    try {
+      const fetchedOrdersGrouped =
+        await gettingAllOrdersByUserIDGroupedByMonthRequest(user_id); // Replace with actual fetch logic
+      // console.log(
+      //   "Fetched Orders Grouped:",
+      //   JSON.stringify(fetchedOrdersGrouped, null, 2)
+      // );
+      setOrdersGrouped(fetchedOrdersGrouped);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      setError(error);
+    } finally {
+      setIsOrdersLoading(false);
+      // setIsLoading(false);
+    }
+    // }, 1000); // Simulate network delay
   };
 
   const handlingDeliveryOption = async ({
@@ -82,7 +83,7 @@ export const Orders_Context_Provider = ({ children }) => {
     //   "DIFFERENT ADDRESS AT HANDLING: ",
     //   JSON.stringify(differentAddress, null, 2)
     // );
-    setIsLoading(true);
+    setIsCheckoutLoading(true);
     // setDeliveryOption("delivery");
 
     try {
@@ -127,7 +128,7 @@ export const Orders_Context_Provider = ({ children }) => {
       // show alert/toast if you want
     } finally {
       // 6) Always stop loader
-      setIsLoading(false);
+      setIsCheckoutLoading(false);
     }
 
     return;
@@ -150,7 +151,7 @@ export const Orders_Context_Provider = ({ children }) => {
     warehouse_distance_range_positive,
     nextOrder,
   }) => {
-    setIsLoading(true);
+    setIsCheckoutLoading(true);
     setDeliveryOption("pickup");
 
     try {
@@ -222,7 +223,7 @@ export const Orders_Context_Provider = ({ children }) => {
       console.log("PICKUP TAX FLOW ERROR:", e?.message || e);
       // optionally show a toast/alert here
     } finally {
-      setIsLoading(false);
+      setIsCheckoutLoading(false);
     }
 
     return;
@@ -290,6 +291,8 @@ export const Orders_Context_Provider = ({ children }) => {
         handlingPickupOption,
         prepareOrderFromCart,
         resetOrdersContext,
+        isOrdersLoading,
+        isCheckoutLoading,
       }}
     >
       {children}

@@ -20,8 +20,7 @@ export default function Shop_Delivery_Type_View() {
   const theme = useTheme();
   const navigation = useNavigation();
   const { cart } = useContext(CartContext);
-  const { user_id, sub_total, total, taxes, products, quantity, cart_id } =
-    cart;
+  const { user_id, sub_total, quantity, cart_id } = cart;
   const { myWarehouse } = useContext(WarehouseContext);
   const {
     warehouse_id,
@@ -42,7 +41,7 @@ export default function Shop_Delivery_Type_View() {
   const {
     myOrder,
     setMyOrder,
-    isLoading,
+    isCheckoutLoading,
     differentAddress,
     handlingDeliveryOption,
     setDeliveryOption,
@@ -71,9 +70,9 @@ export default function Shop_Delivery_Type_View() {
 
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
-      {isLoading ? (
+      {isCheckoutLoading ? (
         <Global_activity_indicator
-          caption="Wait, we are processing the order..."
+          caption="Wait, we are setting up your delivery option..."
           caption_width="65%"
         />
       ) : (
