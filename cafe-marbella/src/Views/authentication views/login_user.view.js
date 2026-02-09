@@ -1,5 +1,13 @@
 import React, { use, useContext, useEffect, useState } from "react";
-import { FlatList, View, SectionList, StyleSheet, Image } from "react-native";
+import {
+  FlatList,
+  View,
+  SectionList,
+  StyleSheet,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
@@ -14,152 +22,229 @@ import { Text } from "../../infrastructure/typography/text.component";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { DataInput } from "../../components/inputs/data_text_input.js";
 import { Underlined_CTA } from "../../components/ctas/underlined.cta.js";
+import { Regular_CTA } from "../../components/ctas/regular.cta.js";
+import { rootReset } from "../../infrastructure/navigation/navigation_ref.js";
+import { rootNavigate } from "../../infrastructure/navigation/navigation_ref.js";
+
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
+import { CartContext } from "../../infrastructure/services/cart/cart.context.js";
+import { OrdersContext } from "../../infrastructure/services/orders/orders.context.js";
 
 export default function Login_Users_View() {
   const navigation = useNavigation();
+  const theme = useTheme();
 
   const {
     user,
     email,
     setEmail,
-    setPassword,
-    password,
+    setPin,
+    pin,
     setUserToDB,
     userToDB,
     comingFrom,
+    loginUser,
   } = useContext(AuthenticationContext);
   const { user_id } = user || {};
-  const theme = useTheme();
 
+  const { cart, clearGuestCart } = useContext(CartContext);
+  const { prepareOrderFromCart } = useContext(OrdersContext);
   const [emailTouched, setEmailTouched] = useState(false);
   const [error, setError] = useState(null);
 
   const route = useRoute();
-
+  console.log("EMAIL:", email);
+  console.log("PIN:", pin);
   console.log("COMING TO LOGIN VIEW FROM:", comingFrom);
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
       style={{ flex: 1 }}
     >
-      <Container
-        width="100%"
-        height="100%"
-        color={theme.colors.bg.elements_bg}
-        //color={"red"}
-        justify="flex-start"
-        align="center"
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <Go_Back_Header label="" action={() => navigation.goBack()} />
         <Container
           width="100%"
-          height="15%"
+          height="100%"
           color={theme.colors.bg.elements_bg}
-        >
-          <Image
-            source={require("../../../assets/brand_images/marbella_cafe_especial_logo_transparent.png")}
-            style={styles.image_1}
-          />
-        </Container>
-        <Container
-          width="100%"
-          height="10%"
-          color={theme.colors.bg.elements_bg}
-          //   color={"yellow"}
-          align="flex-start"
-        >
-          <Spacer position="left" size="extraLarge">
-            <Text variant="raleway_bold_18" textAlign="center">
-              Let's start logging In...
-            </Text>
-          </Spacer>
-        </Container>
-        <Container
-          width="100%"
-          height="20%"
-          color={theme.colors.bg.elements_bg}
-          //   color={"yellow"}
+          //color={"red"}
+          justify="flex-start"
           align="center"
-          direction="column"
         >
-          <DataInput
-            label="Enter email "
-            value={userToDB.email}
-            onChangeText={(value) => {
-              setUserToDB({
-                ...userToDB,
-                email: value,
-              });
-              if (emailTouched) setEmailTouched(false);
-              if (error) setError(null);
-            }}
-            // underlineColor={theme.colors.inputs.bottom_lines_disabled}
-            border_color={theme.colors.inputs.bottom_lines_disabled}
-            underlineColor={theme.colors.inputs.bottom_lines_disabled}
-            border_width={"0.5px"}
-            activeUnderlineColor={theme.colors.ui.primary}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-            textContentType="emailAddress"
-            autoComplete="email"
-            returnKeyType="done"
-            blurOnSubmit
-          />
+          <Go_Back_Header label="" action={() => navigation.goBack()} />
+          <Container
+            width="100%"
+            height="15%"
+            color={theme.colors.bg.elements_bg}
+          >
+            <Image
+              source={require("../../../assets/brand_images/marbella_cafe_especial_logo_transparent.png")}
+              style={styles.image_1}
+            />
+          </Container>
+          <Container
+            width="100%"
+            height="10%"
+            color={theme.colors.bg.elements_bg}
+            //   color={"yellow"}
+            align="flex-start"
+          >
+            <Spacer position="left" size="extraLarge">
+              <Text variant="raleway_bold_18" textAlign="center">
+                Let's start logging In...
+              </Text>
+            </Spacer>
+          </Container>
+          <Container
+            width="100%"
+            height="20%"
+            color={theme.colors.bg.elements_bg}
+            //   color={"yellow"}
+            align="center"
+            direction="column"
+          >
+            <DataInput
+              label="Enter email "
+              value={email}
+              onChangeText={(value) => {
+                setEmail(value);
+                //   setUserToDB({
+                //     ...userToDB,
+                //     email: value,
+                //   });
+                //   if (emailTouched) setEmailTouched(false);
+                //   if (error) setError(null);
+              }}
+              // underlineColor={theme.colors.inputs.bottom_lines_disabled}
+              border_color={theme.colors.inputs.bottom_lines_disabled}
+              underlineColor={theme.colors.inputs.bottom_lines_disabled}
+              border_width={"0.5px"}
+              activeUnderlineColor={theme.colors.ui.primary}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              textContentType="emailAddress"
+              autoComplete="email"
+              returnKeyType="done"
+              blurOnSubmit
+            />
+            <Spacer position="top" size="extraLarge" />
+            <DataInput
+              label="Enter password "
+              value={pin}
+              onChangeText={(value) => {
+                setPin(value);
+                //   setUserToDB({
+                //     ...userToDB,
+                //     password: value,
+                //   });
+                //   if (emailTouched) setEmailTouched(false);
+                //   if (error) setError(null);
+              }}
+              underlineColor={theme.colors.inputs.bottom_lines_disabled}
+              border_color={theme.colors.inputs.bottom_lines_disabled}
+              border_width={"0.5px"}
+              activeUnderlineColor={theme.colors.ui.primary}
+              keyboardType="password"
+              autoCapitalize="none"
+              autoCorrect={false}
+              textContentType="Password"
+              autoComplete="email"
+              returnKeyType="done"
+              onFocus={() => setEmailTouched(true)}
+              onBlur={() => setEmailTouched(false)}
+              blurOnSubmit
+            />
+          </Container>
           <Spacer position="top" size="extraLarge" />
-          <DataInput
-            label="Enter password "
-            value={userToDB.password}
-            onChangeText={(value) => {
-              setUserToDB({
-                ...userToDB,
-                password: value,
-              });
-              if (emailTouched) setEmailTouched(false);
-              if (error) setError(null);
-            }}
-            underlineColor={theme.colors.inputs.bottom_lines_disabled}
-            border_color={theme.colors.inputs.bottom_lines_disabled}
-            border_width={"0.5px"}
-            activeUnderlineColor={theme.colors.ui.primary}
-            keyboardType="password"
-            autoCapitalize="none"
-            autoCorrect={false}
-            textContentType="Password"
-            autoComplete="email"
-            returnKeyType="done"
-            blurOnSubmit
-          />
+          {!email && !pin && (
+            <Container
+              width="100%"
+              height="10%"
+              color={theme.colors.bg.elements_bg}
+              //   color={"yellow"}
+              align="center"
+              direction="row"
+            >
+              <Spacer position="left" size="extraLarge" />
+              <Underlined_CTA
+                width="50%"
+                height={"40%"}
+                caption="Forgot my password"
+                color="transparent"
+                action={() => null}
+                border_color="#898989"
+              />
+              <Underlined_CTA
+                width="50%"
+                height={"40%"}
+                caption="Sign Up"
+                color="transparent"
+                action={() => navigation.navigate("Enter_Names_View")}
+                border_color="#898989"
+              />
+            </Container>
+          )}
+          <Spacer position="top" size="extraLarge" />
+          {email && pin && (
+            <Container
+              width="100%"
+              // style={{ flex: 1, paddingBottom: 16 }}
+              color={theme.colors.bg.elements_bg}
+              //color={"red"}
+              align="center"
+              justify="center"
+              direction="row"
+            >
+              <Regular_CTA
+                width="55%"
+                height={"45%"}
+                color={theme.colors.ui.primary}
+                border_radius={"40px"}
+                caption="Log In"
+                caption_text_variant="dm_sans_bold_20_white"
+                action={async () => {
+                  try {
+                    console.log("CTA: start login");
+                    const result = await loginUser(pin, email);
+                    console.log(
+                      "CTA: loginUser result",
+                      result?.ok,
+                      result?.user?.user_id
+                    );
+
+                    if (!result?.ok) return;
+
+                    const nextUser = { ...result.user, authenticated: true };
+                    console.log("CTA: nextUser ready");
+
+                    console.log("CTA: before prepareOrderFromCart");
+                    prepareOrderFromCart(cart, nextUser);
+                    console.log("CTA: after prepareOrderFromCart");
+
+                    console.log("CTA: BEFORE rootReset");
+
+                    // Replace Auth with App so user can't go back to Auth screens
+                    navigation.getParent()?.replace("App", {
+                      screen: "Shop",
+                      params: {
+                        screen: "Shop_Delivery_Type_View",
+                        params: { coming_from: "Shopping_Cart_View" },
+                      },
+                    });
+
+                    console.log("CTA: AFTER rootReset (if you ever see this)");
+                  } catch (e) {
+                    console.log("CTA ERROR:", e?.message ?? e, e);
+                  }
+                }}
+              />
+            </Container>
+          )}
         </Container>
-        <Spacer position="top" size="extraLarge" />
-        <Container
-          width="100%"
-          height="10%"
-          color={theme.colors.bg.elements_bg}
-          //   color={"yellow"}
-          align="center"
-          direction="row"
-        >
-          <Spacer position="left" size="extraLarge" />
-          <Underlined_CTA
-            width="50%"
-            height={"40%"}
-            caption="Forgot my password"
-            color="transparent"
-            action={() => null}
-            border_color="#898989"
-          />
-          <Underlined_CTA
-            width="50%"
-            height={"40%"}
-            caption="Sign Up"
-            color="transparent"
-            action={() => navigation.navigate("Enter_Names_View")}
-            border_color="#898989"
-          />
-        </Container>
-      </Container>
+      </KeyboardAvoidingView>
     </SafeArea>
   );
 }

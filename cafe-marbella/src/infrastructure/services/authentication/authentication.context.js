@@ -17,8 +17,14 @@ import {
 } from "firebase/auth";
 import { initializeApp, getApps } from "firebase/app";
 import { gettingUserByEmailRequest } from "./authentication.sevices";
-import { post_user_Request } from "./authentication.sevices";
-import { STORAGE_KEYS } from "../../services/authentication/authentication.handlers";
+import {
+  post_user_Request,
+  gettingUserByUIDRequest,
+} from "./authentication.sevices";
+import {
+  STORAGE_KEYS,
+  encryptPinWithServerPublicKey,
+} from "../../services/authentication/authentication.handlers";
 import { rootReset } from "../../../infrastructure/navigation/navigation_ref";
 
 export const AuthenticationContext = createContext();
@@ -66,6 +72,8 @@ export const Authentication_Context_Provider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [authInitializing, setAuthInitializing] = useState(true);
   const [comingFrom, setComingFrom] = useState(null);
+  const [pin, setPin] = useState("");
+  const [email, setEmail] = useState("");
   const [userToDB, setUserToDB] = useState({
     first_name: "",
     last_name: "",
@@ -213,7 +221,7 @@ export const Authentication_Context_Provider = ({ children }) => {
     }
   };
 
-  // ********************* LOGIN USER LOGIC *************************
+  // ********************* REGISTER USER LOGIC *************************
   //We generate a random 6-digit PIN
   const generatePin = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
@@ -232,9 +240,14 @@ export const Authentication_Context_Provider = ({ children }) => {
       );
       const idToken = await userCredential.user.getIdToken();
       console.log("USER ID TOKEN:", idToken);
+
+      console.log("PIN GENERATED BEFORE ENCRYPTION:", pinGenerated);
+      const encrypted_pin = encryptPinWithServerPublicKey(pinGenerated);
+      console.log("ENCRYPTED PIN:", encrypted_pin);
+
       const payload = {
         ...userToDB,
-        encrypted_pin: pinGenerated, // ideally remove later
+        encrypted_pin: encrypted_pin, // ideally remove later
       };
 
       const res = await post_user_Request(payload, cartPayload, idToken);
@@ -258,6 +271,86 @@ export const Authentication_Context_Provider = ({ children }) => {
       setIsLoading(false);
     }
   };
+
+  // ********************* LOG IN USER LOGIC *************************
+  const signingInWithEmailAndPasswordFunction = async (email, pin) => {
+    // setIsLoading(true);
+    console.log("EMAIL AT SIGNIN FUNCTION:", email);
+    console.log("PIN AT SIGNIN FUNCTION:", pin);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // await savePin(pin);
+      const userCredential = await signInWithEmailAndPassword(auth, email, pin);
+      console.log("USER LOGGED IN:", userCredential.user);
+
+      if (userCredential.user) {
+        console.log(
+          "USER LOGGED IN:",
+          JSON.stringify(userCredential.user, null, 2)
+        );
+        const raw = await gettingUserByUIDRequest(userCredential.user.uid);
+        const userByUID = Array.isArray(raw) ? raw[0] : raw;
+        if (!userByUID) throw new Error("User not found in DB");
+
+        await registerLocalUser(userByUID);
+        setUser(userByUID);
+        return { ok: true, user: userByUID };
+      }
+    } catch (error) {
+      setError(
+        error.message === "Firebase: Error (auth/missing-email)."
+          ? "We haven't found an email for this PIN number"
+          : error.message === "Firebase: Error (auth/invalid-credential)."
+          ? "We haven't found a user for this PIN number"
+          : error.message === "Firebase: Error (auth/too-many-requests)."
+          ? "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your PIN or you can try again later."
+          : null
+      );
+    }
+  };
+
+  const loginUser = async (pin, email) => {
+    setIsLoading(true);
+    console.log("PIN BEFORE LOGIN:", pin);
+    console.log("EMAIL BEFORE LOGIN:", email);
+
+    try {
+      const PIN_LENGTH = 6;
+      if (pin.length === PIN_LENGTH) {
+        console.log("PIN BEFORE LOGIN:", pin);
+        const res = await signingInWithEmailAndPasswordFunction(email, pin);
+        if (res?.ok && res?.user) {
+          console.log("RES DATA ON LOGIN USER:", res.user);
+          return res;
+        }
+      }
+    } catch (error) {
+      setError(error.message);
+      console.log("LOGIN USER ERROR:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // const loginUser = async (pin, email) => {
+  //   console.log("PIN BEFORE LOGIN:", pin);
+  //   console.log("EMAIL BEFORE LOGIN:", email);
+  //   const PIN_LENGTH = 6;
+  //   setIsLoading(true);
+  //   if (pin.length === PIN_LENGTH) {
+  //     console.log("PIN BEFORE LOGIN:", pin);
+  //     // const email = await AsyncStorage.getItem("userEmail");
+  //     // const Emails_array_checked =
+  //     //   await checking_for_array_of_multiple_emails();
+  //     const res = await signingInWithEmailAndPasswordFunction(email, pin);
+  //     if (res?.ok && res?.user) {
+  //       console.log("RES DATA ON LOGIN USER:", res.user);
+  //       setIsLoading(false);
+  //       return res;
+  //     }
+  //   }
+  // };
+
   // ********************* LOG OUT USER LOGIC *************************
   const AUTH_KEYS_TO_CLEAR = [
     "@marbella/current_user",
@@ -334,6 +427,11 @@ export const Authentication_Context_Provider = ({ children }) => {
         comingFrom,
         setComingFrom,
         signOut,
+        setPin,
+        setEmail,
+        loginUser,
+        pin,
+        email,
       }}
     >
       {children}

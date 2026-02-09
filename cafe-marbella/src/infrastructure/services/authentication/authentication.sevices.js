@@ -26,6 +26,17 @@ export const gettingUserByEmailRequest = async (email) => {
     throw error;
   }
 };
+export const gettingUserByUIDRequest = async (uid) => {
+  const { usersEndPoint } = environment;
+  const endpoint = `${usersEndPoint}/userByUID`;
+
+  const res = await axios.get(endpoint, {
+    params: { uid }, // <-- goes to req.query.uid
+    timeout: 15000,
+  });
+
+  return res.data;
+};
 
 export const post_user_Request = async (
   userToCreateAtFirebaseAndDB,

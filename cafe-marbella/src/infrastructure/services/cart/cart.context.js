@@ -133,7 +133,6 @@ export const Cart_Context_Provider = ({ children }) => {
     setIsLoading(true);
     setTimeout(async () => {
       try {
-        console.log("Fetching cart for userId:", user_id);
         const myCart = await gettingCartByUserIDRequest(user_id);
         setCart(myCart);
         setCartTotalItems(myCart.quantity || 0);
@@ -302,11 +301,6 @@ export const Cart_Context_Provider = ({ children }) => {
         updated_at: new Date().toISOString(),
       };
 
-      console.log(
-        "UPDATED CART AFTER DECREASE (Optimistic):",
-        JSON.stringify(updatedCart, null, 2)
-      );
-
       const total_items_qty = getTotalCartQuantity(updatedCart);
       setCartTotalItems(total_items_qty);
 
@@ -331,7 +325,7 @@ export const Cart_Context_Provider = ({ children }) => {
       // ✅ USER: backend request
       const myCart = await IncOrDecProductsCartQty(user_id, item, "decrease");
 
-      console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
+      // console.log("MY CART FROM API CALL:", JSON.stringify(myCart, null, 2));
 
       setCart((prev) => ({
         ...prev,
@@ -517,7 +511,7 @@ export const Cart_Context_Provider = ({ children }) => {
   };
 
   const resettingCart = async (user_id) => {
-    console.log("Resetting cart for user_id at context:", user_id);
+    // console.log("Resetting cart for user_id at context:", user_id);
 
     try {
       // ✅ GUEST: reset AsyncStorage cart
@@ -554,7 +548,7 @@ export const Cart_Context_Provider = ({ children }) => {
     }
   };
 
-  console.log("CART AT CONTEXT:", JSON.stringify(cart, null, 2));
+  // console.log("CART AT CONTEXT:", JSON.stringify(cart, null, 2));
 
   const clearGuestCart = async () => {
     await AsyncStorage.removeItem(GUEST_CART_KEY);

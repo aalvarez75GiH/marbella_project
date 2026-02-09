@@ -361,7 +361,6 @@ export default function User_To_Create_Info_Review_View() {
                               routes: [
                                 {
                                   name: "Shop_Delivery_Type_View",
-                                  params: { coming_from: "Shopping_Cart_View" },
                                 },
                               ],
                             },

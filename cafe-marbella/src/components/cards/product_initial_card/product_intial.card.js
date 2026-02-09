@@ -29,9 +29,6 @@ export const Product_Initial_Card = ({ item = null }) => {
 
   const { comingFrom, setComingFrom } = useContext(AuthenticationContext);
 
-  console.log("TOTAL STOCK:", totalStock);
-  // console.log("Product_Initial_Card ITEM:", JSON.stringify(item, null, 2));
-
   const normalizedFlagKey = String(flag_key ?? "")
     .trim()
     .toLowerCase();

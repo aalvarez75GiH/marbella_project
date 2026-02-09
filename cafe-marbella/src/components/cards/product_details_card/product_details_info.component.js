@@ -18,10 +18,6 @@ export const Product_Details_Info_Component = ({
   selectedVariant,
   product_to_add_to_cart,
 }) => {
-  console.log(
-    "SELECTED VARIANT AT INFO COMPONENT:",
-    JSON.stringify(selectedVariant, null, 2)
-  );
   const isSoldOut = selectedVariant?.stock === 0;
   const navigation = useNavigation();
   const { addingProductToCart } = useContext(CartContext);

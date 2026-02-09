@@ -2,6 +2,7 @@
 
 const { v4: uuidv4 } = require("uuid");
 const admin = require("firebase-admin");
+const crypto = require("crypto");
 
 const express = require("express");
 const usersRouter = express.Router();
@@ -9,6 +10,7 @@ const usersRouter = express.Router();
 const usersControllers = require("./users.controllers");
 const cartsControllers = require("../carts/carts.controllers");
 const productsControllers = require("../products/products.controllers");
+const { loadPrivateKeyOnce } = require("./users.handlers");
 
 usersRouter.get("/userByUID", async (req, res) => {
   try {
@@ -164,6 +166,33 @@ usersRouter.post("/", requireAuth, async (req, res) => {
       status: "Failed",
       msg: "Something went wrong saving Data...",
     });
+  }
+});
+
+usersRouter.post("/credentials", (req, res) => {
+  try {
+    const keyObject = loadPrivateKeyOnce();
+
+    const { encrypted_pin } = req.body || {};
+    if (!encrypted_pin)
+      return res.status(400).json({ error: "Missing encryptedPin" });
+
+    const decrypted = crypto.privateDecrypt(
+      {
+        key: keyObject,
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: "sha256",
+      },
+      Buffer.from(encrypted_pin, "base64")
+    );
+
+    const decrypted_pin = decrypted.toString("utf8");
+    console.log("Decrypted PIN:", decrypted_pin);
+    // TODO: use `pin` securely (e.g., update Firebase password, or hash & discard)
+    return res.json({ ok: true, pin: decrypted_pin }); // ← do NOT send the pin back
+  } catch (e) {
+    console.error("Decrypt failed:", e);
+    return res.status(500).json({ error: "Decrypt failed" });
   }
 });
 
