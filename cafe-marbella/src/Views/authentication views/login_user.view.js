@@ -12,6 +12,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 
+import { navigationRef } from "../../infrastructure/navigation/navigation_ref.js";
 import { Container } from "../../components/containers/general.containers";
 import { Just_Caption_Header } from "../../components/headers/just_caption.header.js";
 import { Exit_Header_With_Label } from "../../components/headers/exit_with_label.header";
@@ -23,8 +24,8 @@ import { Global_activity_indicator } from "../../components/activity indicators/
 import { DataInput } from "../../components/inputs/data_text_input.js";
 import { Underlined_CTA } from "../../components/ctas/underlined.cta.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
-import { rootReset } from "../../infrastructure/navigation/navigation_ref.js";
-import { rootNavigate } from "../../infrastructure/navigation/navigation_ref.js";
+// import { rootReset } from "../../infrastructure/navigation/navigation_ref.js";
+// import { rootNavigate } from "../../infrastructure/navigation/navigation_ref.js";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { CartContext } from "../../infrastructure/services/cart/cart.context.js";
@@ -47,7 +48,8 @@ export default function Login_Users_View() {
   } = useContext(AuthenticationContext);
   const { user_id } = user || {};
 
-  const { cart, clearGuestCart } = useContext(CartContext);
+  const { cart, setCart, setCartTotalItems, getTotalCartQuantity } =
+    useContext(CartContext);
   const { prepareOrderFromCart } = useContext(OrdersContext);
   const [emailTouched, setEmailTouched] = useState(false);
   const [error, setError] = useState(null);
@@ -208,6 +210,7 @@ export default function Login_Users_View() {
                 action={async () => {
                   try {
                     console.log("CTA: start login");
+
                     const result = await loginUser(pin, email);
                     console.log(
                       "CTA: loginUser result",
@@ -218,28 +221,111 @@ export default function Login_Users_View() {
                     if (!result?.ok) return;
 
                     const nextUser = { ...result.user, authenticated: true };
-                    console.log("CTA: nextUser ready");
 
-                    console.log("CTA: before prepareOrderFromCart");
-                    prepareOrderFromCart(cart, nextUser);
-                    console.log("CTA: after prepareOrderFromCart");
+                    // ✅ Freeze the current guest cart for checkout
+                    const cartForCheckout = {
+                      ...cart,
+                      user_id: nextUser.user_id,
+                    };
 
-                    console.log("CTA: BEFORE rootReset");
+                    setCart(cartForCheckout);
+                    setCartTotalItems(getTotalCartQuantity(cartForCheckout));
 
-                    // Replace Auth with App so user can't go back to Auth screens
-                    navigation.getParent()?.replace("App", {
-                      screen: "Shop",
-                      params: {
-                        screen: "Shop_Delivery_Type_View",
-                        params: { coming_from: "Shopping_Cart_View" },
-                      },
+                    // ✅ Build order from the same cart we will checkout with
+                    prepareOrderFromCart(cartForCheckout, nextUser);
+
+                    // ✅ Close Auth modal (Cart is underneath)
+                    navigation.getParent()?.goBack();
+
+                    // ✅ Navigate into Cart stack so GO_BACK works
+                    requestAnimationFrame(() => {
+                      navigationRef.current?.navigate("App", {
+                        screen: "Cart",
+                        params: {
+                          screen: "Shop_Delivery_Type_View",
+                        },
+                      });
                     });
-
-                    console.log("CTA: AFTER rootReset (if you ever see this)");
                   } catch (e) {
                     console.log("CTA ERROR:", e?.message ?? e, e);
                   }
                 }}
+
+                // action={async () => {
+                //   try {
+                //     console.log("CTA: start login");
+
+                //     const result = await loginUser(pin, email);
+                //     console.log(
+                //       "CTA: loginUser result",
+                //       result?.ok,
+                //       result?.user?.user_id
+                //     );
+
+                //     if (!result?.ok) return;
+
+                //     const nextUser = { ...result.user, authenticated: true };
+
+                //     // ✅ IMPORTANT: keep the current (guest) cart for checkout
+                //     // (prevents your app from swapping to blank DB cart right now)
+                //     setCart((prev) => ({ ...prev, user_id: nextUser.user_id }));
+                //     setCartTotalItems(getTotalCartQuantity(cart));
+
+                //     // ✅ Build order from the guest cart you already have
+                //     prepareOrderFromCart(cart, nextUser);
+
+                //     // ✅ 1) Close Auth modal (so Cart screen is still underneath)
+                //     navigation.getParent()?.goBack();
+
+                //     // ✅ 2) Then navigate to Cart stack delivery type
+                //     requestAnimationFrame(() => {
+                //       navigationRef.current?.navigate("App", {
+                //         screen: "Cart",
+                //         params: {
+                //           screen: "Shop_Delivery_Type_View",
+                //           params: { coming_from: "Shopping_Cart_View" },
+                //         },
+                //       });
+                //     });
+                //   } catch (e) {
+                //     console.log("CTA ERROR:", e?.message ?? e, e);
+                //   }
+                // }}
+                // action={async () => {
+                //   try {
+                //     console.log("CTA: start login");
+                //     const result = await loginUser(pin, email);
+                //     console.log(
+                //       "CTA: loginUser result",
+                //       result?.ok,
+                //       result?.user?.user_id
+                //     );
+
+                //     if (!result?.ok) return;
+
+                //     const nextUser = { ...result.user, authenticated: true };
+                //     console.log("CTA: nextUser ready");
+
+                //     console.log("CTA: before prepareOrderFromCart");
+                //     prepareOrderFromCart(cart, nextUser);
+                //     console.log("CTA: after prepareOrderFromCart");
+
+                //     console.log("CTA: BEFORE rootReset");
+
+                //     // Replace Auth with App so user can't go back to Auth screens
+                //     navigation.getParent()?.replace("App", {
+                //       screen: "Shop",
+                //       params: {
+                //         screen: "Shop_Delivery_Type_View",
+                //         params: { coming_from: "Shopping_Cart_View" },
+                //       },
+                //     });
+
+                //     console.log("CTA: AFTER rootReset (if you ever see this)");
+                //   } catch (e) {
+                //     console.log("CTA ERROR:", e?.message ?? e, e);
+                //   }
+                // }}
               />
             </Container>
           )}

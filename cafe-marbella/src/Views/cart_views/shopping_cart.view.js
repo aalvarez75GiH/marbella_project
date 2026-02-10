@@ -120,39 +120,49 @@ export default function Shopping_Cart_View() {
                 caption="Proceed to checkout"
                 caption_text_variant="dm_sans_bold_20"
                 // action={() => navigation.navigate("Shop_Delivery_Type_View")}
-                action={() => {
+                action={async () => {
                   const latestProducts = cart?.products ?? [];
 
-                  if (!user_id) {
-                    setComingFrom("Shopping_Cart_View");
-                    navigation.navigate("Auth_Navigator", {
-                      nextView: "Shop_Delivery_Type_View",
-                    });
+                  // ✅ Use auth state, not cart.user_id
+                  const isAuthed = !!user?.authenticated || !!user?.user_id;
+                  // ✅ Build order before navigating (same as you do now)
+                  setComingFrom("Shopping_Cart_View");
 
+                  if (!isAuthed) {
+                    navigation.navigate("AuthModal", {
+                      returnTo: {
+                        tab: "Cart",
+                        screen: "Shop_Delivery_Type_View",
+                      },
+                    });
                     return;
                   }
-                  setComingFrom("Shopping_Cart_View");
+
                   setMyOrder((prevOrder) => ({
                     ...prevOrder,
                     customer: {
-                      first_name,
-                      last_name,
-                      email,
-                      phone_number,
-                      customer_address: address,
-                      uid,
+                      first_name: user?.first_name ?? "",
+                      last_name: user?.last_name ?? "",
+                      email: user?.email ?? "",
+                      phone_number: user?.phone_number ?? "",
+                      customer_address: user?.address ?? "",
+                      uid: user?.uid ?? "",
                     },
                     order_status: "In Progress",
                     order_products: latestProducts,
                     pricing: {
-                      sub_total,
-                      taxes,
+                      sub_total: cart?.sub_total ?? 0,
+                      taxes: cart?.taxes ?? 0,
                       discount: 0,
                       shipping: 0,
-                      total,
-                    }, // ✅ always latest
+                      total: cart?.total ?? 0,
+                    },
                   }));
-                  navigation.navigate("Shop_Delivery_Type_View");
+
+                  // ✅ Pushes onto Cart stack => GO_BACK returns to cart
+                  navigation.navigate("Shop_Delivery_Type_View", {
+                    coming_from: "Shopping_Cart_View",
+                  });
                 }}
               />
             </Container>

@@ -12,7 +12,6 @@ import { Product_Cart_Item_Tile } from "../../components/tiles/product_cart_item
 import { Shopping_Cart_Sub_Total_Footer } from "../../components/footers/shopping_cart_sub_total.footer";
 import { Regular_CTA } from "../../components/ctas/regular.cta";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
-import { Auth_Navigator } from "../../infrastructure/navigation/auth.navigator";
 
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
@@ -116,38 +115,82 @@ export default function Process_Shopping_Cart_View() {
               action={() => {
                 const latestProducts = cart?.products ?? [];
 
-                if (!user_id) {
-                  navigation.navigate("Auth_Navigator", {
-                    nextView: "Shop_Delivery_Type_View",
-                  });
+                // ✅ Use auth context, NOT cart.user_id
+                const isAuthed = !!user?.authenticated || !!user?.user_id;
 
+                if (!isAuthed) {
+                  navigation.navigate("AuthModal", {
+                    returnTo: {
+                      tab: "Cart",
+                      screen: "Shop_Delivery_Type_View",
+                    },
+                  });
                   return;
                 }
+
+                // Build the order BEFORE any navigation
                 setMyOrder((prevOrder) => ({
                   ...prevOrder,
                   customer: {
-                    first_name,
-                    last_name,
-                    email,
-                    phone_number,
-                    customer_address: address,
-                    uid,
+                    first_name: user?.first_name ?? "",
+                    last_name: user?.last_name ?? "",
+                    email: user?.email ?? "",
+                    phone_number: user?.phone_number ?? "",
+                    customer_address: user?.address ?? "",
+                    uid: user?.uid ?? "",
                   },
                   order_status: "In Progress",
                   order_products: latestProducts,
                   pricing: {
-                    sub_total,
-                    taxes,
+                    sub_total: cart?.sub_total ?? 0,
+                    taxes: cart?.taxes ?? 0,
                     discount: 0,
                     shipping: 0,
-                    total,
-                  }, // ✅ always latest
+                    total: cart?.total ?? 0,
+                  },
                 }));
 
+                // ✅ Push onto THIS stack so GO_BACK works
                 navigation.navigate("Shop_Delivery_Type_View", {
                   coming_from: "Process_Shopping_Cart_View",
                 });
               }}
+
+              // action={() => {
+              //   const latestProducts = cart?.products ?? [];
+
+              //   if (!user_id) {
+              //     navigation.navigate("Auth_Navigator", {
+              //       nextView: "Shop_Delivery_Type_View",
+              //     });
+
+              //     return;
+              //   }
+              //   setMyOrder((prevOrder) => ({
+              //     ...prevOrder,
+              //     customer: {
+              //       first_name,
+              //       last_name,
+              //       email,
+              //       phone_number,
+              //       customer_address: address,
+              //       uid,
+              //     },
+              //     order_status: "In Progress",
+              //     order_products: latestProducts,
+              //     pricing: {
+              //       sub_total,
+              //       taxes,
+              //       discount: 0,
+              //       shipping: 0,
+              //       total,
+              //     }, // ✅ always latest
+              //   }));
+
+              //   navigation.navigate("Shop_Delivery_Type_View", {
+              //     coming_from: "Process_Shopping_Cart_View",
+              //   });
+              // }}
             />
           )}
         </Container>

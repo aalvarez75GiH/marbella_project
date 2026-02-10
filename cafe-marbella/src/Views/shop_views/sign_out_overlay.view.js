@@ -12,6 +12,7 @@ import { Regular_CTA } from "../../components/ctas/regular.cta";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
+import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 
 export default function Sign_Out_Overlay_View() {
   const theme = useTheme();
@@ -21,6 +22,7 @@ export default function Sign_Out_Overlay_View() {
   //   const { first_name, last_name, email, display_name, user_id } = user || {};
   console.log("Overlay_View user:", user);
   // Hiding tab bar for this screen
+  const { setDeliveryOption } = useContext(OrdersContext);
   useLayoutEffect(() => {
     navigation.getParent()?.setOptions({
       tabBarStyle: { display: "none" },
@@ -92,7 +94,10 @@ export default function Sign_Out_Overlay_View() {
                   height="56px"
                   color={theme.colors.ui.error}
                   caption_text_variant="raleway_bold_16_white"
-                  action={() => signOut()}
+                  action={async () => {
+                    await setDeliveryOption(null);
+                    signOut();
+                  }}
                 />
 
                 <Container />

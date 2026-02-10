@@ -9,17 +9,12 @@ const RootStack = createNativeStackNavigator();
 export const RootNavigator = () => {
   return (
     <RootStack.Navigator screenOptions={{ headerShown: false }}>
-      {/* Your current app (tabs + stacks) */}
       <RootStack.Screen name="App" component={AppNavigator} />
 
-      {/* Auth flow as a modal */}
       <RootStack.Screen
-        name="Auth_Navigator"
+        name="AuthModal"
         component={Auth_Navigator}
-        options={{
-          presentation: "card",
-          animation: "slide_from_right",
-        }}
+        options={{ presentation: "modal" }}
       />
     </RootStack.Navigator>
   );
