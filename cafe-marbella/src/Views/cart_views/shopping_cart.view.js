@@ -26,12 +26,13 @@ export default function Shopping_Cart_View() {
   const { setMyOrder } = useContext(OrdersContext);
   // *************
   const { user, setComingFrom } = useContext(AuthenticationContext);
-  const { user_id, first_name, last_name, email, phone_number, uid, address } =
-    user || {};
+  const { user_id } = user || {};
   const { cart, isLoading, cartTotalItems, gettingCartByUserID } =
     useContext(CartContext);
-  const { sub_total, total, taxes, products } = cart || {};
+  const { sub_total } = cart || {};
+  const products = Array.isArray(cart?.products) ? cart.products : [];
 
+  console.log("Shopping_Cart_View cart:", JSON.stringify(cart, null, 2));
   useFocusEffect(
     useCallback(() => {
       console.log("Cart screen fetch fired. user_id:", user_id);

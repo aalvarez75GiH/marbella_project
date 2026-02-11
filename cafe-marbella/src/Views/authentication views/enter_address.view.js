@@ -1,4 +1,4 @@
-import React, { use, useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 import { Platform, KeyboardAvoidingView, ScrollView, View } from "react-native";
@@ -24,6 +24,10 @@ export default function Enter_Address_View() {
   const { setUserToDB, userToDB } = useContext(AuthenticationContext);
   const { deviceLat, deviceLng } = useContext(GeolocationContext);
   const CTA_HEIGHT = 65; // ✅ fixed height so it never shrinks
+
+  console.log("PLACES KEY:", process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY);
+  console.log("DEVICE LOCATION for PLACES biasing:", deviceLat, deviceLng);
+
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -80,8 +84,18 @@ export default function Enter_Address_View() {
               align="center"
               style={{ paddingVertical: 10 }}
             >
-              <View style={{ width: "93%" }}>
+              <View
+                style={{
+                  width: "93%",
+                  alignSelf: "center",
+                  position: "relative",
+                  overflow: "visible",
+                  zIndex: 9999,
+                  elevation: 9999,
+                }}
+              >
                 <GooglePlacesAutocomplete
+                  onFail={(err) => console.log("PLACES FAIL:", err)}
                   placeholder="Shipping address"
                   query={{
                     key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,

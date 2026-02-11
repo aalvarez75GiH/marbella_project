@@ -2,8 +2,10 @@
 
 const firebase_controller = require("../../fb");
 const { calculateSubtotal, getTotalCartQuantity } = require("./carts.utils");
+const { FieldValue } = require("firebase-admin/firestore");
 
 const getCartByUserID = async (user_id) => {
+  console.log("[getCartByUserUID] fetching cart for user_id:", user_id);
   const ref = firebase_controller.db.collection("carts").doc(user_id);
   const snap = await ref.get();
   console.log("[getCartByUserUID] docId:", user_id, "exists:", snap.exists);
@@ -16,6 +18,31 @@ const updateCartByDocId = async (docId, payload) => {
     .doc(docId)
     .set(payload, { merge: true });
 };
+
+const updateCart = async (user_id, toUpdate) => {
+  await firebase_controller.db
+    .collection("carts")
+    .doc(user_id)
+    .set(
+      {
+        ...toUpdate,
+        updatedAt: FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+};
+// const updateCart = async (cart_id, toUpdate) => {
+//   await firebase_controller.db
+//     .collection("carts")
+//     .doc(cart_id)
+//     .set(
+//       {
+//         ...toUpdate,
+//         updatedAt: FieldValue.serverTimestamp(),
+//       },
+//       { merge: true }
+//     );
+// };
 
 const updateCartByUserID = async (user_id, payload) => {
   console.log("[updateCartByUserUID] writing docId:", user_id);
@@ -166,6 +193,60 @@ const resetCartByUserID = async (user_id) => {
   return updatedSnap.data();
 };
 
+const upsertCart = async (cart) => {
+  const userId = cart.user_id;
+  console.log("USER ID AT CART CONTROLLER:", userId);
+
+  // 1) find existing cart for user
+  const existing = await getCartByUserID(userId);
+
+  // 2) if none, create
+  if (!existing) {
+    const toCreate = {
+      ...cart,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    return await cartsControllers.createCart(toCreate);
+  }
+
+  // 3) if exists, update it (replace with merged result)
+  const toUpdate = {
+    ...existing, // keep cart_id, etc.
+    ...cart, // merged cart overrides
+    cart_id: existing.cart_id, // make sure cart_id stays stable
+    updatedAt: new Date().toISOString(),
+  };
+
+  // return await updateCart(existing.cart_id, toUpdate);
+  return await updateCart(userId, toUpdate);
+};
+// const upsertCart = async (cart) => {
+//   const userId = cart.user_id;
+//   if (!userId) throw new Error("user_id is required");
+
+//   const now = new Date().toISOString();
+
+//   // Force stable identifiers
+//   const toSave = {
+//     ...cart,
+//     cart_id: userId,          // OPTIONAL: you can also keep a separate cart_id if you want
+//     user_id: userId,
+//     updatedAt: now,
+//   };
+
+//   // Create if missing, update if exists (same call)
+//   await firebase_controller.db
+//     .collection("carts")
+//     .doc(userId)              // ✅ doc id = user_id
+//     .set(
+//       { ...toSave, createdAt: cart.createdAt ?? now },
+//       { merge: true }
+//     );
+
+//   return toSave; // return what you saved
+// };
+
 module.exports = {
   getCartByUserID,
   createCart,
@@ -173,4 +254,5 @@ module.exports = {
   updateCartByDocId,
   updateCartByUserID,
   resetCartByUserID,
+  upsertCart,
 };

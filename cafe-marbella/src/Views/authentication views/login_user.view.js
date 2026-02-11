@@ -48,8 +48,16 @@ export default function Login_Users_View() {
   } = useContext(AuthenticationContext);
   const { user_id } = user || {};
 
-  const { cart, setCart, setCartTotalItems, getTotalCartQuantity } =
-    useContext(CartContext);
+  const {
+    cart,
+    setCart,
+    setCartTotalItems,
+    getTotalCartQuantity,
+    gettingCartByUserID,
+    mergeCartGuestOverridesDb,
+    upsertCart,
+    lockCartInit,
+  } = useContext(CartContext);
   const { prepareOrderFromCart } = useContext(OrdersContext);
   const [emailTouched, setEmailTouched] = useState(false);
   const [error, setError] = useState(null);
@@ -112,14 +120,7 @@ export default function Login_Users_View() {
               value={email}
               onChangeText={(value) => {
                 setEmail(value);
-                //   setUserToDB({
-                //     ...userToDB,
-                //     email: value,
-                //   });
-                //   if (emailTouched) setEmailTouched(false);
-                //   if (error) setError(null);
               }}
-              // underlineColor={theme.colors.inputs.bottom_lines_disabled}
               border_color={theme.colors.inputs.bottom_lines_disabled}
               underlineColor={theme.colors.inputs.bottom_lines_disabled}
               border_width={"0.5px"}
@@ -138,12 +139,6 @@ export default function Login_Users_View() {
               value={pin}
               onChangeText={(value) => {
                 setPin(value);
-                //   setUserToDB({
-                //     ...userToDB,
-                //     password: value,
-                //   });
-                //   if (emailTouched) setEmailTouched(false);
-                //   if (error) setError(null);
               }}
               underlineColor={theme.colors.inputs.bottom_lines_disabled}
               border_color={theme.colors.inputs.bottom_lines_disabled}
@@ -208,41 +203,66 @@ export default function Login_Users_View() {
                 caption="Log In"
                 caption_text_variant="dm_sans_bold_20_white"
                 action={async () => {
+                  lockCartInit(true);
                   try {
                     console.log("CTA: start login");
 
+                    // 0) login
                     const result = await loginUser(pin, email);
-                    console.log(
-                      "CTA: loginUser result",
-                      result?.ok,
-                      result?.user?.user_id
-                    );
-
-                    if (!result?.ok) return;
+                    if (!result?.ok || !result?.user?.user_id) {
+                      console.log("CTA: login failed", result);
+                      return;
+                    }
 
                     const nextUser = { ...result.user, authenticated: true };
+                    const userId = nextUser.user_id;
 
-                    // ✅ Freeze the current guest cart for checkout
-                    const cartForCheckout = {
-                      ...cart,
-                      user_id: nextUser.user_id,
-                    };
+                    // 1) capture the cart you want to keep (guest cart from CartContext)
+                    // IMPORTANT: use the cart that has qty=2 right now
+                    const guestCart = cart;
 
-                    setCart(cartForCheckout);
-                    setCartTotalItems(getTotalCartQuantity(cartForCheckout));
+                    // 2) fetch DB cart
+                    let dbCart = null;
+                    try {
+                      dbCart = await gettingCartByUserID(userId, {
+                        setState: false,
+                      });
+                    } catch (e) {
+                      console.log(
+                        "CTA: no db cart or fetch failed, continuing with guest cart",
+                        e?.message ?? e
+                      );
+                    }
 
-                    // ✅ Build order from the same cart we will checkout with
-                    prepareOrderFromCart(cartForCheckout, nextUser);
+                    // 3) merge: guest overrides db
+                    // If you already have mergeCartGuestOverridesDb, use it.
+                    const mergedCart = mergeCartGuestOverridesDb(
+                      dbCart,
+                      guestCart,
+                      userId
+                    );
 
-                    // ✅ Close Auth modal (Cart is underneath)
+                    // 4) set local cart FIRST (so back shows qty=2)
+                    setCart(mergedCart);
+                    setCartTotalItems(getTotalCartQuantity(mergedCart));
+
+                    // 5) persist merged cart to DB so your "fetch user cart" effect won't overwrite to qty=1
+                    // (This is the key fix for your problem.)
+                    await upsertCart(mergedCart);
+
+                    // 6) build order from the same cart
+                    prepareOrderFromCart(mergedCart, nextUser);
+
+                    // 7) close auth modal (so Cart is underneath)
                     navigation.getParent()?.goBack();
 
-                    // ✅ Navigate into Cart stack so GO_BACK works
+                    // 8) navigate into the Cart stack delivery type (so GO_BACK works)
                     requestAnimationFrame(() => {
                       navigationRef.current?.navigate("App", {
                         screen: "Cart",
                         params: {
                           screen: "Shop_Delivery_Type_View",
+                          params: { coming_from: "Shopping_Cart_View" },
                         },
                       });
                     });
@@ -250,82 +270,6 @@ export default function Login_Users_View() {
                     console.log("CTA ERROR:", e?.message ?? e, e);
                   }
                 }}
-
-                // action={async () => {
-                //   try {
-                //     console.log("CTA: start login");
-
-                //     const result = await loginUser(pin, email);
-                //     console.log(
-                //       "CTA: loginUser result",
-                //       result?.ok,
-                //       result?.user?.user_id
-                //     );
-
-                //     if (!result?.ok) return;
-
-                //     const nextUser = { ...result.user, authenticated: true };
-
-                //     // ✅ IMPORTANT: keep the current (guest) cart for checkout
-                //     // (prevents your app from swapping to blank DB cart right now)
-                //     setCart((prev) => ({ ...prev, user_id: nextUser.user_id }));
-                //     setCartTotalItems(getTotalCartQuantity(cart));
-
-                //     // ✅ Build order from the guest cart you already have
-                //     prepareOrderFromCart(cart, nextUser);
-
-                //     // ✅ 1) Close Auth modal (so Cart screen is still underneath)
-                //     navigation.getParent()?.goBack();
-
-                //     // ✅ 2) Then navigate to Cart stack delivery type
-                //     requestAnimationFrame(() => {
-                //       navigationRef.current?.navigate("App", {
-                //         screen: "Cart",
-                //         params: {
-                //           screen: "Shop_Delivery_Type_View",
-                //           params: { coming_from: "Shopping_Cart_View" },
-                //         },
-                //       });
-                //     });
-                //   } catch (e) {
-                //     console.log("CTA ERROR:", e?.message ?? e, e);
-                //   }
-                // }}
-                // action={async () => {
-                //   try {
-                //     console.log("CTA: start login");
-                //     const result = await loginUser(pin, email);
-                //     console.log(
-                //       "CTA: loginUser result",
-                //       result?.ok,
-                //       result?.user?.user_id
-                //     );
-
-                //     if (!result?.ok) return;
-
-                //     const nextUser = { ...result.user, authenticated: true };
-                //     console.log("CTA: nextUser ready");
-
-                //     console.log("CTA: before prepareOrderFromCart");
-                //     prepareOrderFromCart(cart, nextUser);
-                //     console.log("CTA: after prepareOrderFromCart");
-
-                //     console.log("CTA: BEFORE rootReset");
-
-                //     // Replace Auth with App so user can't go back to Auth screens
-                //     navigation.getParent()?.replace("App", {
-                //       screen: "Shop",
-                //       params: {
-                //         screen: "Shop_Delivery_Type_View",
-                //         params: { coming_from: "Shopping_Cart_View" },
-                //       },
-                //     });
-
-                //     console.log("CTA: AFTER rootReset (if you ever see this)");
-                //   } catch (e) {
-                //     console.log("CTA ERROR:", e?.message ?? e, e);
-                //   }
-                // }}
               />
             </Container>
           )}

@@ -87,3 +87,11 @@ export const resettingCartRequest = async (user_id) => {
     throw error;
   }
 };
+
+export const upsertCartRequest = async (cart) => {
+  const { cartsEndPoint } = environment;
+  const endpoint = `${cartsEndPoint}/cart/upsert`;
+
+  const res = await axios.post(endpoint, cart, { timeout: 15000 });
+  return res.data?.cart;
+};

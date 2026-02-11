@@ -66,6 +66,31 @@ cartsRouter.post("/", async (req, res) => {
   }
 });
 
+cartsRouter.post("/cart/upsert", async (req, res) => {
+  const cart = req.body; // ✅ this is the cart
+  console.log("CART AT END POINT:", JSON.stringify(cart, null, 2));
+
+  try {
+    if (!cart?.user_id) {
+      return res.status(400).json({ ok: false, msg: "user_id is required" });
+    }
+
+    if (!Array.isArray(cart?.products)) {
+      return res.status(400).json({ ok: false, msg: "products[] is required" });
+    }
+
+    const savedCart = await cartsControllers.upsertCart(cart);
+    return res.status(200).json({ ok: true, cart: savedCart });
+  } catch (error) {
+    console.log("UPSERT CART ERROR:", error);
+    return res.status(500).json({
+      ok: false,
+      status: "Failed",
+      msg: "Something went wrong upserting cart...",
+    });
+  }
+});
+
 cartsRouter.put("/products_cart", async (req, res) => {
   const user_id = String(req.query.user_id || "").trim();
   const product = req.body;

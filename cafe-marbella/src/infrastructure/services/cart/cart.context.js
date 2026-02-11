@@ -19,6 +19,7 @@ import {
   IncOrDecProductsCartQty,
   removingCartItemRequest,
   resettingCartRequest,
+  upsertCartRequest,
 } from "./cart.services";
 
 import { AuthenticationContext } from "../authentication/authentication.context";
@@ -26,17 +27,6 @@ import { AuthenticationContext } from "../authentication/authentication.context"
 export const CartContext = createContext();
 
 export const Cart_Context_Provider = ({ children }) => {
-  const [cart, setCart] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [cartTotalItems, setCartTotalItems] = useState(0);
-  const [isUpdatingQty, setIsUpdatingQty] = useState(false);
-
-  const { user, authInitializing } = useContext(AuthenticationContext);
-  const { user_id } = user || {};
-
-  const removingRef = useRef(false);
-
   const { GUEST_CART_KEY } = STORAGE_KEYS;
   const createEmptyGuestCart = () => ({
     cart_id: generateUUID(),
@@ -48,6 +38,21 @@ export const Cart_Context_Provider = ({ children }) => {
     taxes: 0,
     total: 0,
   });
+  const [cart, setCart] = useState(() => createEmptyGuestCart());
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [cartTotalItems, setCartTotalItems] = useState(0);
+  const [isUpdatingQty, setIsUpdatingQty] = useState(false);
+
+  const { user, authInitializing } = useContext(AuthenticationContext);
+  const { user_id } = user || {};
+
+  const removingRef = useRef(false);
+  const cartInitLockRef = useRef(false);
+
+  const lockCartInit = (locked) => {
+    cartInitLockRef.current = locked;
+  };
 
   useEffect(() => {
     const total_items_qty = getTotalCartQuantity(cart);
@@ -63,23 +68,21 @@ export const Cart_Context_Provider = ({ children }) => {
       try {
         console.log("Cart init user_id:", user_id);
 
-        if (user_id) {
-          await gettingCartByUserID(user_id);
+        const isValidUserId =
+          typeof user_id === "string" && user_id.trim().length > 0;
+
+        // ✅ If login flow is merging, don't let init overwrite it
+        if (cartInitLockRef.current) {
+          console.log("Cart init: locked, skip");
           return;
         }
 
-        // ✅ immediate UI reset (stable)
-        setCart({
-          cart_id: "",
-          user_id: "",
-          createdAt: "",
-          updatedAt: "",
-          products: [],
-          sub_total: 0,
-          taxes: 0,
-          total: 0,
-        });
+        if (isValidUserId) {
+          await gettingCartByUserID(user_id); // must be safe and never set undefined
+          return;
+        }
 
+        // Guest: load from storage (no reset-to-empty first)
         const raw = await AsyncStorage.getItem(GUEST_CART_KEY);
         if (cancelled) return;
 
@@ -89,10 +92,12 @@ export const Cart_Context_Provider = ({ children }) => {
           if (cancelled) return;
           setCart(fresh);
         } else {
-          setCart(JSON.parse(raw));
+          const parsed = JSON.parse(raw);
+          setCart(parsed ?? createEmptyGuestCart());
         }
       } catch (e) {
         console.log("Cart init error:", e);
+        setCart(createEmptyGuestCart()); // ✅ never undefined
       }
     };
 
@@ -101,20 +106,6 @@ export const Cart_Context_Provider = ({ children }) => {
       cancelled = true;
     };
   }, [user_id, authInitializing]);
-
-  // // ✅ 2) When a user appears, clear guest cart
-  // useEffect(() => {
-  //   const clearGuest = async () => {
-  //     if (authInitializing) return;
-  //     if (!user_id) return;
-
-  //     // If you want to migrate guest items, do it here BEFORE removing
-  //     await AsyncStorage.removeItem(GUEST_CART_KEY);
-  //     console.log("✅ Guest cart cleared because user is logged in");
-  //   };
-
-  //   clearGuest();
-  // }, [user_id, authInitializing]);
 
   // ✅ 3) Persist guest cart only when guest
   useEffect(() => {
@@ -129,20 +120,48 @@ export const Cart_Context_Provider = ({ children }) => {
     persistGuest();
   }, [cart, user_id, authInitializing]);
 
-  const gettingCartByUserID = async (userId) => {
+  const createEmptyUserCart = (userId) => ({
+    cart_id: userId, // or keep your cart_id field if you want
+    user_id: userId,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    products: [],
+    sub_total: 0,
+    taxes: 0,
+    total: 0,
+  });
+
+  const gettingCartByUserID = async (userId, { setState = true } = {}) => {
+    const isValid = typeof userId === "string" && userId.trim().length > 0;
+    if (!isValid) {
+      console.log("gettingCartByUserID: blocked invalid userId:", userId);
+      return null;
+    }
+
     setIsLoading(true);
-    setTimeout(async () => {
-      try {
-        const myCart = await gettingCartByUserIDRequest(user_id);
-        setCart(myCart);
-        setCartTotalItems(myCart.quantity || 0);
-        // Handle the fetched cart data (e.g., update state or context)
-      } catch (error) {
-        console.error("Error fetching cart:", error);
-      } finally {
-        setIsLoading(false);
+    try {
+      const myCart = await gettingCartByUserIDRequest(userId);
+
+      const safeCart = myCart ?? createEmptyUserCart(userId);
+
+      if (setState) {
+        setCart(safeCart);
+        setCartTotalItems(getTotalCartQuantity(safeCart)); // ✅ don’t use myCart.quantity
       }
-    }, 1000);
+
+      return safeCart;
+    } catch (error) {
+      console.error("Error fetching cart:", error);
+
+      const safeCart = createEmptyUserCart(userId);
+      if (setState) {
+        setCart(safeCart); // ✅ never set undefined
+        setCartTotalItems(0);
+      }
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   //Calculate subtotal of cart helper function
@@ -353,7 +372,7 @@ export const Cart_Context_Provider = ({ children }) => {
             user_id,
             product_to_add_to_cart
           );
-          setCart(myCart);
+          setCart(myCart ?? createEmptyGuestCart());
           setCartTotalItems(myCart.quantity || 0);
         } else {
           const raw = await AsyncStorage.getItem(GUEST_CART_KEY);
@@ -561,6 +580,59 @@ export const Cart_Context_Provider = ({ children }) => {
     setIsUpdatingQty(false);
   };
 
+  // mergeCartGuestOverridesDb.js
+  const mergeCartGuestOverridesDb = (dbCart, guestCart, user_id) => {
+    const base = {
+      ...(dbCart ?? {}),
+      user_id,
+      cart_id: dbCart?.cart_id ?? guestCart?.cart_id,
+      createdAt: dbCart?.createdAt ?? guestCart?.createdAt,
+      updatedAt: new Date().toISOString(),
+    };
+
+    const dbProducts = dbCart?.products ?? [];
+    const guestProducts = guestCart?.products ?? [];
+
+    const map = new Map();
+
+    // 1) start with DB
+    for (const p of dbProducts) {
+      const v = p?.size_variants?.[0];
+      const key = `${p.id}::${v?.id ?? "no-variant"}`;
+      map.set(key, p);
+    }
+
+    // 2) guest overrides
+    for (const p of guestProducts) {
+      const v = p?.size_variants?.[0];
+      const key = `${p.id}::${v?.id ?? "no-variant"}`;
+      map.set(key, p); // override
+    }
+
+    const mergedProducts = Array.from(map.values());
+
+    const sub_total = calculateSubtotal(mergedProducts);
+    const taxes = Number(cart?.taxes ?? 0);
+
+    // recompute pricing if you have helpers; otherwise keep guest totals as source of truth
+    console.log("BASE CART:", JSON.stringify(base, null, 2));
+    console.log("MERGED PRODUCTS:", JSON.stringify(mergedProducts, null, 2));
+    return {
+      ...base,
+      products: mergedProducts,
+      sub_total: guestCart?.sub_total ?? dbCart?.sub_total ?? 0,
+      taxes: guestCart?.taxes ?? dbCart?.taxes ?? 0,
+      total: guestCart?.total ?? dbCart?.total ?? 0,
+    };
+  };
+
+  const upsertCart = async (cart) => {
+    const saved = await upsertCartRequest(cart);
+    setCart(saved);
+    setCartTotalItems(getTotalCartQuantity(saved));
+    return saved;
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -580,6 +652,9 @@ export const Cart_Context_Provider = ({ children }) => {
         clearGuestCart,
         getTotalCartQuantity,
         resetCartContext,
+        mergeCartGuestOverridesDb,
+        upsertCart,
+        lockCartInit,
       }}
     >
       {children}

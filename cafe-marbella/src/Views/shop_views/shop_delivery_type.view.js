@@ -19,8 +19,18 @@ import { PaymentsContext } from "../../infrastructure/services/payments/payments
 export default function Shop_Delivery_Type_View() {
   const theme = useTheme();
   const navigation = useNavigation();
-  const { cart } = useContext(CartContext);
+  const { cart: cartRaw } = useContext(CartContext);
+
+  const cart = cartRaw ?? {
+    user_id: "",
+    sub_total: 0,
+    quantity: 0,
+    cart_id: "",
+    products: [],
+  };
+
   const { user_id, sub_total, quantity, cart_id } = cart;
+
   const { myWarehouse } = useContext(WarehouseContext);
   const {
     warehouse_id,
@@ -68,9 +78,15 @@ export default function Shop_Delivery_Type_View() {
     }));
   }, [differentAddress]);
 
+  const hasValidCart =
+    typeof user_id === "string" &&
+    user_id.trim().length > 0 &&
+    typeof cart_id === "string" &&
+    cart_id.trim().length > 0;
+
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
-      {isCheckoutLoading ? (
+      {!cartRaw ? (
         <Global_activity_indicator
           caption="Wait, we are setting up your delivery option..."
           caption_width="65%"
@@ -114,6 +130,16 @@ export default function Shop_Delivery_Type_View() {
               type="pickup"
               border_radius="10px"
               action={() => {
+                if (!hasValidCart) {
+                  console.log(
+                    "DeliveryType: blocked pickup, missing cart/user",
+                    {
+                      user_id,
+                      cart_id,
+                    }
+                  );
+                  return;
+                }
                 const nextOrder = {
                   ...myOrder,
                   delivery_type: "pickup",
@@ -150,6 +176,16 @@ export default function Shop_Delivery_Type_View() {
               delivery_fee=""
               // action={() => settingMyOrderDeliveryType("delivery")}
               action={() => {
+                if (!hasValidCart) {
+                  console.log(
+                    "DeliveryType: blocked pickup, missing cart/user",
+                    {
+                      user_id,
+                      cart_id,
+                    }
+                  );
+                  return;
+                }
                 setDeliveryOption("delivery");
                 // setTimeout(() => {
                 setMyOrder((prevOrder) => ({
