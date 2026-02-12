@@ -440,6 +440,8 @@ export const Authentication_Context_Provider = ({ children }) => {
         loginUser,
         pin,
         email,
+        emailError,
+        setEmailError,
       }}
     >
       {children}

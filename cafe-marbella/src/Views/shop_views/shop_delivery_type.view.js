@@ -63,14 +63,14 @@ export default function Shop_Delivery_Type_View() {
   const { customer_address } = customer || {};
   // console.log("DELIVERY TYPE OPTION:", deliveryOption);
 
-  console.log(
-    "MY ORDER AT DELIVERY TYPE VIEW:",
-    JSON.stringify(myOrder, null, 2)
-  );
-  console.log(
-    "CART RAW AT DELIVERY TYPE VIEW:",
-    JSON.stringify(cartRaw, null, 2)
-  );
+  // console.log(
+  //   "MY ORDER AT DELIVERY TYPE VIEW:",
+  //   JSON.stringify(myOrder, null, 2)
+  // );
+  // console.log(
+  //   "CART RAW AT DELIVERY TYPE VIEW:",
+  //   JSON.stringify(cartRaw, null, 2)
+  // );
 
   const { onTaxes } = useContext(PaymentsContext);
 
@@ -90,7 +90,7 @@ export default function Shop_Delivery_Type_View() {
 
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
-      {isLoading ? (
+      {isCheckoutLoading ? (
         <Global_activity_indicator
           caption="Wait, we are setting up your delivery option..."
           caption_width="65%"

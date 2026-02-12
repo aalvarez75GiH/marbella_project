@@ -1,4 +1,4 @@
-import React, { use, useContext, useEffect, useState } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import {
   StyleSheet,
   Image,
@@ -26,14 +26,12 @@ import { OrdersContext } from "../../infrastructure/services/orders/orders.conte
 export default function Login_Users_View() {
   const navigation = useNavigation();
   const theme = useTheme();
+  const emailInputRef = useRef(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isEmailFocused, setIsEmailFocused] = useState(false);
-  const [isPinFocused, setIsPinFocused] = useState(false);
 
-  const { user, email, setEmail, setPin, pin, loginUser } = useContext(
-    AuthenticationContext
-  );
+  const { email, setEmail, setPin, pin, loginUser, emailError, setEmailError } =
+    useContext(AuthenticationContext);
 
   const {
     cart,
@@ -50,12 +48,25 @@ export default function Login_Users_View() {
   const [emailTouched, setEmailTouched] = useState(false);
   const [error, setError] = useState(null);
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      emailInputRef.current?.focus();
+    }, 300); // slight delay for modal animation
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  const isValidEmail =
+    global?.isValidEmail ||
+    ((email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).toLowerCase()));
+  const isValidPin = /^\d{6}$/.test(pin);
+
   const route = useRoute();
-  const { comingFrom, returnTo } = route?.params ?? {};
+  const { returnTo } = route?.params ?? {};
   console.log("RETURN TO:", returnTo);
   console.log("EMAIL:", email);
   console.log("PIN:", pin);
-  console.log("COMING TO LOGIN VIEW FROM:", comingFrom);
+  //   console.log("COMING TO LOGIN VIEW FROM:", comingFrom);
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -94,7 +105,8 @@ export default function Login_Users_View() {
             </Container>
             <Container
               width="100%"
-              height="20%"
+              //   height="20%"
+              height={emailError || error ? "25%" : "20%"} // shrink if there's an error to make room
               color={theme.colors.bg.elements_bg}
               //   color={"yellow"}
               align="flex-start"
@@ -114,10 +126,14 @@ export default function Login_Users_View() {
               direction="column"
             >
               <DataInput
-                label="Enter email "
+                ref={emailInputRef}
+                label="Email "
                 value={email}
                 onChangeText={(value) => {
                   setEmail(value);
+                  if (emailError) {
+                    setEmailError(null); // 👈 clear error while typing
+                  }
                 }}
                 border_color={theme.colors.inputs.bottom_lines_disabled}
                 underlineColor={theme.colors.inputs.bottom_lines_disabled}
@@ -129,24 +145,45 @@ export default function Login_Users_View() {
                 textContentType="emailAddress"
                 autoComplete="email"
                 returnKeyType="done"
-                blurOnSubmit
+                // onFocus={() => setIsEmailFocused(true)}
+                // onBlur={() => setIsEmailFocused(false)}
+                // blurOnSubmit
               />
-              <Spacer position="top" size="extraLarge" />
+              {!email && emailTouched && (
+                <Spacer position="top" size="extraLarge" />
+              )}
+              {emailError && (
+                <Container
+                  width="100%"
+                  //   height="25%"
+                  height={emailError || error ? "30%" : "20%"} // shrink if there's an error to make room
+                  color={theme.colors.bg.elements_bg}
+                  justify="flex-start"
+                  align="flex-start"
+                >
+                  <Spacer position="top" size="large" />
+                  <Spacer position="left" size="large">
+                    <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
+                      {emailError}
+                    </Text>
+                  </Spacer>
+                </Container>
+              )}
               <DataInput
-                label="Enter password "
+                label="Pin number (only 6 digits)"
                 value={pin}
                 onChangeText={(value) => {
-                  setPin(value);
+                  const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
+                  setPin(digitsOnly);
                   if (error) {
                     setError(null); // 👈 clear error while typing
-                    setIsPinFocused(true);
                   }
                 }}
                 underlineColor={theme.colors.inputs.bottom_lines_disabled}
                 border_color={theme.colors.inputs.bottom_lines_disabled}
                 border_width={"0.5px"}
                 activeUnderlineColor={theme.colors.ui.primary}
-                keyboardType="password"
+                keyboardType={Platform.OS === "ios" ? "number-pad" : "numeric"}
                 autoCapitalize="none"
                 autoCorrect={false}
                 textContentType="Password"
@@ -209,11 +246,10 @@ export default function Login_Users_View() {
               </Container>
             )}
             <Spacer position="top" size="extraLarge" />
-            {email && pin && (
+            {email && pin && isValidPin && (
               <Container
                 width="100%"
-                padding_vertical="16px"
-                // style={{ flex: 1, paddingBottom: 16 }}
+                padding_vertical={emailError || error ? "0%" : "2%"} // shrink if there's an error to make room
                 color={theme.colors.bg.elements_bg}
                 //color={"red"}
                 align="flex-start"
@@ -229,6 +265,12 @@ export default function Login_Users_View() {
                   caption_text_variant="dm_sans_bold_20_white"
                   action={async () => {
                     if (isSubmitting) return; // prevent double taps
+
+                    if (!isValidEmail(email)) {
+                      setEmailError("Please enter a valid email address.");
+                      return;
+                    }
+
                     setIsSubmitting(true);
                     lockCartInit(true);
                     try {

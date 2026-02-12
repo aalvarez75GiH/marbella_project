@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useContext } from "react";
 import { useTheme } from "styled-components/native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
 
 import { Container } from "../../components/containers/general.containers";
@@ -10,8 +10,10 @@ import { Exit_Header_With_Label } from "../../components/headers/exit_with_label
 import { Text } from "../../infrastructure/typography/text.component";
 import { Menu_Sub_Title_Title } from "../../components/titles/menu_sub_titles.title";
 import { Menu_Tile } from "../../components/tiles/menu_tiles.tile";
+import { navigationRef } from "../../infrastructure/navigation/navigation_ref";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
+import { Regular_CTA } from "../../components/ctas/regular.cta";
 
 export default function Menu_View() {
   const theme = useTheme();
@@ -21,16 +23,26 @@ export default function Menu_View() {
   const { first_name, last_name, email, display_name, user_id } = user || {};
   console.log("Menu_View user:", user);
   // Hiding tab bar for this screen
-  useLayoutEffect(() => {
-    navigation.getParent()?.setOptions({
-      tabBarStyle: { display: "none" },
-    });
+  // useLayoutEffect(() => {
+  //   navigation.getParent()?.setOptions({
+  //     tabBarStyle: { display: "none" },
+  //   });
 
-    return () =>
-      navigation.getParent()?.setOptions({
-        tabBarStyle: undefined,
-      });
-  }, [navigation]);
+  //   return () =>
+  //     navigation.getParent()?.setOptions({
+  //       tabBarStyle: undefined,
+  //     });
+  // }, [navigation]);
+  useFocusEffect(
+    React.useCallback(() => {
+      const parent = navigation.getParent();
+      parent?.setOptions({ tabBarStyle: { display: "none" } });
+
+      return () => {
+        parent?.setOptions({ tabBarStyle: undefined });
+      };
+    }, [navigation])
+  );
 
   return (
     <SafeArea
@@ -137,6 +149,58 @@ export default function Menu_View() {
           </Container>
           <Spacer position="top" size="small" />
           <Container />
+          <Container
+            width="100%"
+            height="80%"
+            color={theme.colors.bg.elements_bg}
+            justify="flex-start"
+            align="flex-start"
+          >
+            <Spacer position="top" size="extraLarge" />
+            <Container
+              width="100%"
+              height="10%"
+              color={theme.colors.bg.elements_bg}
+              justify="center"
+              align="flex-start"
+              padding_horizontal="5%"
+            >
+              <Regular_CTA
+                width={"55%"}
+                height={60}
+                color={theme.colors.ui.black}
+                border_radius={"40px"}
+                caption="Sing in"
+                caption_text_variant="dm_sans_bold_20_white"
+                // action={() => null}
+                action={() => {
+                  navigation.navigate("AuthModal", {
+                    screen: "Login_View",
+                    params: {
+                      returnTo: {
+                        tab: "Shop", // or whatever tab this screen belongs to
+                        screen: "Home_View", // the screen you want to land back on
+                        params: {}, // optional
+                      },
+                    },
+                  });
+                }}
+                // action={() => {
+                //   navigationRef.current?.navigate("AuthModal", {
+                //     screen: "Login_View",
+                //     params: {
+                //       returnTo: { tab: "Shop", screen: "Home_View" },
+                //       // returnTo: {
+                //       //   tab: "Menu",
+                //       //   screen: "Menu_View",
+                //       //   params: {},
+                //       // },
+                //     },
+                //   });
+                // }}
+              />
+            </Container>
+          </Container>
         </Container>
       )}
     </SafeArea>
