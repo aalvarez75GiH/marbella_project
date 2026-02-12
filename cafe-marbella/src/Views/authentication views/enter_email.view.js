@@ -42,6 +42,7 @@ export default function Enter_Email_View() {
   const [emailError, setEmailError] = useState(null);
 
   const route = useRoute();
+  const { comingFrom, returnTo } = route?.params ?? {};
 
   return (
     <SafeArea
@@ -154,7 +155,10 @@ export default function Enter_Email_View() {
                     setEmailError("Please enter a valid email address.");
                     return;
                   }
-                  navigation.navigate("Enter_Address_View");
+                  navigation.navigate("AuthModal", {
+                    screen: "Enter_Address_View",
+                    params: { returnTo },
+                  });
                 }}
               />
             )}

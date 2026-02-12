@@ -1,6 +1,6 @@
 import React, { useContext, useState, useMemo } from "react";
 import { View, KeyboardAvoidingView, Platform } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 
 import { Container } from "../../components/containers/general.containers";
@@ -17,6 +17,8 @@ import { GlobalContext } from "../../infrastructure/services/global/global.conte
 export default function Enter_Phone_Number_View() {
   const navigation = useNavigation();
   const theme = useTheme();
+  const route = useRoute();
+  const { comingFrom, returnTo } = route?.params ?? {};
 
   const { setUserToDB, userToDB } = useContext(AuthenticationContext);
 
@@ -172,7 +174,11 @@ export default function Enter_Phone_Number_View() {
                     setPhoneError("Please enter a valid phone number.");
                     return;
                   }
-                  navigation.navigate("User_To_Create_Info_Review_View");
+                  //   navigation.navigate("User_To_Create_Info_Review_View");
+                  navigation.navigate("AuthModal", {
+                    screen: "User_To_Create_Info_Review_View",
+                    params: { returnTo },
+                  });
                 }}
               />
             )}

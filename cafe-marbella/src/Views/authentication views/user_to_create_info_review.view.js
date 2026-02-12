@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { useNavigation, CommonActions } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { rootNavigate } from "../../infrastructure/navigation/navigation_ref.js";
@@ -11,26 +11,29 @@ import { Spacer } from "../../components/spacers and globals/optimized.spacer.co
 import { Text } from "../../infrastructure/typography/text.component.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component.js";
-import { rootReset } from "../../infrastructure/navigation/navigation_ref";
-import { normalizeCartFromBackend } from "../../infrastructure/local_data/images_mapping/normalize_cart_from_backend.js";
+import { navigationRef } from "../../infrastructure/navigation/navigation_ref.js";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { CartContext } from "../../infrastructure/services/cart/cart.context.js";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context.js";
-import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
 
 export default function User_To_Create_Info_Review_View() {
   const navigation = useNavigation();
   const theme = useTheme();
-
+  const route = useRoute();
+  const { comingFrom, returnTo } = route?.params ?? {};
   // const [isLoading, setIsLoading] = useState(false);
 
-  const { userToDB, registerUser, setUser, registerLocalUser, isLoading } =
-    useContext(AuthenticationContext);
+  const { userToDB, registerUser, registerLocalUser } = useContext(
+    AuthenticationContext
+  );
   const { first_name, last_name, email, address, phone_number } =
     userToDB || {};
 
   const { prepareOrderFromCart } = useContext(OrdersContext);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
   console.log("USER TO DB AT REVIEW VIEW:", JSON.stringify(userToDB, null, 2));
 
@@ -40,8 +43,11 @@ export default function User_To_Create_Info_Review_View() {
     clearGuestCart,
     setCartTotalItems,
     getTotalCartQuantity,
+    lockCartInit,
+    mergeCartGuestOverridesDb,
+    upsertCart,
+    gettingCartByUserID,
   } = useContext(CartContext);
-  const { productsCatalog } = useContext(GlobalContext);
 
   const cartPayload = {
     products: cart.products.map((p) => {
@@ -70,7 +76,7 @@ export default function User_To_Create_Info_Review_View() {
       background_color={theme.colors.bg.elements_bg}
       style={{ flex: 1 }}
     >
-      {isLoading && (
+      {isSubmitting && (
         <Global_activity_indicator
           caption="Wait, we are registering your account..."
           caption_width="65%"
@@ -295,6 +301,22 @@ export default function User_To_Create_Info_Review_View() {
               </Spacer>
             </Container>
           </Container>
+          {error && (
+            <Container
+              width="100%"
+              height="25%"
+              color={theme.colors.bg.elements_bg}
+              justify="flex-start"
+              align="flex-start"
+            >
+              <Spacer position="top" size="large" />
+              <Spacer position="left" size="large">
+                <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
+                  {error}
+                </Text>
+              </Spacer>
+            </Container>
+          )}
         </Container>
 
         {/* CTA pinned bottom-ish using flex (Option A pattern) */}
@@ -307,74 +329,116 @@ export default function User_To_Create_Info_Review_View() {
           justify="center"
           direction="row"
         >
-          <Regular_CTA
-            width="75%"
-            height={"40%"}
-            color={theme.colors.ui.primary}
-            border_radius={"40px"}
-            caption="Finish registration"
-            caption_text_variant="dm_sans_bold_20_white"
-            action={async () => {
-              try {
-                const result = await registerUser(userToDB, cartPayload);
-                console.log(
-                  "REGISTER RESULT:",
-                  JSON.stringify(result, null, 2)
-                );
-
-                if (!result?.ok) {
-                  console.log("Register failed:", result);
-                  return;
-                }
-
-                const nextUser = { ...result.user, authenticated: true };
-                const nextCart = { ...result.cart };
-
-                // ✅ 1) Persist session so reload restores user
-                await registerLocalUser(nextUser);
-                // (This should setUser internally too. If not, keep setUser below.)
-
-                // ✅ 2) Update contexts (safe to keep even if registerLocalUser sets user)
-                const hydratedCart = normalizeCartFromBackend(nextCart);
-                setCart(hydratedCart);
-                setCartTotalItems(getTotalCartQuantity(hydratedCart));
-
-                // ✅ 3) Clear guest cart storage
-                await clearGuestCart();
-
-                // ✅ 4) Build order BEFORE navigating
-                prepareOrderFromCart(hydratedCart, nextUser);
-
-                // ✅ 5) One reset only
-                rootReset({
+          {error === "You already have a account, please log in instead." && (
+            <Regular_CTA
+              width="75%"
+              height={"40%"}
+              color={theme.colors.ui.primary}
+              border_radius={"40px"}
+              caption="Login instead"
+              caption_text_variant="dm_sans_bold_20_white"
+              // action={() => null}
+              action={() => {
+                navigation.reset({
                   index: 0,
                   routes: [
                     {
-                      name: "App",
-                      state: {
-                        index: 0,
-                        routes: [
-                          {
-                            name: "Shop",
-                            state: {
-                              index: 0,
-                              routes: [
-                                {
-                                  name: "Shop_Delivery_Type_View",
-                                },
-                              ],
-                            },
-                          },
-                        ],
-                      },
+                      name: "Login_View",
+                      params: { returnTo }, // keep returnTo if you had it
                     },
                   ],
                 });
-              } catch (e) {
-                console.log("Finish registration action error:", e);
-              }
-            }}
-          />
+              }}
+            />
+          )}
+          {!error && (
+            <Regular_CTA
+              width="75%"
+              height={"40%"}
+              color={theme.colors.ui.primary}
+              border_radius={"40px"}
+              caption="Finish registration"
+              caption_text_variant="dm_sans_bold_20_white"
+              action={async () => {
+                if (isSubmitting) return; // prevent double taps
+                setIsSubmitting(true);
+                lockCartInit(true);
+                try {
+                  console.log("CTA: start register");
+
+                  // 1) capture guest cart BEFORE registration call
+                  const guestCart = cart;
+
+                  // 2) register
+                  const result = await registerUser(userToDB, cartPayload);
+                  if (!result?.ok) {
+                    if (result?.error === "Email already in use") {
+                      // setError(result?.error || "Could not register");
+                      setError(
+                        "You already have a account, please log in instead."
+                      );
+                      return; // ✅ critical: stop the flow here
+                    }
+                  }
+
+                  const nextUser = { ...result.user, authenticated: true };
+                  const userId = nextUser.user_id;
+                  // 3️⃣ ✅ VERY IMPORTANT — persist authenticated user locally
+                  await registerLocalUser(nextUser);
+
+                  // 4) fetch DB cart (new user may not have one yet)
+                  let dbCart = null;
+                  try {
+                    dbCart = await gettingCartByUserID(userId, {
+                      setState: false,
+                    });
+                  } catch (e) {
+                    console.log("CTA: no db cart, continuing", e?.message ?? e);
+                    dbCart = null;
+                  }
+
+                  // 5) merge (guest overrides db)
+                  const mergedCart = mergeCartGuestOverridesDb(
+                    dbCart,
+                    guestCart,
+                    userId
+                  );
+
+                  // 6) set local cart immediately (UI stays consistent)
+                  setCart(mergedCart);
+                  setCartTotalItems(getTotalCartQuantity(mergedCart));
+
+                  // 7) persist merged cart
+                  await upsertCart(mergedCart);
+
+                  // 8) clear guest cart ONLY after successful upsert
+                  await clearGuestCart();
+
+                  // 9) build order from the same cart
+                  prepareOrderFromCart(mergedCart, nextUser);
+
+                  // 10) close auth modal
+                  navigation.getParent()?.goBack();
+
+                  // 11) navigate to return target
+                  requestAnimationFrame(() => {
+                    navigationRef.current?.navigate("App", {
+                      screen: returnTo?.tab ?? "Shop",
+                      params: {
+                        screen: returnTo?.screen ?? "Home_View",
+                        params: returnTo?.params ?? {},
+                      },
+                    });
+                  });
+                } catch (e) {
+                  console.log("CTA REGISTER ERROR:", e?.message ?? e, e);
+                } finally {
+                  setIsSubmitting(false);
+                  lockCartInit(false);
+                }
+              }}
+            />
+          )}
         </Container>
       </Container>
     </SafeArea>

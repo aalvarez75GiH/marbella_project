@@ -13,6 +13,7 @@ import { Global_activity_indicator } from "../../components/activity indicators/
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
+import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
 
 export default function Sign_Out_Overlay_View() {
   const theme = useTheme();
@@ -23,6 +24,9 @@ export default function Sign_Out_Overlay_View() {
   console.log("Overlay_View user:", user);
   // Hiding tab bar for this screen
   const { setDeliveryOption } = useContext(OrdersContext);
+
+  const { setNameOnCard } = useContext(PaymentsContext);
+
   useLayoutEffect(() => {
     navigation.getParent()?.setOptions({
       tabBarStyle: { display: "none" },
@@ -96,6 +100,7 @@ export default function Sign_Out_Overlay_View() {
                   caption_text_variant="raleway_bold_16_white"
                   action={async () => {
                     await setDeliveryOption(null);
+                    setNameOnCard("");
                     signOut();
                   }}
                 />

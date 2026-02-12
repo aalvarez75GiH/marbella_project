@@ -37,6 +37,7 @@ export default function Enter_Names_View() {
   const [error, setError] = useState(null);
 
   const route = useRoute();
+  const { comingFrom, returnTo } = route?.params ?? {};
 
   return (
     <SafeArea
@@ -143,7 +144,13 @@ export default function Enter_Names_View() {
                 border_radius={"40px"}
                 caption="Next"
                 caption_text_variant="dm_sans_bold_20_white"
-                action={async () => navigation.navigate("Enter_Email_View")}
+                // action={async () => navigation.navigate("Enter_Email_View")}
+                action={async () =>
+                  navigation.navigate("AuthModal", {
+                    screen: "Enter_Email_View",
+                    params: { returnTo },
+                  })
+                }
               />
             )}
           </Container>

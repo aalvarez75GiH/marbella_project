@@ -16,12 +16,6 @@ export const Payments_Context_Provider = ({ children }) => {
   const [cardVerified, setCardVerified] = useState(false);
   console.log("CARD AT CONTEXT: ", JSON.stringify(card, null, 2));
 
-  //   const onSuccess = (card) => {
-  //     console.log("CARD AT PAYMENTS CONTEXT: ", JSON.stringify(card, null, 2));
-  //     // setPi_ErrorMessage(false);
-  //     // setCard(card);
-  //   };
-
   const onSuccess = (card) => {
     console.log("Card received in onSuccess:", card);
     if (card && card.id) {
@@ -157,14 +151,6 @@ export const Payments_Context_Provider = ({ children }) => {
       const e = normalizePaymentError(err);
       setError(e);
 
-      //   console.log("PAYMENT ERROR:", {
-      //     status: e.status,
-      //     code: e.code,
-      //     decline_code: e.decline_code,
-      //     message: e.message,
-      //     raw: e.raw,
-      //   });
-
       return { status: e.status || 500, order: null, error: e };
     } finally {
       setIsLoading(false);
@@ -180,7 +166,6 @@ export const Payments_Context_Provider = ({ children }) => {
         setError,
         setNameOnCard,
         nameOnCard,
-        // onSuccess,
         whileIsSuccess,
         setCard,
         card,

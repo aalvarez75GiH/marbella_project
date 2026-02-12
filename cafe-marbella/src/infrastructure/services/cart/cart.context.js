@@ -634,6 +634,8 @@ export const Cart_Context_Provider = ({ children }) => {
     };
   };
 
+  //This function can be used for merging guest cart with DB cart,
+  //backend will handle the logic based on if cart_id exists or not
   const upsertCart = async (nextCart) => {
     const saved = await upsertCartRequest(nextCart);
 

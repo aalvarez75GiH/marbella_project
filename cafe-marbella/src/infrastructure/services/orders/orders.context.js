@@ -84,7 +84,6 @@ export const Orders_Context_Provider = ({ children }) => {
     //   JSON.stringify(differentAddress, null, 2)
     // );
     setIsCheckoutLoading(true);
-    // setDeliveryOption("delivery");
 
     try {
       // 1) Prepare nextOrder with changes

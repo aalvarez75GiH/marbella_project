@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useTheme } from "styled-components/native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { Platform, KeyboardAvoidingView, ScrollView, View } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 
@@ -17,6 +17,8 @@ import { AuthenticationContext } from "../../infrastructure/services/authenticat
 export default function Enter_Address_View() {
   const theme = useTheme();
   const navigation = useNavigation();
+  const route = useRoute();
+  const { comingFrom, returnTo } = route?.params ?? {};
 
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -27,7 +29,6 @@ export default function Enter_Address_View() {
 
   console.log("PLACES KEY:", process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY);
   console.log("DEVICE LOCATION for PLACES biasing:", deviceLat, deviceLng);
-
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -187,7 +188,11 @@ export default function Enter_Address_View() {
                 caption="Continue"
                 caption_text_variant="dm_sans_bold_20_white"
                 action={async () =>
-                  navigation.navigate("Enter_Phone_Number_View")
+                  //   navigation.navigate("Enter_Phone_Number_View")
+                  navigation.navigate("AuthModal", {
+                    screen: "Enter_Phone_Number_View",
+                    params: { returnTo },
+                  })
                 }
               />
             ) : (

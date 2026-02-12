@@ -65,6 +65,16 @@ if (Platform.OS === "web") {
 }
 export { app, auth };
 
+const userToDBInitialState = {
+  first_name: "",
+  last_name: "",
+  email: "",
+  address: "",
+  createdAt: "",
+  updatedAt: "",
+  display_name: "",
+  phone_number: "",
+};
 export const Authentication_Context_Provider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -74,16 +84,17 @@ export const Authentication_Context_Provider = ({ children }) => {
   const [comingFrom, setComingFrom] = useState(null);
   const [pin, setPin] = useState("");
   const [email, setEmail] = useState("");
-  const [userToDB, setUserToDB] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    address: "",
-    createdAt: "",
-    updatedAt: "",
-    display_name: "",
-    phone_number: "",
-  });
+  const [userToDB, setUserToDB] = useState(userToDBInitialState);
+  // const [userToDB, setUserToDB] = useState({
+  //   first_name: "",
+  //   last_name: "",
+  //   email: "",
+  //   address: "",
+  //   createdAt: "",
+  //   updatedAt: "",
+  //   display_name: "",
+  //   phone_number: "",
+  // });
 
   const { CURRENT_USER_KEY, USERS_ON_DEVICE_KEY } = STORAGE_KEYS;
   //**************** */ Local user persistency logic
@@ -257,16 +268,22 @@ export const Authentication_Context_Provider = ({ children }) => {
         return { ok: true, user: res.user[0], cart: res.cart[0] };
       }
 
-      return { ok: false, error: "invalid-response-shape", raw: res };
+      return {
+        ok: false,
+        error: "Invalid server response",
+      };
     } catch (error) {
-      console.log("REGISTER USER ERROR:", error?.message ?? error);
+      console.log("REGISTER USER ERROR (raw):", {
+        code: error?.code,
+        message: error?.message,
+        name: error?.name,
+      });
 
-      if (error?.message === "Firebase: Error (auth/email-already-in-use).") {
-        setEmailError("Esta cuenta ya existe");
-        return { ok: false, error: "email-already-in-use" };
+      if (error?.code === "auth/email-already-in-use") {
+        return { ok: false, error: "Email already in use" };
       }
 
-      return { ok: false, error: error?.message ?? "unknown-error" };
+      return { ok: false, error: error?.message || "Registration failed" };
     } finally {
       setIsLoading(false);
     }
@@ -323,33 +340,21 @@ export const Authentication_Context_Provider = ({ children }) => {
           console.log("RES DATA ON LOGIN USER:", res.user);
           return res;
         }
+        return {
+          ok: false,
+          error: res?.msg || "Invalid email or password",
+        };
       }
     } catch (error) {
-      setError(error.message);
       console.log("LOGIN USER ERROR:", error);
+      return {
+        ok: false,
+        error: error?.message || "Login failed",
+      };
     } finally {
       setIsLoading(false);
     }
   };
-
-  // const loginUser = async (pin, email) => {
-  //   console.log("PIN BEFORE LOGIN:", pin);
-  //   console.log("EMAIL BEFORE LOGIN:", email);
-  //   const PIN_LENGTH = 6;
-  //   setIsLoading(true);
-  //   if (pin.length === PIN_LENGTH) {
-  //     console.log("PIN BEFORE LOGIN:", pin);
-  //     // const email = await AsyncStorage.getItem("userEmail");
-  //     // const Emails_array_checked =
-  //     //   await checking_for_array_of_multiple_emails();
-  //     const res = await signingInWithEmailAndPasswordFunction(email, pin);
-  //     if (res?.ok && res?.user) {
-  //       console.log("RES DATA ON LOGIN USER:", res.user);
-  //       setIsLoading(false);
-  //       return res;
-  //     }
-  //   }
-  // };
 
   // ********************* LOG OUT USER LOGIC *************************
   const AUTH_KEYS_TO_CLEAR = [
@@ -403,6 +408,9 @@ export const Authentication_Context_Provider = ({ children }) => {
     setUser(null);
     setIsLoading(false);
     setError(null);
+    setEmail("");
+    setPin("");
+    setUserToDB(userToDBInitialState);
   };
 
   return (
