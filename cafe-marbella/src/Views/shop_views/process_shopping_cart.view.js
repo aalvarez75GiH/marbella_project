@@ -120,9 +120,13 @@ export default function Process_Shopping_Cart_View() {
 
                 if (!isAuthed) {
                   navigation.navigate("AuthModal", {
-                    returnTo: {
-                      tab: "Cart",
-                      screen: "Shop_Delivery_Type_View",
+                    screen: "Login_View",
+                    params: {
+                      returnTo: {
+                        tab: "Shop",
+                        screen: "Shop_Delivery_Type_View",
+                        params: { coming_from: "Process_Shopping_Cart_View" },
+                      },
                     },
                   });
                   return;

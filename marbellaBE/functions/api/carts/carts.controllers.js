@@ -194,11 +194,11 @@ const resetCartByUserID = async (user_id) => {
 };
 
 const upsertCart = async (cart) => {
-  const userId = cart.user_id;
-  console.log("USER ID AT CART CONTROLLER:", userId);
+  const user_id = cart.user_id;
+  console.log("USER ID AT CART CONTROLLER:", user_id);
 
   // 1) find existing cart for user
-  const existing = await getCartByUserID(userId);
+  const existing = await getCartByUserID(user_id);
 
   // 2) if none, create
   if (!existing) {
@@ -217,35 +217,10 @@ const upsertCart = async (cart) => {
     cart_id: existing.cart_id, // make sure cart_id stays stable
     updatedAt: new Date().toISOString(),
   };
-
+  await updateCart(user_id, toUpdate);
   // return await updateCart(existing.cart_id, toUpdate);
-  return await updateCart(userId, toUpdate);
+  return toUpdate;
 };
-// const upsertCart = async (cart) => {
-//   const userId = cart.user_id;
-//   if (!userId) throw new Error("user_id is required");
-
-//   const now = new Date().toISOString();
-
-//   // Force stable identifiers
-//   const toSave = {
-//     ...cart,
-//     cart_id: userId,          // OPTIONAL: you can also keep a separate cart_id if you want
-//     user_id: userId,
-//     updatedAt: now,
-//   };
-
-//   // Create if missing, update if exists (same call)
-//   await firebase_controller.db
-//     .collection("carts")
-//     .doc(userId)              // ✅ doc id = user_id
-//     .set(
-//       { ...toSave, createdAt: cart.createdAt ?? now },
-//       { merge: true }
-//     );
-
-//   return toSave; // return what you saved
-// };
 
 module.exports = {
   getCartByUserID,

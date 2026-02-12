@@ -53,6 +53,14 @@ export const Cart_Context_Provider = ({ children }) => {
   const lockCartInit = (locked) => {
     cartInitLockRef.current = locked;
   };
+  useEffect(() => {
+    console.log("CartProvider mounted");
+    return () => console.log("CartProvider unmounted");
+  }, []);
+
+  useEffect(() => {
+    console.log("CartProvider cart changed:", cart ? "HAS_CART" : String(cart));
+  }, [cart]);
 
   useEffect(() => {
     const total_items_qty = getTotalCartQuantity(cart);
@@ -626,11 +634,19 @@ export const Cart_Context_Provider = ({ children }) => {
     };
   };
 
-  const upsertCart = async (cart) => {
-    const saved = await upsertCartRequest(cart);
-    setCart(saved);
-    setCartTotalItems(getTotalCartQuantity(saved));
-    return saved;
+  const upsertCart = async (nextCart) => {
+    const saved = await upsertCartRequest(nextCart);
+
+    const safe = saved ?? nextCart ?? createEmptyGuestCart();
+
+    setCart(safe);
+    setCartTotalItems(getTotalCartQuantity(safe));
+    console.log(
+      "upsertCartRequest returned:",
+      saved ? "HAS_DATA" : String(saved)
+    );
+
+    return safe;
   };
 
   return (

@@ -43,7 +43,7 @@ export default function Login_Users_View() {
     pin,
     setUserToDB,
     userToDB,
-    comingFrom,
+    // comingFrom,
     loginUser,
   } = useContext(AuthenticationContext);
   const { user_id } = user || {};
@@ -63,6 +63,8 @@ export default function Login_Users_View() {
   const [error, setError] = useState(null);
 
   const route = useRoute();
+  const { comingFrom, returnTo } = route?.params ?? {};
+  console.log("RETURN TO:", returnTo);
   console.log("EMAIL:", email);
   console.log("PIN:", pin);
   console.log("COMING TO LOGIN VIEW FROM:", comingFrom);
@@ -259,15 +261,17 @@ export default function Login_Users_View() {
                     // 8) navigate into the Cart stack delivery type (so GO_BACK works)
                     requestAnimationFrame(() => {
                       navigationRef.current?.navigate("App", {
-                        screen: "Cart",
+                        screen: returnTo?.tab ?? "Shop",
                         params: {
-                          screen: "Shop_Delivery_Type_View",
-                          params: { coming_from: "Shopping_Cart_View" },
+                          screen: returnTo?.screen ?? "Home_View",
+                          params: returnTo?.params ?? {},
                         },
                       });
                     });
                   } catch (e) {
                     console.log("CTA ERROR:", e?.message ?? e, e);
+                  } finally {
+                    lockCartInit(false);
                   }
                 }}
               />

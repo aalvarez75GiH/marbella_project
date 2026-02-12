@@ -131,9 +131,13 @@ export default function Shopping_Cart_View() {
 
                   if (!isAuthed) {
                     navigation.navigate("AuthModal", {
-                      returnTo: {
-                        tab: "Cart",
-                        screen: "Shop_Delivery_Type_View",
+                      screen: "Login_View",
+                      params: {
+                        returnTo: {
+                          tab: "Cart",
+                          screen: "Shop_Delivery_Type_View",
+                          params: { coming_from: "Shopping_Cart_View" },
+                        },
                       },
                     });
                     return;

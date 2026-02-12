@@ -19,7 +19,7 @@ import { PaymentsContext } from "../../infrastructure/services/payments/payments
 export default function Shop_Delivery_Type_View() {
   const theme = useTheme();
   const navigation = useNavigation();
-  const { cart: cartRaw } = useContext(CartContext);
+  const { cart: cartRaw, isLoading } = useContext(CartContext);
 
   const cart = cartRaw ?? {
     user_id: "",
@@ -67,6 +67,10 @@ export default function Shop_Delivery_Type_View() {
     "MY ORDER AT DELIVERY TYPE VIEW:",
     JSON.stringify(myOrder, null, 2)
   );
+  console.log(
+    "CART RAW AT DELIVERY TYPE VIEW:",
+    JSON.stringify(cartRaw, null, 2)
+  );
 
   const { onTaxes } = useContext(PaymentsContext);
 
@@ -86,7 +90,7 @@ export default function Shop_Delivery_Type_View() {
 
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
-      {!cartRaw ? (
+      {isLoading ? (
         <Global_activity_indicator
           caption="Wait, we are setting up your delivery option..."
           caption_width="65%"
