@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useContext } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
-import { Pressable, View } from "react-native";
+import { Pressable, View, Alert } from "react-native";
 
 import { Container } from "../../components/containers/general.containers";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -14,6 +14,7 @@ import { Global_activity_indicator } from "../../components/activity indicators/
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
+import { CartContext } from "../../infrastructure/services/cart/cart.context";
 
 export default function Sign_Out_Overlay_View() {
   const theme = useTheme();
@@ -27,6 +28,7 @@ export default function Sign_Out_Overlay_View() {
 
   const { setNameOnCard } = useContext(PaymentsContext);
 
+  const { saveCartAsGuest, cart, lockCartInit } = useContext(CartContext);
   useLayoutEffect(() => {
     navigation.getParent()?.setOptions({
       tabBarStyle: { display: "none" },
@@ -98,10 +100,49 @@ export default function Sign_Out_Overlay_View() {
                   height="56px"
                   color={theme.colors.ui.error}
                   caption_text_variant="raleway_bold_16_white"
-                  action={async () => {
-                    await setDeliveryOption(null);
-                    setNameOnCard("");
-                    signOut();
+                  action={() => {
+                    console.log("CTA: Sign out pressed ✅");
+
+                    (async () => {
+                      console.log("CTA: lockCartInit?", typeof lockCartInit);
+                      console.log(
+                        "CTA: saveCartAsGuest?",
+                        typeof saveCartAsGuest
+                      );
+                      console.log("CTA: signOut?", typeof signOut);
+
+                      lockCartInit?.(true);
+
+                      try {
+                        console.log("CTA: step 1 setDeliveryOption");
+                        await setDeliveryOption(null);
+
+                        console.log("CTA: step 2 setNameOnCard");
+                        setNameOnCard("");
+
+                        console.log("CTA: step 3 saveCartAsGuest");
+                        const saved = await saveCartAsGuest?.(cart);
+                        console.log("CTA: saved guest cart?", !!saved);
+
+                        console.log("CTA: step 4 signOut");
+                        await signOut?.();
+
+                        console.log("CTA: signOut finished ✅");
+                      } catch (e) {
+                        console.log(
+                          "CTA: signOut flow ERROR ❌",
+                          e?.message ?? e,
+                          e
+                        );
+                        Alert.alert(
+                          "Sign out error",
+                          e?.message ?? "Unknown error"
+                        );
+                      } finally {
+                        lockCartInit?.(false);
+                        console.log("CTA: finally unlock ✅");
+                      }
+                    })();
                   }}
                 />
 

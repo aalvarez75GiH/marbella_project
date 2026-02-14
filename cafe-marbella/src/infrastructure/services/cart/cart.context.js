@@ -620,7 +620,8 @@ export const Cart_Context_Provider = ({ children }) => {
     const mergedProducts = Array.from(map.values());
 
     const sub_total = calculateSubtotal(mergedProducts);
-    const taxes = Number(cart?.taxes ?? 0);
+    const taxes = Number(dbCart?.taxes ?? 0); // or 0, or compute later
+    const total = sub_total + taxes;
 
     // recompute pricing if you have helpers; otherwise keep guest totals as source of truth
     console.log("BASE CART:", JSON.stringify(base, null, 2));
@@ -628,9 +629,9 @@ export const Cart_Context_Provider = ({ children }) => {
     return {
       ...base,
       products: mergedProducts,
-      sub_total: guestCart?.sub_total ?? dbCart?.sub_total ?? 0,
-      taxes: guestCart?.taxes ?? dbCart?.taxes ?? 0,
-      total: guestCart?.total ?? dbCart?.total ?? 0,
+      sub_total,
+      taxes,
+      total,
     };
   };
 
@@ -649,6 +650,23 @@ export const Cart_Context_Provider = ({ children }) => {
     );
 
     return safe;
+  };
+
+  const saveCartAsGuest = async (userCart) => {
+    const nextGuestCart = {
+      ...createEmptyGuestCart(),
+      // keep products + totals from user cart
+      products: cart?.products ?? [],
+      sub_total: Number(cart?.sub_total ?? 0),
+      taxes: Number(cart?.taxes ?? 0),
+      total: Number(cart?.total ?? 0),
+      updatedAt: new Date().toISOString(),
+    };
+
+    await AsyncStorage.setItem(GUEST_CART_KEY, JSON.stringify(nextGuestCart));
+    setCart(nextGuestCart);
+    setCartTotalItems(getTotalCartQuantity(nextGuestCart));
+    return nextGuestCart;
   };
 
   return (
@@ -673,6 +691,7 @@ export const Cart_Context_Provider = ({ children }) => {
         mergeCartGuestOverridesDb,
         upsertCart,
         lockCartInit,
+        saveCartAsGuest,
       }}
     >
       {children}

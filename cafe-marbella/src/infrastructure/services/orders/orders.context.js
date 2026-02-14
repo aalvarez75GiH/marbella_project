@@ -181,10 +181,10 @@ export const Orders_Context_Provider = ({ children }) => {
         order_delivery_address: "",
       };
 
-      // console.log(
-      //   "NEXT ORDER SENT TO TAX:",
-      //   JSON.stringify(enrichedOrder, null, 2)
-      // );
+      console.log(
+        "NEXT ORDER SENT TO TAX:",
+        JSON.stringify(enrichedOrder, null, 2)
+      );
 
       const taxesResults = await onTaxes(enrichedOrder);
       console.log("Taxes Results:", JSON.stringify(taxesResults, null, 2));

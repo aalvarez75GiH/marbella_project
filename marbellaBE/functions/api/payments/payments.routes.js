@@ -337,6 +337,10 @@ paymentsRouter.post("/calculatingtaxes", async (req, res) => {
       expand: ["line_items", "tax_breakdown"],
     });
     console.log("CALC:", JSON.stringify(calculation, null, 2));
+
+    // ****************************************************
+
+    // *****************************************************
     // Stripe returns totals in cents:
     // const tax_amount =
     //   calculation?.tax_amount_exclusive ?? calculation?.tax_amount ?? 0;
