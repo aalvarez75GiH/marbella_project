@@ -18,7 +18,7 @@ import { Switching_Accounts_Tile } from "../../components/tiles/switching_accoun
 
 export default function Switching_Accounts_View() {
   const {
-    otherUsersIntheDevice,
+    otherUsersInTheDevice,
     emailToSwitch,
     setEmailToSwitch,
     isLoading,
@@ -44,8 +44,8 @@ export default function Switching_Accounts_View() {
   }, [emailToSwitch]);
 
   const renderingUsersAccounts = () => {
-    const users = Array.isArray(otherUsersIntheDevice)
-      ? otherUsersIntheDevice
+    const users = Array.isArray(otherUsersInTheDevice)
+      ? otherUsersInTheDevice
       : [];
 
     return users.map((user, index) => {
@@ -224,7 +224,7 @@ export default function Switching_Accounts_View() {
                 </Spacer>
               )}
             </Container>
-            {!Array.isArray(otherUsersIntheDevice) && !isLoading ? (
+            {!Array.isArray(otherUsersInTheDevice) && !isLoading ? (
               <Text variant="dm_sans_medium_16">Loading accounts…</Text>
             ) : (
               <ScrollView style={{ flex: 1, width: "100%" }}>

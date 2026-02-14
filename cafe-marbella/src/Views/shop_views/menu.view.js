@@ -10,7 +10,6 @@ import { Exit_Header_With_Label } from "../../components/headers/exit_with_label
 import { Text } from "../../infrastructure/typography/text.component";
 import { Menu_Sub_Title_Title } from "../../components/titles/menu_sub_titles.title";
 import { Menu_Tile } from "../../components/tiles/menu_tiles.tile";
-import { navigationRef } from "../../infrastructure/navigation/navigation_ref";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
 import { Regular_CTA } from "../../components/ctas/regular.cta";
@@ -22,17 +21,7 @@ export default function Menu_View() {
   const { user } = useContext(AuthenticationContext);
   const { first_name, last_name, email, display_name, user_id } = user || {};
   console.log("Menu_View user:", user);
-  // Hiding tab bar for this screen
-  // useLayoutEffect(() => {
-  //   navigation.getParent()?.setOptions({
-  //     tabBarStyle: { display: "none" },
-  //   });
 
-  //   return () =>
-  //     navigation.getParent()?.setOptions({
-  //       tabBarStyle: undefined,
-  //     });
-  // }, [navigation]);
   useFocusEffect(
     React.useCallback(() => {
       const parent = navigation.getParent();
@@ -185,19 +174,6 @@ export default function Menu_View() {
                     },
                   });
                 }}
-                // action={() => {
-                //   navigationRef.current?.navigate("AuthModal", {
-                //     screen: "Login_View",
-                //     params: {
-                //       returnTo: { tab: "Shop", screen: "Home_View" },
-                //       // returnTo: {
-                //       //   tab: "Menu",
-                //       //   screen: "Menu_View",
-                //       //   params: {},
-                //       // },
-                //     },
-                //   });
-                // }}
               />
             </Container>
           </Container>

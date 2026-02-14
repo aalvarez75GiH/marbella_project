@@ -11,9 +11,6 @@ import {
   getReactNativePersistence,
   initializeAuth,
   createUserWithEmailAndPassword,
-  updatePassword,
-  EmailAuthProvider,
-  reauthenticateWithCredential,
 } from "firebase/auth";
 import { initializeApp, getApps } from "firebase/app";
 import { gettingUserByEmailRequest } from "./authentication.sevices";
@@ -85,16 +82,6 @@ export const Authentication_Context_Provider = ({ children }) => {
   const [pin, setPin] = useState("");
   const [email, setEmail] = useState("");
   const [userToDB, setUserToDB] = useState(userToDBInitialState);
-  // const [userToDB, setUserToDB] = useState({
-  //   first_name: "",
-  //   last_name: "",
-  //   email: "",
-  //   address: "",
-  //   createdAt: "",
-  //   updatedAt: "",
-  //   display_name: "",
-  //   phone_number: "",
-  // });
 
   const { CURRENT_USER_KEY, USERS_ON_DEVICE_KEY } = STORAGE_KEYS;
   //**************** */ Local user persistency logic
@@ -172,10 +159,60 @@ export const Authentication_Context_Provider = ({ children }) => {
   const [emailToSwitch, setEmailToSwitch] = useState("");
 
   // ✅ always derived from user (so it stays consistent)
-  const otherUsersIntheDevice = useMemo(() => {
-    if (!user?.user_id) return [];
-    return usersInTheDevice.filter((u) => u?.user_id !== user.user_id);
-  }, [user]);
+  // const otherUsersInTheDevice = useMemo(async () => {
+  //   if (!user?.user_id) return [];
+  //   const usersInAsyncStorageRaw = await AsyncStorage.getItem(
+  //     USERS_ON_DEVICE_KEY
+  //   );
+  //   const usersInAsyncStorage = usersInAsyncStorageRaw
+  //     ? JSON.parse(usersInAsyncStorageRaw)
+  //     : null;
+  //   console.log(
+  //     "USERS IN ASYNC STORAGE:",
+  //     JSON.stringify(usersInAsyncStorage, null, 2)
+  //   );
+  //   return usersInAsyncStorage.filter((u) => u?.user_id !== user.user_id);
+  // }, [user]);
+
+  const [otherUsersInTheDevice, setOtherUsersInTheDevice] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      if (!user?.user_id) {
+        setOtherUsersInTheDevice([]);
+        return;
+      }
+
+      try {
+        const raw = await AsyncStorage.getItem(USERS_ON_DEVICE_KEY);
+
+        // If raw is null, default to []
+        const parsed = raw ? JSON.parse(raw) : [];
+
+        // guard: if parsed isn't an array, fallback
+        const list = Array.isArray(parsed) ? parsed : [];
+
+        const others = list.filter((u) => u?.user_id !== user.user_id);
+
+        if (!cancelled) setOtherUsersInTheDevice(others);
+      } catch (e) {
+        console.log("Failed reading USERS_ON_DEVICE_KEY:", e);
+        if (!cancelled) setOtherUsersInTheDevice([]);
+      }
+    };
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.user_id]);
+
+  // const otherUsersInTheDevice = useMemo(() => {
+  //   if (!user?.user_id) return [];
+  //   return usersInTheDevice.filter((u) => u?.user_id !== user.user_id);
+  // }, [user]);
 
   const loginDevUser = (userData) => {
     setUser(user_authenticated);
@@ -420,7 +457,7 @@ export const Authentication_Context_Provider = ({ children }) => {
         error,
         user,
         setUser, // (optional expose)
-        otherUsersIntheDevice,
+        otherUsersInTheDevice,
         emailToSwitch,
         setEmailToSwitch,
         gettingUserByEmailToAuthenticated,
