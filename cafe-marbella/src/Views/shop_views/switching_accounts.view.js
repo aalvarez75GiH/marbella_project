@@ -22,7 +22,6 @@ export default function Switching_Accounts_View() {
     emailToSwitch,
     setEmailToSwitch,
     isLoading,
-    gettingUserByEmailToAuthenticated,
     user,
   } = useContext(AuthenticationContext);
 
@@ -32,6 +31,7 @@ export default function Switching_Accounts_View() {
   const [userSwitched, setUserSwitched] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
   const [error, setError] = useState(null);
+  const [emailError, setEmailError] = useState(null);
 
   const isValidEmail = (email = "") =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
@@ -56,28 +56,16 @@ export default function Switching_Accounts_View() {
             email={email}
             display_name={display_name}
             // action={() => test(email)}
-            action={async () => {
-              try {
-                const userSwitched = await gettingUserByEmailToAuthenticated(
-                  email
-                );
-                if (userSwitched?.ok) {
-                  console.log("Successfully switched to user:", emailToSwitch);
-                  setEmailToSwitch("");
-                  setUserSwitched(true);
-                  setEmailTouched(false); // optional: clear error state
-                  return;
-                }
-                setUserSwitched(false);
-                setError(
-                  result?.message || "This user was not found. Sign up?"
-                );
-              } catch (error) {
-                setUserSwitched(false);
-                setError("This user was not found. Sign up?");
-                console.log("Error switching user account:", error);
-              }
-            }}
+            action={async () =>
+              navigation.navigate("Login_Screen_For_Switching_Accounts_View", {
+                emailToSwitch: email,
+                returnTo: {
+                  tab: "Shop",
+                  screen: "Home_View",
+                  // params: { coming_from: "Home_View" },
+                },
+              })
+            }
           />
         </Spacer>
       );
@@ -210,6 +198,9 @@ export default function Switching_Accounts_View() {
               )}
 
             <Spacer position="top" size="medium" />
+            <Spacer position="top" size="medium" />
+            <Spacer position="top" size="medium" />
+            <Spacer position="top" size="medium" />
 
             <Container
               width="100%"
@@ -220,7 +211,9 @@ export default function Switching_Accounts_View() {
             >
               {emailToSwitch?.trim().length === 0 && (
                 <Spacer position="left" size="extraLarge">
-                  <Text variant="dm_sans_bold_18">Other accounts found...</Text>
+                  <Text variant="dm_sans_bold_18">
+                    Other accounts in this device (tap to switch)
+                  </Text>
                 </Spacer>
               )}
             </Container>
@@ -252,37 +245,58 @@ export default function Switching_Accounts_View() {
                 border_radius={"40px"}
                 caption="Switch Account"
                 caption_text_variant="dm_sans_bold_20_white"
-                action={async () => {
+                action={() => {
                   setEmailTouched(true);
-
                   const ok = isValidEmail(emailToSwitch);
-                  if (!ok) return; // ✅ stops here, no request
 
-                  try {
-                    const result = await gettingUserByEmailToAuthenticated(
-                      emailToSwitch.trim()
+                  if (!ok) return; // ✅ stops here, no request
+                  if (ok) {
+                    setEmailToSwitch("");
+                    setPin;
+                    navigation.navigate(
+                      "Login_Screen_For_Switching_Accounts_View",
+                      {
+                        emailToSwitch: emailToSwitch.trim(),
+                        returnTo: {
+                          tab: "Shop",
+                          screen: "Home_View",
+                          // params: { coming_from: "Home_View" },
+                        },
+                      }
                     );
-                    if (result?.ok) {
-                      console.log(
-                        "Successfully switched to user:",
-                        emailToSwitch
-                      );
-                      setEmailToSwitch("");
-                      setUserSwitched(true);
-                      setEmailTouched(false); // optional: clear error state
-                      return;
-                    }
-                    // ✅ show error from backend (not found / failed)
-                    setUserSwitched(false);
-                    setError(
-                      result?.message || "This user was not found. Sign up?"
-                    );
-                  } catch (error) {
-                    setUserSwitched(false);
-                    setError("This user was not found. Sign up?");
-                    console.log("Error switching user account:", error);
                   }
                 }}
+                // action={async () => {
+                //   setEmailTouched(true);
+
+                //   const ok = isValidEmail(emailToSwitch);
+                //   if (!ok) return; // ✅ stops here, no request
+
+                //   try {
+                //     const result = await gettingUserByEmailToAuthenticated(
+                //       emailToSwitch.trim()
+                //     );
+                //     if (result?.ok) {
+                //       console.log(
+                //         "Successfully switched to user:",
+                //         emailToSwitch
+                //       );
+                //       setEmailToSwitch("");
+                //       setUserSwitched(true);
+                //       setEmailTouched(false); // optional: clear error state
+                //       return;
+                //     }
+                //     // ✅ show error from backend (not found / failed)
+                //     setUserSwitched(false);
+                //     setError(
+                //       result?.message || "This user was not found. Sign up?"
+                //     );
+                //   } catch (error) {
+                //     setUserSwitched(false);
+                //     setError("This user was not found. Sign up?");
+                //     console.log("Error switching user account:", error);
+                //   }
+                // }}
               />
             )}
           </Container>

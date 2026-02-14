@@ -13,7 +13,7 @@ export const Switching_Accounts_Tile = ({ email, display_name, action }) => {
   return (
     <>
       <Action_Container
-        width="95%"
+        width="100%"
         padding_vertical={"5%"}
         // height="25%"
         color={theme.colors.bg.elements_bg}
@@ -23,12 +23,12 @@ export const Switching_Accounts_Tile = ({ email, display_name, action }) => {
         onPress={action}
       >
         <Container
-          width="20%"
+          width="10%"
           padding_vertical={"5%"}
           //   height="100%"
           color={theme.colors.bg.elements_bg}
         >
-          <AccountIcon width={30} height={30} />
+          <AccountIcon width={25} height={25} />
         </Container>
         <Container
           width="80%"
@@ -40,8 +40,8 @@ export const Switching_Accounts_Tile = ({ email, display_name, action }) => {
           border_radius="10px"
         >
           <Spacer position="left" size="medium">
-            <Text variant="dm_sans_bold_18">{display_name}</Text>
-            <Text variant="dm_sans_bold_18">{email}</Text>
+            <Text variant="dm_sans_bold_16">{display_name}</Text>
+            <Text variant="dm_sans_bold_16">{email}</Text>
           </Spacer>
         </Container>
       </Action_Container>
