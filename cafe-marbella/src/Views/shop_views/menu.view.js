@@ -97,7 +97,10 @@ export default function Menu_View() {
 
             {/* ***************************************** */}
             <Menu_Sub_Title_Title label="Credentials" />
-            <Menu_Tile caption="Get a new PIN" action={() => null} />
+            <Menu_Tile
+              caption="Get a new PIN"
+              action={() => navigation.navigate("Reset_PIN_View")}
+            />
             <Menu_Tile
               caption="Switch to another account"
               action={() => navigation.navigate("Switching_Accounts_View")}

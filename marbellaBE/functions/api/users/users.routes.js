@@ -196,210 +196,92 @@ usersRouter.post("/credentials", (req, res) => {
   }
 });
 
-// usersRouter.post("/", async (req, res) => {
-//   console.log("BODY KEYS:", Object.keys(req.body));
-//   console.log("CART:", JSON.stringify(req.body.cart, null, 2));
-//   console.log("CART_PAYLOAD:", JSON.stringify(req.body.cart_payload, null, 2));
-//   const user_id = uuidv4();
-//   const cart_payload = req.body.cart_payload; // expecting { products: [...] }
+// const { verifyFirebaseToken } = require("../middleware/verifyFirebaseToken");
+// middleware/verifyFirebaseToken.js
 
-//   const user = {
-//     first_name: req.body.first_name,
-//     last_name: req.body.last_name,
-//     email: req.body.email,
-//     phone_number: req.body.phone_number,
-//     address: req.body.address,
-//     createdAt: new Date().toISOString(),
-//     updatedAt: new Date().toISOString(),
-//     uid: req.body.uid,
-//     display_name: req.body.display_name,
-//     user_id,
-//     role: "user",
-//     encrypted_pin: req.body.encrypted_pin,
-//   };
+async function verifyFirebaseToken(req, res, next) {
+  try {
+    const header = req.headers.authorization || "";
+    const match = header.match(/^Bearer (.+)$/);
 
-//   try {
-//     const newUser = await usersControllers.createUser(user);
+    if (!match) {
+      return res.status(401).json({ ok: false, error: "Missing Bearer token" });
+    }
 
-//     // ✅ pull incoming cart lines safely
-//     const incoming = cart_payload?.products ?? [];
+    const idToken = match[1];
+    const decoded = await admin.auth().verifyIdToken(idToken);
 
-//     // ✅ normalize & validate
-//     // const requested = incoming
-//     //   .map((x) => ({
-//     //     productId: String(x.productId || ""),
-//     //     variantId: String(x.variantId || ""),
-//     //     quantity: Math.max(1, Number(x.quantity || 1)),
-//     //   }))
-//     //   .filter((x) => x.productId && x.variantId && x.quantity > 0);
+    // attach to request for downstream handlers
+    req.auth = {
+      uid: decoded.uid,
+      email: decoded.email || null,
+      decoded,
+    };
 
-//     const requested = incoming
-//       .map((x) => ({
-//         productId: String(x.productId || ""),
-//         variantId: String(x.variantId || ""),
-//         quantity: Math.max(1, Number(x.quantity || 1)),
-//         image_keys: Array.isArray(x.image_keys) ? x.image_keys.map(String) : [],
-//       }))
-//       .filter((x) => x.productId && x.variantId && x.quantity > 0);
+    return next();
+  } catch (err) {
+    return res.status(401).json({ ok: false, error: "Invalid/expired token" });
+  }
+}
 
-//     const keysFromDB = Array.isArray(size_variants.image_keys)
-//       ? size_variants.image_keys
-//       : [];
-//     const finalKeys = keysFromDB.length ? keysFromDB : line.image_keys;
+const router = express.Router();
 
-//     cartItems.push({
-//       ...product,
-//       size_variants: [
-//         {
-//           ...variant,
-//           quantity: qty,
-//           image_keys: finalKeys, // ✅ store keys
-//           images: [], // optional, but you can omit entirely
-//         },
-//       ],
-//     });
+// PUT /users/pin
+usersRouter.put("/new_pin_on_demand", verifyFirebaseToken, async (req, res) => {
+  try {
+    const { uid } = req.auth;
+    const { new_pin, new_encrypted_pin } = req.body || {};
+    // const user = req.body;
+    // const { new_pin, new_encrypted_pin, user_id } = user;
 
-//     const cartItems = [];
-//     let sub_total = 0;
+    // 1) Validate PIN
+    if (!/^\d{6}$/.test(String(new_pin || ""))) {
+      return res.status(400).json({ ok: false, error: "PIN must be 6 digits" });
+    }
 
-//     for (const line of requested) {
-//       const product = await productsControllers.getProductById(line.productId);
-//       if (!product) continue;
+    // 2) Validate encrypted_pin presence (since you want to keep that design)
+    if (
+      !new_encrypted_pin ||
+      typeof new_encrypted_pin !== "string" ||
+      new_encrypted_pin.length < 20
+    ) {
+      return res
+        .status(400)
+        .json({ ok: false, error: "Missing/invalid encrypted_pin" });
+    }
 
-//       const variant = (product.size_variants || []).find(
-//         (v) => String(v.id) === line.variantId
-//       );
-//       if (!variant) continue;
+    // 3) Update Firebase Auth password (PIN)
+    await admin.auth().updateUser(uid, { password: String(new_pin) });
 
-//       const unitPrice = Number(variant.price || 0); // cents
-//       const qty = line.quantity;
+    // 4) Update DB (Firestore example)
+    // Recommended: store by uid as doc id: users/{uid}
 
-//       cartItems.push({
-//         id: product.id,
-//         title: product.title,
-//         product_name: product.product_name,
-//         flag_key: product.flag_key,
-//         grindType: product.grindType,
-//         size_variants: [
-//           {
-//             ...variant,
-//             quantity: qty,
-//             images: Array.isArray(variant.images) ? variant.images : [], // ✅
-//           },
-//         ],
-//         originCountry: product.originCountry ?? "",
-//       });
+    let encrypted_pin = new_encrypted_pin;
+    const result = await usersControllers.updateUser({ encrypted_pin }, uid);
+    return res.status(result.status).json({
+      ok: result.status === 200,
+      message: result.message,
+    });
 
-//       sub_total += unitPrice * qty;
-//     }
+    // const db = admin.firestore();
 
-//     const newCart = await cartsControllers.createCart({
-//       user_id: user.user_id,
-//       cart_id: uuidv4(),
-//       createdAt: new Date().toISOString(),
-//       updatedAt: new Date().toISOString(),
-//       products: cartItems,
-//       sub_total, // ✅ correct
-//       taxes: 0,
-//       total: sub_total,
-//     });
+    // await db.collection("users").doc(uid).set(
+    //   {
+    //     new_encrypted_pin,
+    //     updatedAt: new Date().toISOString(),
+    //   },
+    //   { merge: true }
+    // );
 
-//     return res.status(201).json({ user: newUser, cart: newCart });
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).send({
-//       status: "Failed",
-//       msg: "Something went wrong saving Data...",
-//     });
-//   }
-// });
+    // return res.status(200).json({ ok: true });
+  } catch (err) {
+    console.error("PUT /users/pin error:", err);
 
-// usersRouter.post("/", async (req, res) => {
-//   const user_id = uuidv4();
+    // Common Firebase error mapping
+    const msg = err?.message || "Server error";
 
-//   const user = {
-//     first_name: req.body.first_name,
-//     last_name: req.body.last_name,
-//     email: req.body.email,
-//     phone_number: req.body.phone_number,
-//     address: req.body.address,
-//     createdAt: new Date().toISOString(),
-//     updatedAt: new Date().toISOString(),
-//     uid: req.body.uid,
-//     display_name: req.body.display_name,
-//     encrypted_pin: req.body.encrypted_pin,
-//     user_id: user_id,
-//     role: "user",
-//   };
-
-//   try {
-//     const newUser = await usersControllers.createUser(user);
-//     if (newUser) {
-//       const incoming = req.body?.cart_payload?.products ?? [];
-
-//       // 1) Validate quantities
-//       const requested = incoming
-//         .map((x) => ({
-//           productId: String(x.productId || ""),
-//           variantId: String(x.variantId || ""),
-//           quantity: Math.max(1, Number(x.quantity || 1)),
-//         }))
-//         .filter((x) => x.productId && x.variantId && x.quantity > 0);
-
-//       // 2) Look up prices from your products collection (source of truth)
-//       const cartItems = [];
-//       let sub_total = 0;
-
-//       for (const line of requested) {
-//         const product = await productsControllers.getProductById(
-//           line.productId
-//         );
-//         const variant = (product.size_variants || []).find(
-//           (v) => String(v.id) === line.variantId
-//         );
-//         if (!product) continue;
-
-//         if (!variant) continue;
-
-//         const unitPrice = Number(variant.price || 0); // cents
-//         const qty = line.quantity;
-
-//         cartItems.push({
-//           id: product.id,
-//           title: product.title,
-//           product_name: product.product_name,
-//           flag_key: product.flag_key,
-//           grindType: product.grindType,
-//           size_variants: [{ ...variant, quantity: qty }],
-//         });
-
-//         sub_total += unitPrice * qty;
-//       }
-//       const newCart = await cartsControllers.createCart({
-//         user_id: user.user_id,
-//         cart_id: uuidv4(),
-//         createdAt: new Date().toISOString(),
-//         updatedAt: new Date().toISOString(),
-//         products: cartItems,
-//         sub_total: 0,
-//         taxes: 0,
-//         total: sub_total,
-//       });
-//       if (newCart) {
-//         console.log("Cart created for new user:", newCart);
-//         return res.status(201).json({
-//           user: newUser,
-//           cart: newCart,
-//         });
-//       }
-//     }
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(500).send({
-//       status: "Failed",
-//       msg: "Something went wrong saving Data...",
-//     });
-//   }
-// });
+    return res.status(500).json({ ok: false, error: msg });
+  }
+});
 
 module.exports = usersRouter;

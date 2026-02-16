@@ -79,40 +79,27 @@ export const post_user_Request = async (
   }
 };
 
-// export const post_user_Request = async (
-//   userToCreateAtFirebaseAndDB,
-//   cart_payload,
-//   idToken
-// ) => {
-//   console.log(
-//     "USER TO DB BEFORE REQUEST:",
-//     JSON.stringify(userToCreateAtFirebaseAndDB, null, 2)
+// export const put_new_pin_Request = async (payload) => {
+//   const { new_pin, new_encrypted_pin, idToken } = payload;
+//   const endpoint = `${environment.usersEndPoint}/new_pin_on_demand`; // e.g. .../users/pin
+//   const res = await axios.put(
+//     endpoint,
+//     { new_pin, new_encrypted_pin },
+//     {
+//       headers: { Authorization: `Bearer ${idToken}` },
+//       timeout: 15000,
+//     }
 //   );
-//   const { usersEndPoint } = environment;
-//   const endpoint = `${usersEndPoint}/`;
-//   try {
-//     const res = await axios.post(
-//       endpoint,
-//       { ...userToCreateAtFirebaseAndDB, cart_payload },
-//       {
-//         timeout: 15000, // Optional timeout
-//       },
-//       {
-//         headers: {
-//           Authorization: `Bearer ${idToken}`,
-//         },
-//       }
-//     );
-
-//     // console.log("RESPONSE:", res.data);
-//     return res.data;
-//   } catch (error) {
-//     console.error("Error creating user:", {
-//       message: error.message,
-//       status: error.response?.status,
-//       data: error.response?.data,
-//       endpoint,
-//     });
-//     throw error;
-//   }
+//   return res.data; // { ok: true }
 // };
+
+export const put_new_pin_Request = async (payload, idToken) => {
+  const endpoint = `${environment.usersEndPoint}/new_pin_on_demand`;
+
+  const res = await axios.put(endpoint, payload, {
+    headers: { Authorization: `Bearer ${idToken}` },
+    timeout: 15000,
+  });
+
+  return res.data; // { ok: true, message: ... }
+};

@@ -18,6 +18,7 @@ import Orders_View from "../../Views/orders_views/orders.view";
 import Switching_Accounts_View from "../../Views/shop_views/switching_accounts.view";
 import Sign_Out_Overlay_View from "../../Views/shop_views/sign_out_overlay.view";
 import Login_Screen_For_Switching_Accounts_View from "../../Views/shop_views/login_screen_for_switching_accounts.view";
+import Reset_PIN_View from "../../Views/shop_views/reset_pin.view";
 
 const ShopFlowStack = createNativeStackNavigator();
 
@@ -92,13 +93,8 @@ export const Shop_Navigator = () => {
       <ShopFlowStack.Screen
         name="Login_Screen_For_Switching_Accounts_View"
         component={Login_Screen_For_Switching_Accounts_View}
-        // options={{
-        //    presentation: "transparentModal",
-        //    animation: "slide_from_bottom",
-        //   headerShown: false,
-        //    contentStyle: { backgroundColor: "transparent" },
-        // }}
       />
+      <ShopFlowStack.Screen name="Reset_PIN_View" component={Reset_PIN_View} />
       <ShopFlowStack.Screen name="Menu_View" component={Menu_View} />
     </ShopFlowStack.Navigator>
   );

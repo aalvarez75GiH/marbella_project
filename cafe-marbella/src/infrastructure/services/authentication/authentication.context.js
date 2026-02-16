@@ -6,14 +6,14 @@ import {
 } from "../../local_data/authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  getAuth,
   signInWithEmailAndPassword,
-  getReactNativePersistence,
-  initializeAuth,
   createUserWithEmailAndPassword,
+  onAuthStateChanged,
 } from "firebase/auth";
-import { initializeApp, getApps } from "firebase/app";
-import { gettingUserByEmailRequest } from "./authentication.sevices";
+import {
+  gettingUserByEmailRequest,
+  put_new_pin_Request,
+} from "./authentication.sevices";
 import {
   post_user_Request,
   gettingUserByUIDRequest,
@@ -23,44 +23,9 @@ import {
   encryptPinWithServerPublicKey,
 } from "../../services/authentication/authentication.handlers";
 import { rootReset } from "../../../infrastructure/navigation/navigation_ref";
+import { auth } from "../../../../fb";
 
 export const AuthenticationContext = createContext();
-
-// Firebase configuration
-
-const firebaseConfig = {
-  apiKey: "AIzaSyA7fPadDf73WRg1tkQPt7n2H-b5pV8ew70",
-  authDomain: "cafe-marbella-be.firebaseapp.com",
-  projectId: "cafe-marbella-be",
-  storageBucket: "cafe-marbella-be.firebasestorage.app",
-  messagingSenderId: "957235778708",
-  appId: "1:957235778708:web:091e323e18096833dc5081",
-};
-
-let app;
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-} else {
-  app = getApps()[0]; // Use the already initialized app
-}
-
-// Auth singleton (RN vs Web)
-let auth;
-if (Platform.OS === "web") {
-  // web can use getAuth (browser persistence)
-  auth = getAuth(app);
-} else {
-  // React Native: ensure AsyncStorage persistence
-  try {
-    auth = initializeAuth(app, {
-      persistence: getReactNativePersistence(AsyncStorage),
-    });
-  } catch (e) {
-    // If already initialized (Fast Refresh), just grab it
-    auth = getAuth(app);
-  }
-}
-export { app, auth };
 
 const userToDBInitialState = {
   first_name: "",
@@ -82,6 +47,9 @@ export const Authentication_Context_Provider = ({ children }) => {
   const [pin, setPin] = useState("");
   const [email, setEmail] = useState("");
   const [userToDB, setUserToDB] = useState(userToDBInitialState);
+
+  const [firebaseReady, setFirebaseReady] = useState(false);
+  const [firebaseUser, setFirebaseUser] = useState(null);
 
   const { CURRENT_USER_KEY, USERS_ON_DEVICE_KEY } = STORAGE_KEYS;
   //**************** */ Local user persistency logic
@@ -112,6 +80,19 @@ export const Authentication_Context_Provider = ({ children }) => {
     return () => {
       cancelled = true;
     };
+  }, []);
+
+  useEffect(() => {
+    console.log("Auth currentUser at mount:", auth.currentUser?.uid || null);
+  }, []);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (fbUser) => {
+      setFirebaseUser(fbUser);
+      setFirebaseReady(true);
+      console.log("Firebase auth state:", fbUser ? fbUser.uid : "signed out");
+    });
+    return unsub;
   }, []);
 
   // 2) Register (create user locally + persist)
@@ -441,6 +422,115 @@ export const Authentication_Context_Provider = ({ children }) => {
     }
   };
 
+  const generatePinNumberOnDemand = async (newPIN) => {
+    setIsLoading(true);
+
+    try {
+      const user = auth.currentUser;
+
+      if (!user) {
+        return {
+          ok: false,
+          error: "No Firebase session. Please log in again.",
+        };
+      }
+
+      // const idToken = await user.getIdToken(true);
+      const idToken = await getFreshIdToken();
+      console.log(" CURRENT USER TOKEN:", idToken);
+
+      // 2) create encrypted pin
+      const new_encrypted_pin = encryptPinWithServerPublicKey(newPIN);
+
+      // 3) call backend (token in header)
+      const payload = {
+        new_encrypted_pin: new_encrypted_pin, // ideally remove later
+        new_pin: newPIN, // ideally remove later
+      };
+      console.log(
+        " GENERATE NEW PIN ON DEMAND PAYLOAD:",
+        JSON.stringify(payload, null, 2)
+      );
+      const res = await put_new_pin_Request(payload, idToken);
+      console.log(
+        "RESPONSE FROM GENERATE NEW PIN ON DEMAND REQUEST:",
+        JSON.stringify(res, null, 2)
+      );
+
+      if (res?.ok) return { ok: true };
+
+      return { ok: false, error: res?.message || "Failed to update PIN" };
+    } catch (error) {
+      return { ok: false, error: error?.message || "Unknown error" };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Generate new pin number on Demand
+  // const generatePinNumberOnDemand = async (newPIN) => {
+  //   setIsLoading(true);
+  //   console.log("NEW PIN NUMBER TO ENCRYPT:", newPIN);
+
+  //   try {
+  //     const new_encrypted_pin = encryptPinWithServerPublicKey(newPIN);
+  //     console.log(" NEW ENCRYPTED PIN:", new_encrypted_pin);
+
+  //     const idToken = await auth.currentUser.getIdToken(true);
+  //     console.log(" CURRENT USER TOKEN:", idToken);
+
+  //     const payload = {
+  //       new_encrypted_pin: new_encrypted_pin, // ideally remove later
+  //       new_pin: newPIN, // ideally remove later
+  //       idToken,
+  //     };
+
+  //     console.log(
+  //       " GENERATE NEW PIN ON DEMAND PAYLOAD:",
+  //       JSON.stringify(payload, null, 2)
+  //     );
+
+  //     const res = await put_new_pin_Request(payload);
+
+  //     console.log(
+  //       "RESPONSE FROM GENERATE NEW PIN ON DEMAND REQUEST:",
+  //       JSON.stringify(res, null, 2)
+  //     );
+  //     if (res?.ok && res?.message === "User updated") {
+  //       return { ok: true };
+  //     } else {
+  //       return {
+  //         ok: false,
+  //         error: res?.message || "Failed to generate new PIN",
+  //       };
+  //     }
+
+  //     // return {
+  //     //   ok: false,
+  //     //   error: "Invalid server response",
+  //     // };
+  //   } catch (error) {
+  //     console.log("GENERATE NEW PIN ERROR (raw):", {
+  //       code: error?.code,
+  //       message: error?.message,
+  //       name: error?.name,
+  //     });
+  //     // console.log("REGISTER USER ERROR (raw):", {
+  //     //   code: error?.code,
+  //     //   message: error?.message,
+  //     //   name: error?.name,
+  //     // });
+
+  //     // if (error?.code === "auth/email-already-in-use") {
+  //     //   return { ok: false, error: "Email already in use" };
+  //     // }
+
+  //     // return { ok: false, error: error?.message || "Registration failed" };
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
   const resetAuthContext = () => {
     setUser(null);
     setIsLoading(false);
@@ -448,6 +538,46 @@ export const Authentication_Context_Provider = ({ children }) => {
     setEmail("");
     setPin("");
     setUserToDB(userToDBInitialState);
+  };
+  const waitForFirebaseUserOnce = () =>
+    new Promise((resolve) => {
+      const unsub = onAuthStateChanged(auth, (u) => {
+        unsub();
+        resolve(u);
+      });
+    });
+
+  const getFreshIdToken = async () => {
+    // If Firebase hasn’t finished initializing, wait for it once
+    let fbUser = auth.currentUser;
+
+    if (!fbUser) {
+      fbUser = await waitForFirebaseUserOnce();
+    }
+
+    if (!fbUser) {
+      const e = new Error("No Firebase session. Please log in again.");
+      e.code = "NO_SESSION";
+      throw e;
+    }
+
+    try {
+      return await fbUser.getIdToken(true); // force refresh
+    } catch (e) {
+      if (
+        e?.code === "auth/user-token-expired" ||
+        e?.code === "auth/invalid-user-token" ||
+        e?.code === "auth/user-disabled"
+      ) {
+        try {
+          await auth.signOut();
+        } catch (_) {}
+        const err = new Error("Session expired. Please log in again.");
+        err.code = e?.code;
+        throw err;
+      }
+      throw e;
+    }
   };
 
   return (
@@ -479,6 +609,9 @@ export const Authentication_Context_Provider = ({ children }) => {
         email,
         emailError,
         setEmailError,
+        generatePinNumberOnDemand,
+        firebaseReady,
+        firebaseUser,
       }}
     >
       {children}
