@@ -47,6 +47,8 @@ export const Authentication_Context_Provider = ({ children }) => {
   const [pin, setPin] = useState("");
   const [email, setEmail] = useState("");
   const [userToDB, setUserToDB] = useState(userToDBInitialState);
+  const [emailToSwitch, setEmailToSwitch] = useState("");
+  const [otherUsersInTheDevice, setOtherUsersInTheDevice] = useState([]);
 
   const [firebaseReady, setFirebaseReady] = useState(false);
   const [firebaseUser, setFirebaseUser] = useState(null);
@@ -54,36 +56,72 @@ export const Authentication_Context_Provider = ({ children }) => {
   const { CURRENT_USER_KEY, USERS_ON_DEVICE_KEY } = STORAGE_KEYS;
   //**************** */ Local user persistency logic
   // 1) Rehydrate user on app start
+  // useEffect(() => {
+  //   let cancelled = false;
+
+  //   const boot = async () => {
+  //     try {
+  //       const raw = await AsyncStorage.getItem(CURRENT_USER_KEY);
+  //       if (cancelled) return;
+
+  //       if (!raw) {
+  //         setUser(null);
+  //       } else {
+  //         const parsed = JSON.parse(raw);
+  //         setUser(parsed); // ✅ THIS fixes reload
+  //       }
+  //     } catch (e) {
+  //       console.log("Auth boot error:", e);
+  //       setUser(null);
+  //     } finally {
+  //       if (!cancelled) setAuthInitializing(false);
+  //     }
+  //   };
+
+  //   boot();
+  //   return () => {
+  //     cancelled = true;
+  //   };
+  // }, []);
   useEffect(() => {
     let cancelled = false;
 
-    const boot = async () => {
-      try {
-        const raw = await AsyncStorage.getItem(CURRENT_USER_KEY);
-        if (cancelled) return;
+    const unsub = onAuthStateChanged(auth, async (fbUser) => {
+      console.log("Firebase auth state:", fbUser ? fbUser.uid : "signed out");
 
-        if (!raw) {
-          setUser(null);
-        } else {
-          const parsed = JSON.parse(raw);
-          setUser(parsed); // ✅ THIS fixes reload
-        }
-      } catch (e) {
-        console.log("Auth boot error:", e);
+      if (cancelled) return;
+
+      setFirebaseUser(fbUser);
+      setFirebaseReady(true);
+      setAuthInitializing(false);
+
+      if (!fbUser) {
         setUser(null);
-      } finally {
-        if (!cancelled) setAuthInitializing(false);
+        await AsyncStorage.removeItem(CURRENT_USER_KEY);
+        return;
       }
-    };
 
-    boot();
+      try {
+        // ✅ load DB user using UID from firebase
+        const raw = await gettingUserByUIDRequest(fbUser.uid);
+        const userByUID = Array.isArray(raw) ? raw[0] : raw;
+
+        if (!userByUID) throw new Error("User not found in DB");
+
+        setUser(userByUID);
+        await AsyncStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userByUID));
+      } catch (e) {
+        console.log("Failed to load DB user:", e?.message ?? e);
+        // optional: force sign out if DB user missing
+        // await auth.signOut();
+        // setUser(null);
+      }
+    });
+
     return () => {
       cancelled = true;
+      unsub();
     };
-  }, []);
-
-  useEffect(() => {
-    console.log("Auth currentUser at mount:", auth.currentUser?.uid || null);
   }, []);
 
   useEffect(() => {
@@ -94,6 +132,39 @@ export const Authentication_Context_Provider = ({ children }) => {
     });
     return unsub;
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      if (!user?.user_id) {
+        setOtherUsersInTheDevice([]);
+        return;
+      }
+
+      try {
+        const raw = await AsyncStorage.getItem(USERS_ON_DEVICE_KEY);
+
+        // If raw is null, default to []
+        const parsed = raw ? JSON.parse(raw) : [];
+
+        // guard: if parsed isn't an array, fallback
+        const list = Array.isArray(parsed) ? parsed : [];
+
+        const others = list.filter((u) => u?.user_id !== user.user_id);
+
+        if (!cancelled) setOtherUsersInTheDevice(others);
+      } catch (e) {
+        console.log("Failed reading USERS_ON_DEVICE_KEY:", e);
+        if (!cancelled) setOtherUsersInTheDevice([]);
+      }
+    };
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.user_id]);
 
   // 2) Register (create user locally + persist)
   const registerLocalUser = async (newUser) => {
@@ -136,59 +207,6 @@ export const Authentication_Context_Provider = ({ children }) => {
   );
   console.log("USER IN AUTH CONTEXT: ", JSON.stringify(user, null, 2));
   const isAuthenticated = !!user;
-
-  const [emailToSwitch, setEmailToSwitch] = useState("");
-
-  // ✅ always derived from user (so it stays consistent)
-  // const otherUsersInTheDevice = useMemo(async () => {
-  //   if (!user?.user_id) return [];
-  //   const usersInAsyncStorageRaw = await AsyncStorage.getItem(
-  //     USERS_ON_DEVICE_KEY
-  //   );
-  //   const usersInAsyncStorage = usersInAsyncStorageRaw
-  //     ? JSON.parse(usersInAsyncStorageRaw)
-  //     : null;
-  //   console.log(
-  //     "USERS IN ASYNC STORAGE:",
-  //     JSON.stringify(usersInAsyncStorage, null, 2)
-  //   );
-  //   return usersInAsyncStorage.filter((u) => u?.user_id !== user.user_id);
-  // }, [user]);
-
-  const [otherUsersInTheDevice, setOtherUsersInTheDevice] = useState([]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const load = async () => {
-      if (!user?.user_id) {
-        setOtherUsersInTheDevice([]);
-        return;
-      }
-
-      try {
-        const raw = await AsyncStorage.getItem(USERS_ON_DEVICE_KEY);
-
-        // If raw is null, default to []
-        const parsed = raw ? JSON.parse(raw) : [];
-
-        // guard: if parsed isn't an array, fallback
-        const list = Array.isArray(parsed) ? parsed : [];
-
-        const others = list.filter((u) => u?.user_id !== user.user_id);
-
-        if (!cancelled) setOtherUsersInTheDevice(others);
-      } catch (e) {
-        console.log("Failed reading USERS_ON_DEVICE_KEY:", e);
-        if (!cancelled) setOtherUsersInTheDevice([]);
-      }
-    };
-
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [user?.user_id]);
 
   // const otherUsersInTheDevice = useMemo(() => {
   //   if (!user?.user_id) return [];
