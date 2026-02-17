@@ -1,4 +1,6 @@
 import React, { useState, createContext, useEffect, useMemo } from "react";
+import { signInWithCustomToken } from "firebase/auth";
+
 import { Platform } from "react-native";
 import {
   user_authenticated,
@@ -56,33 +58,7 @@ export const Authentication_Context_Provider = ({ children }) => {
   const { CURRENT_USER_KEY, USERS_ON_DEVICE_KEY } = STORAGE_KEYS;
   //**************** */ Local user persistency logic
   // 1) Rehydrate user on app start
-  // useEffect(() => {
-  //   let cancelled = false;
 
-  //   const boot = async () => {
-  //     try {
-  //       const raw = await AsyncStorage.getItem(CURRENT_USER_KEY);
-  //       if (cancelled) return;
-
-  //       if (!raw) {
-  //         setUser(null);
-  //       } else {
-  //         const parsed = JSON.parse(raw);
-  //         setUser(parsed); // ✅ THIS fixes reload
-  //       }
-  //     } catch (e) {
-  //       console.log("Auth boot error:", e);
-  //       setUser(null);
-  //     } finally {
-  //       if (!cancelled) setAuthInitializing(false);
-  //     }
-  //   };
-
-  //   boot();
-  //   return () => {
-  //     cancelled = true;
-  //   };
-  // }, []);
   useEffect(() => {
     let cancelled = false;
 
@@ -444,40 +420,47 @@ export const Authentication_Context_Provider = ({ children }) => {
     setIsLoading(true);
 
     try {
-      const user = auth.currentUser;
+      const fbUser = auth.currentUser;
 
-      if (!user) {
+      if (!fbUser) {
         return {
           ok: false,
           error: "No Firebase session. Please log in again.",
         };
       }
 
-      // const idToken = await user.getIdToken(true);
+      // 1) get a fresh idToken for backend verification
       const idToken = await getFreshIdToken();
-      console.log(" CURRENT USER TOKEN:", idToken);
 
-      // 2) create encrypted pin
+      // 2) encrypt pin for your DB
       const new_encrypted_pin = encryptPinWithServerPublicKey(newPIN);
 
       // 3) call backend (token in header)
-      const payload = {
-        new_encrypted_pin: new_encrypted_pin, // ideally remove later
-        new_pin: newPIN, // ideally remove later
-      };
-      console.log(
-        " GENERATE NEW PIN ON DEMAND PAYLOAD:",
-        JSON.stringify(payload, null, 2)
-      );
+      const payload = { new_encrypted_pin, new_pin: newPIN };
       const res = await put_new_pin_Request(payload, idToken);
-      console.log(
-        "RESPONSE FROM GENERATE NEW PIN ON DEMAND REQUEST:",
-        JSON.stringify(res, null, 2)
-      );
 
-      if (res?.ok) return { ok: true };
+      if (!res?.ok) {
+        return {
+          ok: false,
+          error: res?.error || res?.message || "Failed to update PIN",
+        };
+      }
 
-      return { ok: false, error: res?.message || "Failed to update PIN" };
+      // 4) OPTIONAL: if backend returns customToken, re-auth immediately
+      if (res?.customToken) {
+        await signInWithCustomToken(auth, res.customToken);
+        await auth.currentUser?.getIdToken(true);
+      } else {
+        // If you don’t use custom tokens, at least refresh local token.
+        // This can still fail if Firebase invalidated the session after password change.
+        try {
+          await auth.currentUser?.getIdToken(true);
+        } catch (_) {
+          // Don’t hard-fail here—your UI can prompt re-login if next request fails.
+        }
+      }
+
+      return { ok: true };
     } catch (error) {
       return { ok: false, error: error?.message || "Unknown error" };
     } finally {

@@ -258,20 +258,15 @@ usersRouter.put("/new_pin_on_demand", verifyFirebaseToken, async (req, res) => {
 
     let encrypted_pin = new_encrypted_pin;
     const result = await usersControllers.updateUser({ encrypted_pin }, uid);
+
+    // 5) create custom token so client can refresh session immediately
+    const customToken = await admin.auth().createCustomToken(uid);
+
     return res.status(result.status).json({
       ok: result.status === 200,
       message: result.message,
+      customToken: customToken, // send new token so client can re-auth with new PIN immediately
     });
-
-    // const db = admin.firestore();
-
-    // await db.collection("users").doc(uid).set(
-    //   {
-    //     new_encrypted_pin,
-    //     updatedAt: new Date().toISOString(),
-    //   },
-    //   { merge: true }
-    // );
 
     // return res.status(200).json({ ok: true });
   } catch (err) {
