@@ -11,6 +11,7 @@ const usersControllers = require("./users.controllers");
 const cartsControllers = require("../carts/carts.controllers");
 const productsControllers = require("../products/products.controllers");
 const { loadPrivateKeyOnce } = require("./users.handlers");
+const { sendingEmailToUserPINIsChanged } = require("./users.handlers");
 
 usersRouter.get("/userByUID", async (req, res) => {
   try {
@@ -49,21 +50,26 @@ usersRouter.post("/userByEmail", async (req, res) => {
   }
 });
 
-async function requireAuth(req, res, next) {
+async function verifyFirebaseToken(req, res, next) {
   try {
     const header = req.headers.authorization || "";
-    const token = header.startsWith("Bearer ") ? header.slice(7) : null;
-    if (!token) return res.status(401).json({ status: "Unauthorized" });
+    const match = header.match(/^Bearer (.+)$/);
 
-    const decoded = await admin.auth().verifyIdToken(token);
-    req.auth = decoded; // contains uid
+    if (!match) {
+      return res.status(401).json({ ok: false, error: "Missing Bearer token" });
+    }
+
+    const idToken = match[1];
+    const decoded = await admin.auth().verifyIdToken(idToken);
+
+    req.auth = decoded; // ✅ always decoded
     return next();
   } catch (err) {
-    return res.status(401).json({ status: "Unauthorized", msg: String(err) });
+    return res.status(401).json({ ok: false, error: "Invalid/expired token" });
   }
 }
 
-usersRouter.post("/", requireAuth, async (req, res) => {
+usersRouter.post("/", verifyFirebaseToken, async (req, res) => {
   console.log("BODY KEYS:", Object.keys(req.body));
   console.log("CART:", JSON.stringify(req.body.cart, null, 2));
   console.log("CART_PAYLOAD:", JSON.stringify(req.body.cart_payload, null, 2));
@@ -196,36 +202,6 @@ usersRouter.post("/credentials", (req, res) => {
   }
 });
 
-// const { verifyFirebaseToken } = require("../middleware/verifyFirebaseToken");
-// middleware/verifyFirebaseToken.js
-
-async function verifyFirebaseToken(req, res, next) {
-  try {
-    const header = req.headers.authorization || "";
-    const match = header.match(/^Bearer (.+)$/);
-
-    if (!match) {
-      return res.status(401).json({ ok: false, error: "Missing Bearer token" });
-    }
-
-    const idToken = match[1];
-    const decoded = await admin.auth().verifyIdToken(idToken);
-
-    // attach to request for downstream handlers
-    req.auth = {
-      uid: decoded.uid,
-      email: decoded.email || null,
-      decoded,
-    };
-
-    return next();
-  } catch (err) {
-    return res.status(401).json({ ok: false, error: "Invalid/expired token" });
-  }
-}
-
-const router = express.Router();
-
 // PUT /users/pin
 usersRouter.put("/new_pin_on_demand", verifyFirebaseToken, async (req, res) => {
   try {
@@ -262,6 +238,9 @@ usersRouter.put("/new_pin_on_demand", verifyFirebaseToken, async (req, res) => {
     // 5) create custom token so client can refresh session immediately
     const customToken = await admin.auth().createCustomToken(uid);
 
+    //6) Send email notification to user about PIN change (optional but recommended for security)
+    const emailSent = await sendingEmailToUserPINIsChanged(uid, new_pin);
+    //7) Return result with new custom token for client to re-auth with new PIN immediately
     return res.status(result.status).json({
       ok: result.status === 200,
       message: result.message,

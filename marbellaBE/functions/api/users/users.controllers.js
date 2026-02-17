@@ -110,9 +110,6 @@ const updateUser = async (data, uid) => {
       "address",
       "phone_number",
       "display_name",
-      // "photo_url",
-      // "preferences",
-      // etc...
     ]);
 
     // Build update payload with only allowed keys

@@ -432,12 +432,14 @@ export const Authentication_Context_Provider = ({ children }) => {
       // 1) get a fresh idToken for backend verification
       const idToken = await getFreshIdToken();
 
+      console.log("CURRENT USER ID TOKEN", idToken);
       // 2) encrypt pin for your DB
       const new_encrypted_pin = encryptPinWithServerPublicKey(newPIN);
 
       // 3) call backend (token in header)
       const payload = { new_encrypted_pin, new_pin: newPIN };
       const res = await put_new_pin_Request(payload, idToken);
+      console.log("PAYLOAD:", JSON.stringify(payload, null, 2));
 
       if (!res?.ok) {
         return {
@@ -467,70 +469,6 @@ export const Authentication_Context_Provider = ({ children }) => {
       setIsLoading(false);
     }
   };
-
-  // Generate new pin number on Demand
-  // const generatePinNumberOnDemand = async (newPIN) => {
-  //   setIsLoading(true);
-  //   console.log("NEW PIN NUMBER TO ENCRYPT:", newPIN);
-
-  //   try {
-  //     const new_encrypted_pin = encryptPinWithServerPublicKey(newPIN);
-  //     console.log(" NEW ENCRYPTED PIN:", new_encrypted_pin);
-
-  //     const idToken = await auth.currentUser.getIdToken(true);
-  //     console.log(" CURRENT USER TOKEN:", idToken);
-
-  //     const payload = {
-  //       new_encrypted_pin: new_encrypted_pin, // ideally remove later
-  //       new_pin: newPIN, // ideally remove later
-  //       idToken,
-  //     };
-
-  //     console.log(
-  //       " GENERATE NEW PIN ON DEMAND PAYLOAD:",
-  //       JSON.stringify(payload, null, 2)
-  //     );
-
-  //     const res = await put_new_pin_Request(payload);
-
-  //     console.log(
-  //       "RESPONSE FROM GENERATE NEW PIN ON DEMAND REQUEST:",
-  //       JSON.stringify(res, null, 2)
-  //     );
-  //     if (res?.ok && res?.message === "User updated") {
-  //       return { ok: true };
-  //     } else {
-  //       return {
-  //         ok: false,
-  //         error: res?.message || "Failed to generate new PIN",
-  //       };
-  //     }
-
-  //     // return {
-  //     //   ok: false,
-  //     //   error: "Invalid server response",
-  //     // };
-  //   } catch (error) {
-  //     console.log("GENERATE NEW PIN ERROR (raw):", {
-  //       code: error?.code,
-  //       message: error?.message,
-  //       name: error?.name,
-  //     });
-  //     // console.log("REGISTER USER ERROR (raw):", {
-  //     //   code: error?.code,
-  //     //   message: error?.message,
-  //     //   name: error?.name,
-  //     // });
-
-  //     // if (error?.code === "auth/email-already-in-use") {
-  //     //   return { ok: false, error: "Email already in use" };
-  //     // }
-
-  //     // return { ok: false, error: error?.message || "Registration failed" };
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
 
   const resetAuthContext = () => {
     setUser(null);
