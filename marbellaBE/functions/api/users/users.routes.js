@@ -11,7 +11,10 @@ const usersControllers = require("./users.controllers");
 const cartsControllers = require("../carts/carts.controllers");
 const productsControllers = require("../products/products.controllers");
 const { loadPrivateKeyOnce } = require("./users.handlers");
-const { sendingEmailToUserPINIsChanged } = require("./users.handlers");
+const {
+  sendingEmailToUserPINIsChanged,
+  sendingEmailToUserRegistered,
+} = require("./users.handlers");
 
 usersRouter.get("/userByUID", async (req, res) => {
   try {
@@ -71,7 +74,6 @@ async function verifyFirebaseToken(req, res, next) {
 
 usersRouter.post("/", verifyFirebaseToken, async (req, res) => {
   console.log("BODY KEYS:", Object.keys(req.body));
-  console.log("CART:", JSON.stringify(req.body.cart, null, 2));
   console.log("CART_PAYLOAD:", JSON.stringify(req.body.cart_payload, null, 2));
 
   const uidFromToken = req.auth.uid;
@@ -164,6 +166,8 @@ usersRouter.post("/", verifyFirebaseToken, async (req, res) => {
       taxes: 0,
       total: sub_total,
     });
+    // 5) Send email to user created
+    await sendingEmailToUserRegistered(newUser[0]);
 
     return res.status(201).json({ user: newUser, cart: newCart });
   } catch (error) {
@@ -245,6 +249,7 @@ usersRouter.put("/new_pin_on_demand", verifyFirebaseToken, async (req, res) => {
       ok: result.status === 200,
       message: result.message,
       customToken: customToken, // send new token so client can re-auth with new PIN immediately
+      emailSent: emailSent, // optional: indicate if email notification was sent successfully
     });
 
     // return res.status(200).json({ ok: true });

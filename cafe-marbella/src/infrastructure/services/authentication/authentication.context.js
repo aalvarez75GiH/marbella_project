@@ -100,14 +100,14 @@ export const Authentication_Context_Provider = ({ children }) => {
     };
   }, []);
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (fbUser) => {
-      setFirebaseUser(fbUser);
-      setFirebaseReady(true);
-      console.log("Firebase auth state:", fbUser ? fbUser.uid : "signed out");
-    });
-    return unsub;
-  }, []);
+  // useEffect(() => {
+  //   const unsub = onAuthStateChanged(auth, (fbUser) => {
+  //     setFirebaseUser(fbUser);
+  //     setFirebaseReady(true);
+  //     console.log("Firebase auth state:", fbUser ? fbUser.uid : "signed out");
+  //   });
+  //   return unsub;
+  // }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -273,6 +273,10 @@ export const Authentication_Context_Provider = ({ children }) => {
         encrypted_pin: encrypted_pin, // ideally remove later
       };
 
+      console.log(
+        "PAYLOAD TO REGISTER USER:",
+        JSON.stringify(payload, null, 2)
+      );
       const res = await post_user_Request(payload, cartPayload, idToken);
 
       if (res?.user?.[0] && res?.cart?.[0]) {
@@ -439,6 +443,7 @@ export const Authentication_Context_Provider = ({ children }) => {
       // 3) call backend (token in header)
       const payload = { new_encrypted_pin, new_pin: newPIN };
       const res = await put_new_pin_Request(payload, idToken);
+      console.log("RES AT GENERATING:", JSON.stringify(res, null, 2));
       console.log("PAYLOAD:", JSON.stringify(payload, null, 2));
 
       if (!res?.ok) {

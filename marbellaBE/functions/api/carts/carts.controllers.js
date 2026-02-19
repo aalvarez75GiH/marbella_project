@@ -83,7 +83,7 @@ const createCart = async (cart) => {
         console.log(doc.id, " => ", doc.data());
         newCart.push(doc.data());
       });
-      console.log("NEW USER:", newCart);
+      console.log("NEW CART:", newCart);
       return newCart;
     });
 };
