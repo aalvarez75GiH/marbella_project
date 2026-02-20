@@ -1,10 +1,9 @@
 import React, { useContext } from "react";
-import { StyleSheet, FlatList } from "react-native";
+import { FlatList } from "react-native";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 
 import { Container } from "../../components/containers/general.containers";
-import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { Go_Back_Header_With_Label_And_Menu } from "../../components/headers/goBack_with_label_and_menu.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";

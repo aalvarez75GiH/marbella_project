@@ -1,5 +1,4 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { v4 as uuidv4 } from "uuid";
 import * as Crypto from "expo-crypto";
 
 import { STORAGE_KEYS } from "../../services/authentication/authentication.handlers";

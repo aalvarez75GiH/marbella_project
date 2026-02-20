@@ -1,27 +1,14 @@
-import React, { use, useContext, useEffect, useState } from "react";
-import {
-  FlatList,
-  View,
-  SectionList,
-  StyleSheet,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { KeyboardAvoidingView, Platform } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 
 import { Container } from "../../components/containers/general.containers";
-import { Just_Caption_Header } from "../../components/headers/just_caption.header.js";
-import { Exit_Header_With_Label } from "../../components/headers/exit_with_label.header";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header.js";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 import { Text } from "../../infrastructure/typography/text.component";
-import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { DataInput } from "../../components/inputs/data_text_input.js";
-import { Underlined_CTA } from "../../components/ctas/underlined.cta.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";

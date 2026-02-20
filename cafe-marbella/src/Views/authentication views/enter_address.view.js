@@ -29,6 +29,36 @@ export default function Enter_Address_View() {
 
   console.log("PLACES KEY:", process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY);
   console.log("DEVICE LOCATION for PLACES biasing:", deviceLat, deviceLng);
+
+  const placesQuery = {
+    key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
+    language: "en",
+    components: "country:us",
+    types: "geocode",
+    ...(typeof deviceLat === "number" && typeof deviceLng === "number"
+      ? { location: `${deviceLat},${deviceLng}`, radius: 50000 }
+      : {}),
+  };
+
+  const debugPlaces = async (text) => {
+    try {
+      const key = process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY;
+      const url =
+        `https://maps.googleapis.com/maps/api/place/autocomplete/json` +
+        `?input=${encodeURIComponent(text)}` +
+        `&key=${encodeURIComponent(key)}` +
+        `&language=en` +
+        `&components=country:us`;
+
+      const res = await fetch(url);
+      const json = await res.json();
+      console.log("PLACES DEBUG:", json?.status, json?.error_message);
+      console.log("PLACES DEBUG predictions:", json?.predictions?.length);
+    } catch (e) {
+      console.log("PLACES DEBUG fetch error:", e?.message ?? e);
+    }
+  };
+
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -53,11 +83,12 @@ export default function Enter_Address_View() {
             style={{ flex: 1, width: "100%" }}
             contentContainerStyle={{
               flexGrow: 1,
-              paddingTop: 44, // ✅ space from header
+              paddingTop: 44,
               paddingBottom: 16,
             }}
             keyboardShouldPersistTaps="handled"
             scrollEnabled={scrollEnabled}
+            nestedScrollEnabled={true}
           >
             <Container
               width="100%"
@@ -95,72 +126,158 @@ export default function Enter_Address_View() {
                   elevation: 9999,
                 }}
               >
-                <GooglePlacesAutocomplete
-                  onFail={(err) => console.log("PLACES FAIL:", err)}
-                  placeholder="Shipping address"
-                  query={{
-                    key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
-                    language: "en",
-                    components: "country:us",
-                    location: `${deviceLat},${deviceLng}`,
-                    radius: 50000, // meters (~31 miles)
-                    types: "geocode",
-                  }}
-                  fetchDetails
-                  onPress={(data, details = null) => {
-                    const formatted =
-                      details?.formatted_address ?? data.description;
-
-                    const lat = details?.geometry?.location?.lat;
-                    const lng = details?.geometry?.location?.lng;
-
-                    // consider valid only if we have formatted + coords
-                    if (
-                      formatted &&
-                      typeof lat === "number" &&
-                      typeof lng === "number"
-                    ) {
-                      setUserToDB({
-                        ...userToDB,
-                        address: formatted,
-                      });
-                      // setDifferentAddress(formatted);
-
-                      setSelectedAddress({
-                        formatted_address: formatted,
-                        lat,
-                        lng,
-                        place_id: details?.place_id ?? data?.place_id,
-                      });
-                    } else {
-                      setSelectedAddress(null);
+                {Platform.OS === "ios" && (
+                  <GooglePlacesAutocomplete
+                    onFail={(err) =>
+                      console.log("PLACES FAIL:", JSON.stringify(err))
                     }
-                  }}
-                  textInputProps={{
-                    onChangeText: () => {
-                      // user is typing again -> invalidate selection until they tap a suggestion
-                      setSelectedAddress(null);
-                    },
-                  }}
-                  styles={{
-                    textInput: {
-                      width: "100%",
-                      height: 50,
-                      borderBottomWidth: 0.5,
-                      borderBottomColor: theme.colors.inputs.bottom_lines,
-                      backgroundColor: "transparent",
+                    onNotFound={() => console.log("PLACES NOT FOUND")}
+                    onTimeout={() => console.log("PLACES TIMEOUT")}
+                    placeholder="Shipping address"
+                    query={placesQuery}
+                    fetchDetails
+                    onPress={(data, details = null) => {
+                      const formatted =
+                        details?.formatted_address ?? data.description;
 
-                      paddingLeft: 5, // ✅ remove left inset
-                      paddingRight: 0,
-                      paddingVertical: 0, // optional: tighter vertical alignment
-                      marginLeft: 0, // just in case
-                      textAlign: "left", // explicit
-                    },
-                  }}
-                  enablePoweredByContainer={false}
-                  keyboardShouldPersistTaps="handled"
-                  minLength={1}
-                />
+                      const lat = details?.geometry?.location?.lat;
+                      const lng = details?.geometry?.location?.lng;
+
+                      // consider valid only if we have formatted + coords
+                      if (
+                        formatted &&
+                        typeof lat === "number" &&
+                        typeof lng === "number"
+                      ) {
+                        setUserToDB({
+                          ...userToDB,
+                          address: formatted,
+                        });
+                        // setDifferentAddress(formatted);
+
+                        setSelectedAddress({
+                          formatted_address: formatted,
+                          lat,
+                          lng,
+                          place_id: details?.place_id ?? data?.place_id,
+                        });
+                      } else {
+                        setSelectedAddress(null);
+                      }
+                    }}
+                    textInputProps={{
+                      onChangeText: () => {
+                        // user is typing again -> invalidate selection until they tap a suggestion
+                        setSelectedAddress(null);
+                      },
+                    }}
+                    styles={{
+                      textInput: {
+                        width: "100%",
+                        height: 50,
+                        borderBottomWidth: 0.5,
+                        borderBottomColor: theme.colors.inputs.bottom_lines,
+                        backgroundColor: "transparent",
+
+                        paddingLeft: 5, // ✅ remove left inset
+                        paddingRight: 0,
+                        paddingVertical: 0, // optional: tighter vertical alignment
+                        marginLeft: 0, // just in case
+                        textAlign: "left", // explicit
+                      },
+                    }}
+                    enablePoweredByContainer={false}
+                    keyboardShouldPersistTaps="handled"
+                    minLength={1}
+                  />
+                )}
+                {Platform.OS === "android" && (
+                  <View
+                    style={{
+                      width: "93%",
+                      alignSelf: "center",
+                      position: "relative",
+                      overflow: "visible",
+                      zIndex: 9999,
+                      elevation: 9999,
+                    }}
+                    pointerEvents="box-none"
+                  >
+                    {Platform.OS === "android" && (
+                      <GooglePlacesAutocomplete
+                        placeholder="Shipping address"
+                        fetchDetails
+                        listViewDisplayed="auto" // you can keep true while debugging
+                        keyboardShouldPersistTaps="handled"
+                        enablePoweredByContainer={false}
+                        minLength={2}
+                        debounce={250}
+                        query={{
+                          key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
+                          language: "en",
+                          components: "country:us",
+                          location: `${deviceLat},${deviceLng}`,
+                          radius: 50000,
+                        }}
+                        textInputProps={{
+                          onFocus: () => setScrollEnabled(false),
+                          onBlur: () => setScrollEnabled(true),
+                          onChangeText: (t) => {
+                            console.log("typing:", t);
+                            setSelectedAddress(null);
+                          },
+                        }}
+                        onPress={(data, details = null) => {
+                          const formatted =
+                            details?.formatted_address ?? data.description;
+                          const lat = details?.geometry?.location?.lat;
+                          const lng = details?.geometry?.location?.lng;
+
+                          if (
+                            formatted &&
+                            typeof lat === "number" &&
+                            typeof lng === "number"
+                          ) {
+                            setUserToDB({ ...userToDB, address: formatted });
+                            setSelectedAddress({
+                              formatted_address: formatted,
+                              lat,
+                              lng,
+                              place_id: details?.place_id ?? data?.place_id,
+                            });
+                          } else {
+                            setSelectedAddress(null);
+                          }
+                        }}
+                        styles={{
+                          container: { flex: 0, width: "100%" },
+                          textInputContainer: {
+                            width: "100%",
+                            paddingHorizontal: 0,
+                          },
+                          textInput: {
+                            width: "100%",
+                            height: 50,
+                            borderBottomWidth: 0.5,
+                            borderBottomColor: theme.colors.inputs.bottom_lines,
+                            backgroundColor: "transparent",
+                            paddingLeft: 5,
+                          },
+                          listView: {
+                            position: "absolute",
+                            top: 50,
+                            left: 0,
+                            right: 0,
+                            maxHeight: 260,
+                            zIndex: 999999,
+                            elevation: 999999,
+                            backgroundColor: theme.colors.bg.elements_bg,
+                          },
+                        }}
+                      />
+                    )}
+                  </View>
+                )}
               </View>
             </Container>
 

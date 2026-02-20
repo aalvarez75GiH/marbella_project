@@ -9,6 +9,7 @@ export const Global_Context_Provider = ({ children }) => {
   const [productsCatalog, setProductsCatalog] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [globalLanguage, setGlobalLanguage] = useState("en"); // default to English
 
   useEffect(() => {
     const gettingAllProductsCatalog = async () => {
@@ -67,6 +68,22 @@ export const Global_Context_Provider = ({ children }) => {
   const isValidEmail = (email = "") =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   //   const emailOk = isValidEmail(emailToSwitch);
+
+  const togglingGlobalLanguage = () => {
+    setIsLoading(true);
+
+    setTimeout(() => {
+      try {
+        setGlobalLanguage((prev) => (prev === "en" ? "es" : "en"));
+      } catch (error) {
+        setError("There was a problem switching languages. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    }, 500);
+  };
+
+  console.log("GLOBAL CONTEXT RENDERED with language:", globalLanguage);
   return (
     <GlobalContext.Provider
       value={{
@@ -76,6 +93,9 @@ export const Global_Context_Provider = ({ children }) => {
         error,
         formatDate,
         isValidEmail,
+        setGlobalLanguage,
+        globalLanguage,
+        togglingGlobalLanguage,
       }}
     >
       {children}

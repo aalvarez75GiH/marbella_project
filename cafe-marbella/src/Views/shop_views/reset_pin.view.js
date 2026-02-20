@@ -71,7 +71,7 @@ export default function Reset_PIN_View() {
     >
       {isSubmitting ? (
         <Global_activity_indicator
-          caption="Wait, we are logging you in..."
+          caption="Wait, we are setting up your new PIN..."
           caption_width="65%"
           // color={"red"}
         />
