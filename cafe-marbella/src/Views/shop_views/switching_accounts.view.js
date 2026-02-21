@@ -23,7 +23,11 @@ export default function Switching_Accounts_View() {
     setEmailToSwitch,
     isLoading,
     user,
+    isOtherUsers,
   } = useContext(AuthenticationContext);
+
+  const showOtherUsers = Boolean(isOtherUsers);
+  console.log("isOtherUsers:", isOtherUsers);
 
   console.log("Current authenticated user in Switching Accounts View:", user);
 
@@ -202,41 +206,58 @@ export default function Switching_Accounts_View() {
             <Spacer position="top" size="medium" />
             <Spacer position="top" size="medium" />
 
-            <Container
-              width="100%"
-              height="10%"
-              color={theme.colors.bg.elements_bg}
-              // color={"red"}
-              align="flex-start"
-            >
-              {emailToSwitch?.trim().length === 0 && (
+            {showOtherUsers && emailToSwitch?.trim().length === 0 && (
+              <Container
+                width="100%"
+                height="10%"
+                color={theme.colors.bg.elements_bg}
+                align="flex-start"
+              >
                 <Spacer position="left" size="extraLarge">
                   <Text variant="dm_sans_bold_18">
                     Other accounts in this device (tap to switch)
                   </Text>
                 </Spacer>
-              )}
-            </Container>
-            {!Array.isArray(otherUsersInTheDevice) && !isLoading ? (
-              <Text variant="dm_sans_medium_16">Loading accounts…</Text>
-            ) : (
-              <ScrollView style={{ flex: 1, width: "100%" }}>
-                {!emailToSwitch?.length && (
-                  <Container
-                    width="100%"
-                    padding_vertical={"5%"}
-                    //   height="50%"
-                    justify="flex-start"
-                    color={theme.colors.bg.screens_bg}
-                    align="center"
-                    //   color={"green"}
-                  >
-                    {renderingUsersAccounts()}
-                    {/* <Switching_Accounts_Tile /> */}
-                  </Container>
-                )}
-              </ScrollView>
+              </Container>
             )}
+
+            {/* {isOtherUsers && (
+              <Container
+                width="100%"
+                height="10%"
+                color={theme.colors.bg.elements_bg}
+                // color={"red"}
+                align="flex-start"
+              >
+                {emailToSwitch?.trim().length === 0 && (
+                  <Spacer position="left" size="extraLarge">
+                    <Text variant="dm_sans_bold_18">
+                      Other accounts in this device (tap to switch)
+                    </Text>
+                  </Spacer>
+                )}
+              </Container>
+            )} */}
+
+            {showOtherUsers &&
+              (!Array.isArray(otherUsersInTheDevice) && !isLoading ? (
+                <Text variant="dm_sans_medium_16">Loading accounts…</Text>
+              ) : (
+                <ScrollView style={{ flex: 1, width: "100%" }}>
+                  {!emailToSwitch?.length && (
+                    <Container
+                      width="100%"
+                      padding_vertical={"5%"}
+                      justify="flex-start"
+                      color={theme.colors.bg.screens_bg}
+                      align="center"
+                    >
+                      {renderingUsersAccounts()}
+                    </Container>
+                  )}
+                </ScrollView>
+              ))}
+
             {emailToSwitch?.trim().length > 0 && (
               <Regular_CTA
                 width="95%"
@@ -252,7 +273,7 @@ export default function Switching_Accounts_View() {
                   if (!ok) return; // ✅ stops here, no request
                   if (ok) {
                     setEmailToSwitch("");
-                    setPin;
+                    // setPin;
                     navigation.navigate(
                       "Login_Screen_For_Switching_Accounts_View",
                       {
@@ -266,37 +287,6 @@ export default function Switching_Accounts_View() {
                     );
                   }
                 }}
-                // action={async () => {
-                //   setEmailTouched(true);
-
-                //   const ok = isValidEmail(emailToSwitch);
-                //   if (!ok) return; // ✅ stops here, no request
-
-                //   try {
-                //     const result = await gettingUserByEmailToAuthenticated(
-                //       emailToSwitch.trim()
-                //     );
-                //     if (result?.ok) {
-                //       console.log(
-                //         "Successfully switched to user:",
-                //         emailToSwitch
-                //       );
-                //       setEmailToSwitch("");
-                //       setUserSwitched(true);
-                //       setEmailTouched(false); // optional: clear error state
-                //       return;
-                //     }
-                //     // ✅ show error from backend (not found / failed)
-                //     setUserSwitched(false);
-                //     setError(
-                //       result?.message || "This user was not found. Sign up?"
-                //     );
-                //   } catch (error) {
-                //     setUserSwitched(false);
-                //     setError("This user was not found. Sign up?");
-                //     console.log("Error switching user account:", error);
-                //   }
-                // }}
               />
             )}
           </Container>

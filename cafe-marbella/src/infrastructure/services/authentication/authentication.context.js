@@ -51,6 +51,7 @@ export const Authentication_Context_Provider = ({ children }) => {
   const [userToDB, setUserToDB] = useState(userToDBInitialState);
   const [emailToSwitch, setEmailToSwitch] = useState("");
   const [otherUsersInTheDevice, setOtherUsersInTheDevice] = useState([]);
+  const [isOtherUsers, setIsOtherUsers] = useState(false);
 
   const [firebaseReady, setFirebaseReady] = useState(false);
   const [firebaseUser, setFirebaseUser] = useState(null);
@@ -100,15 +101,7 @@ export const Authentication_Context_Provider = ({ children }) => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   const unsub = onAuthStateChanged(auth, (fbUser) => {
-  //     setFirebaseUser(fbUser);
-  //     setFirebaseReady(true);
-  //     console.log("Firebase auth state:", fbUser ? fbUser.uid : "signed out");
-  //   });
-  //   return unsub;
-  // }, []);
-
+  // This useEffect sets the list of other users in the device, excluding the currently authenticated user.
   useEffect(() => {
     let cancelled = false;
 
@@ -128,6 +121,7 @@ export const Authentication_Context_Provider = ({ children }) => {
         const list = Array.isArray(parsed) ? parsed : [];
 
         const others = list.filter((u) => u?.user_id !== user.user_id);
+        setIsOtherUsers(others.length > 0);
 
         if (!cancelled) setOtherUsersInTheDevice(others);
       } catch (e) {
@@ -556,6 +550,7 @@ export const Authentication_Context_Provider = ({ children }) => {
         generatePinNumberOnDemand,
         firebaseReady,
         firebaseUser,
+        isOtherUsers,
       }}
     >
       {children}

@@ -10,7 +10,12 @@ import { Spacer } from "../spacers and globals/optimized.spacer.component.js";
 
 import ChevronRightIcon from "../../../assets/my_icons/chevron-right.svg";
 
-export const Menu_Tile = ({ caption = "Standard caption", action }) => {
+export const Menu_Tile = ({
+  caption = "Standard caption",
+  action,
+  disabled = false,
+}) => {
+  console.log("Menu_Tile - disabled:", disabled);
   return (
     <Action_Container
       width="100%"
@@ -20,19 +25,24 @@ export const Menu_Tile = ({ caption = "Standard caption", action }) => {
       justify="center"
       align="centers"
       direction="row"
+      // onPress={disabled ? null : action}
       onPress={action}
     >
       <Container
         width="90%"
         padding_vertical="4%"
         color={theme.colors.bg.elements_bg}
-        // color={"yellow"}
+        //color={"yellow"}
         justify="center"
         align="flex-start"
       >
         <Spacer position="left" size="extraLarge">
           <Spacer position="left" size="large">
-            <Text variant="raleway_bold_16">{caption}</Text>
+            <Text
+              variant={disabled ? "raleway_bold_16_grey" : "raleway_bold_16"}
+            >
+              {caption}
+            </Text>
           </Spacer>
         </Spacer>
       </Container>
