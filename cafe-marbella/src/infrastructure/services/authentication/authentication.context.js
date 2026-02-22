@@ -52,7 +52,8 @@ export const Authentication_Context_Provider = ({ children }) => {
   const [emailToSwitch, setEmailToSwitch] = useState("");
   const [otherUsersInTheDevice, setOtherUsersInTheDevice] = useState([]);
   const [isOtherUsers, setIsOtherUsers] = useState(false);
-
+  const [reset_pin_1, set_Reset_Pin_1] = useState("");
+  const [reset_pin_2, set_Reset_Pin_2] = useState("");
   const [firebaseReady, setFirebaseReady] = useState(false);
   const [firebaseUser, setFirebaseUser] = useState(null);
 
@@ -87,11 +88,11 @@ export const Authentication_Context_Provider = ({ children }) => {
 
         setUser(userByUID);
         await AsyncStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userByUID));
-      } catch (e) {
-        console.log("Failed to load DB user:", e?.message ?? e);
+      } catch (error) {
+        console.log("Failed to load DB user:", error?.message ?? error);
         // optional: force sign out if DB user missing
-        // await auth.signOut();
-        // setUser(null);
+        await auth.signOut();
+        setUser(null);
       }
     });
 
@@ -172,16 +173,11 @@ export const Authentication_Context_Provider = ({ children }) => {
   };
 
   console.log(
-    "USER TO DB IN AUTH CONTEXT: ",
+    "USER SCHEMA TO REGISTER USER AT AUTH CONTEXT: ",
     JSON.stringify(userToDB, null, 2)
   );
   console.log("USER IN AUTH CONTEXT: ", JSON.stringify(user, null, 2));
   const isAuthenticated = !!user;
-
-  // const otherUsersInTheDevice = useMemo(() => {
-  //   if (!user?.user_id) return [];
-  //   return usersInTheDevice.filter((u) => u?.user_id !== user.user_id);
-  // }, [user]);
 
   const loginDevUser = (userData) => {
     setUser(user_authenticated);
@@ -518,6 +514,15 @@ export const Authentication_Context_Provider = ({ children }) => {
     }
   };
 
+  const isValidPin = /^\d{6}$/.test(pin);
+
+  // This can be used to enable/disable the login button in the reset pin UI
+  const canSubmit =
+    firebaseReady &&
+    !!firebaseUser &&
+    reset_pin_1 === reset_pin_2 &&
+    /^\d{6}$/.test(reset_pin_1);
+
   return (
     <AuthenticationContext.Provider
       value={{
@@ -551,6 +556,12 @@ export const Authentication_Context_Provider = ({ children }) => {
         firebaseReady,
         firebaseUser,
         isOtherUsers,
+        isValidPin,
+        reset_pin_1,
+        set_Reset_Pin_1,
+        reset_pin_2,
+        set_Reset_Pin_2,
+        canSubmit,
       }}
     >
       {children}

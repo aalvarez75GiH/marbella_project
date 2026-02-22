@@ -79,20 +79,6 @@ export const post_user_Request = async (
   }
 };
 
-// export const put_new_pin_Request = async (payload) => {
-//   const { new_pin, new_encrypted_pin, idToken } = payload;
-//   const endpoint = `${environment.usersEndPoint}/new_pin_on_demand`; // e.g. .../users/pin
-//   const res = await axios.put(
-//     endpoint,
-//     { new_pin, new_encrypted_pin },
-//     {
-//       headers: { Authorization: `Bearer ${idToken}` },
-//       timeout: 15000,
-//     }
-//   );
-//   return res.data; // { ok: true }
-// };
-
 export const put_new_pin_Request = async (payload, idToken) => {
   const endpoint = `${environment.usersEndPoint}/new_pin_on_demand`;
 

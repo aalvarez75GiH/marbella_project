@@ -65,9 +65,12 @@ export const Global_Context_Provider = ({ children }) => {
       currency: "USD",
     }).format(cents / 100);
   };
+
+  // ✅ validate email format (for PIN reset flow)
   const isValidEmail = (email = "") =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-  //   const emailOk = isValidEmail(emailToSwitch);
+    /^[a-z0-9]+([._%+-][a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}$/i.test(
+      String(email).trim()
+    );
 
   const togglingGlobalLanguage = () => {
     setIsLoading(true);
@@ -83,7 +86,7 @@ export const Global_Context_Provider = ({ children }) => {
     }, 500);
   };
 
-  console.log("GLOBAL CONTEXT RENDERED with language:", globalLanguage);
+  console.log("USER LANGUAGE AT GLOBAL CONTEXT:", globalLanguage);
   return (
     <GlobalContext.Provider
       value={{

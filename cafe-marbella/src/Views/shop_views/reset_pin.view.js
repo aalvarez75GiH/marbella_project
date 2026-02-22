@@ -24,7 +24,9 @@ import { CartContext } from "../../infrastructure/services/cart/cart.context.js"
 export default function Reset_PIN_View() {
   const navigation = useNavigation();
   const theme = useTheme();
+
   const pinInputRef = useRef(null);
+  const secondPinRef = useRef(null);
 
   const route = useRoute();
   const { returnTo } = route.params || {};
@@ -32,38 +34,52 @@ export default function Reset_PIN_View() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { generatePinNumberOnDemand, firebaseReady, firebaseUser } = useContext(
-    AuthenticationContext
-  );
-  console.log("FIREBASE READY?:", firebaseReady);
-  console.log("FIREBASE USER?:", firebaseUser);
+  const {
+    generatePinNumberOnDemand,
+    reset_pin_1,
+    set_Reset_Pin_1,
+    reset_pin_2,
+    set_Reset_Pin_2,
+    canSubmit,
+    // setPin, // (if you still expose it, but this screen doesn't need it)
+  } = useContext(AuthenticationContext);
 
   const { lockCartInit } = useContext(CartContext);
 
-  const [emailTouched, setEmailTouched] = useState(false);
   const [error, setError] = useState(null);
-  const [pinNumber_1, setPinNumber_1] = useState("");
-  const [pinNumber_2, setPinNumber_2] = useState("");
 
+  // ✅ show "PIN must be 6 digits" ONLY after user tries to focus PIN2
+  const [showPin1LengthError, setShowPin1LengthError] = useState(false);
+
+  // Auto-focus first PIN input
   useEffect(() => {
     const timeout = setTimeout(() => {
       pinInputRef.current?.focus();
-    }, 300); // slight delay for modal animation
-
+    }, 300);
     return () => clearTimeout(timeout);
   }, []);
 
-  const isValidEmail =
-    global?.isValidEmail ||
-    ((email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).toLowerCase()));
-  const isValidPin = /^\d{6}$/.test(pinNumber_1);
+  // Optional: auto-focus second input once first reaches 6 digits
+  useEffect(() => {
+    if (reset_pin_1.length === 6) {
+      secondPinRef.current?.focus();
+    }
+  }, [reset_pin_1]);
 
-  //   console.log("COMING TO LOGIN VIEW FROM:", comingFrom);
-  const canSubmit =
-    firebaseReady &&
-    !!firebaseUser &&
-    pinNumber_1 === pinNumber_2 &&
-    /^\d{6}$/.test(pinNumber_1);
+  const validateFirstPinBeforeSecond = () => {
+    // user is attempting to go to PIN2; now we validate PIN1 length
+    setShowPin1LengthError(true);
+
+    if (reset_pin_1.length < 6) {
+      setError("PIN must be exactly 6 digits before continuing.");
+      return false;
+    }
+
+    // ok
+    setError(null);
+    return true;
+  };
+
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -73,10 +89,8 @@ export default function Reset_PIN_View() {
         <Global_activity_indicator
           caption="Wait, we are setting up your new PIN..."
           caption_width="65%"
-          // color={"red"}
         />
       ) : (
-        // your normal UI
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -85,11 +99,11 @@ export default function Reset_PIN_View() {
             width="100%"
             height="100%"
             color={theme.colors.bg.elements_bg}
-            //color={"red"}
             justify="flex-start"
             align="center"
           >
             <Go_Back_Header label="" action={() => navigation.goBack()} />
+
             <Container
               width="100%"
               height="15%"
@@ -100,11 +114,11 @@ export default function Reset_PIN_View() {
                 style={styles.image_1}
               />
             </Container>
+
             <Container
               width="100%"
-              height={"25%"} // shrink if there's an error to make room
+              height={"25%"}
               color={theme.colors.bg.elements_bg}
-              //   color={"yellow"}
               align="flex-start"
             >
               <Spacer position="left" size="extraLarge">
@@ -113,48 +127,28 @@ export default function Reset_PIN_View() {
                 </Text>
               </Spacer>
             </Container>
+
             <Container
               width="100%"
               height="20%"
               color={theme.colors.bg.elements_bg}
-              //   color={"yellow"}
               align="center"
               direction="column"
             >
+              {/* PIN 1 */}
               <DataInput
                 ref={pinInputRef}
                 label="Pin number (only 6 digits)"
-                value={pinNumber_1}
+                value={reset_pin_1}
                 onChangeText={(value) => {
                   const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
-                  setPinNumber_1(digitsOnly);
-                  if (error) {
-                    setError(null); // 👈 clear error while typing
-                  }
-                }}
-                underlineColor={theme.colors.inputs.bottom_lines_disabled}
-                border_color={theme.colors.inputs.bottom_lines_disabled}
-                border_width={"0.5px"}
-                activeUnderlineColor={theme.colors.ui.primary}
-                keyboardType={Platform.OS === "ios" ? "number-pad" : "numeric"}
-                autoCapitalize="none"
-                autoCorrect={false}
-                textContentType="Password"
-                autoComplete="email"
-                returnKeyType="done"
-                onFocus={() => setEmailTouched(true)}
-                onBlur={() => setEmailTouched(false)}
-                blurOnSubmit
-              />
-              <DataInput
-                label="Repeat pin number"
-                value={pinNumber_2}
-                onChangeText={(value) => {
-                  const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
-                  setPinNumber_2(digitsOnly);
-                  if (error) {
-                    setError(null); // 👈 clear error while typing
-                  }
+                  set_Reset_Pin_1(digitsOnly);
+
+                  // ✅ hide pin-length error while user is fixing it
+                  if (showPin1LengthError) setShowPin1LengthError(false);
+
+                  // clear any error as they type
+                  if (error) setError(null);
                 }}
                 underlineColor={theme.colors.inputs.bottom_lines_disabled}
                 border_color={theme.colors.inputs.bottom_lines_disabled}
@@ -166,37 +160,65 @@ export default function Reset_PIN_View() {
                 textContentType="password"
                 autoComplete="off"
                 returnKeyType="done"
-                onFocus={() => setEmailTouched(true)}
-                onBlur={() => setEmailTouched(false)}
                 blurOnSubmit
               />
-              {error && (
+
+              {/* ✅ show ONLY after user tries PIN2 */}
+              {showPin1LengthError && reset_pin_1.length < 6 && (
                 <Container
                   width="100%"
-                  height="25%"
+                  height="30%"
                   color={theme.colors.bg.elements_bg}
                   justify="flex-start"
                   align="flex-start"
                 >
-                  <Spacer position="top" size="large" />
+                  <Spacer position="top" size="medium" />
                   <Spacer position="left" size="large">
                     <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
-                      {error}
+                      PIN must be 6 digits.
                     </Text>
                   </Spacer>
                 </Container>
               )}
+
+              {/* PIN 2 */}
+              <DataInput
+                ref={secondPinRef}
+                label="Repeat pin number"
+                value={reset_pin_2}
+                onChangeText={(value) => {
+                  const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
+                  set_Reset_Pin_2(digitsOnly);
+                  if (error) setError(null);
+                }}
+                underlineColor={theme.colors.inputs.bottom_lines_disabled}
+                border_color={theme.colors.inputs.bottom_lines_disabled}
+                border_width={"0.5px"}
+                activeUnderlineColor={theme.colors.ui.primary}
+                keyboardType={Platform.OS === "ios" ? "number-pad" : "numeric"}
+                autoCapitalize="none"
+                autoCorrect={false}
+                textContentType="password"
+                autoComplete="off"
+                returnKeyType="done"
+                onFocus={() => {
+                  const ok = validateFirstPinBeforeSecond();
+                  if (!ok) {
+                    pinInputRef.current?.focus(); // send back to PIN1
+                  }
+                }}
+                blurOnSubmit
+              />
             </Container>
-            <Spacer position="top" size="extraLarge" />
 
             <Spacer position="top" size="extraLarge" />
-            {/* {pinNumber_1 === pinNumber_2 && isValidPin && ( */}
+            <Spacer position="top" size="extraLarge" />
+
             {canSubmit && (
               <Container
                 width="100%"
-                padding_vertical={"2%"} // shrink if there's an error to make room
+                padding_vertical={"2%"}
                 color={theme.colors.bg.elements_bg}
-                //color={"red"}
                 align="flex-start"
                 justify="center"
                 direction="row"
@@ -208,7 +230,6 @@ export default function Reset_PIN_View() {
                   border_radius={"40px"}
                   caption="Update PIN"
                   caption_text_variant="dm_sans_bold_20_white"
-                  //   action={() => generatePinNumberOnDemand(pinNumber_1)}
                   action={async () => {
                     if (isSubmitting) return;
 
@@ -216,20 +237,24 @@ export default function Reset_PIN_View() {
                     lockCartInit(true);
 
                     try {
-                      // 1) login
                       const result = await generatePinNumberOnDemand(
-                        pinNumber_1
+                        reset_pin_1
                       );
+
                       if (!result?.ok) {
                         setError(result?.error || "Pin generation failed");
                         return;
                       }
 
-                      // 2) close modal if possible (avoid GO_BACK warning)
+                      // ✅ clear fields on success
+                      set_Reset_Pin_1("");
+                      set_Reset_Pin_2("");
+                      setShowPin1LengthError(false);
+                      setError(null);
+
                       const parent = navigation.getParent();
                       if (parent?.canGoBack?.()) parent.goBack();
 
-                      // 5) go where you want
                       requestAnimationFrame(() => {
                         navigationRef.current?.navigate("App", {
                           screen: returnTo?.tab ?? "Shop",
@@ -240,12 +265,11 @@ export default function Reset_PIN_View() {
                         });
                       });
                     } catch (e) {
-                      console.log("SWITCH LOGIN CTA ERROR:", e?.message ?? e);
+                      console.log("UPDATE PIN CTA ERROR:", e?.message ?? e);
                       setError("Something went wrong. Try again.");
                     } finally {
                       lockCartInit(false);
                       setIsSubmitting(false);
-                      setPin("");
                     }
                   }}
                 />
@@ -257,6 +281,7 @@ export default function Reset_PIN_View() {
     </SafeArea>
   );
 }
+
 const styles = StyleSheet.create({
   image_1: {
     width: "100%",

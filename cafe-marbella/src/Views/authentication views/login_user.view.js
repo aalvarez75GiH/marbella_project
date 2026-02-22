@@ -22,16 +22,12 @@ import { DataInput } from "../../components/inputs/data_text_input.js";
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { CartContext } from "../../infrastructure/services/cart/cart.context.js";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context.js";
+import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
 
 export default function Login_Users_View() {
   const navigation = useNavigation();
   const theme = useTheme();
   const emailInputRef = useRef(null);
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { email, setEmail, setPin, pin, loginUser, emailError, setEmailError } =
-    useContext(AuthenticationContext);
 
   const {
     cart,
@@ -45,8 +41,22 @@ export default function Login_Users_View() {
     clearGuestCart,
   } = useContext(CartContext);
   const { prepareOrderFromCart } = useContext(OrdersContext);
+  const { isValidEmail } = useContext(GlobalContext);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
   const [error, setError] = useState(null);
+
+  const {
+    email,
+    setEmail,
+    setPin,
+    pin,
+    loginUser,
+    emailError,
+    setEmailError,
+    isValidPin,
+  } = useContext(AuthenticationContext);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -55,11 +65,6 @@ export default function Login_Users_View() {
 
     return () => clearTimeout(timeout);
   }, []);
-
-  const isValidEmail =
-    global?.isValidEmail ||
-    ((email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).toLowerCase()));
-  const isValidPin = /^\d{6}$/.test(pin);
 
   const route = useRoute();
   const { returnTo } = route?.params ?? {};
@@ -145,9 +150,6 @@ export default function Login_Users_View() {
                 textContentType="emailAddress"
                 autoComplete="email"
                 returnKeyType="done"
-                // onFocus={() => setIsEmailFocused(true)}
-                // onBlur={() => setIsEmailFocused(false)}
-                // blurOnSubmit
               />
               {!email && emailTouched && (
                 <Spacer position="top" size="extraLarge" />

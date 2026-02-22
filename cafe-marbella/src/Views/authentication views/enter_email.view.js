@@ -18,10 +18,8 @@ export default function Enter_Email_View() {
   const navigation = useNavigation();
 
   const { setUserToDB, userToDB } = useContext(AuthenticationContext);
+  const { isValidEmail } = useContext(GlobalContext);
   const global = useContext(GlobalContext);
-  const isValidEmail =
-    global?.isValidEmail ||
-    ((email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).toLowerCase()));
 
   const theme = useTheme();
 

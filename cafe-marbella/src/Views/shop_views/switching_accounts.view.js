@@ -12,9 +12,11 @@ import { Text } from "../../infrastructure/typography/text.component";
 import { Regular_CTA } from "../../components/ctas/regular.cta";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 
-import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
 import { ScrollView } from "react-native-gesture-handler";
 import { Switching_Accounts_Tile } from "../../components/tiles/switching_accounts.tile";
+
+import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
+import { GlobalContext } from "../../infrastructure/services/global/global.context";
 
 export default function Switching_Accounts_View() {
   const {
@@ -25,7 +27,7 @@ export default function Switching_Accounts_View() {
     user,
     isOtherUsers,
   } = useContext(AuthenticationContext);
-
+  const { isValidEmail } = useContext(GlobalContext);
   const showOtherUsers = Boolean(isOtherUsers);
   console.log("isOtherUsers:", isOtherUsers);
 
@@ -36,10 +38,6 @@ export default function Switching_Accounts_View() {
   const [emailTouched, setEmailTouched] = useState(false);
   const [error, setError] = useState(null);
   const [emailError, setEmailError] = useState(null);
-
-  const isValidEmail = (email = "") =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-  //   const emailOk = isValidEmail(emailToSwitch);
 
   useEffect(() => {
     if (emailToSwitch?.trim().length === 0) {

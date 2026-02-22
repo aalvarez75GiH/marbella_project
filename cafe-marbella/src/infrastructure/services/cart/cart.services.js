@@ -3,7 +3,7 @@ import { environment } from "../../../util/env";
 
 export const gettingCartByUserIDRequest = async (user_id) => {
   const { cartsEndPoint } = environment;
-  console.log("USER ID AT SERVICE:", user_id);
+  // console.log("USER ID AT SERVICE:", user_id);
 
   try {
     try {
