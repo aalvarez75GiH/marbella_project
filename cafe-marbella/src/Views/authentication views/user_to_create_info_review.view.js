@@ -98,7 +98,7 @@ export default function User_To_Create_Info_Review_View() {
         <Spacer position="top" size="extraLarge" />
 
         <Container
-          width="100%"
+          width="95%"
           height="60%"
           color={theme.colors.bg.elements_bg}
           // color="red"
@@ -122,7 +122,7 @@ export default function User_To_Create_Info_Review_View() {
               color={theme.colors.bg.elements_bg}
               // color="blue"
               justify="center"
-              align="flex-start"
+              align="flex-end"
             >
               <Spacer position="left" size="medium">
                 <Text variant="raleway_bold_16" textAlign="center">
@@ -140,6 +140,7 @@ export default function User_To_Create_Info_Review_View() {
             >
               <Spacer position="left" size="medium">
                 <Text variant="raleway_regular_16" textAlign="center">
+                  {" "}
                   {first_name}
                 </Text>
               </Spacer>
@@ -161,7 +162,7 @@ export default function User_To_Create_Info_Review_View() {
               color={theme.colors.bg.elements_bg}
               // color="blue"
               justify="center"
-              align="flex-start"
+              align="flex-end"
             >
               <Spacer position="left" size="medium">
                 <Text variant="raleway_bold_16" textAlign="center">
@@ -179,6 +180,7 @@ export default function User_To_Create_Info_Review_View() {
             >
               <Spacer position="left" size="medium">
                 <Text variant="raleway_regular_16" textAlign="center">
+                  {" "}
                   {last_name}
                 </Text>
               </Spacer>
@@ -200,7 +202,7 @@ export default function User_To_Create_Info_Review_View() {
               color={theme.colors.bg.elements_bg}
               // color="blue"
               justify="center"
-              align="flex-start"
+              align="flex-end"
             >
               <Spacer position="left" size="medium">
                 <Text variant="raleway_bold_16" textAlign="center">
@@ -218,6 +220,7 @@ export default function User_To_Create_Info_Review_View() {
             >
               <Spacer position="left" size="medium">
                 <Text variant="raleway_regular_16" textAlign="center">
+                  {" "}
                   {email}
                 </Text>
               </Spacer>
@@ -239,7 +242,7 @@ export default function User_To_Create_Info_Review_View() {
               color={theme.colors.bg.elements_bg}
               // color="blue"
               justify="center"
-              align="flex-start"
+              align="flex-end"
             >
               <Spacer position="left" size="medium">
                 <Text variant="raleway_bold_16" textAlign="center">
@@ -256,7 +259,15 @@ export default function User_To_Create_Info_Review_View() {
               align="flex-start"
             >
               <Spacer position="left" size="medium">
-                <Text variant="raleway_regular_16" textAlign="center">
+                <Text
+                  variant="raleway_regular_16"
+                  textAlign="center"
+                  style={{
+                    flexShrink: 1,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  {" "}
                   {address}
                 </Text>
               </Spacer>
@@ -278,7 +289,7 @@ export default function User_To_Create_Info_Review_View() {
               color={theme.colors.bg.elements_bg}
               // color="blue"
               justify="center"
-              align="flex-start"
+              align="flex-end"
             >
               <Spacer position="left" size="medium">
                 <Text variant="raleway_bold_16" textAlign="center">
@@ -296,6 +307,7 @@ export default function User_To_Create_Info_Review_View() {
             >
               <Spacer position="left" size="medium">
                 <Text variant="raleway_regular_16" textAlign="center">
+                  {" "}
                   {phone_number}
                 </Text>
               </Spacer>

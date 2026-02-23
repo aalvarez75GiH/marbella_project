@@ -164,7 +164,7 @@ export default function Enter_Phone_Number_View() {
             {showCTA && (
               <Regular_CTA
                 width="55%"
-                height={"35%"}
+                height={Platform.OS === "ios" ? "35%" : "45%"}
                 color={theme.colors.ui.primary}
                 border_radius={"40px"}
                 caption="Next"

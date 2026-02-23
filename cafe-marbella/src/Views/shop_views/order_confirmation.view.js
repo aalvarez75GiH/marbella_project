@@ -1,37 +1,20 @@
 import React, { useLayoutEffect } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
-import { ScrollView } from "react-native";
 import { Image, StyleSheet } from "react-native";
 
-// import MartbellaLogoPNG from "../../../assets/brand_images/Marbella_logo.png";
 import {
   Container,
   Action_Container,
 } from "../../components/containers/general.containers";
 import { Text } from "../../infrastructure/typography/text.component";
-import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
-import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
-import { Product_Details_Card } from "../../components/cards/product_details_card/product_details.card";
 
-import { CartContext } from "../../infrastructure/services/cart/cart.context";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 
 export default function Order_Confirmation_View({ route }) {
   const theme = useTheme();
   const navigation = useNavigation();
-  // Hiding tab bar for this screen
-  // useLayoutEffect(() => {
-  //   navigation.getParent()?.setOptions({
-  //     tabBarStyle: { display: "none" },
-  //   });
-
-  //   return () =>
-  //     navigation.getParent()?.setOptions({
-  //       tabBarStyle: undefined,
-  //     });
-  // }, [navigation]);
 
   return (
     <SafeArea
