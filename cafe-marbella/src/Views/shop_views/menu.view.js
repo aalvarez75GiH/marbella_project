@@ -6,6 +6,7 @@ import { Switch } from "react-native-paper";
 
 import { Container } from "../../components/containers/general.containers";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
+import { NewSafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 import { Exit_Header_With_Label } from "../../components/headers/exit_with_label.header";
 import { Text } from "../../infrastructure/typography/text.component";
@@ -17,6 +18,7 @@ import { Global_activity_indicator } from "../../components/activity indicators/
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
 import { GlobalContext } from "../../infrastructure/services/global/global.context";
+
 export default function Menu_View() {
   const theme = useTheme();
   const navigation = useNavigation();
@@ -30,20 +32,21 @@ export default function Menu_View() {
 
   const { globalLanguage, togglingGlobalLanguage, isLoading } =
     useContext(GlobalContext);
-  useFocusEffect(
-    React.useCallback(() => {
-      const parent = navigation.getParent();
-      parent?.setOptions({ tabBarStyle: { display: "none" } });
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     const parent = navigation.getParent();
+  //     parent?.setOptions({ tabBarStyle: { display: "none" } });
 
-      return () => {
-        parent?.setOptions({ tabBarStyle: undefined });
-      };
-    }, [navigation])
-  );
+  //     return () => {
+  //       parent?.setOptions({ tabBarStyle: undefined });
+  //     };
+  //   }, [navigation])
+  // );
 
   return (
-    <SafeArea
+    <NewSafeArea
       background_color={theme.colors.bg.elements_bg}
+      edges={["top", "left", "right"]}
       style={{ flex: 1 }}
     >
       {isLoading ? (
@@ -200,6 +203,6 @@ export default function Menu_View() {
           </Container>
         </Container>
       )}
-    </SafeArea>
+    </NewSafeArea>
   );
 }

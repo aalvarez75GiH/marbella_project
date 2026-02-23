@@ -1,7 +1,8 @@
-import React, { useContext } from "react";
+import React, { useContext, useCallback } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
+import { useFocusEffect } from "@react-navigation/native";
 
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
@@ -48,6 +49,17 @@ export default function Shop_Order_Review_View() {
   const { lat, lng } = geo || {};
 
   const navigation = useNavigation();
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const parent = navigation.getParent();
+  //     parent?.setOptions({ tabBarStyle: { display: "none" } });
+
+  //     return () => {
+  //       parent?.setOptions({ tabBarStyle: { display: "flex" } });
+  //     };
+  //   }, [navigation])
+  // );
   //   let delivery_type = "pickup";
 
   const renderingOrderProducts = () => {
@@ -79,7 +91,7 @@ export default function Shop_Order_Review_View() {
               const hasDeliveryType = state.routes.some(
                 (r) => r.name === "Shop_Delivery_Type_View"
               );
-
+              console.log("HAS DELIVERY TYPE IN STACK:", hasDeliveryType);
               if (hasDeliveryType) {
                 // keep popping until it's on top
                 while (

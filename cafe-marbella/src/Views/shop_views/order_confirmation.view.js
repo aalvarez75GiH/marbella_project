@@ -22,16 +22,16 @@ export default function Order_Confirmation_View({ route }) {
   const theme = useTheme();
   const navigation = useNavigation();
   // Hiding tab bar for this screen
-  useLayoutEffect(() => {
-    navigation.getParent()?.setOptions({
-      tabBarStyle: { display: "none" },
-    });
+  // useLayoutEffect(() => {
+  //   navigation.getParent()?.setOptions({
+  //     tabBarStyle: { display: "none" },
+  //   });
 
-    return () =>
-      navigation.getParent()?.setOptions({
-        tabBarStyle: undefined,
-      });
-  }, [navigation]);
+  //   return () =>
+  //     navigation.getParent()?.setOptions({
+  //       tabBarStyle: undefined,
+  //     });
+  // }, [navigation]);
 
   return (
     <SafeArea

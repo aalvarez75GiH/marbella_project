@@ -7,3 +7,10 @@ export const SafeArea = styled(SafeAreaView)`
   padding-top: ${Platform.OS === "android" ? 35 : 0}px;
   background-color: ${(props) => props.background_color};
 `;
+export const NewSafeArea = styled(SafeAreaView).attrs((props) => ({
+  edges: props.edges ?? ["top", "bottom", "left", "right"],
+}))`
+  flex: 1;
+  padding-top: ${Platform.OS === "android" ? 35 : 0}px;
+  background-color: ${(props) => props.background_color};
+`;

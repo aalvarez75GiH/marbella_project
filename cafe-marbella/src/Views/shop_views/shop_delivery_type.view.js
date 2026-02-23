@@ -1,4 +1,6 @@
 import React, { useContext, useEffect } from "react";
+import { useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 import { Container } from "../../components/containers/general.containers";
@@ -19,6 +21,8 @@ import { PaymentsContext } from "../../infrastructure/services/payments/payments
 export default function Shop_Delivery_Type_View() {
   const theme = useTheme();
   const navigation = useNavigation();
+  // Hiding tab bar for this screen
+
   const { cart: cartRaw, isLoading } = useContext(CartContext);
 
   const cart = cartRaw ?? {
@@ -99,7 +103,8 @@ export default function Shop_Delivery_Type_View() {
         <Container
           width="100%"
           height="900px"
-          color={theme.colors.bg.screens_bg}
+          //color={theme.colors.bg.screens_bg}
+          color={theme.colors.bg.elements_bg}
           justify="flex-start"
           align="center"
         >

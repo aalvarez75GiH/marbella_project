@@ -40,9 +40,12 @@ export default function Reset_PIN_View() {
     set_Reset_Pin_1,
     reset_pin_2,
     set_Reset_Pin_2,
-    canSubmit,
-    // setPin, // (if you still expose it, but this screen doesn't need it)
   } = useContext(AuthenticationContext);
+
+  const canSubmitLocal =
+    reset_pin_1.length === 6 &&
+    reset_pin_2.length === 6 &&
+    reset_pin_1 === reset_pin_2;
 
   const { lockCartInit } = useContext(CartContext);
 
@@ -79,6 +82,13 @@ export default function Reset_PIN_View() {
     setError(null);
     return true;
   };
+  console.log("pins:", {
+    reset_pin_1,
+    reset_pin_2,
+    len1: reset_pin_1?.length,
+    len2: reset_pin_2?.length,
+    equals: reset_pin_1 === reset_pin_2,
+  });
 
   return (
     <SafeArea
@@ -214,10 +224,11 @@ export default function Reset_PIN_View() {
             <Spacer position="top" size="extraLarge" />
             <Spacer position="top" size="extraLarge" />
 
-            {canSubmit && (
+            {canSubmitLocal && (
               <Container
                 width="100%"
                 padding_vertical={"2%"}
+                style={{ paddingVertical: 16 }} // ✅ number, not percent
                 color={theme.colors.bg.elements_bg}
                 align="flex-start"
                 justify="center"
@@ -225,7 +236,8 @@ export default function Reset_PIN_View() {
               >
                 <Regular_CTA
                   width="55%"
-                  height={"45%"}
+                  // height={"45%"}
+                  height={56} // ✅ number, not percent
                   color={theme.colors.ui.primary}
                   border_radius={"40px"}
                   caption="Update PIN"

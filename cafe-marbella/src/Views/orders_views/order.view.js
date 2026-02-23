@@ -14,6 +14,7 @@ import { SafeArea } from "../../components/spacers and globals/safe-area.compone
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 import { Text } from "../../infrastructure/typography/text.component";
 import { Product_Cart_Item_Tile } from "../../components/tiles/product_cart_item.tile";
+import { Product_Cart_Item_For_Review_Tile } from "../../components/tiles/product_cart_item_for_review.tile";
 import { Order_Info_Tile } from "../../components/tiles/order_info.tile";
 import { RT_Delivery_Information_Order_Tile } from "../../components/tiles/rt_delivery_information_order_tile";
 import { Splitter_Component } from "../../components/others/grey_splitter.component";
@@ -65,7 +66,7 @@ export default function Order_View() {
 
       return (
         <Spacer position="bottom" size="medium" key={key}>
-          <Product_Cart_Item_Tile
+          <Product_Cart_Item_For_Review_Tile
             image={item?.size_variants?.[0]?.images?.[0]}
             product={item}
           />

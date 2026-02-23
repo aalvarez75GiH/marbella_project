@@ -214,38 +214,41 @@ export default function Login_Users_View() {
             </Container>
             <Spacer position="top" size="extraLarge" />
             {!email && !pin && (
-              <Container
-                width="100%"
-                height="10%"
-                color={theme.colors.bg.elements_bg}
-                //   color={"yellow"}
-                align="center"
-                direction="row"
-              >
-                <Spacer position="left" size="extraLarge" />
-                <Underlined_CTA
-                  width="50%"
-                  height={"40%"}
-                  caption="Forgot my password"
-                  color="transparent"
-                  action={() => null}
-                  border_color="#898989"
-                />
-                <Underlined_CTA
-                  width="50%"
-                  height={"40%"}
-                  caption="Sign Up"
-                  color="transparent"
-                  // action={() => navigation.navigate("Enter_Names_View")}
-                  action={() =>
-                    navigation.navigate("AuthModal", {
-                      screen: "Enter_Names_View",
-                      params: { returnTo }, // forward it
-                    })
-                  }
-                  border_color="#898989"
-                />
-              </Container>
+              <>
+                <Spacer position="top" size="extraLarge" />
+                <Container
+                  width="100%"
+                  height="10%"
+                  color={theme.colors.bg.elements_bg}
+                  //   color={"yellow"}
+                  align="center"
+                  direction="row"
+                >
+                  <Spacer position="left" size="extraLarge" />
+                  <Underlined_CTA
+                    width="50%"
+                    height={"40%"}
+                    caption="Forgot my password"
+                    color="transparent"
+                    action={() => null}
+                    border_color="#898989"
+                  />
+                  <Underlined_CTA
+                    width="50%"
+                    height={"40%"}
+                    caption="Sign Up"
+                    color="transparent"
+                    // action={() => navigation.navigate("Enter_Names_View")}
+                    action={() =>
+                      navigation.navigate("AuthModal", {
+                        screen: "Enter_Names_View",
+                        params: { returnTo }, // forward it
+                      })
+                    }
+                    border_color="#898989"
+                  />
+                </Container>
+              </>
             )}
             <Spacer position="top" size="extraLarge" />
             {email && pin && isValidPin && (

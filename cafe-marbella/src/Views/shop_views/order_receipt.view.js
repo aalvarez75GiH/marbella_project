@@ -58,16 +58,16 @@ export default function Shop_Order_Receipt_View() {
   const { comingFrom } = useContext(AuthenticationContext);
 
   const navigation = useNavigation();
-  useFocusEffect(
-    useCallback(() => {
-      const parent = navigation.getParent();
-      parent?.setOptions({ tabBarStyle: { display: "none" } });
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const parent = navigation.getParent();
+  //     parent?.setOptions({ tabBarStyle: { display: "none" } });
 
-      return () => {
-        parent?.setOptions({ tabBarStyle: { display: "flex" } });
-      };
-    }, [navigation])
-  );
+  //     return () => {
+  //       parent?.setOptions({ tabBarStyle: { display: "flex" } });
+  //     };
+  //   }, [navigation])
+  // );
 
   const renderingOrderProducts = () => {
     return order_products.map((item) => {

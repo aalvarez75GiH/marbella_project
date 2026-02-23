@@ -516,13 +516,6 @@ export const Authentication_Context_Provider = ({ children }) => {
 
   const isValidPin = /^\d{6}$/.test(pin);
 
-  // This can be used to enable/disable the login button in the reset pin UI
-  const canSubmit =
-    firebaseReady &&
-    !!firebaseUser &&
-    reset_pin_1 === reset_pin_2 &&
-    /^\d{6}$/.test(reset_pin_1);
-
   return (
     <AuthenticationContext.Provider
       value={{
@@ -561,7 +554,6 @@ export const Authentication_Context_Provider = ({ children }) => {
         set_Reset_Pin_1,
         reset_pin_2,
         set_Reset_Pin_2,
-        canSubmit,
       }}
     >
       {children}

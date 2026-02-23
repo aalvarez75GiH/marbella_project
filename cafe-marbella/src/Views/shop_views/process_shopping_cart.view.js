@@ -34,17 +34,6 @@ export default function Process_Shopping_Cart_View() {
   // *************
   const navigation = useNavigation();
 
-  useFocusEffect(
-    useCallback(() => {
-      const parent = navigation.getParent();
-      parent?.setOptions({ tabBarStyle: { display: "none" } });
-
-      return () => {
-        parent?.setOptions({ tabBarStyle: { display: "flex" } });
-      };
-    }, [navigation])
-  );
-
   const renderProductCartItemTile = ({ item }) => {
     const image = item?.size_variants?.[0]?.images?.[0]; // ✅ safe
     return (
