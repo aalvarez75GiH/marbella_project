@@ -21,11 +21,11 @@ import { GlobalContext } from "../../infrastructure/services/global/global.conte
 export default function Switching_Accounts_View() {
   const {
     otherUsersInTheDevice,
+    isOtherUsers,
     emailToSwitch,
     setEmailToSwitch,
     isLoading,
     user,
-    isOtherUsers,
   } = useContext(AuthenticationContext);
   const { isValidEmail } = useContext(GlobalContext);
   const showOtherUsers = Boolean(isOtherUsers);
@@ -34,10 +34,8 @@ export default function Switching_Accounts_View() {
   console.log("Current authenticated user in Switching Accounts View:", user);
 
   const navigation = useNavigation();
-  const [userSwitched, setUserSwitched] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
   const [error, setError] = useState(null);
-  const [emailError, setEmailError] = useState(null);
 
   useEffect(() => {
     if (emailToSwitch?.trim().length === 0) {
@@ -83,59 +81,8 @@ export default function Switching_Accounts_View() {
           // color={"red"}
         />
       )}
-      {!isLoading && userSwitched && (
-        <Container
-          width="100%"
-          height="100%"
-          color={theme.colors.bg.elements_bg}
-          justify="center"
-          align="center"
-        >
-          <Text variant="dm_sans_bold_18"> User switched Successfully!!! </Text>
-          <Spacer position="top" size="large"></Spacer>
-          <Regular_CTA
-            width="50%"
-            height="8%"
-            color={theme.colors.ui.primary}
-            border_radius={"40px"}
-            caption="Home"
-            caption_text_variant="dm_sans_bold_20_white"
-            action={() =>
-              navigation.reset({
-                index: 0,
-                routes: [{ name: "Home_View" }],
-              })
-            }
-          />
-        </Container>
-      )}
-      {!isLoading && error && (
-        <Container
-          width="100%"
-          height="100%"
-          color={theme.colors.bg.elements_bg}
-          justify="center"
-          align="center"
-        >
-          <Text variant="dm_sans_bold_18"> {error} </Text>
-          <Spacer position="top" size="large"></Spacer>
-          <Regular_CTA
-            width="50%"
-            height="8%"
-            color={theme.colors.ui.primary}
-            border_radius={"40px"}
-            caption="Sign Up"
-            caption_text_variant="dm_sans_bold_20_white"
-            action={() =>
-              navigation.reset({
-                index: 0,
-                routes: [{ name: "Home_View" }],
-              })
-            }
-          />
-        </Container>
-      )}
-      {!isLoading && !userSwitched && !error && (
+
+      {!isLoading && !error && (
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -219,24 +166,6 @@ export default function Switching_Accounts_View() {
               </Container>
             )}
 
-            {/* {isOtherUsers && (
-              <Container
-                width="100%"
-                height="10%"
-                color={theme.colors.bg.elements_bg}
-                // color={"red"}
-                align="flex-start"
-              >
-                {emailToSwitch?.trim().length === 0 && (
-                  <Spacer position="left" size="extraLarge">
-                    <Text variant="dm_sans_bold_18">
-                      Other accounts in this device (tap to switch)
-                    </Text>
-                  </Spacer>
-                )}
-              </Container>
-            )} */}
-
             {showOtherUsers &&
               (!Array.isArray(otherUsersInTheDevice) && !isLoading ? (
                 <Text variant="dm_sans_medium_16">Loading accounts…</Text>
@@ -271,7 +200,6 @@ export default function Switching_Accounts_View() {
                   if (!ok) return; // ✅ stops here, no request
                   if (ok) {
                     setEmailToSwitch("");
-                    // setPin;
                     navigation.navigate(
                       "Login_Screen_For_Switching_Accounts_View",
                       {
@@ -279,7 +207,6 @@ export default function Switching_Accounts_View() {
                         returnTo: {
                           tab: "Shop",
                           screen: "Home_View",
-                          // params: { coming_from: "Home_View" },
                         },
                       }
                     );

@@ -1,31 +1,18 @@
-import React, {
-  useContext,
-  useLayoutEffect,
-  useEffect,
-  useCallback,
-} from "react";
-import { FlatList } from "react-native";
+import React, { useContext, useCallback } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { rootNavigate } from "../../infrastructure/navigation/navigation_ref";
 import { ScrollView } from "react-native-gesture-handler";
 
-import {
-  Action_Container,
-  Container,
-} from "../../components/containers/general.containers";
+import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
-import { Shopping_Cart_Title } from "../../components/titles/shopping_cart.title";
 import { Text } from "../../infrastructure/typography/text.component";
-import { Product_Cart_Item_Tile } from "../../components/tiles/product_cart_item.tile";
-import { Shopping_Cart_Sub_Total_Footer } from "../../components/footers/shopping_cart_sub_total.footer";
+import { Product_Cart_Item_For_Review_Tile } from "../../components/tiles/product_cart_item_for_review.tile";
 import { Regular_CTA } from "../../components/ctas/regular.cta";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { Order_Info_Tile } from "../../components/tiles/order_info.tile";
-import { Delivery_type_Badge } from "../../components/others/delivery_type.badge";
-import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
 import { Delivery_Information_Order_Tile } from "../../components/tiles/delivery_information_order.tile";
 import { Splitter_Component } from "../../components/others/grey_splitter.component";
 import { Payment_method_Info_Tile } from "../../components/tiles/payment_method_used_info.tile";
@@ -86,7 +73,7 @@ export default function Shop_Order_Receipt_View() {
     return order_products.map((item) => {
       return (
         <Spacer position="bottom" size="medium" key={item.id}>
-          <Product_Cart_Item_Tile
+          <Product_Cart_Item_For_Review_Tile
             image={item.size_variants[0].images[0]}
             product={item}
           />

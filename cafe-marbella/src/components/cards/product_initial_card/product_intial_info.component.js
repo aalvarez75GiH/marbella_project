@@ -14,8 +14,8 @@ export const Product_Initial_Info_Component = ({
     <Container
       width="100%"
       height="26%"
-      //color={theme.colors.bg.elements_bg}
-      color={"lightgreen"}
+      color={theme.colors.bg.elements_bg}
+      // color={"lightgreen"}
       justify="center"
       align="center"
       direction="row"

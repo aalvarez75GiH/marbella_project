@@ -27,8 +27,13 @@ export default function Different_Delivery_Address_View() {
 
   const { deviceLat, deviceLng } = useContext(GeolocationContext);
   const { onTaxes } = useContext(PaymentsContext);
-  const { setDifferentAddress, handlingDeliveryOption, myOrder, isLoading } =
-    useContext(OrdersContext);
+  const {
+    setDifferentAddress,
+    handlingDeliveryOption,
+    myOrder,
+    isLoading,
+    isCheckoutLoading,
+  } = useContext(OrdersContext);
 
   const { customer_address } = myOrder || {};
   const CTA_HEIGHT = 65; // ✅ fixed height so it never shrinks
@@ -37,7 +42,7 @@ export default function Different_Delivery_Address_View() {
       background_color={theme.colors.bg.elements_bg}
       style={{ flex: 1 }}
     >
-      {isLoading ? (
+      {isCheckoutLoading ? (
         <Global_activity_indicator
           caption="Wait, we are working with your new delivery address..."
           caption_width="65%"
@@ -101,76 +106,165 @@ export default function Different_Delivery_Address_View() {
                 align="center"
                 style={{ paddingVertical: 10 }}
               >
-                <View style={{ width: "93%" }}>
-                  <GooglePlacesAutocomplete
-                    placeholder="New address for delivery"
-                    query={{
-                      key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
-                      language: "en",
-                      components: "country:us",
-                      location: `${deviceLat},${deviceLng}`,
-                      radius: 50000, // meters (~31 miles)
-                      types: "geocode",
-                    }}
-                    fetchDetails
-                    onPress={(data, details = null) => {
-                      const formatted =
-                        details?.formatted_address ?? data.description;
+                {Platform.OS === "ios" && (
+                  <View style={{ width: "93%" }}>
+                    <GooglePlacesAutocomplete
+                      placeholder="New address for delivery"
+                      query={{
+                        key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
+                        language: "en",
+                        components: "country:us",
+                        location: `${deviceLat},${deviceLng}`,
+                        radius: 50000, // meters (~31 miles)
+                        types: "geocode",
+                      }}
+                      fetchDetails
+                      onPress={(data, details = null) => {
+                        const formatted =
+                          details?.formatted_address ?? data.description;
 
-                      const lat = details?.geometry?.location?.lat;
-                      const lng = details?.geometry?.location?.lng;
+                        const lat = details?.geometry?.location?.lat;
+                        const lng = details?.geometry?.location?.lng;
 
-                      // consider valid only if we have formatted + coords
-                      if (
-                        formatted &&
-                        typeof lat === "number" &&
-                        typeof lng === "number"
-                      ) {
-                        setDifferentAddress(formatted);
+                        // consider valid only if we have formatted + coords
+                        if (
+                          formatted &&
+                          typeof lat === "number" &&
+                          typeof lng === "number"
+                        ) {
+                          setDifferentAddress(formatted);
 
-                        setSelectedAddress({
-                          formatted_address: formatted,
-                          lat,
-                          lng,
-                          place_id: details?.place_id ?? data?.place_id,
-                        });
-                      } else {
-                        setSelectedAddress(null);
-                      }
-                    }}
-                    textInputProps={{
-                      onChangeText: () => {
-                        // user is typing again -> invalidate selection until they tap a suggestion
-                        setSelectedAddress(null);
-                      },
-                    }}
-                    styles={{
-                      textInput: {
-                        width: "100%",
-                        height: 50,
-                        borderBottomWidth: 1,
-                        borderBottomColor: theme.colors.inputs.bottom_lines,
-                        backgroundColor: "transparent",
+                          setSelectedAddress({
+                            formatted_address: formatted,
+                            lat,
+                            lng,
+                            place_id: details?.place_id ?? data?.place_id,
+                          });
+                        } else {
+                          setSelectedAddress(null);
+                        }
+                      }}
+                      textInputProps={{
+                        onChangeText: () => {
+                          // user is typing again -> invalidate selection until they tap a suggestion
+                          setSelectedAddress(null);
+                        },
+                      }}
+                      styles={{
+                        textInput: {
+                          width: "100%",
+                          height: 50,
+                          borderBottomWidth: 1,
+                          borderBottomColor: theme.colors.inputs.bottom_lines,
+                          backgroundColor: "transparent",
 
-                        paddingLeft: 5, // ✅ remove left inset
-                        paddingRight: 0,
-                        paddingVertical: 0, // optional: tighter vertical alignment
-                        marginLeft: 0, // just in case
-                        textAlign: "left", // explicit
-                      },
+                          paddingLeft: 5, // ✅ remove left inset
+                          paddingRight: 0,
+                          paddingVertical: 0, // optional: tighter vertical alignment
+                          marginLeft: 0, // just in case
+                          textAlign: "left", // explicit
+                        },
+                      }}
+                      enablePoweredByContainer={false}
+                      keyboardShouldPersistTaps="handled"
+                      minLength={1}
+                    />
+                  </View>
+                )}
+                {Platform.OS === "android" && (
+                  <View
+                    style={{
+                      width: "93%",
+                      alignSelf: "center",
+                      position: "relative",
+                      overflow: "visible",
+                      zIndex: 9999,
+                      elevation: 9999,
                     }}
-                    enablePoweredByContainer={false}
-                    keyboardShouldPersistTaps="handled"
-                    minLength={1}
-                  />
-                </View>
+                    pointerEvents="box-none"
+                  >
+                    <GooglePlacesAutocomplete
+                      placeholder="New delivery address"
+                      fetchDetails
+                      listViewDisplayed="auto" // you can keep true while debugging
+                      keyboardShouldPersistTaps="handled"
+                      enablePoweredByContainer={false}
+                      minLength={2}
+                      debounce={250}
+                      query={{
+                        key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
+                        language: "en",
+                        components: "country:us",
+                        location: `${deviceLat},${deviceLng}`,
+                        radius: 50000,
+                      }}
+                      textInputProps={{
+                        onFocus: () => setScrollEnabled(false),
+                        onBlur: () => setScrollEnabled(true),
+                        onChangeText: (t) => {
+                          console.log("typing:", t);
+                          setSelectedAddress(null);
+                        },
+                      }}
+                      onPress={(data, details = null) => {
+                        const formatted =
+                          details?.formatted_address ?? data.description;
+
+                        const lat = details?.geometry?.location?.lat;
+                        const lng = details?.geometry?.location?.lng;
+
+                        // consider valid only if we have formatted + coords
+                        if (
+                          formatted &&
+                          typeof lat === "number" &&
+                          typeof lng === "number"
+                        ) {
+                          setDifferentAddress(formatted);
+
+                          setSelectedAddress({
+                            formatted_address: formatted,
+                            lat,
+                            lng,
+                            place_id: details?.place_id ?? data?.place_id,
+                          });
+                        } else {
+                          setSelectedAddress(null);
+                        }
+                      }}
+                      styles={{
+                        container: { flex: 0, width: "100%" },
+                        textInputContainer: {
+                          width: "100%",
+                          paddingHorizontal: 0,
+                        },
+                        textInput: {
+                          width: "100%",
+                          height: 50,
+                          borderBottomWidth: 0.5,
+                          borderBottomColor: theme.colors.inputs.bottom_lines,
+                          backgroundColor: "transparent",
+                          paddingLeft: 5,
+                        },
+                        listView: {
+                          position: "absolute",
+                          top: 50,
+                          left: 0,
+                          right: 0,
+                          maxHeight: 260,
+                          zIndex: 999999,
+                          elevation: 999999,
+                          backgroundColor: theme.colors.bg.elements_bg,
+                        },
+                      }}
+                    />
+                  </View>
+                )}
               </Container>
 
               {/* filler pushes CTA down */}
               <View style={{ flex: 1 }} />
             </ScrollView>
 
-            {/* ✅ Fixed footer CTA (outside ScrollView) */}
             <Container
               width="100%"
               color={theme.colors.bg.elements_bg}
@@ -195,9 +289,6 @@ export default function Different_Delivery_Address_View() {
                       onTaxes,
                       differentAddress: selectedAddress.formatted_address,
                       customer_address,
-                      // optional: pass geo too if you want
-                      // delivery_geo: { lat: selectedAddress.lat, lng: selectedAddress.lng },
-                      // place_id: selectedAddress.place_id,
                     });
                   }}
                 />

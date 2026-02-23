@@ -7,13 +7,12 @@ import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplet
 import { Container } from "../../components/containers/general.containers";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
-import { Exit_Header_With_Label } from "../../components/headers/exit_with_label.header";
 import { Text } from "../../infrastructure/typography/text.component";
 import { Regular_CTA } from "../../components/ctas/regular.cta";
-import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header.js";
 import { GeolocationContext } from "../../infrastructure/services/geolocation/geolocation.context";
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
+
 export default function Enter_Address_View() {
   const theme = useTheme();
   const navigation = useNavigation();

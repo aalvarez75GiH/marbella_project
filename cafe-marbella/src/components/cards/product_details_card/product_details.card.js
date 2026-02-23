@@ -22,9 +22,6 @@ export const Product_Details_Card = ({ item = null }) => {
   const selectedVariant =
     item.size_variants.find((v) => v.id === selectedVariantId) ||
     defaultVariant;
-  // console.log("SELECTED VARIANT ID:", selectedVariantId);
-  // console.log("SELECTED IMAGE ID:", selectedVariant.images[selectedImageIndex]);
-  // console.log("QUANTITY:", selectedVariant.quantity);
 
   const product_to_add_to_cart = {
     ...item,

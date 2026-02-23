@@ -1,18 +1,14 @@
-import React, { useContext, useLayoutEffect, useEffect } from "react";
-import { FlatList } from "react-native";
+import React, { useContext } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
 
-import {
-  Action_Container,
-  Container,
-} from "../../components/containers/general.containers";
+import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 import { Text } from "../../infrastructure/typography/text.component";
-import { Product_Cart_Item_Tile } from "../../components/tiles/product_cart_item.tile";
+import { Product_Cart_Item_For_Review_Tile } from "../../components/tiles/product_cart_item_for_review.tile";
 import { Regular_CTA } from "../../components/ctas/regular.cta";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { Order_Info_Tile } from "../../components/tiles/order_info.tile";
@@ -58,7 +54,7 @@ export default function Shop_Order_Review_View() {
     return order_products.map((item) => {
       return (
         <Spacer position="bottom" size="medium" key={item.id}>
-          <Product_Cart_Item_Tile
+          <Product_Cart_Item_For_Review_Tile
             image={item?.size_variants?.[0]?.images?.[0]}
             product={item}
           />
