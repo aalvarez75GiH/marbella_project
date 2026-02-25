@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
@@ -19,7 +19,6 @@ export default function Enter_Email_View() {
 
   const { setUserToDB, userToDB } = useContext(AuthenticationContext);
   const { isValidEmail } = useContext(GlobalContext);
-  const global = useContext(GlobalContext);
 
   const theme = useTheme();
 
@@ -28,6 +27,21 @@ export default function Enter_Email_View() {
 
   const route = useRoute();
   const { comingFrom, returnTo } = route?.params ?? {};
+
+  const emailDataInputRef = useRef(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      emailDataInputRef.current?.focus();
+    }, 100); // small delay helps with navigation transitions
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  console.log(
+    "USER TO DB IN ENTER EMAIL VIEW:",
+    JSON.stringify(userToDB, null, 2)
+  );
 
   return (
     <SafeArea
@@ -47,7 +61,17 @@ export default function Enter_Email_View() {
           justify="flex-start"
           align="center"
         >
-          <Go_Back_Header label="" action={() => navigation.goBack()} />
+          <Go_Back_Header
+            label=""
+            action={() => {
+              setUserToDB({
+                ...userToDB,
+                email: "",
+              });
+              setIsEmailFocused(true);
+              navigation.goBack();
+            }}
+          />
 
           <Container
             width="100%"
@@ -71,6 +95,7 @@ export default function Enter_Email_View() {
             direction="column"
           >
             <DataInput
+              ref={emailDataInputRef}
               label="Email"
               value={userToDB.email}
               onChangeText={(value) => {
@@ -126,27 +151,31 @@ export default function Enter_Email_View() {
             align="center"
             direction="row"
           >
-            {isEmailFocused && (
-              <Regular_CTA
-                width="55%"
-                height={60}
-                color={theme.colors.ui.primary}
-                border_radius={"40px"}
-                caption="Next"
-                caption_text_variant="dm_sans_bold_20_white"
-                action={() => {
-                  setIsEmailFocused(false);
-                  if (!isValidEmail(userToDB.email)) {
-                    setEmailError("Please enter a valid email address.");
-                    return;
-                  }
-                  navigation.navigate("AuthModal", {
-                    screen: "Enter_Address_View",
-                    params: { returnTo },
-                  });
-                }}
-              />
-            )}
+            {isEmailFocused &&
+              isValidEmail(userToDB.email) &&
+              userToDB.email !== "" && (
+                <Regular_CTA
+                  // width="55%"
+                  // height={60}
+                  width="200px"
+                  height={"65px"}
+                  color={theme.colors.ui.primary}
+                  border_radius={"40px"}
+                  caption="Next"
+                  caption_text_variant="dm_sans_bold_20_white"
+                  action={() => {
+                    setIsEmailFocused(false);
+                    if (!isValidEmail(userToDB.email)) {
+                      setEmailError("Please enter a valid email address.");
+                      return;
+                    }
+                    navigation.navigate("AuthModal", {
+                      screen: "Enter_Address_View",
+                      params: { returnTo },
+                    });
+                  }}
+                />
+              )}
           </Container>
         </Container>
       </KeyboardAvoidingView>

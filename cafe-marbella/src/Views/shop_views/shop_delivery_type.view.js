@@ -45,7 +45,7 @@ export default function Shop_Delivery_Type_View() {
     distance_time,
     max_limit_pickup_ratio,
   } = myWarehouse;
-  // console.log("DISTANCE IN MILES:", distance_in_miles);
+  console.log("DISTANCE IN MILES:", distance_in_miles);
   const { formatted_address } = geo || {};
   const { phone } = warehouse_information || {};
   const distanceMilesNumber = parseFloat(distance_in_miles);

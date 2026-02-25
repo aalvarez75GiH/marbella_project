@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Platform, KeyboardAvoidingView, ScrollView, View } from "react-native";
@@ -28,6 +28,16 @@ export default function Enter_Address_View() {
 
   console.log("PLACES KEY:", process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY);
   console.log("DEVICE LOCATION for PLACES biasing:", deviceLat, deviceLng);
+
+  const addressDataInputRef = useRef(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      addressDataInputRef.current?.focus();
+    }, 100); // small delay helps with navigation transitions
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const placesQuery = {
     key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
@@ -127,6 +137,7 @@ export default function Enter_Address_View() {
               >
                 {Platform.OS === "ios" && (
                   <GooglePlacesAutocomplete
+                    ref={addressDataInputRef}
                     onFail={(err) =>
                       console.log("PLACES FAIL:", JSON.stringify(err))
                     }

@@ -97,7 +97,16 @@ export default function Login_Users_View() {
             justify="flex-start"
             align="center"
           >
-            <Go_Back_Header label="" action={() => navigation.goBack()} />
+            <Go_Back_Header
+              label=""
+              action={() => {
+                setEmail("");
+                setEmailError(null);
+                setPin("");
+                navigation.goBack();
+              }}
+            />
+
             <Container
               width="100%"
               height="15%"
@@ -262,8 +271,8 @@ export default function Login_Users_View() {
                 direction="row"
               >
                 <Regular_CTA
-                  width="55%"
-                  height={"45%"}
+                  width="200px"
+                  height={"65px"}
                   color={theme.colors.ui.primary}
                   border_radius={"40px"}
                   caption="Log In"

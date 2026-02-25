@@ -104,7 +104,10 @@ export default function Menu_View() {
             contentContainerStyle={{ flexGrow: 1, alignItems: "center" }}
           >
             <Menu_Sub_Title_Title label="Profile" />
-            <Menu_Tile caption="Personal info" action={() => null} />
+            <Menu_Tile
+              caption="Personal info"
+              action={() => navigation.navigate("Personal_Information_View")}
+            />
             <Menu_Tile
               caption="Transactions history"
               action={() => navigation.navigate("Orders_View")}

@@ -117,7 +117,7 @@ export default function User_To_Create_Info_Review_View() {
             direction="row"
           >
             <Container
-              width="35%"
+              width="30%"
               height="100%"
               color={theme.colors.bg.elements_bg}
               // color="blue"
@@ -157,7 +157,7 @@ export default function User_To_Create_Info_Review_View() {
             direction="row"
           >
             <Container
-              width="35%"
+              width="30%"
               height="100%"
               color={theme.colors.bg.elements_bg}
               // color="blue"
@@ -197,7 +197,7 @@ export default function User_To_Create_Info_Review_View() {
             direction="row"
           >
             <Container
-              width="35%"
+              width="30%"
               height="100%"
               color={theme.colors.bg.elements_bg}
               // color="blue"
@@ -211,10 +211,10 @@ export default function User_To_Create_Info_Review_View() {
               </Spacer>
             </Container>
             <Container
-              width="65%"
+              width="70%"
               height="100%"
               color={theme.colors.bg.elements_bg}
-              // color="green"
+              //color="green"
               justify="center"
               align="flex-start"
             >
@@ -237,7 +237,7 @@ export default function User_To_Create_Info_Review_View() {
             direction="row"
           >
             <Container
-              width="35%"
+              width="30%"
               height="100%"
               color={theme.colors.bg.elements_bg}
               // color="blue"
@@ -284,7 +284,7 @@ export default function User_To_Create_Info_Review_View() {
             direction="row"
           >
             <Container
-              width="35%"
+              width="30%"
               height="100%"
               color={theme.colors.bg.elements_bg}
               // color="blue"
@@ -293,7 +293,7 @@ export default function User_To_Create_Info_Review_View() {
             >
               <Spacer position="left" size="medium">
                 <Text variant="raleway_bold_16" textAlign="center">
-                  Phone number:
+                  Phone #:
                 </Text>
               </Spacer>
             </Container>

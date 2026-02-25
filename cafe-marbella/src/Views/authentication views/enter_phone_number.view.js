@@ -1,4 +1,4 @@
-import React, { useContext, useState, useMemo } from "react";
+import React, { useContext, useState, useMemo, useRef, useEffect } from "react";
 import { View, KeyboardAvoidingView, Platform } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
@@ -58,6 +58,16 @@ export default function Enter_Phone_Number_View() {
   console.log("SHOW CTA:", showCTA);
   //   const showCTA = isPhoneFocused || phoneDigits.length > 0;
 
+  const phoneNumberDataInputRef = useRef(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      phoneNumberDataInputRef.current?.focus();
+    }, 100); // small delay helps with navigation transitions
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -103,6 +113,7 @@ export default function Enter_Phone_Number_View() {
             </Container>
             <Spacer position="top" size="large" />
             <DataInput
+              ref={phoneNumberDataInputRef}
               label="Phone Number"
               value={userToDB?.phone_number || ""}
               onChangeText={(value) => {
@@ -154,17 +165,20 @@ export default function Enter_Phone_Number_View() {
           {/* CTA pinned bottom-ish using flex (Option A pattern) */}
           <Container
             width="100%"
+            padding_vertical="25px"
             // style={{ flex: 1, paddingBottom: 16 }}
             color={theme.colors.bg.elements_bg}
-            //color={"red"}
+            // color={"red"}
             align="center"
             justify="center"
             direction="row"
           >
             {showCTA && (
               <Regular_CTA
-                width="55%"
-                height={Platform.OS === "ios" ? "35%" : "45%"}
+                //width="55%"
+                //height={Platform.OS === "ios" ? "35%" : "45%"}
+                width="200px"
+                height={"65px"}
                 color={theme.colors.ui.primary}
                 border_radius={"40px"}
                 caption="Next"

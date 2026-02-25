@@ -1,4 +1,4 @@
-import React, { use, useContext, useEffect, useState } from "react";
+import React, { use, useContext, useEffect, useState, useRef } from "react";
 import {
   FlatList,
   View,
@@ -38,6 +38,16 @@ export default function Enter_Names_View() {
 
   const route = useRoute();
   const { comingFrom, returnTo } = route?.params ?? {};
+
+  const firstNameDataInputRef = useRef(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      firstNameDataInputRef.current?.focus();
+    }, 100); // small delay helps with navigation transitions
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <SafeArea
@@ -81,6 +91,7 @@ export default function Enter_Names_View() {
             direction="column"
           >
             <DataInput
+              ref={firstNameDataInputRef}
               label="First Name"
               value={userToDB.first_name}
               onChangeText={(value) => {
@@ -138,8 +149,10 @@ export default function Enter_Names_View() {
           >
             {isLastNameFocused && (
               <Regular_CTA
-                width="55%"
-                height={60}
+                width="200px"
+                height={"65px"}
+                // width="55%"
+                // height={60}
                 color={theme.colors.ui.primary}
                 border_radius={"40px"}
                 caption="Next"
