@@ -20,6 +20,10 @@ import Sign_Out_Overlay_View from "../../Views/shop_views/sign_out_overlay.view"
 import Login_Screen_For_Switching_Accounts_View from "../../Views/shop_views/login_screen_for_switching_accounts.view";
 import Reset_PIN_View from "../../Views/shop_views/reset_pin.view";
 import Personal_Information_View from "../../Views/shop_views/personal_infrmation.view";
+import Email_Verified_View from "../../Views/shop_views/email_verified.view";
+import Login_View from "../../Views/authentication views/login_user.view";
+import Shop_Login_Users_View from "../../Views/shop_views/shop_login.view";
+import Email_Verification_Sent_View from "../../Views/shop_views/email_verified.view";
 
 const ShopFlowStack = createNativeStackNavigator();
 
@@ -99,6 +103,14 @@ export const Shop_Navigator = () => {
       <ShopFlowStack.Screen
         name="Personal_Information_View"
         component={Personal_Information_View}
+      />
+      <ShopFlowStack.Screen
+        name="Email_Verification_Sent_View"
+        component={Email_Verification_Sent_View}
+      />
+      <ShopFlowStack.Screen
+        name="Shop_Login_Users_View"
+        component={Shop_Login_Users_View}
       />
       <ShopFlowStack.Screen name="Menu_View" component={Menu_View} />
     </ShopFlowStack.Navigator>

@@ -1,7 +1,11 @@
 import React, { useState, createContext, useEffect, useMemo } from "react";
-import { signInWithCustomToken } from "firebase/auth";
+import {
+  signInWithCustomToken,
+  updateEmail,
+  verifyBeforeUpdateEmail,
+} from "firebase/auth";
 
-import { Platform } from "react-native";
+import { Alert } from "react-native";
 import {
   user_authenticated,
   usersInTheDevice,
@@ -19,6 +23,7 @@ import {
 import {
   post_user_Request,
   gettingUserByUIDRequest,
+  put_update_userinfo_Request,
 } from "./authentication.sevices";
 import {
   STORAGE_KEYS,
@@ -137,7 +142,10 @@ export const Authentication_Context_Provider = ({ children }) => {
     };
   }, [user?.user_id]);
 
-  // 2) Register (create user locally + persist)
+  // helper regex to validate PIN format (6 digits)
+  const isValidPin = /^\d{6}$/.test(pin);
+
+  //  Register (create user locally + persist)
   const registerLocalUser = async (newUser) => {
     setError(null);
     try {
@@ -166,7 +174,7 @@ export const Authentication_Context_Provider = ({ children }) => {
     }
   };
 
-  // 3) Logout
+  // Logout
   const logout = async () => {
     await AsyncStorage.removeItem(CURRENT_USER_KEY);
     setUser(null);
@@ -296,21 +304,63 @@ export const Authentication_Context_Provider = ({ children }) => {
   };
 
   // ********************* LOG IN USER LOGIC *************************
+  // const signingInWithEmailAndPasswordFunction = async (email, pin) => {
+  //   // setIsLoading(true);
+  //   console.log("EMAIL AT SIGNIN FUNCTION:", email);
+  //   console.log("PIN AT SIGNIN FUNCTION:", pin);
+  //   try {
+  //     await new Promise((resolve) => setTimeout(resolve, 2000));
+  //     // await savePin(pin);
+  //     const userCredential = await signInWithEmailAndPassword(auth, email, pin);
+  //     console.log("USER LOGGED IN:", userCredential.user);
+
+  //     if (userCredential.user) {
+  //       console.log(
+  //         "USER LOGGED IN:",
+  //         JSON.stringify(userCredential.user, null, 2)
+  //       );
+  //       const raw = await gettingUserByUIDRequest(userCredential.user.uid);
+  //       const userByUID = Array.isArray(raw) ? raw[0] : raw;
+  //       if (!userByUID) throw new Error("User not found in DB");
+
+  //       await registerLocalUser(userByUID);
+  //       setUser(userByUID);
+  //       return { ok: true, user: userByUID };
+  //     }
+  //   } catch (error) {
+  //     setError(
+  //       error.message === "Firebase: Error (auth/missing-email)."
+  //         ? "We haven't found an email for this PIN number"
+  //         : error.message === "Firebase: Error (auth/invalid-credential)."
+  //         ? "We haven't found a user for this PIN number"
+  //         : error.message === "Firebase: Error (auth/too-many-requests)."
+  //         ? "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your PIN or you can try again later."
+  //         : null
+  //     );
+  //   }
+  // };
+
   const signingInWithEmailAndPasswordFunction = async (email, pin) => {
-    // setIsLoading(true);
     console.log("EMAIL AT SIGNIN FUNCTION:", email);
     console.log("PIN AT SIGNIN FUNCTION:", pin);
+
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      // await savePin(pin);
+
       const userCredential = await signInWithEmailAndPassword(auth, email, pin);
       console.log("USER LOGGED IN:", userCredential.user);
 
       if (userCredential.user) {
-        console.log(
-          "USER LOGGED IN:",
-          JSON.stringify(userCredential.user, null, 2)
-        );
+        // ✅ FINALIZE HERE (before DB fetch)
+        try {
+          const finalize = await finalizePendingEmailChange(
+            userCredential.user
+          );
+          console.log("finalize after login:", finalize);
+        } catch (e) {
+          console.log("finalize failed:", e?.message ?? e);
+        }
+
         const raw = await gettingUserByUIDRequest(userCredential.user.uid);
         const userByUID = Array.isArray(raw) ? raw[0] : raw;
         if (!userByUID) throw new Error("User not found in DB");
@@ -320,15 +370,7 @@ export const Authentication_Context_Provider = ({ children }) => {
         return { ok: true, user: userByUID };
       }
     } catch (error) {
-      setError(
-        error.message === "Firebase: Error (auth/missing-email)."
-          ? "We haven't found an email for this PIN number"
-          : error.message === "Firebase: Error (auth/invalid-credential)."
-          ? "We haven't found a user for this PIN number"
-          : error.message === "Firebase: Error (auth/too-many-requests)."
-          ? "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your PIN or you can try again later."
-          : null
-      );
+      setError(/* ... */);
     }
   };
 
@@ -514,7 +556,101 @@ export const Authentication_Context_Provider = ({ children }) => {
     }
   };
 
-  const isValidPin = /^\d{6}$/.test(pin);
+  const handleUpdate = async (userToDB) => {
+    setIsLoading(true);
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) return { ok: false, error: "SIGNED_OUT" };
+
+      const newEmail = (userToDB?.email ?? "").trim().toLowerCase();
+      const oldEmail = (currentUser.email ?? "").trim().toLowerCase();
+      const emailChanged = !!newEmail && newEmail !== oldEmail;
+
+      if (emailChanged) {
+        const r = await startEmailChange({ newEmail, userPatch: userToDB });
+        if (!r.ok) return r;
+
+        return { ok: true, emailChanged: true, pendingEmail: newEmail };
+      }
+
+      // No email change -> normal DB update now
+      const idToken = await currentUser.getIdToken(true);
+      const res = await put_update_userinfo_Request(userToDB, idToken);
+      if (res?.ok) {
+        setUser(res.data);
+        return { ok: true, emailChanged: false };
+      }
+      return { ok: false, error: res?.error ?? "DB_UPDATE_FAILED" };
+    } catch (e) {
+      if (e?.code === "auth/requires-recent-login") {
+        return { ok: false, error: "requires_recent_login" };
+      }
+      if (e?.code === "auth/email-already-in-use") {
+        return { ok: false, error: "email_already_in_use" };
+      }
+      return { ok: false, error: e?.message ?? "unknown" };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const PENDING_EMAIL_CHANGE_KEY = "PENDING_EMAIL_CHANGE";
+  const startEmailChange = async ({ newEmail, userPatch }) => {
+    const currentUser = auth.currentUser;
+    if (!currentUser) return { ok: false, error: "SIGNED_OUT" };
+
+    const actionCodeSettings = {
+      url: "https://cafe-marbella-be.web.app",
+      handleCodeInApp: false,
+    };
+
+    await verifyBeforeUpdateEmail(currentUser, newEmail, actionCodeSettings);
+
+    await AsyncStorage.setItem(
+      PENDING_EMAIL_CHANGE_KEY,
+      JSON.stringify({ pendingEmail: newEmail, userPatch })
+    );
+
+    return { ok: true };
+  };
+
+  const finalizePendingEmailChange = async (firebaseUser) => {
+    const raw = await AsyncStorage.getItem(PENDING_EMAIL_CHANGE_KEY);
+    if (!raw) return { ok: true, skipped: true };
+
+    const { pendingEmail, userPatch } = JSON.parse(raw);
+
+    const currentUser = firebaseUser ?? auth.currentUser;
+    if (!currentUser) return { ok: false, error: "SIGNED_OUT" };
+
+    await currentUser.reload();
+
+    const firebaseEmail = (currentUser.email ?? "").trim().toLowerCase();
+    const expectedEmail = (pendingEmail ?? "").trim().toLowerCase();
+
+    console.log("Firebase email:", firebaseEmail);
+    console.log("Expected email:", expectedEmail);
+
+    if (firebaseEmail !== expectedEmail) {
+      return {
+        ok: false,
+        error: "NOT_VERIFIED_YET",
+        firebaseEmail,
+        expectedEmail,
+      };
+    }
+
+    const idToken = await currentUser.getIdToken(true);
+    const res = await put_update_userinfo_Request(userPatch ?? {}, idToken);
+
+    if (res?.ok) {
+      setUser(res.data);
+      await AsyncStorage.removeItem(PENDING_EMAIL_CHANGE_KEY);
+      return { ok: true, updated: true };
+    }
+
+    return { ok: false, error: res?.error ?? "DB_UPDATE_FAILED" };
+  };
 
   return (
     <AuthenticationContext.Provider
@@ -554,6 +690,9 @@ export const Authentication_Context_Provider = ({ children }) => {
         set_Reset_Pin_1,
         reset_pin_2,
         set_Reset_Pin_2,
+        handleUpdate,
+        finalizePendingEmailChange,
+        startEmailChange,
       }}
     >
       {children}

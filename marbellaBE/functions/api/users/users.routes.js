@@ -262,5 +262,42 @@ usersRouter.put("/new_pin_on_demand", verifyFirebaseToken, async (req, res) => {
     return res.status(500).json({ ok: false, error: msg });
   }
 });
+usersRouter.put("/update_user_info", verifyFirebaseToken, async (req, res) => {
+  try {
+    const { uid } = req.auth;
+
+    const body = req.body ?? {};
+    const patch = {
+      first_name: body.first_name ?? "",
+      last_name: body.last_name ?? "",
+      email: body.email ?? "",
+      address: body.address ?? "",
+      createdAt: body.createdAt ?? "", // optional: you might want to keep original createdAt instead of updating it
+      updatedAt: new Date().toISOString(),
+      display_name: body.display_name ?? "",
+      phone_number: body.phone_number ?? "",
+    };
+    // optional hardening: ensure DB email matches Firebase email
+    const fbUser = await admin.auth().getUser(uid);
+    patch.email = fbUser.email ?? patch.email;
+
+    const result = await usersControllers.updateUser(patch, uid);
+
+    return res.status(result.status).json({
+      ok: result.status === 200,
+      message: result.message,
+      data: result.data ?? null,
+    });
+
+    // return res.status(200).json({ ok: true });
+  } catch (err) {
+    console.error("PUT /users/pin error:", err);
+
+    // Common Firebase error mapping
+    const msg = err?.message || "Server error";
+
+    return res.status(500).json({ ok: false, error: msg });
+  }
+});
 
 module.exports = usersRouter;

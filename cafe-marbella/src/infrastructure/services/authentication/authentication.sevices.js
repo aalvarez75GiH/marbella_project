@@ -89,3 +89,13 @@ export const put_new_pin_Request = async (payload, idToken) => {
 
   return res.data; // { ok: true, message: ... }
 };
+export const put_update_userinfo_Request = async (userToDB, idToken) => {
+  const endpoint = `${environment.usersEndPoint}/update_user_info`;
+
+  const res = await axios.put(endpoint, userToDB, {
+    headers: { Authorization: `Bearer ${idToken}` },
+    timeout: 15000,
+  });
+
+  return res.data; // { ok: true, message: ... }
+};

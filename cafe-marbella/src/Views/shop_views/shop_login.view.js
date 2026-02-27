@@ -18,13 +18,14 @@ import { Global_activity_indicator } from "../../components/activity indicators/
 import { Underlined_CTA } from "../../components/ctas/underlined.cta.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 import { DataInput } from "../../components/inputs/data_text_input.js";
+import { auth } from "../../../fb.js";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { CartContext } from "../../infrastructure/services/cart/cart.context.js";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context.js";
 import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
 
-export default function Login_Users_View() {
+export default function Shop_Login_Users_View() {
   const navigation = useNavigation();
   const theme = useTheme();
   const emailInputRef = useRef(null);
@@ -72,6 +73,20 @@ export default function Login_Users_View() {
   console.log("RETURN TO:", returnTo);
   console.log("EMAIL:", email);
   console.log("PIN:", pin);
+
+  const waitForFirebaseUser = (timeoutMs = 4000) =>
+    new Promise((resolve, reject) => {
+      const start = Date.now();
+      const unsub = auth.onAuthStateChanged((u) => {
+        if (u) {
+          unsub();
+          resolve(u);
+        } else if (Date.now() - start > timeoutMs) {
+          unsub();
+          reject(new Error("Firebase user not ready"));
+        }
+      });
+    });
   //   console.log("COMING TO LOGIN VIEW FROM:", comingFrom);
   return (
     <SafeArea
@@ -298,7 +313,25 @@ export default function Login_Users_View() {
                         setError(result?.error || "Login failed");
                         return;
                       }
+                      // ***************************************
+                      try {
+                        await waitForFirebaseUser(); // ✅ ensures auth.currentUser exists
+                        const pendingRes = await finalizePendingEmailChange();
 
+                        if (pendingRes?.ok && pendingRes?.updated) {
+                          console.log("✅ finalized pending email change");
+                        } else if (pendingRes?.ok && pendingRes?.skipped) {
+                          console.log("No pending email change");
+                        } else {
+                          console.log("Finalize result:", pendingRes);
+                        }
+                      } catch (e) {
+                        console.log(
+                          "Finalize pending email change error:",
+                          e?.message ?? e
+                        );
+                      }
+                      // ***************************************
                       const nextUser = { ...result.user, authenticated: true };
                       const userId = nextUser.user_id;
 
@@ -343,6 +376,30 @@ export default function Login_Users_View() {
 
                       // 7) close auth modal (so Cart is underneath)
                       navigation.getParent()?.goBack();
+
+                      // navigationRef.current?.reset({
+                      //   index: 0,
+                      //   routes: [
+                      //     {
+                      //       name: "App",
+                      //       state: {
+                      //         routes: [
+                      //           {
+                      //             name: targetTab,
+                      //             state: {
+                      //               routes: [
+                      //                 {
+                      //                   name: targetScreen,
+                      //                   params: targetParams,
+                      //                 },
+                      //               ],
+                      //             },
+                      //           },
+                      //         ],
+                      //       },
+                      //     },
+                      //   ],
+                      // });
 
                       // 8) navigate into the Cart stack delivery type (so GO_BACK works)
                       requestAnimationFrame(() => {
