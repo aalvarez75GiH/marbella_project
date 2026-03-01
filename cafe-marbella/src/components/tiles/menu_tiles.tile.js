@@ -15,7 +15,6 @@ export const Menu_Tile = ({
   action,
   disabled = false,
 }) => {
-  console.log("Menu_Tile - disabled:", disabled);
   return (
     <Action_Container
       width="100%"

@@ -40,6 +40,8 @@ export default function Reset_PIN_View() {
     set_Reset_Pin_1,
     reset_pin_2,
     set_Reset_Pin_2,
+    firebaseReady,
+    firebaseUser,
   } = useContext(AuthenticationContext);
 
   const canSubmitLocal =
@@ -220,6 +222,20 @@ export default function Reset_PIN_View() {
                 blurOnSubmit
               />
             </Container>
+            {error && (
+              <Container
+                width="100%"
+                color={theme.colors.bg.elements_bg}
+                align="flex-start"
+              >
+                <Spacer position="top" size="medium" />
+                <Spacer position="left" size="large">
+                  <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
+                    {error}
+                  </Text>
+                </Spacer>
+              </Container>
+            )}
 
             <Spacer position="top" size="extraLarge" />
             <Spacer position="top" size="extraLarge" />
@@ -243,7 +259,17 @@ export default function Reset_PIN_View() {
                   caption="Update PIN"
                   caption_text_variant="dm_sans_bold_20_white"
                   action={async () => {
+                    console.log("✅ Update PIN CTA pressed");
+
                     if (isSubmitting) return;
+
+                    // ✅ Don’t allow action until firebaseReady is true
+                    if (!firebaseReady) {
+                      setError(
+                        "Session is still loading. Try again in a moment."
+                      );
+                      return;
+                    }
 
                     setIsSubmitting(true);
                     lockCartInit(true);
@@ -254,15 +280,25 @@ export default function Reset_PIN_View() {
                       );
 
                       if (!result?.ok) {
-                        setError(result?.error || "Pin generation failed");
+                        setError(result?.error || "Pin update failed");
                         return;
                       }
 
-                      // ✅ clear fields on success
                       set_Reset_Pin_1("");
                       set_Reset_Pin_2("");
                       setShowPin1LengthError(false);
                       setError(null);
+
+                      if (result?.mustReLogin) {
+                        Alert.alert(
+                          "PIN updated",
+                          "Please log in again using your new PIN."
+                        );
+                        navigationRef.current?.navigate("AuthModal", {
+                          screen: "Login_View",
+                        });
+                        return;
+                      }
 
                       const parent = navigation.getParent();
                       if (parent?.canGoBack?.()) parent.goBack();
@@ -284,6 +320,97 @@ export default function Reset_PIN_View() {
                       setIsSubmitting(false);
                     }
                   }}
+                  // action={async () => {
+                  //   console.log("✅ Update PIN CTA pressed");
+
+                  //   if (isSubmitting) return;
+
+                  //   // local helper to avoid permanent spinner
+                  //   const withTimeout = (promise, ms = 20000) =>
+                  //     Promise.race([
+                  //       promise,
+                  //       new Promise((_, reject) =>
+                  //         setTimeout(
+                  //           () => reject(new Error("Timed out updating PIN")),
+                  //           ms
+                  //         )
+                  //       ),
+                  //     ]);
+
+                  //   setIsSubmitting(true);
+                  //   lockCartInit(true);
+
+                  //   try {
+                  //     // Clear previous error so user sees fresh state
+                  //     if (error) setError(null);
+
+                  //     console.log("CTA: calling generatePinNumberOnDemand...", {
+                  //       pinLen: reset_pin_1?.length,
+                  //       returnTo,
+                  //     });
+
+                  //     const result = await withTimeout(
+                  //       generatePinNumberOnDemand(reset_pin_1),
+                  //       20000
+                  //     );
+
+                  //     console.log(
+                  //       "CTA: generatePinNumberOnDemand result:",
+                  //       result
+                  //     );
+
+                  //     if (!result?.ok) {
+                  //       setError(result?.error || "Pin update failed");
+                  //       return;
+                  //     }
+
+                  //     // ✅ clear fields on success
+                  //     set_Reset_Pin_1("");
+                  //     set_Reset_Pin_2("");
+                  //     setShowPin1LengthError(false);
+                  //     setError(null);
+
+                  //     // ✅ If PIN change forced sign-out, send user to login
+                  //     if (result?.mustReLogin) {
+                  //       Alert.alert(
+                  //         "PIN updated",
+                  //         "Please log in again using your new PIN."
+                  //       );
+
+                  //       // Important: Reset_PIN_View seems to live inside App tabs,
+                  //       // so use the root ref to route to Auth modal/stack.
+                  //       navigationRef.current?.navigate("AuthModal", {
+                  //         screen: "Login_View",
+                  //       });
+
+                  //       return;
+                  //     }
+
+                  //     // ✅ If reauthed (customToken path), proceed normally
+                  //     const parent = navigation.getParent();
+                  //     if (parent?.canGoBack?.()) parent.goBack();
+
+                  //     requestAnimationFrame(() => {
+                  //       navigationRef.current?.navigate("App", {
+                  //         screen: returnTo?.tab ?? "Shop",
+                  //         params: {
+                  //           screen: returnTo?.screen ?? "Home_View",
+                  //           params: returnTo?.params ?? {},
+                  //         },
+                  //       });
+                  //     });
+                  //   } catch (e) {
+                  //     console.log("UPDATE PIN CTA ERROR:", e?.message ?? e);
+                  //     setError(
+                  //       e?.message === "Timed out updating PIN"
+                  //         ? "This is taking too long. Please try again."
+                  //         : "Something went wrong. Try again."
+                  //     );
+                  //   } finally {
+                  //     lockCartInit(false);
+                  //     setIsSubmitting(false);
+                  //   }
+                  // }}
                 />
               </Container>
             )}

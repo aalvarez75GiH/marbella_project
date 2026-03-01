@@ -127,50 +127,6 @@ export default function Login_Screen_For_Switching_Accounts_View() {
               align="center"
               direction="column"
             >
-              {/* <DataInput
-                ref={emailInputRef}
-                label="Email "
-                value={email}
-                onChangeText={(value) => {
-                  setEmail(value);
-                  if (emailError) {
-                    setEmailError(null); // 👈 clear error while typing
-                  }
-                }}
-                border_color={theme.colors.inputs.bottom_lines_disabled}
-                underlineColor={theme.colors.inputs.bottom_lines_disabled}
-                border_width={"0.5px"}
-                activeUnderlineColor={theme.colors.ui.primary}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                textContentType="emailAddress"
-                autoComplete="email"
-                returnKeyType="done"
-                // onFocus={() => setIsEmailFocused(true)}
-                // onBlur={() => setIsEmailFocused(false)}
-                // blurOnSubmit
-              />
-              {!email && emailTouched && (
-                <Spacer position="top" size="extraLarge" />
-              )}
-              {emailError && (
-                <Container
-                  width="100%"
-                  //   height="25%"
-                  height={emailError || error ? "30%" : "20%"} // shrink if there's an error to make room
-                  color={theme.colors.bg.elements_bg}
-                  justify="flex-start"
-                  align="flex-start"
-                >
-                  <Spacer position="top" size="large" />
-                  <Spacer position="left" size="large">
-                    <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
-                      {emailError}
-                    </Text>
-                  </Spacer>
-                </Container>
-              )} */}
               <DataInput
                 ref={pinInputRef}
                 label="Pin number (only 6 digits)"

@@ -13,22 +13,16 @@ export const Global_Context_Provider = ({ children }) => {
 
   useEffect(() => {
     const gettingAllProductsCatalog = async () => {
-      //   setIsLoading(true);
       try {
         const allProductsAtCatalog = await gettingAllProductsCatalogRequest();
-        // console.log(
-        //   "ALL PRODUCTS AT CATALOG FROM API CALL:",
-        //   JSON.stringify(allProductsAtCatalog, null, 2)
-        // );
+
         const normalized = allProductsAtCatalog.map(
           normalizeProductFromBackend
         );
 
         setProductsCatalog(normalized);
-        // setIsLoading(false);
       } catch (err) {
         setError(err.message);
-        // setIsLoading(false);
       }
     };
     gettingAllProductsCatalog();

@@ -26,7 +26,7 @@ export default function Shop_Order_Review_View() {
   const { order } = route.params;
   const { isLoading, setDeliveryOption, setDifferentAddress } =
     useContext(OrdersContext);
-  console.log("MY ORDER AT REVIEW VIEW:", JSON.stringify(order, null, 2));
+  // console.log("MY ORDER AT REVIEW VIEW:", JSON.stringify(order, null, 2));
   const { myWarehouse } = useContext(WarehouseContext);
   const { distance_in_miles } = myWarehouse || {};
   const {

@@ -143,7 +143,7 @@ export default function Shop_Login_Users_View() {
             >
               <Spacer position="left" size="extraLarge">
                 <Text variant="raleway_bold_18" textAlign="center">
-                  Let's start logging In...
+                  Login using your new email...
                 </Text>
               </Spacer>
             </Container>
@@ -223,7 +223,7 @@ export default function Shop_Login_Users_View() {
               {error && (
                 <Container
                   width="100%"
-                  height="25%"
+                  height="30%"
                   color={theme.colors.bg.elements_bg}
                   justify="flex-start"
                   align="flex-start"
@@ -376,30 +376,6 @@ export default function Shop_Login_Users_View() {
 
                       // 7) close auth modal (so Cart is underneath)
                       navigation.getParent()?.goBack();
-
-                      // navigationRef.current?.reset({
-                      //   index: 0,
-                      //   routes: [
-                      //     {
-                      //       name: "App",
-                      //       state: {
-                      //         routes: [
-                      //           {
-                      //             name: targetTab,
-                      //             state: {
-                      //               routes: [
-                      //                 {
-                      //                   name: targetScreen,
-                      //                   params: targetParams,
-                      //                 },
-                      //               ],
-                      //             },
-                      //           },
-                      //         ],
-                      //       },
-                      //     },
-                      //   ],
-                      // });
 
                       // 8) navigate into the Cart stack delivery type (so GO_BACK works)
                       requestAnimationFrame(() => {

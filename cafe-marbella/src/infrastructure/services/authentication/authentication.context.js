@@ -64,7 +64,18 @@ export const Authentication_Context_Provider = ({ children }) => {
 
   const { CURRENT_USER_KEY, USERS_ON_DEVICE_KEY } = STORAGE_KEYS;
   //**************** */ Local user persistency logic
-  // 1) Rehydrate user on app start
+  console.log("auth.context auth app name on context:", auth?.app?.name);
+
+  useEffect(() => {
+    const orig = auth.signOut.bind(auth);
+    auth.signOut = async (...args) => {
+      console.log("🔥 FIREBASE SIGNOUT CALLED 🔥", new Error().stack);
+      return orig(...args);
+    };
+    return () => {
+      auth.signOut = orig;
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -85,6 +96,12 @@ export const Authentication_Context_Provider = ({ children }) => {
       }
 
       try {
+        try {
+          const fin = await finalizePendingEmailChange(fbUser);
+          console.log("finalize onAuthStateChanged:", fin);
+        } catch (e) {
+          console.log("finalize failed:", e?.message ?? e);
+        }
         // ✅ load DB user using UID from firebase
         const raw = await gettingUserByUIDRequest(fbUser.uid);
         const userByUID = Array.isArray(raw) ? raw[0] : raw;
@@ -126,7 +143,8 @@ export const Authentication_Context_Provider = ({ children }) => {
         // guard: if parsed isn't an array, fallback
         const list = Array.isArray(parsed) ? parsed : [];
 
-        const others = list.filter((u) => u?.user_id !== user.user_id);
+        // const others = list.filter((u) => u?.user_id !== user.user_id);
+        const others = list.filter((u) => u?.uid !== user.uid);
         setIsOtherUsers(others.length > 0);
 
         if (!cancelled) setOtherUsersInTheDevice(others);
@@ -140,7 +158,7 @@ export const Authentication_Context_Provider = ({ children }) => {
     return () => {
       cancelled = true;
     };
-  }, [user?.user_id]);
+  }, [user?.uid]);
 
   // helper regex to validate PIN format (6 digits)
   const isValidPin = /^\d{6}$/.test(pin);
@@ -155,12 +173,18 @@ export const Authentication_Context_Provider = ({ children }) => {
 
       setUser(newUser); // ✅ important
 
-      // users on device list (optional keep)
       const rawUsers = await AsyncStorage.getItem(USERS_ON_DEVICE_KEY);
       const users = rawUsers ? JSON.parse(rawUsers) : [];
+      const list = Array.isArray(users) ? users : [];
 
-      const exists = users.some((u) => u?.uid === newUser.uid);
-      const nextUsers = exists ? users : [newUser, ...users];
+      const idx = list.findIndex((u) => u?.uid === newUser.uid);
+
+      let nextUsers = [...list];
+      if (idx >= 0) {
+        nextUsers[idx] = { ...nextUsers[idx], ...newUser }; // ✅ replace/update existing
+      } else {
+        nextUsers = [newUser, ...nextUsers];
+      }
 
       await AsyncStorage.setItem(
         USERS_ON_DEVICE_KEY,
@@ -175,16 +199,16 @@ export const Authentication_Context_Provider = ({ children }) => {
   };
 
   // Logout
-  const logout = async () => {
-    await AsyncStorage.removeItem(CURRENT_USER_KEY);
-    setUser(null);
-  };
-
-  console.log(
-    "USER SCHEMA TO REGISTER USER AT AUTH CONTEXT: ",
-    JSON.stringify(userToDB, null, 2)
-  );
-  console.log("USER IN AUTH CONTEXT: ", JSON.stringify(user, null, 2));
+  // const logout = async () => {
+  //   await auth.signOut();
+  //   await AsyncStorage.removeItem(CURRENT_USER_KEY);
+  //   setUser(null);
+  // };
+  // console.log(
+  //   "USER SCHEMA TO REGISTER USER AT AUTH CONTEXT: ",
+  //   JSON.stringify(userToDB, null, 2)
+  // );
+  // console.log("USER IN AUTH CONTEXT: ", JSON.stringify(user, null, 2));
   const isAuthenticated = !!user;
 
   const loginDevUser = (userData) => {
@@ -260,21 +284,21 @@ export const Authentication_Context_Provider = ({ children }) => {
         pinGenerated
       );
       const idToken = await userCredential.user.getIdToken();
-      console.log("USER ID TOKEN:", idToken);
+      // console.log("USER ID TOKEN:", idToken);
 
       console.log("PIN GENERATED BEFORE ENCRYPTION:", pinGenerated);
       const encrypted_pin = encryptPinWithServerPublicKey(pinGenerated);
-      console.log("ENCRYPTED PIN:", encrypted_pin);
+      // console.log("ENCRYPTED PIN:", encrypted_pin);
 
       const payload = {
         ...userToDB,
         encrypted_pin: encrypted_pin, // ideally remove later
       };
 
-      console.log(
-        "PAYLOAD TO REGISTER USER:",
-        JSON.stringify(payload, null, 2)
-      );
+      // console.log(
+      //   "PAYLOAD TO REGISTER USER:",
+      //   JSON.stringify(payload, null, 2)
+      // );
       const res = await post_user_Request(payload, cartPayload, idToken);
 
       if (res?.user?.[0] && res?.cart?.[0]) {
@@ -304,51 +328,16 @@ export const Authentication_Context_Provider = ({ children }) => {
   };
 
   // ********************* LOG IN USER LOGIC *************************
-  // const signingInWithEmailAndPasswordFunction = async (email, pin) => {
-  //   // setIsLoading(true);
-  //   console.log("EMAIL AT SIGNIN FUNCTION:", email);
-  //   console.log("PIN AT SIGNIN FUNCTION:", pin);
-  //   try {
-  //     await new Promise((resolve) => setTimeout(resolve, 2000));
-  //     // await savePin(pin);
-  //     const userCredential = await signInWithEmailAndPassword(auth, email, pin);
-  //     console.log("USER LOGGED IN:", userCredential.user);
-
-  //     if (userCredential.user) {
-  //       console.log(
-  //         "USER LOGGED IN:",
-  //         JSON.stringify(userCredential.user, null, 2)
-  //       );
-  //       const raw = await gettingUserByUIDRequest(userCredential.user.uid);
-  //       const userByUID = Array.isArray(raw) ? raw[0] : raw;
-  //       if (!userByUID) throw new Error("User not found in DB");
-
-  //       await registerLocalUser(userByUID);
-  //       setUser(userByUID);
-  //       return { ok: true, user: userByUID };
-  //     }
-  //   } catch (error) {
-  //     setError(
-  //       error.message === "Firebase: Error (auth/missing-email)."
-  //         ? "We haven't found an email for this PIN number"
-  //         : error.message === "Firebase: Error (auth/invalid-credential)."
-  //         ? "We haven't found a user for this PIN number"
-  //         : error.message === "Firebase: Error (auth/too-many-requests)."
-  //         ? "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your PIN or you can try again later."
-  //         : null
-  //     );
-  //   }
-  // };
 
   const signingInWithEmailAndPasswordFunction = async (email, pin) => {
-    console.log("EMAIL AT SIGNIN FUNCTION:", email);
-    console.log("PIN AT SIGNIN FUNCTION:", pin);
+    // console.log("EMAIL AT SIGNIN FUNCTION:", email);
+    // console.log("PIN AT SIGNIN FUNCTION:", pin);
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       const userCredential = await signInWithEmailAndPassword(auth, email, pin);
-      console.log("USER LOGGED IN:", userCredential.user);
+      // console.log("USER LOGGED IN:", userCredential.user);
 
       if (userCredential.user) {
         // ✅ FINALIZE HERE (before DB fetch)
@@ -376,16 +365,16 @@ export const Authentication_Context_Provider = ({ children }) => {
 
   const loginUser = async (pin, email) => {
     setIsLoading(true);
-    console.log("PIN BEFORE LOGIN:", pin);
-    console.log("EMAIL BEFORE LOGIN:", email);
+    // console.log("PIN BEFORE LOGIN:", pin);
+    // console.log("EMAIL BEFORE LOGIN:", email);
 
     try {
       const PIN_LENGTH = 6;
       if (pin.length === PIN_LENGTH) {
-        console.log("PIN BEFORE LOGIN:", pin);
+        // console.log("PIN BEFORE LOGIN:", pin);
         const res = await signingInWithEmailAndPasswordFunction(email, pin);
         if (res?.ok && res?.user) {
-          console.log("RES DATA ON LOGIN USER:", res.user);
+          // console.log("RES DATA ON LOGIN USER:", res.user);
           return res;
         }
         return {
@@ -452,31 +441,91 @@ export const Authentication_Context_Provider = ({ children }) => {
     }
   };
 
+  // const generatePinNumberOnDemand = async (newPIN) => {
+  //   console.log("PIN auth app name on function:", auth?.app?.name);
+  //   setIsLoading(true);
+
+  //   try {
+  //     // ✅ If auth.currentUser isn't ready yet (common right after register),
+  //     // wait a moment for Firebase to settle, then proceed automatically.
+  //     let fbUser = auth.currentUser;
+
+  //     if (!fbUser) {
+  //       console.log("PIN: auth.currentUser null, waiting briefly...");
+  //       fbUser = await waitForFirebaseUserOnce(2500);
+  //     }
+
+  //     if (!fbUser) {
+  //       return {
+  //         ok: false,
+  //         error: "No Firebase session. Please log in again.",
+  //       };
+  //     }
+
+  //     // 1) get a fresh idToken for backend verification
+  //     const idToken = await fbUser.getIdToken(true);
+  //     console.log("CURRENT USER ID TOKEN", idToken);
+
+  //     // 2) encrypt pin for your DB
+  //     const new_encrypted_pin = encryptPinWithServerPublicKey(newPIN);
+
+  //     // 3) call backend (token in header)
+  //     const payload = { new_encrypted_pin, new_pin: newPIN };
+  //     const res = await put_new_pin_Request(payload, idToken);
+
+  //     console.log("RES AT GENERATING:", JSON.stringify(res, null, 2));
+  //     console.log("PAYLOAD:", JSON.stringify(payload, null, 2));
+
+  //     if (!res?.ok) {
+  //       return {
+  //         ok: false,
+  //         error: res?.error || res?.message || "Failed to update PIN",
+  //       };
+  //     }
+
+  //     // ✅ PIN == Firebase password. Best practice:
+  //     // - If backend returns customToken: reauth seamlessly
+  //     // - Otherwise: force sign out (clean state)
+  //     if (res?.customToken) {
+  //       await signInWithCustomToken(auth, res.customToken);
+  //       await auth.currentUser?.getIdToken(true);
+  //       return { ok: true, reauthed: true };
+  //     }
+
+  //     await auth.signOut();
+  //     return { ok: true, mustReLogin: true };
+  //   } catch (error) {
+  //     console.log("generatePinNumberOnDemand error:", error?.message ?? error);
+  //     return { ok: false, error: error?.message || "Unknown error" };
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   const generatePinNumberOnDemand = async (newPIN) => {
     setIsLoading(true);
 
     try {
-      const fbUser = auth.currentUser;
+      console.log("PIN: start", {
+        firebaseReady,
+        hasFirebaseUserState: !!firebaseUser,
+        hasAuthCurrentUser: !!auth.currentUser,
+      });
+
+      const fbUser = await getFirebaseUserOrWait(12000);
 
       if (!fbUser) {
         return {
           ok: false,
-          error: "No Firebase session. Please log in again.",
+          error: "Your session is still loading. Please try again in a moment.",
         };
       }
 
-      // 1) get a fresh idToken for backend verification
-      const idToken = await getFreshIdToken();
+      const idToken = await fbUser.getIdToken(true);
 
-      console.log("CURRENT USER ID TOKEN", idToken);
-      // 2) encrypt pin for your DB
       const new_encrypted_pin = encryptPinWithServerPublicKey(newPIN);
-
-      // 3) call backend (token in header)
       const payload = { new_encrypted_pin, new_pin: newPIN };
+
       const res = await put_new_pin_Request(payload, idToken);
-      console.log("RES AT GENERATING:", JSON.stringify(res, null, 2));
-      console.log("PAYLOAD:", JSON.stringify(payload, null, 2));
 
       if (!res?.ok) {
         return {
@@ -485,23 +534,19 @@ export const Authentication_Context_Provider = ({ children }) => {
         };
       }
 
-      // 4) OPTIONAL: if backend returns customToken, re-auth immediately
+      // ✅ Best UX: backend returns customToken so user stays logged in
       if (res?.customToken) {
         await signInWithCustomToken(auth, res.customToken);
         await auth.currentUser?.getIdToken(true);
-      } else {
-        // If you don’t use custom tokens, at least refresh local token.
-        // This can still fail if Firebase invalidated the session after password change.
-        try {
-          await auth.currentUser?.getIdToken(true);
-        } catch (_) {
-          // Don’t hard-fail here—your UI can prompt re-login if next request fails.
-        }
+        return { ok: true, reauthed: true };
       }
 
-      return { ok: true };
-    } catch (error) {
-      return { ok: false, error: error?.message || "Unknown error" };
+      // If no customToken, Firebase password changed -> session may become invalid.
+      // You can still return success and let user continue, but best practice is reauth.
+      return { ok: true, mustReLogin: true };
+    } catch (e) {
+      console.log("PIN error:", e?.message ?? e);
+      return { ok: false, error: e?.message || "Unknown error" };
     } finally {
       setIsLoading(false);
     }
@@ -515,46 +560,103 @@ export const Authentication_Context_Provider = ({ children }) => {
     setPin("");
     setUserToDB(userToDBInitialState);
   };
-  const waitForFirebaseUserOnce = () =>
+  // const waitForFirebaseUserOnce = () =>
+  //   new Promise((resolve) => {
+  //     const unsub = onAuthStateChanged(auth, (u) => {
+  //       unsub();
+  //       resolve(u);
+  //     });
+  //   });
+
+  const waitForFirebaseUserOnce = (timeoutMs = 2500) =>
     new Promise((resolve) => {
+      let done = false;
+
+      const timer = setTimeout(() => {
+        if (done) return;
+        done = true;
+        unsub?.();
+        resolve(null);
+      }, timeoutMs);
+
       const unsub = onAuthStateChanged(auth, (u) => {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
         unsub();
         resolve(u);
       });
     });
-
-  const getFreshIdToken = async () => {
-    // If Firebase hasn’t finished initializing, wait for it once
+  const getFreshIdToken = async (timeoutMs = 2500) => {
     let fbUser = auth.currentUser;
-
-    if (!fbUser) {
-      fbUser = await waitForFirebaseUserOnce();
-    }
-
-    if (!fbUser) {
-      const e = new Error("No Firebase session. Please log in again.");
-      e.code = "NO_SESSION";
-      throw e;
-    }
-
-    try {
-      return await fbUser.getIdToken(true); // force refresh
-    } catch (e) {
-      if (
-        e?.code === "auth/user-token-expired" ||
-        e?.code === "auth/invalid-user-token" ||
-        e?.code === "auth/user-disabled"
-      ) {
-        try {
-          await auth.signOut();
-        } catch (_) {}
-        const err = new Error("Session expired. Please log in again.");
-        err.code = e?.code;
-        throw err;
-      }
-      throw e;
-    }
+    if (!fbUser) fbUser = await waitForFirebaseUserOnce(timeoutMs);
+    if (!fbUser)
+      throw Object.assign(new Error("No Firebase session."), {
+        code: "NO_SESSION",
+      });
+    return fbUser.getIdToken(true);
   };
+  const getFirebaseUserOrWait = async (timeoutMs = 12000) => {
+    // If our context already has it, use it immediately
+    if (firebaseUser) return firebaseUser;
+
+    // If not ready yet, wait for auth state to emit
+    return new Promise((resolve) => {
+      let done = false;
+
+      const timer = setTimeout(() => {
+        if (done) return;
+        done = true;
+        unsub?.();
+        resolve(null);
+      }, timeoutMs);
+
+      const unsub = onAuthStateChanged(auth, (u) => {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        unsub();
+        resolve(u);
+      });
+    });
+  };
+
+  // const getFreshIdToken = async () => {
+  //   console.log("getFreshIdToken: start", {
+  //     hasCurrentUser: !!auth.currentUser,
+  //     uid: auth.currentUser?.uid ?? null,
+  //   });
+  //   // If Firebase hasn’t finished initializing, wait for it once
+  //   let fbUser = auth.currentUser;
+
+  //   if (!fbUser) {
+  //     fbUser = await waitForFirebaseUserOnce();
+  //   }
+
+  //   if (!fbUser) {
+  //     const e = new Error("No Firebase session. Please log in again.");
+  //     e.code = "NO_SESSION";
+  //     throw e;
+  //   }
+
+  //   try {
+  //     return await fbUser.getIdToken(true); // force refresh
+  //   } catch (e) {
+  //     if (
+  //       e?.code === "auth/user-token-expired" ||
+  //       e?.code === "auth/invalid-user-token" ||
+  //       e?.code === "auth/user-disabled"
+  //     ) {
+  //       try {
+  //         await auth.signOut();
+  //       } catch (_) {}
+  //       const err = new Error("Session expired. Please log in again.");
+  //       err.code = e?.code;
+  //       throw err;
+  //     }
+  //     throw e;
+  //   }
+  // };
 
   const handleUpdate = async (userToDB) => {
     setIsLoading(true);
@@ -578,6 +680,7 @@ export const Authentication_Context_Provider = ({ children }) => {
       const res = await put_update_userinfo_Request(userToDB, idToken);
       if (res?.ok) {
         setUser(res.data);
+        await updateUserEverywhereInStorage(res.data);
         return { ok: true, emailChanged: false };
       }
       return { ok: false, error: res?.error ?? "DB_UPDATE_FAILED" };
@@ -645,11 +748,32 @@ export const Authentication_Context_Provider = ({ children }) => {
 
     if (res?.ok) {
       setUser(res.data);
+      await updateUserEverywhereInStorage(res.data);
       await AsyncStorage.removeItem(PENDING_EMAIL_CHANGE_KEY);
       return { ok: true, updated: true };
     }
 
     return { ok: false, error: res?.error ?? "DB_UPDATE_FAILED" };
+  };
+
+  const updateUserEverywhereInStorage = async (updatedUser) => {
+    try {
+      // Update current user key
+      await AsyncStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
+
+      // Update users_on_device list (replace matching uid)
+      const raw = await AsyncStorage.getItem(USERS_ON_DEVICE_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      const list = Array.isArray(parsed) ? parsed : [];
+
+      const nextList = list.map((u) =>
+        u?.uid === updatedUser?.uid ? { ...u, ...updatedUser } : u
+      );
+
+      await AsyncStorage.setItem(USERS_ON_DEVICE_KEY, JSON.stringify(nextList));
+    } catch (e) {
+      console.log("updateUserEverywhereInStorage failed:", e?.message ?? e);
+    }
   };
 
   return (
@@ -665,7 +789,7 @@ export const Authentication_Context_Provider = ({ children }) => {
         gettingUserByEmailToAuthenticated,
         isAuthenticated,
         loginDevUser,
-        logout,
+        // logout,
         setUserToDB,
         userToDB,
         registerUser,

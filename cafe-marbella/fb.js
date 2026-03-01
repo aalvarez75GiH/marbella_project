@@ -36,3 +36,4 @@ if (Platform.OS === "web") {
     auth = getAuth(app);
   }
 }
+console.log("fb.js auth app name on fb file:", auth?.app?.name);

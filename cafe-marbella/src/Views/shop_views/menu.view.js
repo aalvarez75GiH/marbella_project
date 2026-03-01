@@ -25,7 +25,7 @@ export default function Menu_View() {
 
   const { user, otherUsersInTheDevice } = useContext(AuthenticationContext);
   const { first_name, last_name, email, display_name, user_id } = user || {};
-  console.log("Menu_View user:", user);
+  // console.log("Menu_View user:", user);
 
   // Check if there are other users in the device in order to use it as a
   //condition to enable or disable the "Switch to another account" option in the menu
