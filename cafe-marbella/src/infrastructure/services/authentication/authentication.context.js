@@ -65,7 +65,7 @@ export const Authentication_Context_Provider = ({ children }) => {
   const { CURRENT_USER_KEY, USERS_ON_DEVICE_KEY } = STORAGE_KEYS;
   //**************** */ Local user persistency logic
   console.log("auth.context auth app name on context:", auth?.app?.name);
-
+  // *********************************************************
   useEffect(() => {
     const orig = auth.signOut.bind(auth);
     auth.signOut = async (...args) => {
@@ -77,12 +77,13 @@ export const Authentication_Context_Provider = ({ children }) => {
     };
   }, []);
 
+  // *********************************************************
+
   useEffect(() => {
     let cancelled = false;
 
     const unsub = onAuthStateChanged(auth, async (fbUser) => {
       console.log("Firebase auth state:", fbUser ? fbUser.uid : "signed out");
-
       if (cancelled) return;
 
       setFirebaseUser(fbUser);
@@ -95,26 +96,41 @@ export const Authentication_Context_Provider = ({ children }) => {
         return;
       }
 
+      // ✅ Hydrate from cache immediately (prevents UI going blank)
       try {
+        const cached = await AsyncStorage.getItem(CURRENT_USER_KEY);
+        if (cached) setUser(JSON.parse(cached));
+      } catch {}
+
+      try {
+        // finalize email if needed (ok to fail)
         try {
-          const fin = await finalizePendingEmailChange(fbUser);
-          console.log("finalize onAuthStateChanged:", fin);
-        } catch (e) {
-          console.log("finalize failed:", e?.message ?? e);
-        }
-        // ✅ load DB user using UID from firebase
+          await finalizePendingEmailChange(fbUser);
+        } catch {}
+
         const raw = await gettingUserByUIDRequest(fbUser.uid);
         const userByUID = Array.isArray(raw) ? raw[0] : raw;
 
-        if (!userByUID) throw new Error("User not found in DB");
+        if (!userByUID) {
+          // ✅ only sign out if your API truly says "not found"
+          // (better: check status code in the request wrapper)
+          console.log("DB user missing for uid:", fbUser.uid);
+          // optional: do NOT sign out automatically; show error screen instead
+          // await fbSignOut("DB user not found");
+          setUser(null);
+          await AsyncStorage.removeItem(CURRENT_USER_KEY);
+          return;
+        }
 
         setUser(userByUID);
         await AsyncStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userByUID));
-      } catch (error) {
-        console.log("Failed to load DB user:", error?.message ?? error);
-        // optional: force sign out if DB user missing
-        await auth.signOut();
-        setUser(null);
+      } catch (e) {
+        // ✅ IMPORTANT: do NOT sign out on transient errors
+        console.log(
+          "DB fetch failed, keeping firebase session:",
+          e?.message ?? e
+        );
+        // optionally setError("Could not load profile. Check connection.")
       }
     });
 
@@ -124,6 +140,7 @@ export const Authentication_Context_Provider = ({ children }) => {
     };
   }, []);
 
+  // *********************************************************
   // This useEffect sets the list of other users in the device, excluding the currently authenticated user.
   useEffect(() => {
     let cancelled = false;
@@ -198,18 +215,8 @@ export const Authentication_Context_Provider = ({ children }) => {
     }
   };
 
-  // Logout
-  // const logout = async () => {
-  //   await auth.signOut();
-  //   await AsyncStorage.removeItem(CURRENT_USER_KEY);
-  //   setUser(null);
-  // };
-  // console.log(
-  //   "USER SCHEMA TO REGISTER USER AT AUTH CONTEXT: ",
-  //   JSON.stringify(userToDB, null, 2)
-  // );
-  // console.log("USER IN AUTH CONTEXT: ", JSON.stringify(user, null, 2));
-  const isAuthenticated = !!user;
+  const isFirebaseSignedIn = !!firebaseUser; // or auth.currentUser
+  const isAuthenticated = isFirebaseSignedIn && !!user;
 
   const loginDevUser = (userData) => {
     setUser(user_authenticated);
@@ -405,7 +412,8 @@ export const Authentication_Context_Provider = ({ children }) => {
     setIsLoading(true);
     try {
       // 1) Firebase auth sign out (clears firebase:authUser key)
-      await auth.signOut();
+      // await auth.signOut();
+      await fbSignOut("generatePinNumberOnDemand no customToken");
 
       // 2) Clear only auth-session keys (keep users_on_device, keep guest_cart)
       await AsyncStorage.multiRemove(AUTH_KEYS_TO_CLEAR);
@@ -441,67 +449,11 @@ export const Authentication_Context_Provider = ({ children }) => {
     }
   };
 
-  // const generatePinNumberOnDemand = async (newPIN) => {
-  //   console.log("PIN auth app name on function:", auth?.app?.name);
-  //   setIsLoading(true);
-
-  //   try {
-  //     // ✅ If auth.currentUser isn't ready yet (common right after register),
-  //     // wait a moment for Firebase to settle, then proceed automatically.
-  //     let fbUser = auth.currentUser;
-
-  //     if (!fbUser) {
-  //       console.log("PIN: auth.currentUser null, waiting briefly...");
-  //       fbUser = await waitForFirebaseUserOnce(2500);
-  //     }
-
-  //     if (!fbUser) {
-  //       return {
-  //         ok: false,
-  //         error: "No Firebase session. Please log in again.",
-  //       };
-  //     }
-
-  //     // 1) get a fresh idToken for backend verification
-  //     const idToken = await fbUser.getIdToken(true);
-  //     console.log("CURRENT USER ID TOKEN", idToken);
-
-  //     // 2) encrypt pin for your DB
-  //     const new_encrypted_pin = encryptPinWithServerPublicKey(newPIN);
-
-  //     // 3) call backend (token in header)
-  //     const payload = { new_encrypted_pin, new_pin: newPIN };
-  //     const res = await put_new_pin_Request(payload, idToken);
-
-  //     console.log("RES AT GENERATING:", JSON.stringify(res, null, 2));
-  //     console.log("PAYLOAD:", JSON.stringify(payload, null, 2));
-
-  //     if (!res?.ok) {
-  //       return {
-  //         ok: false,
-  //         error: res?.error || res?.message || "Failed to update PIN",
-  //       };
-  //     }
-
-  //     // ✅ PIN == Firebase password. Best practice:
-  //     // - If backend returns customToken: reauth seamlessly
-  //     // - Otherwise: force sign out (clean state)
-  //     if (res?.customToken) {
-  //       await signInWithCustomToken(auth, res.customToken);
-  //       await auth.currentUser?.getIdToken(true);
-  //       return { ok: true, reauthed: true };
-  //     }
-
-  //     await auth.signOut();
-  //     return { ok: true, mustReLogin: true };
-  //   } catch (error) {
-  //     console.log("generatePinNumberOnDemand error:", error?.message ?? error);
-  //     return { ok: false, error: error?.message || "Unknown error" };
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
   const generatePinNumberOnDemand = async (newPIN) => {
+    console.log("PIN: fbUser", {
+      uid: firebaseUser?.uid,
+      email: firebaseUser?.email,
+    });
     setIsLoading(true);
 
     try {
@@ -560,13 +512,6 @@ export const Authentication_Context_Provider = ({ children }) => {
     setPin("");
     setUserToDB(userToDBInitialState);
   };
-  // const waitForFirebaseUserOnce = () =>
-  //   new Promise((resolve) => {
-  //     const unsub = onAuthStateChanged(auth, (u) => {
-  //       unsub();
-  //       resolve(u);
-  //     });
-  //   });
 
   const waitForFirebaseUserOnce = (timeoutMs = 2500) =>
     new Promise((resolve) => {
@@ -597,10 +542,9 @@ export const Authentication_Context_Provider = ({ children }) => {
     return fbUser.getIdToken(true);
   };
   const getFirebaseUserOrWait = async (timeoutMs = 12000) => {
-    // If our context already has it, use it immediately
+    if (auth.currentUser) return auth.currentUser;
     if (firebaseUser) return firebaseUser;
 
-    // If not ready yet, wait for auth state to emit
     return new Promise((resolve) => {
       let done = false;
 
@@ -620,43 +564,6 @@ export const Authentication_Context_Provider = ({ children }) => {
       });
     });
   };
-
-  // const getFreshIdToken = async () => {
-  //   console.log("getFreshIdToken: start", {
-  //     hasCurrentUser: !!auth.currentUser,
-  //     uid: auth.currentUser?.uid ?? null,
-  //   });
-  //   // If Firebase hasn’t finished initializing, wait for it once
-  //   let fbUser = auth.currentUser;
-
-  //   if (!fbUser) {
-  //     fbUser = await waitForFirebaseUserOnce();
-  //   }
-
-  //   if (!fbUser) {
-  //     const e = new Error("No Firebase session. Please log in again.");
-  //     e.code = "NO_SESSION";
-  //     throw e;
-  //   }
-
-  //   try {
-  //     return await fbUser.getIdToken(true); // force refresh
-  //   } catch (e) {
-  //     if (
-  //       e?.code === "auth/user-token-expired" ||
-  //       e?.code === "auth/invalid-user-token" ||
-  //       e?.code === "auth/user-disabled"
-  //     ) {
-  //       try {
-  //         await auth.signOut();
-  //       } catch (_) {}
-  //       const err = new Error("Session expired. Please log in again.");
-  //       err.code = e?.code;
-  //       throw err;
-  //     }
-  //     throw e;
-  //   }
-  // };
 
   const handleUpdate = async (userToDB) => {
     setIsLoading(true);
@@ -776,6 +683,16 @@ export const Authentication_Context_Provider = ({ children }) => {
     }
   };
 
+  const fbSignOut = async (reason = "unknown") => {
+    console.log("🔥 FIREBASE SIGN OUT CALLED:", reason);
+    console.trace(); // <- this prints the callsite stack
+    try {
+      await auth.signOut();
+    } catch (e) {
+      console.log("🔥 signOut error:", e?.message ?? e);
+    }
+  };
+
   return (
     <AuthenticationContext.Provider
       value={{
@@ -817,6 +734,7 @@ export const Authentication_Context_Provider = ({ children }) => {
         handleUpdate,
         finalizePendingEmailChange,
         startEmailChange,
+        fbSignOut,
       }}
     >
       {children}
