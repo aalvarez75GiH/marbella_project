@@ -24,6 +24,7 @@ import Email_Verified_View from "../../Views/shop_views/email_verified.view";
 import Login_View from "../../Views/authentication views/login_user.view";
 import Shop_Login_Users_View from "../../Views/shop_views/shop_login.view";
 import Email_Verification_Sent_View from "../../Views/shop_views/email_verified.view";
+import Shop_Products_View from "../../Views/shop_views/shop_products.view";
 
 const ShopFlowStack = createNativeStackNavigator();
 
@@ -34,6 +35,10 @@ export const Shop_Navigator = () => {
         headerShown: false,
       }}
     >
+      <ShopFlowStack.Screen
+        name="Shop_Products_View"
+        component={Shop_Products_View}
+      />
       <ShopFlowStack.Screen name="Home_View" component={Shop_View} />
       <ShopFlowStack.Screen
         name="Shop_Product_Details_View"

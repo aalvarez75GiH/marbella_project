@@ -14,6 +14,7 @@ export const Go_Back_Header_With_Label_And_Menu = ({
   action_1,
   action_2,
   label = "",
+  hide_icon = false,
 }) => {
   return (
     <Container
@@ -21,17 +22,28 @@ export const Go_Back_Header_With_Label_And_Menu = ({
       height="8%"
       align="center"
       direction="row"
-      justify="center"
+      justify={hide_icon ? "space-between" : "center"}
       color={theme.colors.bg.elements_bg}
     >
-      <Action_Container
+      {!hide_icon && (
+        <Action_Container
+          width="15%"
+          height="100%"
+          color={theme.colors.bg.elements_bg}
+          // color={"red"}
+          onPress={action_1}
+        >
+          <ArrowBackIcon width={30} height={30} fill={"#000000"} />
+        </Action_Container>
+      )}
+      {/* <Action_Container
         width="15%"
         height="100%"
         color={theme.colors.bg.elements_bg}
         onPress={action_1}
       >
         <ArrowBackIcon width={30} height={30} fill={"#000000"} />
-      </Action_Container>
+      </Action_Container> */}
       <Container
         width="70%"
         height="100%"

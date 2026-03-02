@@ -23,15 +23,15 @@ const baseStyles = css`
   border-width: ${(props) => props.border_width || "0px"};
   border-color: ${(props) => props.border_color || "transparent"};
   border-style: ${(props) => props.border_style || "solid"};
-  border-radius: ${(props) => props.border_radius || "0px"};
+  border-radius: ${(props) => props.border_radius ?? "0px"};
   border-top-left-radius: ${(props) =>
-    props.border_radius_top_left || props.border_radius || "0px"};
+    props.border_radius_top_left ?? props.border_radius ?? "0px"};
   border-top-right-radius: ${(props) =>
-    props.border_radius_top_right || props.border_radius || "0px"};
+    props.border_radius_top_right ?? props.border_radius ?? "0px"};
   border-bottom-left-radius: ${(props) =>
-    props.border_radius_bottom_left || props.border_radius || "0px"};
+    props.border_radius_bottom_left ?? props.border_radius ?? "0px"};
   border-bottom-right-radius: ${(props) =>
-    props.border_radius_bottom_right || props.border_radius || "0px"};
+    props.border_radius_bottom_right ?? props.border_radius ?? "0px"};
   gap: ${(props) => props.gap || "0px"};
   overflow: ${(props) => props.overflow || "visible"};
   /* Dynamically calculate padding */

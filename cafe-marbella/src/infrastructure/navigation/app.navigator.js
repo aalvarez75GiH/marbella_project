@@ -83,7 +83,7 @@ const Tabs = () => {
         component={Shop_Navigator}
         options={({ route }) => ({
           title: "Shop",
-          tabBarStyle: tabBarStyleFromNested(route, "Home_View"),
+          tabBarStyle: tabBarStyleFromNested(route, "Shop_Products_View"),
           tabBarIcon: ({ color }) => (
             <ShopIcon width={25} height={25} fill={color} />
           ),

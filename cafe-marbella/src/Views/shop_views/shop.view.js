@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { FlatList } from "react-native";
 import { useTheme } from "styled-components/native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header_With_Label_And_Menu } from "../../components/headers/goBack_with_label_and_menu.header";
@@ -13,11 +13,13 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 
 export default function Shop_View() {
   const navigation = useNavigation();
+  const route = useRoute();
+  const data = route?.params?.products ?? [];
 
   const { shopProductsGround, shopProductsWhole } =
     useContext(WarehouseContext);
   //const data = shopProductsWhole;
-  const data = shopProductsGround;
+  // const data = shopProductsGround;
 
   const renderProductInitialCard = ({ item }) => {
     return (
@@ -43,7 +45,7 @@ export default function Shop_View() {
         align="center"
       >
         <Go_Back_Header_With_Label_And_Menu
-          action_1={() => null}
+          action_1={() => navigation.goBack()}
           action_2={() => navigation.navigate("Menu_View")}
           label="Whole bean coffee"
         />
