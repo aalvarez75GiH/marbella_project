@@ -11,12 +11,17 @@ import { Go_Back_Header_With_Label_And_Menu } from "../../components/headers/goB
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 import { Product_Initial_Card } from "../../components/cards/product_initial_card/product_intial.card";
+import { Text } from "../../infrastructure/typography/text.component";
 
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
 
 export default function Shop_Products_View() {
-  const { shopProductsGround, shopProductsWhole } =
-    useContext(WarehouseContext);
+  const {
+    shopProductsGround,
+    shopProductsWhole,
+    productsChosenForShop,
+    setProductsChosenForShop,
+  } = useContext(WarehouseContext);
   //const data = shopProductsWhole;
   const data = shopProductsGround;
 
@@ -54,11 +59,12 @@ export default function Shop_Products_View() {
           border_radius_bottom_left={"10px"}
           direction="row"
           overflow="hidden"
-          onPress={() =>
+          onPress={() => {
+            setProductsChosenForShop(shopProductsWhole);
             navigation.navigate("Home_View", {
               products: shopProductsWhole,
-            })
-          }
+            });
+          }}
         >
           <Container
             width="65%"
@@ -84,13 +90,24 @@ export default function Shop_Products_View() {
             width="35%"
             height="100%"
             //color={theme.colors.bg.elements_bg}
-            color={theme.colors.brand.tertiary}
-            justify="flex-start"
+            // color={theme.colors.brand.tertiary}
+            color={"#D86A6D"}
+            justify="center"
             align="center"
             border_radius_top_left={"0px"}
             border_radius_bottom_left={"0px"}
             overflow="hidden"
-          ></Container>
+          >
+            <Text variant="raleway_bold_16_white" textAlign="center">
+              Premium
+            </Text>
+            <Text variant="raleway_bold_16_white" textAlign="center">
+              Whole bean
+            </Text>
+            <Text variant="raleway_bold_16_white" textAlign="center">
+              coffee
+            </Text>
+          </Container>
         </Action_Container>
         <Spacer position="top" size="medium" />
         <Action_Container
@@ -104,22 +121,33 @@ export default function Shop_Products_View() {
           border_radius_bottom_right={"10px"}
           direction="row"
           overflow="hidden"
-          onPress={() =>
+          onPress={() => {
+            setProductsChosenForShop(shopProductsGround);
             navigation.navigate("Home_View", {
-              products: shopProductsGround,
-            })
-          }
+              products: shopProductsWhole,
+            });
+          }}
         >
           <Container
             width="35%"
             height="100%"
             //color={theme.colors.bg.elements_bg}
-            color={"#B46043"}
-            justify="flex-start"
+            color={"#E7B672"}
+            justify="center"
             align="center"
             border_radius_top_left={"0px"}
             border_radius_bottom_left={"0px"}
-          ></Container>
+          >
+            <Text variant="raleway_bold_16" textAlign="center">
+              Premium
+            </Text>
+            <Text variant="raleway_bold_16" textAlign="center">
+              Ground bean
+            </Text>
+            <Text variant="raleway_bold_16" textAlign="center">
+              coffee
+            </Text>
+          </Container>
           <Container
             width="65%"
             height="100%"
@@ -131,7 +159,7 @@ export default function Shop_Products_View() {
             border_radius_bottom_right={"10px"}
           >
             <Image
-              source={require("../../../assets/ilustrations/ground_beans_products.png")}
+              source={require("../../../assets/ilustrations/ground_beans_poster.png")}
               style={{
                 width: "100%",
                 height: "100%",

@@ -434,7 +434,7 @@ export const Authentication_Context_Provider = ({ children }) => {
                   name: "Shop",
                   state: {
                     index: 0,
-                    routes: [{ name: "Home_View" }],
+                    routes: [{ name: "Shop_Products_View" }],
                   },
                 },
               ],

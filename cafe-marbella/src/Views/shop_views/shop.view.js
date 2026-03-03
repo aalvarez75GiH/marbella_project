@@ -14,10 +14,10 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 export default function Shop_View() {
   const navigation = useNavigation();
   const route = useRoute();
-  const data = route?.params?.products ?? [];
+  // const data = route?.params?.products ?? [];
 
-  const { shopProductsGround, shopProductsWhole } =
-    useContext(WarehouseContext);
+  const { productsChosenForShop } = useContext(WarehouseContext);
+  const data = productsChosenForShop.length > 0 ? productsChosenForShop : [];
   //const data = shopProductsWhole;
   // const data = shopProductsGround;
 
@@ -45,7 +45,7 @@ export default function Shop_View() {
         align="center"
       >
         <Go_Back_Header_With_Label_And_Menu
-          action_1={() => navigation.goBack()}
+          action_1={() => navigation.navigate("Shop_Products_View")}
           action_2={() => navigation.navigate("Menu_View")}
           label="Whole bean coffee"
         />

@@ -1,8 +1,7 @@
-import React, { useLayoutEffect, useContext } from "react";
+import React, { useContext } from "react";
 import { useTheme } from "styled-components/native";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
-import { Switch } from "react-native-paper";
 
 import { Container } from "../../components/containers/general.containers";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -24,7 +23,7 @@ export default function Menu_View() {
   const navigation = useNavigation();
 
   const { user, otherUsersInTheDevice } = useContext(AuthenticationContext);
-  const { first_name, last_name, email, display_name, user_id } = user || {};
+  const { email, display_name, user_id } = user || {};
   // console.log("Menu_View user:", user);
 
   // Check if there are other users in the device in order to use it as a
@@ -32,16 +31,6 @@ export default function Menu_View() {
 
   const { globalLanguage, togglingGlobalLanguage, isLoading } =
     useContext(GlobalContext);
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const parent = navigation.getParent();
-  //     parent?.setOptions({ tabBarStyle: { display: "none" } });
-
-  //     return () => {
-  //       parent?.setOptions({ tabBarStyle: undefined });
-  //     };
-  //   }, [navigation])
-  // );
 
   return (
     <NewSafeArea
@@ -195,7 +184,7 @@ export default function Menu_View() {
                     params: {
                       returnTo: {
                         tab: "Shop",
-                        screen: "Home_View",
+                        screen: "Shop_Products_View",
                         params: {},
                       },
                     },
