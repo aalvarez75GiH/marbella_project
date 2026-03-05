@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { Authentication_Context_Provider } from "./src/infrastructure/services/authentication/authentication.context";
 import { Geolocation_Context_Provider } from "./src/infrastructure/services/geolocation/geolocation.context";
+import { AppProviders } from "./src/infrastructure/navigation/app.providers.navigator";
 import { theme } from "./src/infrastructure/theme";
 
 export default function App() {

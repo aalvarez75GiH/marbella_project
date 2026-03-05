@@ -13,17 +13,15 @@ export const AppProviders = ({ children }) => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Global_Context_Provider>
-        <Authentication_Context_Provider>
-          <Warehouse_Context_Provider>
-            <Cart_Context_Provider>
-              <Orders_Context_Provider>
-                <Payments_Context_Provider>
-                  {children}
-                </Payments_Context_Provider>
-              </Orders_Context_Provider>
-            </Cart_Context_Provider>
-          </Warehouse_Context_Provider>
-        </Authentication_Context_Provider>
+        {/* <Authentication_Context_Provider> */}
+        <Warehouse_Context_Provider>
+          <Cart_Context_Provider>
+            <Orders_Context_Provider>
+              <Payments_Context_Provider>{children}</Payments_Context_Provider>
+            </Orders_Context_Provider>
+          </Cart_Context_Provider>
+        </Warehouse_Context_Provider>
+        {/* </Authentication_Context_Provider> */}
       </Global_Context_Provider>
     </GestureHandlerRootView>
   );

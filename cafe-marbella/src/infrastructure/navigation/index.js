@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { DefaultTheme } from "@react-navigation/native";
+import { View, ActivityIndicator } from "react-native";
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 
 import { AuthenticationContext } from "../services/authentication/authentication.context";
 import { RootNavigator } from "./root.navigator";
@@ -8,18 +8,44 @@ import { AppProviders } from "./app.providers.navigator";
 import { navigationRef } from "./navigation_ref";
 import { theme as appTheme } from "../../infrastructure/theme";
 
+const BootScreen = () => {
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: appTheme.colors.bg.elements_bg,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <ActivityIndicator size="large" />
+    </View>
+  );
+};
+
+const NavigationInner = () => {
+  console.log("NAV: profileReady =", profileReady);
+  const { profileReady } = useContext(AuthenticationContext);
+
+  // ✅ hard gate: nothing under RootNavigator runs until user vs guest decided
+  if (!profileReady) return <BootScreen />;
+
+  return <RootNavigator />;
+};
+
 export const Navigation = () => {
   const navTheme = {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      background: appTheme.colors.bg.elements_bg, // <- the color you want instead of grey
+      background: appTheme.colors.bg.elements_bg,
     },
   };
+
   return (
     <NavigationContainer ref={navigationRef} theme={navTheme}>
       <AppProviders>
-        <RootNavigator />
+        <NavigationInner />
       </AppProviders>
     </NavigationContainer>
   );

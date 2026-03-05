@@ -1,4 +1,10 @@
-import React, { useState, createContext, useEffect, useMemo } from "react";
+import React, {
+  useState,
+  createContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import {
   signInWithCustomToken,
   updateEmail,
@@ -61,11 +67,21 @@ export const Authentication_Context_Provider = ({ children }) => {
   const [reset_pin_2, set_Reset_Pin_2] = useState("");
   const [firebaseReady, setFirebaseReady] = useState(false);
   const [firebaseUser, setFirebaseUser] = useState(null);
+  const [profileReady, setProfileReady] = useState(false);
+  const [profileWarning, setProfileWarning] = useState(null); // optional banner msg
 
   const { CURRENT_USER_KEY, USERS_ON_DEVICE_KEY } = STORAGE_KEYS;
   //**************** */ Local user persistency logic
-  console.log("auth.context auth app name on context:", auth?.app?.name);
   // *********************************************************
+  useEffect(() => {
+    console.log("auth.context auth app name on context:", auth?.app?.name);
+  }, []);
+
+  useEffect(() => {
+    console.log("AUTH PROVIDER MOUNTED");
+    return () => console.log("AUTH PROVIDER UNMOUNTED");
+  }, []);
+
   useEffect(() => {
     const orig = auth.signOut.bind(auth);
     auth.signOut = async (...args) => {
@@ -79,58 +95,150 @@ export const Authentication_Context_Provider = ({ children }) => {
 
   // *********************************************************
 
+  const lastHydratedUidRef = useRef(null);
+  const hydrationInFlightRef = useRef(false);
+  const authCycleIdRef = useRef(0);
+
   useEffect(() => {
     let cancelled = false;
 
     const unsub = onAuthStateChanged(auth, async (fbUser) => {
-      console.log("Firebase auth state:", fbUser ? fbUser.uid : "signed out");
+      // ✅ If we're unmounting, ignore everything
       if (cancelled) return;
+
+      console.log("Firebase auth state:", fbUser ? fbUser.uid : "signed out");
+
+      // -------------------------
+      // SIGNED OUT
+      // -------------------------
+      if (!fbUser) {
+        // ✅ This is a real "decision": guest
+        console.log("AUTH: profileReady -> false (signed out cycle)");
+        setProfileReady(false);
+        setProfileWarning(null);
+
+        lastHydratedUidRef.current = null;
+        hydrationInFlightRef.current = false;
+
+        setFirebaseUser(null);
+        setFirebaseReady(true);
+        setAuthInitializing(false);
+
+        setUser(null);
+        try {
+          await AsyncStorage.removeItem(CURRENT_USER_KEY);
+        } catch {}
+
+        if (cancelled) return;
+        console.log("AUTH: profileReady -> true (signed out)");
+        setProfileReady(true);
+        return;
+      }
+
+      // -------------------------
+      // SIGNED IN: ignore duplicates *BEFORE* touching profileReady
+      // -------------------------
+      if (hydrationInFlightRef.current) {
+        console.log("AUTH: ignore duplicate auth event (hydration in flight)");
+        return;
+      }
+
+      if (lastHydratedUidRef.current === fbUser.uid) {
+        console.log("AUTH: already hydrated uid, ensure ready");
+        // ✅ ensure ready in case something else left it false
+        setProfileReady(true);
+        return;
+      }
+
+      // ✅ NOW we are starting a real hydration cycle
+      const myCycleId = ++authCycleIdRef.current;
+      hydrationInFlightRef.current = true;
+
+      console.log("AUTH: profileReady -> false (start hydration)");
+      setProfileReady(false);
+      setProfileWarning(null);
 
       setFirebaseUser(fbUser);
       setFirebaseReady(true);
       setAuthInitializing(false);
 
-      if (!fbUser) {
-        setUser(null);
-        await AsyncStorage.removeItem(CURRENT_USER_KEY);
-        return;
-      }
-
-      // ✅ Hydrate from cache immediately (prevents UI going blank)
-      try {
-        const cached = await AsyncStorage.getItem(CURRENT_USER_KEY);
-        if (cached) setUser(JSON.parse(cached));
-      } catch {}
+      let cachedUser = null;
 
       try {
-        // finalize email if needed (ok to fail)
+        // 1) Hydrate cached user (fast UI)
+        try {
+          const cachedRaw = await AsyncStorage.getItem(CURRENT_USER_KEY);
+          if (cancelled || myCycleId !== authCycleIdRef.current) return;
+
+          if (cachedRaw) {
+            cachedUser = JSON.parse(cachedRaw);
+            console.log("AUTH: cachedUser? true");
+            setUser(cachedUser);
+          } else {
+            console.log("AUTH: cachedUser? false");
+          }
+        } catch {
+          console.log("AUTH: cachedUser? false (read failed)");
+        }
+
+        // 2) finalize pending email (don’t block hydration)
         try {
           await finalizePendingEmailChange(fbUser);
         } catch {}
+        if (cancelled || myCycleId !== authCycleIdRef.current) return;
 
+        // 3) Fetch DB user (decides user vs guest)
         const raw = await gettingUserByUIDRequest(fbUser.uid);
-        const userByUID = Array.isArray(raw) ? raw[0] : raw;
+        if (cancelled || myCycleId !== authCycleIdRef.current) return;
 
+        const userByUID = Array.isArray(raw) ? raw[0] : raw;
+        console.log("AUTH: DB user loaded?", !!userByUID);
+
+        // NOT FOUND -> treat as no profile (guest-ish state)
         if (!userByUID) {
-          // ✅ only sign out if your API truly says "not found"
-          // (better: check status code in the request wrapper)
-          console.log("DB user missing for uid:", fbUser.uid);
-          // optional: do NOT sign out automatically; show error screen instead
-          // await fbSignOut("DB user not found");
           setUser(null);
-          await AsyncStorage.removeItem(CURRENT_USER_KEY);
+          try {
+            await AsyncStorage.removeItem(CURRENT_USER_KEY);
+          } catch {}
+
+          lastHydratedUidRef.current = fbUser.uid;
+
+          if (cancelled || myCycleId !== authCycleIdRef.current) return;
+          console.log("AUTH: profileReady -> true (db not found)");
+          setProfileReady(true);
           return;
         }
 
+        // SUCCESS
         setUser(userByUID);
-        await AsyncStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userByUID));
+        try {
+          await AsyncStorage.setItem(
+            CURRENT_USER_KEY,
+            JSON.stringify(userByUID)
+          );
+        } catch {}
+
+        lastHydratedUidRef.current = fbUser.uid;
+
+        if (cancelled || myCycleId !== authCycleIdRef.current) return;
+        console.log("AUTH: profileReady -> true (success)");
+        setProfileReady(true);
+        return;
       } catch (e) {
-        // ✅ IMPORTANT: do NOT sign out on transient errors
-        console.log(
-          "DB fetch failed, keeping firebase session:",
-          e?.message ?? e
-        );
-        // optionally setError("Could not load profile. Check connection.")
+        if (cancelled || myCycleId !== authCycleIdRef.current) return;
+
+        console.log("AUTH: DB fetch failed:", e?.message ?? e);
+
+        // transient error -> keep cached user if any
+        if (!cachedUser) setUser(null);
+
+        setProfileWarning("Could not refresh your profile. Check connection.");
+
+        console.log("AUTH: profileReady -> true (transient error)");
+        setProfileReady(true);
+        return;
+      } finally {
+        hydrationInFlightRef.current = false;
       }
     });
 
@@ -139,7 +247,6 @@ export const Authentication_Context_Provider = ({ children }) => {
       unsub();
     };
   }, []);
-
   // *********************************************************
   // This useEffect sets the list of other users in the device, excluding the currently authenticated user.
   useEffect(() => {
@@ -420,6 +527,7 @@ export const Authentication_Context_Provider = ({ children }) => {
 
       //3 ) Reset the states at context
       resetAuthContext();
+      lastHydratedUidRef.current = null;
 
       // 4) Reset navigation to the normal guest experience: App Tabs -> Shop -> Home_View
       rootReset({
@@ -693,49 +801,123 @@ export const Authentication_Context_Provider = ({ children }) => {
     }
   };
 
+  const value = useMemo(
+    () => ({
+      isLoading,
+      error,
+      user,
+      setUser,
+      otherUsersInTheDevice,
+      emailToSwitch,
+      setEmailToSwitch,
+      gettingUserByEmailToAuthenticated,
+      isAuthenticated,
+      loginDevUser,
+      setUserToDB,
+      userToDB,
+      registerUser,
+      authInitializing,
+      registerLocalUser,
+      comingFrom,
+      setComingFrom,
+      signOut,
+      setPin,
+      pin,
+      setEmail,
+      email,
+      loginUser,
+      emailError,
+      setEmailError,
+      generatePinNumberOnDemand,
+      firebaseReady,
+      firebaseUser,
+      isOtherUsers,
+      isValidPin,
+      reset_pin_1,
+      set_Reset_Pin_1,
+      reset_pin_2,
+      set_Reset_Pin_2,
+      handleUpdate,
+      finalizePendingEmailChange,
+      startEmailChange,
+      fbSignOut,
+      profileWarning,
+      profileReady,
+    }),
+    [
+      isLoading,
+      error,
+      user,
+      otherUsersInTheDevice,
+      emailToSwitch,
+      isAuthenticated,
+      userToDB,
+      registerUser,
+      authInitializing,
+      registerLocalUser,
+      comingFrom,
+      signOut,
+      pin,
+      email,
+      loginUser,
+      emailError,
+      generatePinNumberOnDemand,
+      firebaseReady,
+      firebaseUser,
+      isOtherUsers,
+      isValidPin,
+      reset_pin_1,
+      reset_pin_2,
+      handleUpdate,
+      profileReady,
+      profileWarning,
+    ]
+  );
+
   return (
     <AuthenticationContext.Provider
-      value={{
-        isLoading,
-        error,
-        user,
-        setUser, // (optional expose)
-        otherUsersInTheDevice,
-        emailToSwitch,
-        setEmailToSwitch,
-        gettingUserByEmailToAuthenticated,
-        isAuthenticated,
-        loginDevUser,
-        // logout,
-        setUserToDB,
-        userToDB,
-        registerUser,
-        authInitializing,
-        registerLocalUser,
-        comingFrom,
-        setComingFrom,
-        signOut,
-        setPin,
-        pin,
-        setEmail,
-        email,
-        loginUser,
-        emailError,
-        setEmailError,
-        generatePinNumberOnDemand,
-        firebaseReady,
-        firebaseUser,
-        isOtherUsers,
-        isValidPin,
-        reset_pin_1,
-        set_Reset_Pin_1,
-        reset_pin_2,
-        set_Reset_Pin_2,
-        handleUpdate,
-        finalizePendingEmailChange,
-        startEmailChange,
-        fbSignOut,
-      }}
+      value={value}
+      // value={{
+      //   isLoading,
+      //   error,
+      //   user,
+      //   setUser, // (optional expose)
+      //   otherUsersInTheDevice,
+      //   emailToSwitch,
+      //   setEmailToSwitch,
+      //   gettingUserByEmailToAuthenticated,
+      //   isAuthenticated,
+      //   loginDevUser,
+      //   // logout,
+      //   setUserToDB,
+      //   userToDB,
+      //   registerUser,
+      //   authInitializing,
+      //   registerLocalUser,
+      //   comingFrom,
+      //   setComingFrom,
+      //   signOut,
+      //   setPin,
+      //   pin,
+      //   setEmail,
+      //   email,
+      //   loginUser,
+      //   emailError,
+      //   setEmailError,
+      //   generatePinNumberOnDemand,
+      //   firebaseReady,
+      //   firebaseUser,
+      //   isOtherUsers,
+      //   isValidPin,
+      //   reset_pin_1,
+      //   set_Reset_Pin_1,
+      //   reset_pin_2,
+      //   set_Reset_Pin_2,
+      //   handleUpdate,
+      //   finalizePendingEmailChange,
+      //   startEmailChange,
+      //   fbSignOut,
+      // }}
     >
       {children}
     </AuthenticationContext.Provider>
