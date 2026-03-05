@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { FlatList } from "react-native";
+import { useRoute, useNavigation } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
-import { useNavigation, useRoute } from "@react-navigation/native";
 
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header_With_Label_And_Menu } from "../../components/headers/goBack_with_label_and_menu.header";
@@ -13,13 +13,15 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 
 export default function Shop_View() {
   const navigation = useNavigation();
-  const route = useRoute();
-  // const data = route?.params?.products ?? [];
+  // const route = useRoute();
+  // const { products } = route.params || {};
 
   const { productsChosenForShop } = useContext(WarehouseContext);
-  const data = productsChosenForShop.length > 0 ? productsChosenForShop : [];
-  //const data = shopProductsWhole;
-  // const data = shopProductsGround;
+  // const data = productsChosenForShop.length > 0 ? productsChosenForShop : [];
+  const data = Array.isArray(productsChosenForShop)
+    ? productsChosenForShop
+    : [];
+  // const data = products.length > 0 ? productsChosenForShop : [];
 
   const renderProductInitialCard = ({ item }) => {
     return (

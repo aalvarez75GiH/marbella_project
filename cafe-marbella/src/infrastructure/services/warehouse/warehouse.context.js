@@ -20,7 +20,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [myWarehouse, setMyWarehouse] = useState(null);
-  const [productsChosenForShop, setProductsChosenForShop] = useState(null);
+  const [productsChosenForShop, setProductsChosenForShop] = useState([]);
   // later you’ll set this based on geolocation
   const { productsCatalog } = useContext(GlobalContext);
 
@@ -170,10 +170,10 @@ export const Warehouse_Context_Provider = ({ children }) => {
     // return getWarehouseShopProductsAll(productsCatalog, myWarehouse, "whole");
   }, [myWarehouse, productsCatalog]);
 
-  console.log(
-    "PRODUCTS CHOSEN FOR SHOP AT CONTEXT:",
-    JSON.stringify(productsChosenForShop, null, 2)
-  );
+  // console.log(
+  //   "PRODUCTS CHOSEN FOR SHOP AT CONTEXT:",
+  //   JSON.stringify(productsChosenForShop, null, 2)
+  // );
 
   return (
     <WarehouseContext.Provider

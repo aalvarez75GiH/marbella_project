@@ -20,8 +20,6 @@ import Sign_Out_Overlay_View from "../../Views/shop_views/sign_out_overlay.view"
 import Login_Screen_For_Switching_Accounts_View from "../../Views/shop_views/login_screen_for_switching_accounts.view";
 import Reset_PIN_View from "../../Views/shop_views/reset_pin.view";
 import Personal_Information_View from "../../Views/shop_views/personal_infrmation.view";
-import Email_Verified_View from "../../Views/shop_views/email_verified.view";
-import Login_View from "../../Views/authentication views/login_user.view";
 import Shop_Login_Users_View from "../../Views/shop_views/shop_login.view";
 import Email_Verification_Sent_View from "../../Views/shop_views/email_verified.view";
 import Shop_Products_View from "../../Views/shop_views/shop_products.view";
@@ -86,10 +84,7 @@ export const Shop_Navigator = () => {
         name="Switching_Accounts_View"
         component={Switching_Accounts_View}
       />
-      {/* <ShopFlowStack.Screen
-        name="Sign_Out_Overlay_View"
-        component={Sign_Out_Overlay_View}
-      /> */}
+
       <ShopFlowStack.Screen
         name="Sign_Out_Overlay_View"
         component={Sign_Out_Overlay_View}
