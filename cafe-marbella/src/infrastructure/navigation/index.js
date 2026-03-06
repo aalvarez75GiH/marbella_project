@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { View, ActivityIndicator } from "react-native";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 
@@ -28,7 +28,17 @@ const NavigationInner = () => {
   const { profileReady } = useContext(AuthenticationContext);
 
   // ✅ hard gate: nothing under RootNavigator runs until user vs guest decided
-  if (!profileReady) return <BootScreen />;
+  // if (!profileReady) return <BootScreen />;
+  const [hasBootstrapped, setHasBootstrapped] = useState(false);
+  useEffect(() => {
+    if (profileReady && !hasBootstrapped) {
+      setHasBootstrapped(true);
+    }
+  }, [profileReady, hasBootstrapped]);
+  console.log("NAV: profileReady =", profileReady);
+  console.log("NAV: hasBootstrapped =", hasBootstrapped);
+  // ✅ only block the VERY FIRST app boot
+  if (!hasBootstrapped) return <BootScreen />;
 
   return <RootNavigator />;
 };
