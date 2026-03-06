@@ -46,6 +46,7 @@ export default function Shop_Products_View() {
       <Container
         width="100%"
         color={theme.colors.bg.elements_bg}
+        // color={"green"}
         justify="flex-start"
         align="center"
         style={{ flex: 1 }}
@@ -65,7 +66,12 @@ export default function Shop_Products_View() {
         )}
         {ready && !whLoading && !isLoading && (
           <ScrollView
-            style={{ flex: 1, width: "100%" }}
+            // style={{ flex: 1, width: "100%" }}
+            style={{
+              flex: 1,
+              backgroundColor: theme.colors.bg.primary,
+              width: "100%",
+            }}
             contentContainerStyle={{
               alignItems: "center",
               paddingTop: 24,
@@ -196,6 +202,18 @@ export default function Shop_Products_View() {
                 />
               </Container>
             </Action_Container>
+            {/* <Action_Container
+              width="90%"
+              // height="40%"
+              padding_vertical="10%"
+              //color={theme.colors.bg.elements_bg}
+              color={"green"}
+              justify="flex-start"
+              align="center"
+              direction="row"
+              overflow="hidden"
+              onPress={() => null}
+            ></Action_Container> */}
           </ScrollView>
         )}
       </Container>

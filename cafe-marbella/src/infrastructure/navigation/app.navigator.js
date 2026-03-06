@@ -16,16 +16,20 @@ import { CartContext } from "../services/cart/cart.context";
 const Tab = createBottomTabNavigator();
 
 const TAB_BAR_BASE_STYLE = Platform.select({
-  ios: { height: 90, paddingTop: 14, backgroundColor: "#FFFFFF" },
-  default: { height: 100, paddingTop: 14, backgroundColor: "#FFFFFF" },
+  ios: {
+    position: "absolute",
+    height: 90,
+    paddingTop: 14,
+    backgroundColor: "#FFFFFF",
+  },
+  default: {
+    position: "absolute",
+    height: 100,
+    paddingTop: 14,
+    backgroundColor: "#FFFFFF",
+  },
 });
 
-// smoother than display:none
-// const HIDDEN_TAB_STYLE = {
-//   ...TAB_BAR_BASE_STYLE,
-//   opacity: 0,
-//   pointerEvents: "none",
-// };
 const HIDDEN_TAB_STYLE = {
   ...TAB_BAR_BASE_STYLE,
   backgroundColor: "transparent",
@@ -66,7 +70,8 @@ const Tabs = () => {
 
         // 🔥 ADD THIS
         sceneContainerStyle: {
-          backgroundColor: "transparent",
+          // backgroundColor: "transparent",
+          backgroundColor: theme.colors.bg.elements_bg,
         },
 
         tabBarActiveTintColor: "#247F35",
