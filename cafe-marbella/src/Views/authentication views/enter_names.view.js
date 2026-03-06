@@ -37,7 +37,7 @@ export default function Enter_Names_View() {
   const [error, setError] = useState(null);
 
   const route = useRoute();
-  const { comingFrom, returnTo } = route?.params ?? {};
+  const { returnTo } = route?.params ?? {};
 
   const firstNameDataInputRef = useRef(null);
 

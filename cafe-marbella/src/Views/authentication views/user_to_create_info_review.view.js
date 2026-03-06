@@ -21,7 +21,7 @@ export default function User_To_Create_Info_Review_View() {
   const navigation = useNavigation();
   const theme = useTheme();
   const route = useRoute();
-  const { comingFrom, returnTo } = route?.params ?? {};
+  const { returnTo } = route?.params ?? {};
   // const [isLoading, setIsLoading] = useState(false);
 
   const { userToDB, registerUser, registerLocalUser } = useContext(
@@ -435,7 +435,8 @@ export default function User_To_Create_Info_Review_View() {
                   // 10) close auth modal
                   navigation.getParent()?.goBack();
 
-                  // 11) navigate to return target
+                  // 11) then close auth modal
+
                   requestAnimationFrame(() => {
                     navigationRef.current?.navigate("App", {
                       screen: returnTo?.tab ?? "Shop",
@@ -453,83 +454,6 @@ export default function User_To_Create_Info_Review_View() {
                   lockCartInit(false);
                 }
               }}
-              // action={async () => {
-              //   if (isSubmitting) return; // prevent double taps
-              //   setIsSubmitting(true);
-              //   lockCartInit(true);
-              //   try {
-              //     console.log("CTA: start register");
-
-              //     // 1) capture guest cart BEFORE registration call
-              //     const guestCart = cart;
-
-              //     // 2) register
-              //     const result = await registerUser(userToDB, cartPayload);
-
-              //     if (!result?.ok) {
-              //       setError(
-              //         result?.error === "Email already in use"
-              //           ? "You already have an account, please log in instead."
-              //           : result?.error || "Could not register"
-              //       );
-              //       return; // ✅ ALWAYS stop if register failed
-              //     }
-
-              //     const nextUser = { ...result.user, authenticated: true };
-              //     const userId = nextUser.user_id;
-              //     // 3️⃣ ✅ VERY IMPORTANT — persist authenticated user locally
-              //     await registerLocalUser(nextUser);
-
-              //     // 4) fetch DB cart (new user may not have one yet)
-              //     let dbCart = null;
-              //     try {
-              //       dbCart = await gettingCartByUserID(userId, {
-              //         setState: false,
-              //       });
-              //     } catch (e) {
-              //       console.log("CTA: no db cart, continuing", e?.message ?? e);
-              //       dbCart = null;
-              //     }
-
-              //     // 5) merge (guest overrides db)
-              //     const mergedCart = mergeCartGuestOverridesDb(
-              //       dbCart,
-              //       guestCart,
-              //       userId
-              //     );
-
-              //     // 6) set local cart immediately (UI stays consistent)
-              //     setCart(mergedCart);
-
-              //     // 7) persist merged cart
-              //     await upsertCart(mergedCart);
-
-              //     // 8) clear guest cart ONLY after successful upsert
-              //     await clearGuestCart();
-
-              //     // 9) build order from the same cart
-              //     prepareOrderFromCart(mergedCart, nextUser);
-
-              //     // 10) close auth modal
-              //     navigation.getParent()?.goBack();
-
-              //     // 11) navigate to return target
-              //     requestAnimationFrame(() => {
-              //       navigationRef.current?.navigate("App", {
-              //         screen: returnTo?.tab ?? "Shop",
-              //         params: {
-              //           screen: returnTo?.screen ?? "Home_View",
-              //           params: returnTo?.params ?? {},
-              //         },
-              //       });
-              //     });
-              //   } catch (e) {
-              //     console.log("CTA REGISTER ERROR:", e?.message ?? e, e);
-              //   } finally {
-              //     setIsSubmitting(false);
-              //     lockCartInit(false);
-              //   }
-              // }}
             />
           )}
         </Container>

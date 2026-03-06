@@ -22,6 +22,7 @@ export const Orders_Context_Provider = ({ children }) => {
 
   const { user } = useContext(AuthenticationContext);
   const user_id = user?.user_id;
+
   useEffect(() => {
     // Fetch orders when the component mounts or when user_id changes
     // const user_id = "aaa09d45-24a9-4a3f-aca5-9658952172c2"; // Replace with actual user ID from context/authentication
@@ -52,6 +53,7 @@ export const Orders_Context_Provider = ({ children }) => {
       }
     }, 1000); // Simulate network delay
   };
+
   const gettingAllOrdersByUserIDGroupedByMonth = async (user_id) => {
     setIsOrdersLoading(true);
     // setTimeout(async () => {

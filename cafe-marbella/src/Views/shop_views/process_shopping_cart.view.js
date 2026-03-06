@@ -148,42 +148,6 @@ export default function Process_Shopping_Cart_View() {
                   coming_from: "Process_Shopping_Cart_View",
                 });
               }}
-
-              // action={() => {
-              //   const latestProducts = cart?.products ?? [];
-
-              //   if (!user_id) {
-              //     navigation.navigate("Auth_Navigator", {
-              //       nextView: "Shop_Delivery_Type_View",
-              //     });
-
-              //     return;
-              //   }
-              //   setMyOrder((prevOrder) => ({
-              //     ...prevOrder,
-              //     customer: {
-              //       first_name,
-              //       last_name,
-              //       email,
-              //       phone_number,
-              //       customer_address: address,
-              //       uid,
-              //     },
-              //     order_status: "In Progress",
-              //     order_products: latestProducts,
-              //     pricing: {
-              //       sub_total,
-              //       taxes,
-              //       discount: 0,
-              //       shipping: 0,
-              //       total,
-              //     }, // ✅ always latest
-              //   }));
-
-              //   navigation.navigate("Shop_Delivery_Type_View", {
-              //     coming_from: "Process_Shopping_Cart_View",
-              //   });
-              // }}
             />
           )}
         </Container>

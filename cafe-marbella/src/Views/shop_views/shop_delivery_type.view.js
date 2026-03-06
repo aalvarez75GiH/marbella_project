@@ -49,6 +49,7 @@ export default function Shop_Delivery_Type_View() {
   const { formatted_address } = geo || {};
   const { phone } = warehouse_information || {};
   const distanceMilesNumber = parseFloat(distance_in_miles);
+
   const warehouse_distance_range_positive =
     distanceMilesNumber < max_limit_pickup_ratio;
 

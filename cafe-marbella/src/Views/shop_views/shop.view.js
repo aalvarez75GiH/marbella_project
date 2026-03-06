@@ -13,15 +13,12 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 
 export default function Shop_View() {
   const navigation = useNavigation();
-  // const route = useRoute();
-  // const { products } = route.params || {};
 
   const { productsChosenForShop } = useContext(WarehouseContext);
   // const data = productsChosenForShop.length > 0 ? productsChosenForShop : [];
   const data = Array.isArray(productsChosenForShop)
     ? productsChosenForShop
     : [];
-  // const data = products.length > 0 ? productsChosenForShop : [];
 
   const renderProductInitialCard = ({ item }) => {
     return (

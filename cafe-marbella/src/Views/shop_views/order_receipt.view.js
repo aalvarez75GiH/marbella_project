@@ -208,13 +208,13 @@ export default function Shop_Order_Receipt_View() {
               action={async () => {
                 setMyOrder(myOrder_schema);
                 setCardVerified(false);
-                const warehouse_by_id = await gettingWarehouseByID(
-                  warehouse_id
-                );
-                console.log(
-                  "MY WAREHOUSE BEFORE NAVIGATING BACK TO HOME: ",
-                  JSON.stringify(warehouse_by_id, null, 2)
-                );
+                // const warehouse_by_id = await gettingWarehouseByID(
+                //   warehouse_id
+                // );
+                // console.log(
+                //   "MY WAREHOUSE BEFORE NAVIGATING BACK TO HOME: ",
+                //   JSON.stringify(warehouse_by_id, null, 2)
+                // );
 
                 if (comingFrom === "Shopping_Cart_View") {
                   rootNavigate("App", {
@@ -224,7 +224,7 @@ export default function Shop_Order_Receipt_View() {
                 } else {
                   rootNavigate("App", {
                     screen: "Shop",
-                    params: { screen: "Home_View" },
+                    params: { screen: "Shop_Products_View" },
                   });
                 }
               }}
