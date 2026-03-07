@@ -32,8 +32,6 @@ export default function Login_Users_View() {
   const {
     cart,
     setCart,
-    setCartTotalItems,
-    getTotalCartQuantity,
     gettingCartByUserID,
     mergeCartGuestOverridesDb,
     upsertCart,
@@ -56,7 +54,6 @@ export default function Login_Users_View() {
     emailError,
     setEmailError,
     isValidPin,
-    finalizePendingEmailChange,
   } = useContext(AuthenticationContext);
 
   useEffect(() => {
@@ -329,7 +326,7 @@ export default function Login_Users_View() {
 
                       // 4) set local cart FIRST (so back shows qty=2)
                       setCart(mergedCart);
-                      setCartTotalItems(getTotalCartQuantity(mergedCart));
+                      // setCartTotalItems(getTotalCartQuantity(mergedCart));
 
                       // 5) persist merged cart to DB so your "fetch user cart" effect won't overwrite to qty=1
                       // (This is the key fix for your problem.)

@@ -2,6 +2,7 @@ import React, { useEffect, useState, createContext, useContext } from "react";
 
 import { gettingAllProductsCatalogRequest } from "./global.services";
 import { normalizeProductFromBackend } from "../../local_data/images_mapping/normalize_product_from_backend";
+import { theme } from "../../theme/index";
 
 export const GlobalContext = createContext();
 
@@ -80,6 +81,37 @@ export const Global_Context_Provider = ({ children }) => {
     }, 500);
   };
 
+  //********** logic to control Snackbar from global context (for error handling and user feedback) **********/
+  const [snackbar, setSnackbar] = useState({
+    visible: false,
+    message: "",
+    actionLabel: "OK",
+    onAction: null,
+    bgColor: theme.colors.ui.primary,
+  });
+
+  const showSnackbar = ({
+    message,
+    actionLabel = "OK",
+    onAction = null,
+    bgColor = theme.colors.ui.primary,
+  }) => {
+    setSnackbar({
+      visible: true,
+      message,
+      actionLabel,
+      onAction,
+      bgColor,
+    });
+  };
+
+  const hideSnackbar = () => {
+    setSnackbar((prev) => ({
+      ...prev,
+      visible: false,
+    }));
+  };
+
   console.log("USER LANGUAGE AT GLOBAL CONTEXT:", globalLanguage);
   return (
     <GlobalContext.Provider
@@ -93,6 +125,11 @@ export const Global_Context_Provider = ({ children }) => {
         setGlobalLanguage,
         globalLanguage,
         togglingGlobalLanguage,
+
+        // setSnackbar,
+        snackbar,
+        showSnackbar,
+        hideSnackbar,
       }}
     >
       {children}

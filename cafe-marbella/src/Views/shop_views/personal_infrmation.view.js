@@ -8,11 +8,7 @@ import React, {
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  FlatList,
   View,
-  SectionList,
-  StyleSheet,
-  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -24,6 +20,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import { Snackbar } from "react-native-paper";
 
 import { Container } from "../../components/containers/general.containers";
 import { Just_Caption_Header } from "../../components/headers/just_caption.header.js";
@@ -40,9 +37,10 @@ import { put_update_userinfo_Request } from "../../infrastructure/services/authe
 import { auth } from "../../../fb.js";
 
 import ClearIcon from "../../../assets/my_icons/delete_clear_icon.svg";
+
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { GeolocationContext } from "../../infrastructure/services/geolocation/geolocation.context.js";
-import { createdAt } from "expo-updates";
+import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
 
 export default function Personal_Information_View() {
   const navigation = useNavigation();
@@ -67,6 +65,14 @@ export default function Personal_Information_View() {
 
   const { setUserToDB, userToDB, user, handleUpdate, setUser, isLoading } =
     useContext(AuthenticationContext);
+
+  const { deviceLat, deviceLng } = useContext(GeolocationContext);
+  console.log("Device location at Personal Info View:", {
+    deviceLat,
+    deviceLng,
+  });
+
+  const { snackbar, showSnackbar, hideSnackbar } = useContext(GlobalContext);
 
   useFocusEffect(
     useCallback(() => {
@@ -141,35 +147,7 @@ export default function Personal_Information_View() {
     JSON.stringify(userToDB, null, 2)
   );
 
-  //   useEffect(() => {
-  //     const sync = async () => {
-  //       const currentUser = auth.currentUser;
-  //       if (!currentUser) return;
-
-  //       await currentUser.reload(); // ✅ gets latest email from Firebase
-
-  //       const idToken = await currentUser.getIdToken(true);
-
-  //       // Call backend to sync Firestore email from Firebase Admin
-  //       const res = await put_update_userinfo_Request(
-  //         { ...userToDB, email: currentUser.email }, // or even omit email; backend uses fbUser.email anyway
-  //         idToken
-  //       );
-
-  //       if (res.ok) setUser(res.data);
-  //     };
-
-  //     sync();
-  //   }, []);
-
-  const { deviceLat, deviceLng } = useContext(GeolocationContext);
-  console.log("Device location at Personal Info View:", {
-    deviceLat,
-    deviceLng,
-  });
-
   //   ************** PHONE VALIDATION LOGIC ***************
-  //   const showCTA = isPhoneComplete; // ✅ CTA only when complete
   const onlyDigits = (s = "") => String(s).replace(/\D/g, "");
 
   const formatPhone = (input = "") => {
@@ -308,7 +286,7 @@ export default function Personal_Information_View() {
                 underlineColor={theme.colors.inputs.bottom_lines_disabled}
                 border_width={"0.3px"}
                 activeUnderlineColor={theme.colors.ui.primary}
-                keyboardType="email"
+                keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
                 textContentType="emailAddress"
@@ -549,51 +527,90 @@ export default function Personal_Information_View() {
                 </Container>
               )}
 
-              {/* {isLastNameFocused && ( */}
-              <Container
-                width="100%"
-                height="30%"
-                justify="center"
-                align="center"
-                color={theme.colors.bg.elements_bg}
-              >
-                <Regular_CTA
-                  width="200px"
-                  height={"65px"}
-                  color={theme.colors.ui.primary}
-                  border_radius={"40px"}
-                  caption="Update"
-                  caption_text_variant="dm_sans_bold_20_white"
-                  action={async () => {
-                    const res = await handleUpdate(userToDB);
+              {!snackbar.visible && (
+                <Container
+                  width="100%"
+                  height="30%"
+                  justify="center"
+                  align="center"
+                  color={theme.colors.bg.elements_bg}
+                >
+                  <Regular_CTA
+                    width="200px"
+                    height={"65px"}
+                    color={theme.colors.ui.primary}
+                    border_radius={"40px"}
+                    caption="Update"
+                    caption_text_variant="dm_sans_bold_20_white"
+                    action={async () => {
+                      const res = await handleUpdate(userToDB);
 
-                    if (!res?.ok) {
-                      if (res.error === "requires_recent_login") {
-                        Alert.alert(
-                          "Please log in again to change your email."
-                        );
-                        navigation.navigate("Shop_Login_Users_View");
+                      if (!res?.ok) {
+                        if (res.error === "requires_recent_login") {
+                          showSnackbar({
+                            message:
+                              "Please log in again to change your email.",
+                            actionLabel: "Log in",
+                            bgColor: "#B00020",
+                            onAction: () => {
+                              hideSnackbar();
+                              navigation.navigate("Shop_Login_Users_View");
+                            },
+                          });
+                          return;
+                        }
+                        if (res.error === "email_already_in_use") {
+                          Alert.alert("This email is already in use.");
+                          return;
+                        }
+                        Alert.alert("Update failed", String(res.error));
                         return;
                       }
-                      if (res.error === "email_already_in_use") {
-                        Alert.alert("This email is already in use.");
+
+                      if (res.emailChanged) {
+                        navigation.navigate("Email_Verification_Sent_View", {
+                          pendingEmail: res.pendingEmail,
+                        });
                         return;
                       }
-                      Alert.alert("Update failed", String(res.error));
-                      return;
-                    }
 
-                    if (res.emailChanged) {
-                      navigation.navigate("Email_Verification_Sent_View", {
-                        pendingEmail: res.pendingEmail,
+                      // setVisible(true);
+                      showSnackbar({
+                        message: "Your information was updated successfully.",
+                        actionLabel: "OK",
+                        bgColor: theme.colors.ui.primary,
+                        onAction: () => {
+                          hideSnackbar();
+                          navigation.goBack();
+                        },
                       });
-                      return;
+                      // Alert.alert("Updated", "Your info was updated.");
+                    }}
+                  />
+                </Container>
+              )}
+              <Snackbar
+                visible={snackbar.visible}
+                onDismiss={() => {}}
+                duration={Number.POSITIVE_INFINITY}
+                action={{
+                  label: snackbar.actionLabel,
+                  onPress: () => {
+                    if (snackbar.onAction) {
+                      snackbar.onAction();
+                    } else {
+                      hideSnackbar();
                     }
-
-                    Alert.alert("Updated", "Your info was updated.");
-                  }}
-                />
-              </Container>
+                  },
+                }}
+                style={{
+                  minHeight: 80,
+                  marginBottom: 30,
+                  backgroundColor: snackbar.bgColor,
+                }}
+              >
+                {snackbar.message}
+              </Snackbar>
             </ScrollView>
           </KeyboardAvoidingView>
         </>
