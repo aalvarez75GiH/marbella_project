@@ -2,6 +2,7 @@ import React, { useContext, useCallback } from "react";
 import { FlatList } from "react-native";
 import { useTheme } from "styled-components/native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import {
   Action_Container,
@@ -23,6 +24,7 @@ import { OrdersContext } from "../../infrastructure/services/orders/orders.conte
 
 export default function Shopping_Cart_View() {
   const theme = useTheme();
+  const tabBarHeight = useBottomTabBarHeight();
   const { setMyOrder } = useContext(OrdersContext);
   // *************
   const { user, setComingFrom } = useContext(AuthenticationContext);
@@ -87,9 +89,8 @@ export default function Shopping_Cart_View() {
           <>
             <Just_Caption_Header caption="My Cart" />
             <Container
-              style={{ flex: 1 }} // ✅ THIS fills remaining SafeArea
+              style={{ flex: 1, paddingBottom: tabBarHeight }} // ✅ this is the key     }} // ✅ THIS fills remaining SafeArea
               width="100%"
-              // height="80%"
               color={theme.colors.bg.screens_bg}
               justify="center"
               align="center"

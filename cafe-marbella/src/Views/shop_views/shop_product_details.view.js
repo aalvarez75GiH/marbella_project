@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -12,6 +13,7 @@ import { CartContext } from "../../infrastructure/services/cart/cart.context";
 
 export default function Shop_Product_Details_View({ route }) {
   const theme = useTheme();
+  const tabBarHeight = useBottomTabBarHeight();
   const navigation = useNavigation();
   const { item } = route.params;
   // console.log("Product Details View - item:", JSON.stringify(item, null, 2));

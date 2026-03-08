@@ -200,6 +200,7 @@ export default function Login_Users_View() {
                 returnKeyType="done"
                 onFocus={() => setEmailTouched(true)}
                 onBlur={() => setEmailTouched(false)}
+                secureTextEntry
                 blurOnSubmit
               />
               {error && (

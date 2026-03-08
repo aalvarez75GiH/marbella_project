@@ -1,4 +1,4 @@
-import React, { useContext, useState, useRef, useEffect } from "react";
+import React, { useContext, useState, useRef, useEffect, useMemo } from "react";
 import {
   StyleSheet,
   Image,
@@ -15,13 +15,11 @@ import { SafeArea } from "../../components/spacers and globals/safe-area.compone
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 import { Text } from "../../infrastructure/typography/text.component";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
-import { Underlined_CTA } from "../../components/ctas/underlined.cta.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 import { DataInput } from "../../components/inputs/data_text_input.js";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { CartContext } from "../../infrastructure/services/cart/cart.context.js";
-import { OrdersContext } from "../../infrastructure/services/orders/orders.context.js";
 
 export default function Login_Screen_For_Switching_Accounts_View() {
   const navigation = useNavigation();
@@ -30,20 +28,20 @@ export default function Login_Screen_For_Switching_Accounts_View() {
 
   const route = useRoute();
   const { emailToSwitch, returnTo } = route.params || {};
+
   console.log("RETURN TO:", returnTo);
   console.log("EMAIL TO SWITCH:", emailToSwitch);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [pinToSwitch, setPinToSwitch] = useState("");
 
-  const { setPin, pin, loginUser, emailError, setEmailError } = useContext(
-    AuthenticationContext
-  );
+  const { setPin, pin, loginUser } = useContext(AuthenticationContext);
 
   const {
     cart,
     setCart,
-    setCartTotalItems,
-    getTotalCartQuantity,
     gettingCartByUserID,
     mergeCartGuestOverridesDb,
     upsertCart,
@@ -51,25 +49,103 @@ export default function Login_Screen_For_Switching_Accounts_View() {
     clearGuestCart,
   } = useContext(CartContext);
 
-  const { prepareOrderFromCart } = useContext(OrdersContext);
-  const [emailTouched, setEmailTouched] = useState(false);
-  const [error, setError] = useState(null);
-  const [pinToSwitch, setPinToSwitch] = useState("");
+  const canSubmit = useMemo(() => /^\d{6}$/.test(pin), [pin]);
+  const isValidPin = /^\d{6}$/.test(pin);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       pinInputRef.current?.focus();
-    }, 300); // slight delay for modal animation
+    }, 300);
 
     return () => clearTimeout(timeout);
   }, []);
 
-  const isValidEmail =
-    global?.isValidEmail ||
-    ((email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).toLowerCase()));
-  const isValidPin = /^\d{6}$/.test(pin);
+  const goToFinalDestination = () => {
+    const targetTab = returnTo?.tab ?? "Shop";
+    const targetScreen = returnTo?.screen ?? "Shop_Products_View";
+    const targetParams = returnTo?.params ?? {};
 
-  //   console.log("COMING TO LOGIN VIEW FROM:", comingFrom);
+    // Same stack flow: replace avoids briefly showing previous screen again
+    if (targetTab === "Shop") {
+      navigation.replace(targetScreen, targetParams);
+      return;
+    }
+
+    // Cross-tab flow
+    navigationRef.current?.navigate("App", {
+      screen: targetTab,
+      params: {
+        screen: targetScreen,
+        params: targetParams,
+      },
+    });
+  };
+
+  const handleSwitch = async () => {
+    if (isSubmitting) return;
+
+    if (!canSubmit) {
+      setError("Please enter a valid 6-digit PIN.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+    lockCartInit(true);
+
+    try {
+      console.log("CTA: start login for switching");
+
+      // 1) login target user
+      const result = await loginUser(pin, emailToSwitch);
+
+      if (!result?.ok || !result?.user) {
+        setError(result?.error || "Login failed");
+        return;
+      }
+
+      const nextUser = { ...result.user, authenticated: true };
+      const userId = nextUser.user_id;
+
+      // 2) capture current local cart before switching
+      const guestCart = cart;
+
+      // 3) fetch target user's db cart without overwriting local state yet
+      let dbCart = null;
+      try {
+        dbCart = await gettingCartByUserID(userId, { setState: false });
+      } catch (e) {
+        console.log(
+          "CTA: no db cart or fetch failed, continuing with local cart",
+          e?.message ?? e
+        );
+        dbCart = null;
+      }
+
+      // 4) merge carts
+      const mergedCart = mergeCartGuestOverridesDb(dbCart, guestCart, userId);
+
+      // 5) update local cart immediately
+      setCart(mergedCart);
+
+      // 6) persist merged cart
+      await upsertCart(mergedCart);
+
+      // 7) clear guest cart after successful upsert
+      await clearGuestCart();
+
+      // 8) go directly to final destination
+      goToFinalDestination();
+    } catch (e) {
+      console.log("CTA SWITCH LOGIN ERROR:", e?.message ?? e, e);
+      setError("Could not switch account. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+      lockCartInit(false);
+      setPin("");
+    }
+  };
+
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -79,10 +155,8 @@ export default function Login_Screen_For_Switching_Accounts_View() {
         <Global_activity_indicator
           caption="Wait, we are logging you in..."
           caption_width="65%"
-          // color={"red"}
         />
       ) : (
-        // your normal UI
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -91,7 +165,6 @@ export default function Login_Screen_For_Switching_Accounts_View() {
             width="100%"
             height="100%"
             color={theme.colors.bg.elements_bg}
-            //color={"red"}
             justify="flex-start"
             align="center"
           >
@@ -108,9 +181,8 @@ export default function Login_Screen_For_Switching_Accounts_View() {
             </Container>
             <Container
               width="100%"
-              height={"25%"} // shrink if there's an error to make room
+              height={"25%"}
               color={theme.colors.bg.elements_bg}
-              //   color={"yellow"}
               align="flex-start"
             >
               <Spacer position="left" size="extraLarge">
@@ -123,7 +195,6 @@ export default function Login_Screen_For_Switching_Accounts_View() {
               width="100%"
               height="20%"
               color={theme.colors.bg.elements_bg}
-              //   color={"yellow"}
               align="center"
               direction="column"
             >
@@ -134,8 +205,9 @@ export default function Login_Screen_For_Switching_Accounts_View() {
                 onChangeText={(value) => {
                   const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
                   setPin(digitsOnly);
+                  setPinToSwitch(digitsOnly);
                   if (error) {
-                    setError(null); // 👈 clear error while typing
+                    setError(null);
                   }
                 }}
                 underlineColor={theme.colors.inputs.bottom_lines_disabled}
@@ -145,12 +217,13 @@ export default function Login_Screen_For_Switching_Accounts_View() {
                 keyboardType={Platform.OS === "ios" ? "number-pad" : "numeric"}
                 autoCapitalize="none"
                 autoCorrect={false}
-                textContentType="Password"
-                autoComplete="email"
+                textContentType="password"
+                autoComplete="off"
                 returnKeyType="done"
                 onFocus={() => setEmailTouched(true)}
                 onBlur={() => setEmailTouched(false)}
                 blurOnSubmit
+                secureTextEntry
               />
               {error && (
                 <Container
@@ -175,9 +248,8 @@ export default function Login_Screen_For_Switching_Accounts_View() {
             {emailToSwitch && pin && isValidPin && (
               <Container
                 width="100%"
-                padding_vertical={"2%"} // shrink if there's an error to make room
+                padding_vertical={"2%"}
                 color={theme.colors.bg.elements_bg}
-                //color={"red"}
                 align="flex-start"
                 justify="center"
                 direction="row"
@@ -189,60 +261,7 @@ export default function Login_Screen_For_Switching_Accounts_View() {
                   border_radius={"40px"}
                   caption="Switch"
                   caption_text_variant="dm_sans_bold_20_white"
-                  action={async () => {
-                    if (isSubmitting) return;
-
-                    setIsSubmitting(true);
-                    lockCartInit(true);
-
-                    try {
-                      // 1) login
-                      const result = await loginUser(pin, emailToSwitch);
-                      if (!result?.ok) {
-                        setError(result?.error || "Login failed");
-                        return;
-                      }
-
-                      const nextUser = { ...result.user, authenticated: true };
-                      const userId = nextUser.user_id;
-
-                      // 2) fetch the user's cart (and SET state)
-                      // this will set cart + badge safely inside CartContext
-                      const userCart = await gettingCartByUserID(userId, {
-                        setState: true,
-                      });
-
-                      // optional: ensure not undefined (your getter already does)
-                      // const safe = userCart ?? createEmptyUserCart(userId);
-                      // setCart(safe);
-                      // setCartTotalItems(getTotalCartQuantity(safe));
-
-                      // 3) prepare order from that cart (only if you need it for returnTo flow)
-                      prepareOrderFromCart(userCart, nextUser);
-
-                      // 4) close modal if possible (avoid GO_BACK warning)
-                      const parent = navigation.getParent();
-                      if (parent?.canGoBack?.()) parent.goBack();
-
-                      // 5) go where you want
-                      requestAnimationFrame(() => {
-                        navigationRef.current?.navigate("App", {
-                          screen: returnTo?.tab ?? "Shop",
-                          params: {
-                            screen: returnTo?.screen ?? "Home_View",
-                            params: returnTo?.params ?? {},
-                          },
-                        });
-                      });
-                    } catch (e) {
-                      console.log("SWITCH LOGIN CTA ERROR:", e?.message ?? e);
-                      setError("Something went wrong. Try again.");
-                    } finally {
-                      lockCartInit(false);
-                      setIsSubmitting(false);
-                      setPin("");
-                    }
-                  }}
+                  action={handleSwitch}
                 />
               </Container>
             )}
@@ -252,6 +271,7 @@ export default function Login_Screen_For_Switching_Accounts_View() {
     </SafeArea>
   );
 }
+
 const styles = StyleSheet.create({
   image_1: {
     width: "100%",

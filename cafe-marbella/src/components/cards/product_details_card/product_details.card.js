@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import { Container } from "../../containers/general.containers.js";
 import { theme } from "../../../infrastructure/theme/index.js";
@@ -11,6 +12,7 @@ import { Product_Details_Description_Component } from "./product_details_descrip
 import { Product_Details_Avail_Promotion_Component } from "./product_details_availability.component.js";
 
 export const Product_Details_Card = ({ item = null }) => {
+  const tabBarHeight = useBottomTabBarHeight();
   // console.log("ITEM AT PRODUCT DETAILS CARD:", JSON.stringify(item, null, 2));
   const { product_name, product_subtitle, size_variants } = item || {};
 
@@ -40,6 +42,7 @@ export const Product_Details_Card = ({ item = null }) => {
       justify="flex-start"
       align="center"
       color={theme.colors.bg.screens_bg}
+      style={{ paddingBottom: tabBarHeight }}
       //color={"red"}
     >
       <Product_Details_Avail_Promotion_Component

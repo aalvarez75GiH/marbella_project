@@ -109,8 +109,9 @@ const Tabs = () => {
       <Tab.Screen
         name="Cart"
         component={Cart_Navigator}
-        options={{
+        options={({ route }) => ({
           title: "Cart",
+          tabBarStyle: tabBarStyleFromNested(route, "Shopping_Cart_View"),
           tabBarIcon: ({ size }) => (
             <Cart_Active_With_Items_CTA
               size={size ?? 25}
@@ -119,7 +120,7 @@ const Tabs = () => {
               color={theme.colors.bg.elements_bg}
             />
           ),
-        }}
+        })}
       />
     </Tab.Navigator>
   );

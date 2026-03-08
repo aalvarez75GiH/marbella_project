@@ -61,7 +61,7 @@ export default function Switching_Accounts_View() {
                 emailToSwitch: email,
                 returnTo: {
                   tab: "Shop",
-                  screen: "Home_View",
+                  screen: "Shop_Products_View",
                   // params: { coming_from: "Home_View" },
                 },
               })
@@ -206,7 +206,7 @@ export default function Switching_Accounts_View() {
                         emailToSwitch: emailToSwitch.trim(),
                         returnTo: {
                           tab: "Shop",
-                          screen: "Home_View",
+                          screen: "Shop_Products_View",
                         },
                       }
                     );

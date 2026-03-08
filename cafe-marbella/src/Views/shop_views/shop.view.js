@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { FlatList } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header_With_Label_And_Menu } from "../../components/headers/goBack_with_label_and_menu.header";
@@ -13,6 +14,7 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 
 export default function Shop_View() {
   const navigation = useNavigation();
+  const tabBarHeight = useBottomTabBarHeight();
 
   const { productsChosenForShop } = useContext(WarehouseContext);
   // const data = productsChosenForShop.length > 0 ? productsChosenForShop : [];
@@ -33,7 +35,7 @@ export default function Shop_View() {
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
-      style={{ flex: 1 }}
+      style={{ flex: 1, paddingBottom: tabBarHeight }}
     >
       <Container
         width="100%"

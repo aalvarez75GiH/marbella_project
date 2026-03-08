@@ -23,15 +23,12 @@ import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplet
 import { Snackbar } from "react-native-paper";
 
 import { Container } from "../../components/containers/general.containers";
-import { Just_Caption_Header } from "../../components/headers/just_caption.header.js";
-import { Exit_Header_With_Label } from "../../components/headers/exit_with_label.header";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header.js";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 import { Text } from "../../infrastructure/typography/text.component";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { DataInput } from "../../components/inputs/data_text_input.js";
-import { Underlined_CTA } from "../../components/ctas/underlined.cta.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 import { put_update_userinfo_Request } from "../../infrastructure/services/authentication/authentication.sevices.js";
 import { auth } from "../../../fb.js";
@@ -45,14 +42,9 @@ import { GlobalContext } from "../../infrastructure/services/global/global.conte
 export default function Personal_Information_View() {
   const navigation = useNavigation();
   const theme = useTheme();
-  const route = useRoute();
-  const { comingFrom, returnTo } = route?.params ?? {};
 
   const [isLastNameFocused, setIsLastNameFocused] = useState(false);
-  const [error, setError] = useState(null);
-  const [emailError, setEmailError] = useState(null);
   const [selectedAddress, setSelectedAddress] = useState(null);
-  const [scrollEnabled, setScrollEnabled] = useState(true);
   const [phoneError, setPhoneError] = useState(null);
 
   const didInitRef = useRef(false);
@@ -60,8 +52,6 @@ export default function Personal_Information_View() {
   const scrollRef = useRef(null);
   const addressYRef = useRef(0);
   const placesRef = useRef(null);
-  const didAutoScrollAddressRef = useRef(false);
-  const lastScrollYRef = useRef(0);
 
   const { setUserToDB, userToDB, user, handleUpdate, setUser, isLoading } =
     useContext(AuthenticationContext);
