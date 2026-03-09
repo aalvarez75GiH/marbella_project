@@ -14,6 +14,7 @@ const { loadPrivateKeyOnce } = require("./users.handlers");
 const {
   sendingEmailToUserPINIsChanged,
   sendingEmailToUserRegistered,
+  generateCustomerQRToken,
 } = require("./users.handlers");
 
 usersRouter.get("/userByUID", async (req, res) => {
@@ -80,6 +81,9 @@ usersRouter.post("/", verifyFirebaseToken, async (req, res) => {
   const user_id = uuidv4();
   const cart_payload = req.body.cart_payload; // expecting { products: [...] }
 
+  const userQRToken = generateCustomerQRToken();
+
+  const now = new Date().toISOString();
   const user = {
     first_name: req.body.first_name,
     last_name: req.body.last_name,
@@ -94,6 +98,11 @@ usersRouter.post("/", verifyFirebaseToken, async (req, res) => {
     user_id,
     role: "user",
     encrypted_pin: req.body.encrypted_pin,
+    customer_qr: {
+      customer_token: userQRToken,
+      created_at: now,
+      active: true,
+    },
   };
 
   try {

@@ -1,9 +1,8 @@
-import React, { useContext, useLayoutEffect, useEffect } from "react";
-import { FlatList } from "react-native";
+import React from "react";
 import { useTheme } from "styled-components/native";
-import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
-import { useRoute } from "@react-navigation/native";
+import { useRoute, useNavigation } from "@react-navigation/native";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import {
   Action_Container,
@@ -20,12 +19,16 @@ import { RT_Delivery_Information_Order_Tile } from "../../components/tiles/rt_de
 import { Splitter_Component } from "../../components/others/grey_splitter.component";
 import { Payment_method_Info_Tile } from "../../components/tiles/payment_method_used_info.tile";
 import { Refunded_Information_Order_Tile } from "../../components/tiles/refunded_information_order.tile";
+import { Order_Pickup_QR } from "../../components/others/order_pickup_qr.components";
+import ChevronRightIcon from "../../../assets/my_icons/chevron-right.svg";
 
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
 import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
 
 export default function Order_View() {
   const theme = useTheme();
+  const navigation = useNavigation();
+  const tabBarHeight = useBottomTabBarHeight();
   const route = useRoute();
   const { item } = route.params;
   console.log("ORDER ITEM AT ORDER VIEW :", JSON.stringify(item, null, 2));
@@ -46,7 +49,8 @@ export default function Order_View() {
     order_delivery_address,
   } = item || {};
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
-  const { last_four } = payment_information || {};
+  const { last_four, pickup_qr } = payment_information || {};
+  const { token } = pickup_qr || {};
   const {
     warehouse_name,
     warehouse_address,
@@ -56,8 +60,6 @@ export default function Order_View() {
     geo,
   } = warehouse_to_pickup || {};
   const { lat, lng } = geo || {};
-
-  const navigation = useNavigation();
 
   const renderingOrderProducts = () => {
     return order_products.map((item) => {
@@ -96,7 +98,7 @@ export default function Order_View() {
             width="100%"
             align="center"
             justify="flex-start"
-            style={{ flex: 1 }} // Ensures dynamic height adjustment
+            style={{ flex: 1, paddingBottom: tabBarHeight }} // Ensures dynamic height adjustment
             color={theme.colors.bg.elements_bg}
             //   color={theme.colors.bg.screens_bg}
           >
@@ -186,6 +188,48 @@ export default function Order_View() {
             >
               {renderingOrderProducts()}
             </Container>
+            <Spacer position="top" size="large" />
+
+            <Action_Container
+              width="95%"
+              // color={theme.colors.bg.screens_bg}
+              color={theme.colors.ui.tertiary}
+              padding_vertical={"5%"}
+              align="flex-start"
+              direction="row"
+              onPress={() =>
+                navigation.navigate("Order_Pickup_QR_View", {
+                  token,
+                  size: 300,
+                })
+              }
+            >
+              <Container
+                width="80%"
+                padding_vertical="4%"
+                //color={theme.colors.bg.screens_bg}
+                color={theme.colors.ui.tertiary}
+                // color={"red"}
+                justify="center"
+                align="flex-start"
+              >
+                <Spacer position="left" size="large">
+                  <Text variant="dm_sans_bold_18">Order QR code</Text>
+                </Spacer>
+              </Container>
+              <Container
+                width="10%"
+                padding_vertical="4%"
+                color={theme.colors.ui.tertiary}
+                //color={"blue"}
+                justify="center"
+                align="center"
+              >
+                <ChevronRightIcon width={20} height={20} />
+              </Container>
+            </Action_Container>
+
+            {/* <Order_Pickup_QR token={token} size={200} /> */}
           </Container>
         </ScrollView>
       </>

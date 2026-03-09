@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import { Container } from "../../components/containers/general.containers";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -21,9 +22,11 @@ import { GlobalContext } from "../../infrastructure/services/global/global.conte
 export default function Menu_View() {
   const theme = useTheme();
   const navigation = useNavigation();
+  const tabBarHeight = useBottomTabBarHeight();
 
   const { user, otherUsersInTheDevice } = useContext(AuthenticationContext);
-  const { email, display_name, user_id } = user || {};
+  const { email, display_name, user_id, customer_qr } = user || {};
+  const { customer_token } = customer_qr || {};
   // console.log("Menu_View user:", user);
 
   // Check if there are other users in the device in order to use it as a
@@ -50,9 +53,10 @@ export default function Menu_View() {
         <Container
           width="100%"
           height="100%"
-          color={theme.colors.bg.screens_bg}
+          color={theme.colors.bg.elements_bg}
           justify="flex-start"
           align="center"
+          // style={{ paddingBottom: tabBarHeight }}
         >
           <Exit_Header_With_Label
             label=""
@@ -101,7 +105,16 @@ export default function Menu_View() {
               caption="Transactions history"
               action={() => navigation.navigate("Orders_View")}
             />
-            <Menu_Tile caption="Your QR code" action={() => null} />
+            <Menu_Tile
+              caption="Your QR code"
+              action={() =>
+                navigation.navigate("Customer_QR_View", {
+                  customer_token,
+                  size: 300,
+                })
+              }
+              // disabled={true}
+            />
 
             <Menu_Sub_Title_Title label="Credentials" />
             <Menu_Tile
@@ -122,11 +135,16 @@ export default function Menu_View() {
               }
               action={() => togglingGlobalLanguage()}
             />
-            <Menu_Tile caption="Help & Support" action={() => null} />
+            <Menu_Tile
+              caption="Help & Support"
+              action={() => null}
+              disabled={true}
+            />
             <Menu_Tile
               caption="Sign out"
               action={() => navigation.navigate("Sign_Out_Overlay_View")}
             />
+            <Menu_Tile caption="" action={() => null} disabled={true} />
           </ScrollView>
         </Container>
       ) : (

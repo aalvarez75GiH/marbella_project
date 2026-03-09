@@ -4,15 +4,13 @@ import BuggyIcon from "../../../assets/my_icons/buggy.svg";
 import { Container } from "../containers/general.containers";
 import { Spacer } from "../spacers and globals/optimized.spacer.component";
 
-import { CartContext } from "../../infrastructure/services/cart/cart.context";
-
 export const Cart_Active_With_Items_CTA = ({
   color,
+  active_color,
   size = 25,
   quantity,
   type,
 }) => {
-  const { cartTotalItems } = React.useContext(CartContext);
   return type === 1 ? (
     <>
       <Container
@@ -23,7 +21,7 @@ export const Cart_Active_With_Items_CTA = ({
         direction="row"
         color={color}
       >
-        <BuggyIcon width={size} height={size} fill={"#FFFFFF"} />
+        <BuggyIcon width={size} height={size} color={active_color} />
         <Spacer position="left" size="medium" />
         {quantity > 0 && (
           <Container width={size} height={size} color={"#FFFFFF"}>
@@ -58,7 +56,7 @@ export const Cart_Active_With_Items_CTA = ({
       direction="column"
       color="transparent"
     >
-      <BuggyIcon width={size} height={size} fill={"#FFFFFF"} />
+      <BuggyIcon width={size} height={size} color={active_color} />
       {quantity > 0 && (
         <Container
           width="25px"

@@ -2,6 +2,7 @@ import React, { useContext, useCallback } from "react";
 import { FlatList, View, SectionList } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import { useTheme } from "styled-components/native";
 import { Container } from "../../components/containers/general.containers";
@@ -28,6 +29,7 @@ export default function Orders_View() {
     gettingAllOrdersByUserIDGroupedByMonth,
   } = useContext(OrdersContext);
   const navigation = useNavigation();
+  const tabBarHeight = useBottomTabBarHeight();
 
   console.log(
     "ORDERS GROUPED BY DATES:",
@@ -90,7 +92,7 @@ export default function Orders_View() {
     >
       <Container
         width="100%"
-        style={{ flex: 1 }}
+        style={{ flex: 1, paddingBottom: tabBarHeight }}
         color={theme.colors.bg.elements_bg}
         //color={"red"}
         justify="flex-start"

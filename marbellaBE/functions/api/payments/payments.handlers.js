@@ -1,5 +1,7 @@
 /* eslint-disable */
 
+const crypto = require("crypto");
+
 const buildStripeErrorPayload = (error, fallbackMessage) => {
   const stripeErr = error?.raw || error; // Stripe errors often have `.raw`
   return {
@@ -135,8 +137,13 @@ function buildLineItemsFromOrderProducts(order_products = []) {
   });
 }
 
+function generatePickupToken() {
+  return crypto.randomBytes(16).toString("hex");
+}
+
 module.exports = {
   buildStripeErrorPayload,
   normalizeRawAddressIntoStripeAddress,
   buildLineItemsFromOrderProducts,
+  generatePickupToken,
 };

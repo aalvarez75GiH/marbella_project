@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { FlatList } from "react-native";
-import { useRoute, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 

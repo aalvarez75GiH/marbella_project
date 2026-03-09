@@ -268,10 +268,15 @@ const sendingEmailToUserRegistered = async (newUser) => {
     throw error;
   }
 };
+
+function generateCustomerQRToken() {
+  return `cst_${crypto.randomBytes(8).toString("hex")}`;
+}
 module.exports = {
   normalizePem,
   publicFpFromPem,
   loadPrivateKeyOnce,
   sendingEmailToUserPINIsChanged,
   sendingEmailToUserRegistered,
+  generateCustomerQRToken,
 };

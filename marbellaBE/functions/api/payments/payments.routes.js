@@ -11,10 +11,9 @@ const {
 const ordersControllers = require("../orders/orders.controllers");
 const {
   buildStripeErrorPayload,
-  parseUSAddressString,
-  buildStripeAddress,
   buildLineItemsFromOrderProducts,
   normalizeRawAddressIntoStripeAddress,
+  generatePickupToken,
 } = require("./payments.handlers");
 const {
   decrementWarehouseInventoryFromOrder,
@@ -82,6 +81,8 @@ paymentsRouter.post("/payments", async (req, res) => {
         warehouse_id,
         order_products: order.order_products,
       });
+      const now = new Date().toISOString();
+      const pickupToken = generatePickupToken();
 
       const orderWithPaidStatus = {
         ...order,
@@ -89,6 +90,14 @@ paymentsRouter.post("/payments", async (req, res) => {
           ...order.payment_information, // ✅ correct source
           payment_status: "paid",
           paid_at: new Date().toISOString(),
+          pickup_qr: {
+            token: pickupToken,
+            created_at: now,
+            expires_at: null,
+            used: false,
+            used_at: null,
+            used_by: null,
+          },
         },
       };
 
@@ -107,8 +116,6 @@ paymentsRouter.post("/payments", async (req, res) => {
       paymentIntentResponse,
       order: createdOrder ?? null,
     };
-    //   console.log(paymentIntentResponse);
-    // res.json(paymentIntentResponse);
     res.json(dataToReturn);
     return;
   } catch (error) {

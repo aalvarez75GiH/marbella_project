@@ -112,12 +112,13 @@ const Tabs = () => {
         options={({ route }) => ({
           title: "Cart",
           tabBarStyle: tabBarStyleFromNested(route, "Shopping_Cart_View"),
-          tabBarIcon: ({ size }) => (
+          tabBarIcon: ({ size, color }) => (
             <Cart_Active_With_Items_CTA
               size={size ?? 25}
               quantity={cartTotalItems}
               type={1}
               color={theme.colors.bg.elements_bg}
+              active_color={color}
             />
           ),
         })}

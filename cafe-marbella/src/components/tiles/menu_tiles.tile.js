@@ -53,11 +53,13 @@ export const Menu_Tile = ({
         justify="center"
         align="center"
       >
-        <ChevronRightIcon
-          width={20}
-          height={20}
-          // fill={theme.colors.text.primary}
-        />
+        {!disabled && (
+          <ChevronRightIcon
+            width={20}
+            height={20}
+            // fill={theme.colors.text.primary}
+          />
+        )}
       </Container>
     </Action_Container>
   );

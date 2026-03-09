@@ -25,10 +25,6 @@ export const Underlined_CTA = ({
       onPress={() => action()}
       color={color}
       border_color={border_color}
-      //   style={{
-      //     borderBottomWidth: 1, // 👈 underline thickness
-      //     borderBottomColor: border_color || "#000",
-      //   }}
     >
       <Text
         variant={caption_text_variant}
