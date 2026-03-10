@@ -90,16 +90,32 @@ paymentsRouter.post("/payments", async (req, res) => {
           ...order.payment_information, // ✅ correct source
           payment_status: "paid",
           paid_at: new Date().toISOString(),
-          pickup_qr: {
-            token: pickupToken,
-            created_at: now,
-            expires_at: null,
-            used: false,
-            used_at: null,
-            used_by: null,
-          },
+        },
+        pickup_qr: {
+          token: pickupToken,
+          created_at: now,
+          expires_at: null,
+          used: false,
+          used_at: null,
+          used_by: null,
         },
       };
+      // const orderWithPaidStatus = {
+      //   ...order,
+      //   payment_information: {
+      //     ...order.payment_information, // ✅ correct source
+      //     payment_status: "paid",
+      //     paid_at: new Date().toISOString(),
+      //     pickup_qr: {
+      //       token: pickupToken,
+      //       created_at: now,
+      //       expires_at: null,
+      //       used: false,
+      //       used_at: null,
+      //       used_by: null,
+      //     },
+      //   },
+      // };
 
       createdOrder = await ordersControllers.createOrder(
         orderWithPaidStatus,

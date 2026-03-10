@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useTheme } from "styled-components/native";
 import { ScrollView } from "react-native-gesture-handler";
-import { useRoute, useNavigation } from "@react-navigation/native";
+import {
+  useRoute,
+  useNavigation,
+  useFocusEffect,
+} from "@react-navigation/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { Snackbar } from "react-native-paper";
 
 import {
   Action_Container,
@@ -24,21 +29,26 @@ import ChevronRightIcon from "../../../assets/my_icons/chevron-right.svg";
 
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
 import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
+import { GlobalContext } from "../../infrastructure/services/global/global.context";
 
 export default function Order_View() {
   const theme = useTheme();
   const navigation = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
   const route = useRoute();
-  const { item } = route.params;
-  console.log("ORDER ITEM AT ORDER VIEW :", JSON.stringify(item, null, 2));
+  const { order } = route.params;
+  console.log("ORDER ITEM AT ORDER VIEW :", JSON.stringify(order, null, 2));
+  // const { snackbar, showSnackbar, hideSnackbar } = useContext(GlobalContext);
 
   //   const { myWarehouse } = useContext(WarehouseContext);
   //   const { distance_in_miles } = myWarehouse || {};
+
+  const [pickupSnackbarVisible, setPickupSnackbarVisible] = useState(false);
+
   const {
     pricing,
     warehouse_to_pickup,
-    order_products,
+    order_products = [],
     delivery_type,
     payment_information,
     quantity,
@@ -47,9 +57,12 @@ export default function Order_View() {
     refund_details = "Refunded",
     order_number,
     order_delivery_address,
-  } = item || {};
+    pickup_qr,
+    customer,
+  } = order || {};
+
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
-  const { last_four, pickup_qr } = payment_information || {};
+  const { last_four } = payment_information || {};
   const { token } = pickup_qr || {};
   const {
     warehouse_name,
@@ -61,10 +74,40 @@ export default function Order_View() {
   } = warehouse_to_pickup || {};
   const { lat, lng } = geo || {};
 
+  const { customer_address } = customer || {};
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const normalizedDeliveryType = String(delivery_type || "")
+        .trim()
+        .toLowerCase();
+
+      const isPickup =
+        normalizedDeliveryType === "pick up" ||
+        normalizedDeliveryType === "pickup";
+
+      const shouldShow = isPickup && order_status === "In Progress" && !!token;
+
+      let timer;
+
+      if (shouldShow) {
+        timer = setTimeout(() => {
+          setPickupSnackbarVisible(true);
+        }, 900); // delay after screen becomes active
+      }
+
+      return () => {
+        if (timer) clearTimeout(timer);
+      };
+    }, [delivery_type, order_status, token])
+  );
+
   const renderingOrderProducts = () => {
-    return order_products.map((item) => {
+    const products = Array.isArray(order_products) ? order_products : [];
+
+    return products.map((item) => {
       const variantId = item?.size_variants?.[0]?.id ?? "no-variant";
-      const key = `${item.id}:${variantId}`;
+      const key = `${item?.id ?? "no-id"}:${variantId}`;
 
       return (
         <Spacer position="bottom" size="medium" key={key}>
@@ -190,7 +233,9 @@ export default function Order_View() {
             </Container>
             <Spacer position="top" size="large" />
 
-            <Action_Container
+            {/* ****************************************************************** */}
+
+            {/* <Action_Container
               width="95%"
               // color={theme.colors.bg.screens_bg}
               color={theme.colors.ui.tertiary}
@@ -227,11 +272,41 @@ export default function Order_View() {
               >
                 <ChevronRightIcon width={20} height={20} />
               </Container>
-            </Action_Container>
-
-            {/* <Order_Pickup_QR token={token} size={200} /> */}
+            </Action_Container> */}
+            {/* ****************************************************************** */}
           </Container>
         </ScrollView>
+        <Snackbar
+          visible={pickupSnackbarVisible}
+          // onDismiss={() => setPickupSnackbarVisible(false)}
+          onDismiss={() => {}}
+          duration={Number.POSITIVE_INFINITY}
+          action={{
+            label: "View QR",
+            labelStyle: { color: "#FFFFFF" },
+            onPress: () => {
+              setPickupSnackbarVisible(false);
+              navigation.navigate("Order_Pickup_QR_View", {
+                token,
+                size: 300,
+              });
+            },
+          }}
+          style={{
+            position: "absolute",
+            left: 16,
+            right: 16,
+            bottom: tabBarHeight + 12,
+            minHeight: 80,
+            borderRadius: 0,
+            backgroundColor: theme.colors.ui.primary,
+            elevation: 6,
+          }}
+        >
+          <Text variant="dm_sans_bold_16_white">
+            Show this QR code at merchant when pick up.
+          </Text>
+        </Snackbar>
       </>
     </SafeArea>
   );

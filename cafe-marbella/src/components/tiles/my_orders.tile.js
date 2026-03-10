@@ -40,7 +40,7 @@ export const My_Orders_Tile = ({
         align="flex-start"
         onPress={() =>
           navigation.navigate("Order_View", {
-            item,
+            order: item,
           })
         }
       >
@@ -188,7 +188,7 @@ export const My_Orders_Tile = ({
         align="flex-start"
         onPress={() =>
           navigation.navigate("Order_View", {
-            item,
+            order: item,
           })
         }
       >
