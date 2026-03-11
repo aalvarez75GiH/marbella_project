@@ -1,0 +1,123 @@
+import React from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+import Shop_View from "../../Views/shop_views/shop.view";
+import Shop_Product_Details_View from "../../Views/shop_views/shop_product_details.view";
+import Process_Shopping_Cart_View from "../../Views/shop_views/process_shopping_cart.view";
+import Shop_Delivery_Type_View from "../../Views/shop_views/shop_delivery_type.view";
+import Shop_Order_Review_View from "../../Views/shop_views/shop_order_review.view";
+import Payment_View from "../../Views/shop_views/payment.view";
+import Order_Confirmation_View from "../../Views/shop_views/order_confirmation.view";
+import Shop_Order_Receipt_View from "../../Views/shop_views/order_receipt.view";
+import Long_Distance_Warning_View from "../../Views/shop_views/long_distance_warning.view";
+import Menu_View from "../../Views/shop_views/menu.view";
+import Different_Delivery_Address_View from "../../Views/shop_views/different_delivery_address.view";
+import Product_Specifications_View from "../../Views/shop_views/product_specifications.view";
+import Product_Ingredients_View from "../../Views/shop_views/product_ingredients.view";
+import Orders_View from "../../Views/orders_views/orders.view";
+import Switching_Accounts_View from "../../Views/shop_views/switching_accounts.view";
+import Sign_Out_Overlay_View from "../../Views/shop_views/sign_out_overlay.view";
+import Login_Screen_For_Switching_Accounts_View from "../../Views/shop_views/login_screen_for_switching_accounts.view";
+import Reset_PIN_View from "../../Views/shop_views/reset_pin.view";
+import Personal_Information_View from "../../Views/shop_views/personal_infrmation.view";
+import Shop_Login_Users_View from "../../Views/shop_views/shop_login.view";
+import Email_Verification_Sent_View from "../../Views/shop_views/email_verified.view";
+import Shop_Products_View from "../../Views/shop_views/shop_products.view";
+import Customer_QR_View from "../../Views/shop_views/customer_qr.view";
+
+const ShopFlowStack = createNativeStackNavigator();
+
+export const Shop_Navigator = () => {
+  return (
+    <ShopFlowStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <ShopFlowStack.Screen
+        name="Shop_Products_View"
+        component={Shop_Products_View}
+      />
+      <ShopFlowStack.Screen name="Home_View" component={Shop_View} />
+      <ShopFlowStack.Screen
+        name="Shop_Product_Details_View"
+        component={Shop_Product_Details_View}
+      />
+      <ShopFlowStack.Screen
+        name="Shop_Shopping_Cart_View"
+        component={Process_Shopping_Cart_View}
+      />
+      <ShopFlowStack.Screen
+        name="Shop_Delivery_Type_View"
+        component={Shop_Delivery_Type_View}
+      />
+      <ShopFlowStack.Screen
+        name="Shop_Order_Review_View"
+        component={Shop_Order_Review_View}
+      />
+      <ShopFlowStack.Screen name="Payment_View" component={Payment_View} />
+      <ShopFlowStack.Screen
+        name="Order_Confirmation_View"
+        component={Order_Confirmation_View}
+      />
+      <ShopFlowStack.Screen
+        name="Shop_Order_Receipt_View"
+        component={Shop_Order_Receipt_View}
+      />
+      <ShopFlowStack.Screen
+        name="Long_Distance_Warning_View"
+        component={Long_Distance_Warning_View}
+      />
+      <ShopFlowStack.Screen
+        name="Different_Delivery_Address_View"
+        component={Different_Delivery_Address_View}
+      />
+      <ShopFlowStack.Screen
+        name="Product_Specifications_View"
+        component={Product_Specifications_View}
+      />
+      <ShopFlowStack.Screen
+        name="Product_Ingredients_View"
+        component={Product_Ingredients_View}
+      />
+      <ShopFlowStack.Screen name="Orders_View" component={Orders_View} />
+      <ShopFlowStack.Screen
+        name="Switching_Accounts_View"
+        component={Switching_Accounts_View}
+      />
+
+      <ShopFlowStack.Screen
+        name="Sign_Out_Overlay_View"
+        component={Sign_Out_Overlay_View}
+        options={{
+          presentation: "transparentModal",
+          animation: "slide_from_bottom",
+          headerShown: false,
+          contentStyle: { backgroundColor: "transparent" },
+        }}
+      />
+      <ShopFlowStack.Screen
+        name="Login_Screen_For_Switching_Accounts_View"
+        component={Login_Screen_For_Switching_Accounts_View}
+      />
+      <ShopFlowStack.Screen name="Reset_PIN_View" component={Reset_PIN_View} />
+      <ShopFlowStack.Screen
+        name="Personal_Information_View"
+        component={Personal_Information_View}
+      />
+      <ShopFlowStack.Screen
+        name="Email_Verification_Sent_View"
+        component={Email_Verification_Sent_View}
+      />
+      <ShopFlowStack.Screen
+        name="Shop_Login_Users_View"
+        component={Shop_Login_Users_View}
+      />
+      <ShopFlowStack.Screen
+        name="Customer_QR_View"
+        component={Customer_QR_View}
+      />
+      <ShopFlowStack.Screen name="Menu_View" component={Menu_View} />
+    </ShopFlowStack.Navigator>
+  );
+};
