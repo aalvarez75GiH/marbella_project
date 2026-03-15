@@ -106,6 +106,43 @@ ordersRouter.post("/order_qr_scanned", async (req, res) => {
   }
 });
 
+ordersRouter.post("/orders_by_customer_qr", async (req, res) => {
+  const token = String(req.body.token || "").trim();
+
+  if (!token) {
+    return res.status(400).json({
+      ok: false,
+      code: "MISSING_CUSTOMER_QR_TOKEN",
+      message: "Customer QR token is required.",
+    });
+  }
+
+  try {
+    const orders = await ordersControllers.getOrdersByCustomerQrToken(token);
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({
+        ok: false,
+        code: "ORDER_NOT_FOUND",
+        message: "No order found for this customer QR token.",
+      });
+    }
+
+    return res.status(200).json({
+      ok: true,
+      orders,
+    });
+  } catch (error) {
+    console.log("Error retrieving order by customer QR token:", error);
+    return res.status(500).json({
+      ok: false,
+      code: "GET_ORDER_BY_CUSTOMER_QR_FAILED",
+      message: "Something went wrong retrieving the order.",
+      error: String(error),
+    });
+  }
+});
+
 ordersRouter.patch("/:order_id/status", async (req, res) => {
   const order_id = String(req.params.order_id || "").trim();
   const order_status = String(req.body.order_status || "").trim();

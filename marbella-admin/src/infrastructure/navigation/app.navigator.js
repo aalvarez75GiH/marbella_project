@@ -98,7 +98,7 @@ const Tabs = () => {
 
       <Tab.Screen
         name="Orders"
-        component={Orders_Navigator}
+        component={Scan_Order_Navigator}
         options={{
           title: "Orders",
           tabBarIcon: ({ color }) => (
@@ -106,6 +106,16 @@ const Tabs = () => {
           ),
         }}
       />
+      {/* <Tab.Screen
+        name="Orders"
+        component={Orders_Navigator}
+        options={{
+          title: "Orders",
+          tabBarIcon: ({ color }) => (
+            <OrdersIcon width={25} height={25} fill={color} />
+          ),
+        }}
+      /> */}
 
       <Tab.Screen
         name="Cart"
@@ -123,16 +133,6 @@ const Tabs = () => {
             />
           ),
         })}
-      />
-      <Tab.Screen
-        name="Scan"
-        component={Scan_Order_Navigator}
-        options={{
-          title: "Scan",
-          tabBarIcon: ({ color }) => (
-            <OrdersIcon width={25} height={25} fill={color} />
-          ),
-        }}
       />
     </Tab.Navigator>
   );

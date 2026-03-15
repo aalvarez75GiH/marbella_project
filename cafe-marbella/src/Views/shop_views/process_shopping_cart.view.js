@@ -16,6 +16,7 @@ import { Global_activity_indicator } from "../../components/activity indicators/
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
+import { createdAt } from "expo-updates";
 export default function Process_Shopping_Cart_View() {
   const theme = useTheme();
   // *************
@@ -131,6 +132,11 @@ export default function Process_Shopping_Cart_View() {
                     phone_number: user?.phone_number ?? "",
                     customer_address: user?.address ?? "",
                     uid: user?.uid ?? "",
+                    customer_qr: {
+                      active: true,
+                      createdAt: new Date().toISOString(),
+                      customer_token: user?.customer_qr.customer_token ?? "",
+                    },
                   },
                   order_status: "In Progress",
                   order_products: latestProducts,

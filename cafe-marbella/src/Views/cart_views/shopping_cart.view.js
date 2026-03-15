@@ -153,6 +153,11 @@ export default function Shopping_Cart_View() {
                       phone_number: user?.phone_number ?? "",
                       customer_address: user?.address ?? "",
                       uid: user?.uid ?? "",
+                      customer_qr: {
+                        active: true,
+                        createdAt: new Date().toISOString(),
+                        customer_token: user?.customer_qr.customer_token ?? "",
+                      },
                     },
                     order_status: "In Progress",
                     order_products: latestProducts,

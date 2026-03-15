@@ -115,7 +115,7 @@ export const My_Orders_Tile = ({
           >
             <Text
               variant={
-                order_status === "Refunded"
+                order_status === "Refunded" || order_status === "Finished"
                   ? "dm_sans_bold_14_white"
                   : "dm_sans_bold_14"
               }

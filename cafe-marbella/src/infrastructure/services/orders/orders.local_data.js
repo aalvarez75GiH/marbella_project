@@ -1,3 +1,5 @@
+import { createdAt } from "expo-updates";
+
 export const myOrder_schema = {
   customer: {
     first_name: "",
@@ -6,6 +8,11 @@ export const myOrder_schema = {
     phone_number: "",
     customer_address: "",
     uid: "",
+    customer_qr: {
+      active: true,
+      createdAt: Date.now(),
+      customer_token: "",
+    },
   },
   //   order_id: "",
   user_id: "",

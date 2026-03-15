@@ -26,6 +26,7 @@ export const My_Orders_Tile = ({
   item,
 }) => {
   console.log("ORDER INFO TILE - QUANTITY:", quantity);
+  console.log("ORDER STATUS:", order_status);
   const { formatCentsToUSD } = useContext(GlobalContext);
   const formatted_currency = formatCentsToUSD;
   const { order_delivery_address } = item || {};
@@ -115,7 +116,7 @@ export const My_Orders_Tile = ({
           >
             <Text
               variant={
-                order_status === "Refunded"
+                order_status === "Refunded" || order_status === "Finished"
                   ? "dm_sans_bold_14_white"
                   : "dm_sans_bold_14"
               }
@@ -261,7 +262,7 @@ export const My_Orders_Tile = ({
           >
             <Text
               variant={
-                order_status === "Refunded"
+                order_status === "Refunded" || order_status === "Finished"
                   ? "dm_sans_bold_14_white"
                   : "dm_sans_bold_14"
               }

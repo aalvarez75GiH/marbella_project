@@ -247,6 +247,11 @@ export const Orders_Context_Provider = ({ children }) => {
         phone_number: user?.phone_number ?? "",
         customer_address: user?.address ?? "",
         uid: user?.uid ?? "",
+        customer_qr: {
+          active: true,
+          createdAt: new Date().toISOString(),
+          customer_token: user?.customer_token ?? "",
+        },
       },
       user_id: user?.user_id ?? "",
       cart_id: cart?.cart_id ?? "",

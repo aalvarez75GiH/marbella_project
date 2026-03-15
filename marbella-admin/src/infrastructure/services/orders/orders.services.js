@@ -58,6 +58,26 @@ export const getOrderByPickupTokenRequest = async (token) => {
     return error;
   }
 };
+export const getCustomersOrdersByTokenRequest = async (token) => {
+  const { ordersEndPoint } = environment;
+  // return `this token: ${token} should return all orders of the customer related to the pickup token, this is for the case when the customer has more than 1 order at the same time, so we need to show them all the orders to be able to pick the right one for pickup`;
+  try {
+    const res = await axios.post(
+      `${ordersEndPoint}/orders_by_customer_qr`,
+      { token },
+      {
+        timeout: 15000,
+      }
+    );
+    return res.data;
+  } catch (error) {
+    // console.error("Error fetching order by pickup token:");
+    // console.error("status:", error?.response?.status);
+    // console.error("data:", error?.response?.data);
+    // throw error;
+    return error;
+  }
+};
 
 export const updateOrderStatusRequest = async (order_id, order_status) => {
   const { ordersEndPoint } = environment;

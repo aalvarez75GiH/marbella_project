@@ -200,6 +200,26 @@ const updateOrderStatus = async (order_id, order_status) => {
   return updatedSnap.data();
 };
 
+const getOrdersByCustomerQrToken = async (token) => {
+  const ordersRef = firebase_controller.db.collection("orders");
+
+  const snap = await ordersRef
+    .where("customer_qr.customer_token", "==", token)
+    .limit(1)
+    .get();
+
+  if (snap.empty) {
+    return null;
+  }
+
+  const doc = snap.docs[0];
+
+  return {
+    id: doc.id,
+    ...doc.data(),
+  };
+};
+
 module.exports = {
   createOrder,
   getAllOrdersByUserID,
@@ -208,4 +228,5 @@ module.exports = {
   markOrderAsRefunded,
   getOrderByPickupToken,
   updateOrderStatus,
+  getOrdersByCustomerQrToken,
 };

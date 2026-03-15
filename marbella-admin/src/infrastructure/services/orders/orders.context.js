@@ -6,6 +6,7 @@ import {
   gettingAllOrdersByUserIDGroupedByMonthRequest,
   getOrderByPickupTokenRequest,
   updateOrderStatusRequest,
+  getCustomersOrdersByTokenRequest,
 } from "./orders.services";
 import { AuthenticationContext } from "../authentication/authentication.context";
 
@@ -299,6 +300,31 @@ export const Orders_Context_Provider = ({ children }) => {
       console.error("Error fetching order by QR token:", error);
     }
   };
+  const getCustomersOrdersByQRToken = async (qr_token) => {
+    try {
+      const ordersByQrTokenInfo = await getCustomersOrdersByTokenRequest(
+        qr_token
+      );
+      return ordersByQrTokenInfo;
+      // console.log(
+      //   "Order by QR Token :",
+      //   JSON.stringify(ordersByQrTokenInfo.orders, null, 2)
+      // );
+      // console.log(
+      //   "Order by QR Token response:",
+      //   JSON.stringify(ordersByQrTokenInfo.response, null, 2)
+      // );
+
+      // if (ordersByQrTokenInfo?.response?.status === 409) {
+      //   return ordersByQrTokenInfo?.response;
+      // }
+      // if (ordersByQrTokenInfo?.orders) {
+      //   return ordersByQrTokenInfo.orders;
+      // }
+    } catch (error) {
+      console.error("Error fetching order by QR token:", error);
+    }
+  };
 
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -353,6 +379,7 @@ export const Orders_Context_Provider = ({ children }) => {
         isCheckoutLoading,
         getOrderByQRToken,
         updateOrderStatus,
+        getCustomersOrdersByQRToken,
       }}
     >
       {children}
