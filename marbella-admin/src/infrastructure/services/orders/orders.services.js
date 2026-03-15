@@ -37,3 +37,43 @@ export const gettingAllOrdersByUserIDGroupedByMonthRequest = async (
     throw error;
   }
 };
+
+export const getOrderByPickupTokenRequest = async (token) => {
+  const { ordersEndPoint } = environment;
+
+  try {
+    const res = await axios.post(
+      `${ordersEndPoint}/order_qr_scanned`,
+      { token },
+      {
+        timeout: 15000,
+      }
+    );
+    return res.data;
+  } catch (error) {
+    // console.error("Error fetching order by pickup token:");
+    // console.error("status:", error?.response?.status);
+    // console.error("data:", error?.response?.data);
+    // throw error;
+    return error;
+  }
+};
+
+export const updateOrderStatusRequest = async (order_id, order_status) => {
+  const { ordersEndPoint } = environment;
+
+  try {
+    const res = await axios.patch(
+      `${ordersEndPoint}/${order_id}/status`,
+      { order_status },
+      {
+        timeout: 15000,
+      }
+    );
+
+    return res.data;
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    throw error;
+  }
+};

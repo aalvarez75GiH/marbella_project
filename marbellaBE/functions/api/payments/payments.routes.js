@@ -194,6 +194,7 @@ paymentsRouter.post("/refundOrder", async (req, res) => {
   try {
     if (!stripe_payment_id) {
       return res.status(400).json({
+        ok: false,
         status: "failed",
         msg: "stripe_id (payment_intent_id) is required",
       });
@@ -236,6 +237,7 @@ paymentsRouter.post("/refundOrder", async (req, res) => {
     }
 
     return res.status(200).json({
+      ok: true,
       status: "success",
       refund,
       order_updated,

@@ -78,17 +78,6 @@ export const Product_Cart_Item_For_Review_Tile = ({ product, image }) => {
               // color="yellow"
               color={theme.colors.ui.secondary}
             ></Container>
-            <Action_Container
-              width="20%"
-              height="100%"
-              // color="orange"
-              color={theme.colors.ui.secondary}
-              justify="flex-end"
-              align="center"
-              onPress={() => onTrashPress(product)}
-            >
-              <RemoveIcon width={20} height={20} fill={"#FFFFFF"} />
-            </Action_Container>
           </Container>
           <Container
             width="100%"

@@ -87,48 +87,6 @@ const MONTHS = [
   "December",
 ];
 
-// const getOrdersGroupedByMonth = async (user_id) => {
-//   const snap = await firebase_controller.db
-//     .collection("orders")
-//     .where("user_id", "==", user_id)
-//     .get();
-
-//   const buckets = new Map(); // monthKey -> { monthKey, label, orders: [] }
-
-//   snap.forEach((doc) => {
-//     const order = doc.data();
-//     const createdAtIso = order?.createdAt;
-
-//     if (!createdAtIso) return; // skip if missing
-
-//     const d = new Date(createdAtIso);
-//     if (Number.isNaN(d.getTime())) return;
-
-//     const year = d.getFullYear();
-//     const monthIndex = d.getMonth(); // 0-11
-//     const monthKey = `${year}-${String(monthIndex + 1).padStart(2, "0")}`;
-//     const label = `${MONTHS[monthIndex]}, ${year}`;
-
-//     if (!buckets.has(monthKey)) {
-//       buckets.set(monthKey, { monthKey, label, orders: [] });
-//     }
-//     buckets.get(monthKey).orders.push(order);
-//   });
-
-//   // Sort newest month first
-//   const grouped = Array.from(buckets.values()).sort((a, b) =>
-//     b.monthKey.localeCompare(a.monthKey)
-//   );
-
-//   // Optional: sort orders inside each month by newest first
-//   grouped.forEach((g) => {
-//     g.orders.sort((a, b) =>
-//       String(b.createdAt).localeCompare(String(a.createdAt))
-//     );
-//   });
-
-//   return grouped;
-// };
 const getOrdersGroupedByMonth = async (user_id) => {
   const snap = await firebase_controller.db
     .collection("orders")
@@ -193,36 +151,54 @@ const markOrderAsRefunded = async (order_id, internal_reason) => {
   return updatedSnap.exists ? updatedSnap.data() : null;
 };
 
-module.exports = {
-  getOrdersGroupedByMonth,
+const getOrderByPickupToken = async (token) => {
+  console.log("Looking up order with pickup token:", token);
+  const snap = await firebase_controller.db
+    .collection("orders")
+    .where("pickup_qr.token", "==", token)
+    .limit(1)
+    .get();
+
+  const doc = snap.docs[0];
+  const order = doc.data();
+
+  await doc.ref.update({
+    // "pickup_qr.used": true,
+    "pickup_qr.used_at": new Date().toISOString(),
+  });
+
+  return order;
 };
 
-// const createOrder = async (order, user_id) => {
-//   console.log("NEW ORDER BEFORE CREATION AT CONTROLLER:", order);
-//   const order_id = uuidv4();
-//   await firebase_controller.db
-//     .collection("orders")
-//     .doc(`/${order_id}/`)
-//     .create({
-//       ...order,
-//       order_id: order_id,
-//       createdAt: new Date().toISOString(),
-//       updatedAt: new Date().toISOString(),
-//     });
-//   let orders = [];
-//   return await firebase_controller.db
-//     .collection("orders")
-//     .where(`user_id`, "==", user_id)
-//     .get()
-//     .then((querySnapshot) => {
-//       querySnapshot.forEach((doc) => {
-//         console.log(doc.id, " => ", doc.data());
-//         orders.push(doc.data());
-//       });
-//       console.log("NEW Order:", order);
-//       return orders;
-//     });
-// };
+const updateOrderStatus = async (order_id, order_status) => {
+  const orderRef = firebase_controller.db.collection("orders").doc(order_id);
+
+  const docSnap = await orderRef.get();
+
+  if (!docSnap.exists) {
+    return null;
+  }
+
+  if (order_status === "Finished") {
+    await orderRef.update({
+      order_status: "Finished",
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  if (order_status === "In Progress") {
+    await orderRef.update({
+      order_status: "In Progress",
+      "pickup_qr.used": false,
+      "pickup_qr.used_at": null, // optional but recommended
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  const updatedSnap = await orderRef.get();
+
+  return updatedSnap.data();
+};
 
 module.exports = {
   createOrder,
@@ -230,4 +206,6 @@ module.exports = {
   createOrderWithNoPayment,
   getOrdersGroupedByMonth,
   markOrderAsRefunded,
+  getOrderByPickupToken,
+  updateOrderStatus,
 };

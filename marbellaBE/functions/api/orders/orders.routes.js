@@ -72,5 +72,91 @@ ordersRouter.post("/testingEmail", async (req, res) => {
     });
   }
 });
+//this is just for testing email functionality & email style
+ordersRouter.post("/order_qr_scanned", async (req, res) => {
+  const token = req.body.token;
+  console.log("Received order QR scanned with token:", token);
+  try {
+    const order_to_pickup = await ordersControllers.getOrderByPickupToken(
+      token
+    );
+
+    const { order_id, pickup_qr } = order_to_pickup || {};
+    const { used_at, used } = pickup_qr || {};
+
+    if (used) {
+      return res.status(409).json({
+        ok: false,
+        code: "ORDER_ALREADY_PICKED_UP",
+        message: "This order has already been picked up.",
+        order_id: order_id,
+        used_at: used_at,
+      });
+    }
+
+    return res.status(201).json({
+      order: order_to_pickup,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({
+      status: "Failed",
+      msg: "Something went wrong retrieving Data...",
+    });
+  }
+});
+
+ordersRouter.patch("/:order_id/status", async (req, res) => {
+  const order_id = String(req.params.order_id || "").trim();
+  const order_status = String(req.body.order_status || "").trim();
+
+  const allowedStatuses = ["In Progress", "Finished"];
+
+  if (!order_id) {
+    return res.status(400).json({
+      ok: false,
+      code: "MISSING_ORDER_ID",
+      message: "order_id is required.",
+    });
+  }
+
+  if (!allowedStatuses.includes(order_status)) {
+    return res.status(400).json({
+      ok: false,
+      code: "INVALID_ORDER_STATUS",
+      message: `order_status must be one of: ${allowedStatuses.join(", ")}`,
+    });
+  }
+
+  try {
+    const updatedOrder = await ordersControllers.updateOrderStatus(
+      order_id,
+      order_status
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({
+        ok: false,
+        code: "ORDER_NOT_FOUND",
+        message: "Order not found.",
+        order_id,
+      });
+    }
+
+    return res.status(200).json({
+      ok: true,
+      message: "Order status updated successfully.",
+      order: updatedOrder,
+    });
+  } catch (error) {
+    console.log("Error updating order status:", error);
+    return res.status(500).json({
+      ok: false,
+      code: "UPDATE_ORDER_STATUS_FAILED",
+      message: "Something went wrong updating the order status.",
+      error: String(error),
+    });
+  }
+});
 
 module.exports = ordersRouter;

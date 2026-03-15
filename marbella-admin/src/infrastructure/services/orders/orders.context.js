@@ -4,6 +4,8 @@ import { myOrder_schema } from "./orders.local_data";
 import {
   gettingAllOrdersByUserIDRequest,
   gettingAllOrdersByUserIDGroupedByMonthRequest,
+  getOrderByPickupTokenRequest,
+  updateOrderStatusRequest,
 } from "./orders.services";
 import { AuthenticationContext } from "../authentication/authentication.context";
 
@@ -273,6 +275,61 @@ export const Orders_Context_Provider = ({ children }) => {
     setDifferentAddress("");
   };
 
+  // **************** ADMIN CONTEXT FUNCTIONS ****************
+
+  const getOrderByQRToken = async (qr_token) => {
+    try {
+      const orderByQrTokenInfo = await getOrderByPickupTokenRequest(qr_token);
+      console.log(
+        "Order by QR Token :",
+        JSON.stringify(orderByQrTokenInfo.order, null, 2)
+      );
+      console.log(
+        "Order by QR Token response:",
+        JSON.stringify(orderByQrTokenInfo.response, null, 2)
+      );
+
+      if (orderByQrTokenInfo?.response?.status === 409) {
+        return orderByQrTokenInfo?.response;
+      }
+      if (orderByQrTokenInfo?.order) {
+        return orderByQrTokenInfo.order;
+      }
+    } catch (error) {
+      console.error("Error fetching order by QR token:", error);
+    }
+  };
+
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const updateOrderStatus = async (order_id, order_status) => {
+    setIsLoading(true);
+    try {
+      await wait(1000);
+
+      const orderStatusUpdated = await updateOrderStatusRequest(
+        order_id,
+        order_status
+      );
+
+      console.log(
+        "Order Status Updated :",
+        JSON.stringify(orderStatusUpdated?.order, null, 2)
+      );
+
+      if (orderStatusUpdated?.order) {
+        return orderStatusUpdated;
+      }
+
+      return null;
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <OrdersContext.Provider
       value={{
@@ -294,6 +351,8 @@ export const Orders_Context_Provider = ({ children }) => {
         resetOrdersContext,
         isOrdersLoading,
         isCheckoutLoading,
+        getOrderByQRToken,
+        updateOrderStatus,
       }}
     >
       {children}

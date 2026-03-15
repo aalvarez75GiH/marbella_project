@@ -6,6 +6,7 @@ import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { Shop_Navigator } from "./shop.navigator";
 import { Orders_Navigator } from "./orders.navigator";
 import { Cart_Navigator } from "./cart.navigator";
+import { Scan_Order_Navigator } from "./scan.navigator";
 
 import ShopIcon from "../../../assets/my_icons/shop_icon.svg";
 import OrdersIcon from "../../../assets/my_icons/receipt_orders.svg";
@@ -122,6 +123,16 @@ const Tabs = () => {
             />
           ),
         })}
+      />
+      <Tab.Screen
+        name="Scan"
+        component={Scan_Order_Navigator}
+        options={{
+          title: "Scan",
+          tabBarIcon: ({ color }) => (
+            <OrdersIcon width={25} height={25} fill={color} />
+          ),
+        }}
       />
     </Tab.Navigator>
   );
