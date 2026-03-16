@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { View } from "react-native";
+import { View, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import { Text } from "../../infrastructure/typography/text.component.js";
@@ -30,6 +30,9 @@ export const My_Orders_Tile = ({
   const { formatCentsToUSD } = useContext(GlobalContext);
   const formatted_currency = formatCentsToUSD;
   const { order_delivery_address } = item || {};
+
+  const iOs = Platform.OS === "ios";
+  const android = Platform.OS === "android";
 
   const navigation = useNavigation();
   return delivery_type === "pickup" ? (
@@ -164,7 +167,8 @@ export const My_Orders_Tile = ({
         {/* SECTION 4 (moved to the end) */}
 
         <Container
-          width="390px"
+          // width="390"
+          width={iOs ? "390px" : "410px"}
           height="10px"
           color={
             order_status === "In Progress"
@@ -315,10 +319,25 @@ export const My_Orders_Tile = ({
           </Container>
         </Container>
         {/* SECTION 4 (moved to the end) */}
-
-        <View
+        <Container
+          // width="390"
+          width={iOs ? "390px" : "410px"}
+          height="10px"
+          color={
+            order_status === "In Progress"
+              ? theme.colors.status_orders.inProgress
+              : order_status === "Finished"
+              ? theme.colors.ui.primary
+              : theme.colors.ui.error
+          }
+          margin_top="8px"
+          // border_width="1px"
+          // border_color="black"
+          align="stretch"
+        ></Container>
+        {/* <View
           style={{
-            width: 390,
+            width: 100,
             height: 10,
             backgroundColor:
               order_status === "In Progress"
@@ -329,7 +348,7 @@ export const My_Orders_Tile = ({
             marginTop: 8,
             alignSelf: "stretch",
           }}
-        />
+        /> */}
       </Action_Container>
     </>
   );
