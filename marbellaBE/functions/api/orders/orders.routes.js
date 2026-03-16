@@ -118,13 +118,15 @@ ordersRouter.post("/orders_by_customer_qr", async (req, res) => {
   }
 
   try {
-    const orders = await ordersControllers.getOrdersByCustomerQrToken(token);
+    const orders = await ordersControllers.getOrdersGroupedByCustomerQrToken(
+      token
+    );
 
-    if (!orders || orders.length === 0) {
+    if (orders.length === 0) {
       return res.status(404).json({
         ok: false,
-        code: "ORDER_NOT_FOUND",
-        message: "No order found for this customer QR token.",
+        code: "NO_ORDERS_FOUND_FOR_CUSTOMER_QR",
+        message: "No orders found for the provided customer QR token.",
       });
     }
 
@@ -133,11 +135,11 @@ ordersRouter.post("/orders_by_customer_qr", async (req, res) => {
       orders,
     });
   } catch (error) {
-    console.log("Error retrieving order by customer QR token:", error);
+    console.log("Error retrieving orders by customer QR token:", error);
     return res.status(500).json({
       ok: false,
-      code: "GET_ORDER_BY_CUSTOMER_QR_FAILED",
-      message: "Something went wrong retrieving the order.",
+      code: "GET_ORDERS_BY_CUSTOMER_QR_FAILED",
+      message: "Something went wrong retrieving orders.",
       error: String(error),
     });
   }

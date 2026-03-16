@@ -78,20 +78,21 @@ export default function Customers_QR_Scanner_View() {
 
     try {
       const res = await getCustomersOrdersByQRToken(token);
-      console.log("Order validation response:", res);
-      //   console.log("Order validation response:", JSON.stringify(res, null, 2));
+      console.log(
+        "Customer's QR validation response:",
+        JSON.stringify(res, null, 2)
+      );
 
-      //   if (res.status === 409) {
-      //     setValidationError(
-      //       res.message ||
-      //         "Order has already been picked up. Try another QR code."
-      //     );
-      //     return;
-      //   }
-      //   if (res.order_id) {
-      //     navigation.navigate("Order_View", { order: res });
-      //     setLastScannedToken(token);
-      //   }
+      if (res.status === 404) {
+        setValidationError(
+          res.message || "Orders hasn't been found. Try another QR code."
+        );
+        return;
+      }
+      if (res.orders.length !== 0) {
+        navigation.navigate("New_Orders_View", { orders: res.orders });
+        setLastScannedToken(token);
+      }
     } catch (error) {
       const status = error?.response?.status;
       const data = error?.response?.data;

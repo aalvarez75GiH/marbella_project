@@ -15,6 +15,7 @@ export const OrdersContext = createContext();
 export const Orders_Context_Provider = ({ children }) => {
   const [orders, setOrders] = useState([]);
   const [ordersGrouped, setOrdersGrouped] = useState([]);
+  const [customerOrders, setCustomerOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOrdersLoading, setIsOrdersLoading] = useState(false);
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
@@ -63,10 +64,7 @@ export const Orders_Context_Provider = ({ children }) => {
     try {
       const fetchedOrdersGrouped =
         await gettingAllOrdersByUserIDGroupedByMonthRequest(user_id); // Replace with actual fetch logic
-      // console.log(
-      //   "Fetched Orders Grouped:",
-      //   JSON.stringify(fetchedOrdersGrouped, null, 2)
-      // );
+
       setOrdersGrouped(fetchedOrdersGrouped);
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -278,6 +276,7 @@ export const Orders_Context_Provider = ({ children }) => {
 
   // **************** ADMIN CONTEXT FUNCTIONS ****************
 
+  // Getting Order by Order QR token
   const getOrderByQRToken = async (qr_token) => {
     try {
       const orderByQrTokenInfo = await getOrderByPickupTokenRequest(qr_token);
@@ -300,12 +299,24 @@ export const Orders_Context_Provider = ({ children }) => {
       console.error("Error fetching order by QR token:", error);
     }
   };
+
+  // Getting customer's Orders by Customer's QR token
   const getCustomersOrdersByQRToken = async (qr_token) => {
     try {
       const ordersByQrTokenInfo = await getCustomersOrdersByTokenRequest(
         qr_token
       );
+      console.log(
+        "Orders by Customer QR Token :",
+        JSON.stringify(ordersByQrTokenInfo.orders, null, 2)
+      );
+
+      if (ordersByQrTokenInfo?.response?.status === 404) {
+        return ordersByQrTokenInfo?.response;
+      }
+      setCustomerOrders(ordersByQrTokenInfo.orders);
       return ordersByQrTokenInfo;
+
       // console.log(
       //   "Order by QR Token :",
       //   JSON.stringify(ordersByQrTokenInfo.orders, null, 2)
@@ -315,9 +326,6 @@ export const Orders_Context_Provider = ({ children }) => {
       //   JSON.stringify(ordersByQrTokenInfo.response, null, 2)
       // );
 
-      // if (ordersByQrTokenInfo?.response?.status === 409) {
-      //   return ordersByQrTokenInfo?.response;
-      // }
       // if (ordersByQrTokenInfo?.orders) {
       //   return ordersByQrTokenInfo.orders;
       // }

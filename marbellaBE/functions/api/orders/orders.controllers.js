@@ -151,6 +151,7 @@ const markOrderAsRefunded = async (order_id, internal_reason) => {
   return updatedSnap.exists ? updatedSnap.data() : null;
 };
 
+// ******* admin app controllers **********************
 const getOrderByPickupToken = async (token) => {
   console.log("Looking up order with pickup token:", token);
   const snap = await firebase_controller.db
@@ -204,22 +205,61 @@ const getOrdersByCustomerQrToken = async (token) => {
   const ordersRef = firebase_controller.db.collection("orders");
 
   const snap = await ordersRef
-    .where("customer_qr.customer_token", "==", token)
-    .limit(1)
+    .where("customer.customer_qr.customer_token", "==", token)
     .get();
 
   if (snap.empty) {
-    return null;
+    return [];
   }
 
-  const doc = snap.docs[0];
-
-  return {
-    id: doc.id,
-    ...doc.data(),
-  };
+  return snap.docs.map((doc) => doc.data());
 };
+const getOrdersGroupedByCustomerQrToken = async (token) => {
+  const snap = await firebase_controller.db
+    .collection("orders")
+    .where("customer.customer_qr.customer_token", "==", token)
+    .get();
 
+  const buckets = new Map(); // monthKey -> { monthKey, label, orders: [] }
+
+  snap.forEach((doc) => {
+    const order = doc.data();
+    const createdAtIso = order?.createdAt;
+
+    if (!createdAtIso) return;
+
+    const d = new Date(createdAtIso);
+    if (Number.isNaN(d.getTime())) return;
+
+    const year = d.getFullYear();
+    const monthIndex = d.getMonth(); // 0-11
+    const monthKey = `${year}-${String(monthIndex + 1).padStart(2, "0")}`;
+
+    const label = `${MONTHS[monthIndex].slice(0, 3)}, ${year}`;
+
+    if (!buckets.has(monthKey)) {
+      buckets.set(monthKey, {
+        monthKey,
+        label,
+        orders: [],
+      });
+    }
+
+    buckets.get(monthKey).orders.push(order);
+  });
+
+  const grouped = Array.from(buckets.values()).sort((a, b) =>
+    b.monthKey.localeCompare(a.monthKey)
+  );
+
+  grouped.forEach((group) => {
+    group.orders.sort((a, b) =>
+      String(b.createdAt).localeCompare(String(a.createdAt))
+    );
+  });
+
+  return grouped;
+};
 module.exports = {
   createOrder,
   getAllOrdersByUserID,
@@ -229,4 +269,5 @@ module.exports = {
   getOrderByPickupToken,
   updateOrderStatus,
   getOrdersByCustomerQrToken,
+  getOrdersGroupedByCustomerQrToken,
 };
