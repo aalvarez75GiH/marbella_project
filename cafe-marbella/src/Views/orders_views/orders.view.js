@@ -1,12 +1,11 @@
 import React, { useContext, useCallback } from "react";
-import { FlatList, View, SectionList } from "react-native";
+import { View, SectionList } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import { useTheme } from "styled-components/native";
 import { Container } from "../../components/containers/general.containers";
-import { Just_Caption_Header } from "../../components/headers/just_caption.header.js";
 import { Exit_Header_With_Label } from "../../components/headers/exit_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
@@ -69,7 +68,6 @@ export default function Orders_View() {
     } = item;
     const { name, warehouse_address } = warehouse_to_pickup;
     const { total } = pricing;
-    const { customer_address } = customer;
 
     return (
       <My_Orders_Tile

@@ -100,7 +100,7 @@ const Tabs = () => {
         name="Orders"
         component={Scan_Order_Navigator}
         options={{
-          title: "Orders",
+          title: "Admin Orders",
           tabBarIcon: ({ color }) => (
             <OrdersIcon width={25} height={25} fill={color} />
           ),
