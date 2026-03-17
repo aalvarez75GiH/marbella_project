@@ -14,7 +14,6 @@ import Menu_View from "../../Views/shop_views/menu.view";
 import Different_Delivery_Address_View from "../../Views/shop_views/different_delivery_address.view";
 import Product_Specifications_View from "../../Views/shop_views/product_specifications.view";
 import Product_Ingredients_View from "../../Views/shop_views/product_ingredients.view";
-import Orders_View from "../../Views/orders_views/orders.view";
 import Switching_Accounts_View from "../../Views/shop_views/switching_accounts.view";
 import Sign_Out_Overlay_View from "../../Views/shop_views/sign_out_overlay.view";
 import Login_Screen_For_Switching_Accounts_View from "../../Views/shop_views/login_screen_for_switching_accounts.view";
@@ -80,7 +79,6 @@ export const Shop_Navigator = () => {
         name="Product_Ingredients_View"
         component={Product_Ingredients_View}
       />
-      <ShopFlowStack.Screen name="Orders_View" component={Orders_View} />
       <ShopFlowStack.Screen
         name="Switching_Accounts_View"
         component={Switching_Accounts_View}

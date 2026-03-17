@@ -18,7 +18,7 @@ import { CartContext } from "../../infrastructure/services/cart/cart.context";
 
 import { CheckIcon } from "../../../assets/modified_icons/success_icon";
 
-export default function Payment_View() {
+export default function Cart_Payment_View() {
   const {
     nameOnCard,
     setNameOnCard,
@@ -38,19 +38,6 @@ export default function Payment_View() {
   const { user_id } = myOrder || {};
   const { resettingCart, setCart } = useContext(CartContext);
 
-  const navigation = useNavigation();
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const tabs = navigation.getParent("MainTabs");
-  //     tabs?.setOptions({ tabBarStyle: { display: "none" } });
-
-  //     return () => {
-  //       tabs?.setOptions({ tabBarStyle: { display: "flex" } });
-  //     };
-  //   }, [navigation])
-  // );
-
   useEffect(() => {
     setMyOrder((prev) => ({
       ...prev,
@@ -64,6 +51,18 @@ export default function Payment_View() {
     }));
   }, []);
 
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const parent = navigation.getParent();
+  //     parent?.setOptions({ tabBarStyle: { display: "none" } });
+
+  //     return () => {
+  //       parent?.setOptions({ tabBarStyle: { display: "flex" } });
+  //     };
+  //   }, [navigation])
+  // );
+
+  const navigation = useNavigation();
   console.log("CARD VERIFIED STATE:", cardVerified);
   console.log("MY ORDER IN PAYMENT VIEW:", JSON.stringify(myOrder, null, 2));
 
@@ -220,7 +219,7 @@ export default function Payment_View() {
                     }
 
                     setMyOrder(response.order);
-                    navigation.navigate("Order_Confirmation_View");
+                    navigation.navigate("Cart_Order_Confirmation_View");
                     return;
                   }
 

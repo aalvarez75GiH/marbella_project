@@ -56,7 +56,7 @@ export default function Menu_View() {
           color={theme.colors.bg.elements_bg}
           justify="flex-start"
           align="center"
-          // style={{ paddingBottom: tabBarHeight }}
+          style={{ paddingBottom: tabBarHeight }}
         >
           <Exit_Header_With_Label
             label=""
@@ -103,7 +103,12 @@ export default function Menu_View() {
             />
             <Menu_Tile
               caption="Transactions history"
-              action={() => navigation.navigate("Orders_View")}
+              // action={() => navigation.navigate("Orders_View")}
+              action={() =>
+                navigation.navigate("Orders", {
+                  screen: "Orders_View",
+                })
+              }
             />
             <Menu_Tile
               caption="Your QR code"

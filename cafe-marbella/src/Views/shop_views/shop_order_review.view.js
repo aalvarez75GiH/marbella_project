@@ -3,6 +3,7 @@ import { useTheme } from "styled-components/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useFocusEffect } from "@react-navigation/native";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
@@ -23,6 +24,7 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 export default function Shop_Order_Review_View() {
   const theme = useTheme();
   const route = useRoute();
+  const tabBarHeight = useBottomTabBarHeight();
   const { order } = route.params;
   const { isLoading, setDeliveryOption, setDifferentAddress } =
     useContext(OrdersContext);
@@ -49,18 +51,6 @@ export default function Shop_Order_Review_View() {
   const { lat, lng } = geo || {};
 
   const navigation = useNavigation();
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const parent = navigation.getParent();
-  //     parent?.setOptions({ tabBarStyle: { display: "none" } });
-
-  //     return () => {
-  //       parent?.setOptions({ tabBarStyle: { display: "flex" } });
-  //     };
-  //   }, [navigation])
-  // );
-  //   let delivery_type = "pickup";
 
   const renderingOrderProducts = () => {
     return order_products.map((item) => {
@@ -112,8 +102,9 @@ export default function Shop_Order_Review_View() {
               justifyContent: "flex-start",
               alignItems: "center",
               backgroundColor: theme.colors.bg.elements_bg,
-              paddingBottom: 20, // Prevents last items from being cut off
+              paddingBottom: 16,
             }}
+            style={{ flex: 1 }} // Ensures dynamic height adjustment
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
@@ -121,8 +112,9 @@ export default function Shop_Order_Review_View() {
               width="100%"
               align="center"
               justify="flex-start"
-              style={{ flex: 1 }} // Ensures dynamic height adjustment
+              // style={{ flex: 1 }} // Ensures dynamic height adjustment
               color={theme.colors.bg.elements_bg}
+              style={{ flex: 1 }}
               //   color={theme.colors.bg.screens_bg}
             >
               <Spacer position="top" size="small" />
@@ -200,14 +192,21 @@ export default function Shop_Order_Review_View() {
           </ScrollView>
           <Container
             width="100%"
-            height="12%"
-            color={theme.colors.bg.elements_bg}
-            justify="center"
-            align="center"
+            padding_vertical="10px"
+            color="transparent"
+            // color="red"
+
+            style={{
+              paddingTop: 10,
+              paddingBottom: 70,
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
           >
             <Regular_CTA
               width="95%"
-              height="70%"
+              height="70px"
               color={theme.colors.ui.business}
               border_radius={"40px"}
               caption="Continue to payment"

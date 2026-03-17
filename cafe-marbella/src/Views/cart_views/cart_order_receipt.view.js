@@ -3,8 +3,6 @@ import { useTheme } from "styled-components/native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { rootNavigate } from "../../infrastructure/navigation/navigation_ref";
 import { ScrollView } from "react-native-gesture-handler";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { Platform } from "react-native";
 
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
@@ -25,10 +23,8 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
 
-export default function Shop_Order_Receipt_View() {
+export default function Cart_Order_Receipt_View() {
   const theme = useTheme();
-  const tabBarHeight = useBottomTabBarHeight();
-  const iOs = Platform.OS === "ios";
   const { myOrder, setMyOrder } = useContext(OrdersContext);
   console.log(
     "myOrder in Shop_Order_Receipt_View:",
@@ -62,6 +58,16 @@ export default function Shop_Order_Receipt_View() {
   const { comingFrom } = useContext(AuthenticationContext);
 
   const navigation = useNavigation();
+  useFocusEffect(
+    useCallback(() => {
+      const parent = navigation.getParent();
+      parent?.setOptions({ tabBarStyle: { display: "none" } });
+
+      return () => {
+        parent?.setOptions({ tabBarStyle: { display: "flex" } });
+      };
+    }, [navigation])
+  );
 
   const renderingOrderProducts = () => {
     return order_products.map((item) => {
@@ -100,7 +106,7 @@ export default function Shop_Order_Receipt_View() {
               justifyContent: "flex-start",
               alignItems: "center",
               backgroundColor: theme.colors.bg.elements_bg,
-              paddingBottom: 16,
+              paddingBottom: 20, // Prevents last items from being cut off
             }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
@@ -111,7 +117,6 @@ export default function Shop_Order_Receipt_View() {
               justify="flex-start"
               style={{ flex: 1 }} // Ensures dynamic height adjustment
               color={theme.colors.bg.elements_bg}
-
               //   color={theme.colors.bg.screens_bg}
             >
               <Spacer position="top" size="small" />
@@ -188,20 +193,14 @@ export default function Shop_Order_Receipt_View() {
           </ScrollView>
           <Container
             width="100%"
-            padding_vertical="10px"
-            color="transparent"
-            // color="red"
-            style={{
-              paddingTop: 10,
-              paddingBottom: 70,
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
+            height="12%"
+            color={theme.colors.bg.elements_bg}
+            justify="center"
+            align="center"
           >
             <Regular_CTA
               width="95%"
-              height="70px"
+              height="70%"
               color={theme.colors.brand.primary}
               border_radius={"40px"}
               caption="Done"
@@ -209,6 +208,13 @@ export default function Shop_Order_Receipt_View() {
               action={async () => {
                 setMyOrder(myOrder_schema);
                 setCardVerified(false);
+                // const warehouse_by_id = await gettingWarehouseByID(
+                //   warehouse_id
+                // );
+                // console.log(
+                //   "MY WAREHOUSE BEFORE NAVIGATING BACK TO HOME: ",
+                //   JSON.stringify(warehouse_by_id, null, 2)
+                // );
 
                 if (comingFrom === "Shopping_Cart_View") {
                   rootNavigate("App", {

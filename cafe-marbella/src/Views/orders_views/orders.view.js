@@ -21,19 +21,12 @@ import { AuthenticationContext } from "../../infrastructure/services/authenticat
 
 export default function Orders_View() {
   const {
-    orders,
-    isLoading,
     isOrdersLoading,
     ordersGrouped,
     gettingAllOrdersByUserIDGroupedByMonth,
   } = useContext(OrdersContext);
   const navigation = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
-
-  console.log(
-    "ORDERS GROUPED BY DATES:",
-    JSON.stringify(ordersGrouped, null, 2)
-  );
 
   const { user } = useContext(AuthenticationContext);
   const { user_id } = user || {};
@@ -63,7 +56,6 @@ export default function Orders_View() {
       order_status,
       createdAt,
       delivery_type,
-      customer,
       order_number,
     } = item;
     const { name, warehouse_address } = warehouse_to_pickup;

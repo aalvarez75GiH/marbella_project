@@ -14,7 +14,6 @@ export const Order_Info_Tile = ({
   total,
   quantity,
 }) => {
-  console.log("ORDER INFO TILE - QUANTITY:", quantity);
   const { formatCentsToUSD } = useContext(GlobalContext);
   const formatted_currency = formatCentsToUSD;
 

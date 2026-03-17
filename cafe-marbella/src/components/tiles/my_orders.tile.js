@@ -18,21 +18,17 @@ export const My_Orders_Tile = ({
   warehouse_name,
   warehouse_address,
   order_status,
-  quantity,
   long_formatted_date,
   short_formatted_date,
   delivery_type,
   order_number,
   item,
 }) => {
-  console.log("ORDER INFO TILE - QUANTITY:", quantity);
-  console.log("ORDER STATUS:", order_status);
   const { formatCentsToUSD } = useContext(GlobalContext);
   const formatted_currency = formatCentsToUSD;
   const { order_delivery_address } = item || {};
 
   const iOs = Platform.OS === "ios";
-  const android = Platform.OS === "android";
 
   const navigation = useNavigation();
   return delivery_type === "pickup" ? (
@@ -335,20 +331,6 @@ export const My_Orders_Tile = ({
           // border_color="black"
           align="stretch"
         ></Container>
-        {/* <View
-          style={{
-            width: 100,
-            height: 10,
-            backgroundColor:
-              order_status === "In Progress"
-                ? theme.colors.status_orders.inProgress
-                : order_status === "Finished"
-                ? theme.colors.ui.primary
-                : theme.colors.ui.error,
-            marginTop: 8,
-            alignSelf: "stretch",
-          }}
-        /> */}
       </Action_Container>
     </>
   );

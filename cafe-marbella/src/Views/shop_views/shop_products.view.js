@@ -1,5 +1,5 @@
 import React, { useContext, useState, useCallback } from "react";
-import { Image, ScrollView, InteractionManager } from "react-native";
+import { Image, ScrollView } from "react-native";
 import { useTheme } from "styled-components/native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
@@ -7,11 +7,9 @@ import {
   Container,
   Action_Container,
 } from "../../components/containers/general.containers";
-import { Go_Back_Header_With_Label_And_Menu } from "../../components/headers/goBack_with_label_and_menu.header";
 import { Main_Header } from "../../components/headers/main.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
-import { Product_Initial_Card } from "../../components/cards/product_initial_card/product_intial.card";
 import { Text } from "../../infrastructure/typography/text.component";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 
@@ -202,18 +200,6 @@ export default function Shop_Products_View() {
                 />
               </Container>
             </Action_Container>
-            {/* <Action_Container
-              width="90%"
-              // height="40%"
-              padding_vertical="10%"
-              //color={theme.colors.bg.elements_bg}
-              color={"green"}
-              justify="flex-start"
-              align="center"
-              direction="row"
-              overflow="hidden"
-              onPress={() => null}
-            ></Action_Container> */}
           </ScrollView>
         )}
       </Container>

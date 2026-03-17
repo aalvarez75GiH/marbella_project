@@ -9,27 +9,17 @@ import {
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { Snackbar } from "react-native-paper";
 
-import {
-  Action_Container,
-  Container,
-} from "../../components/containers/general.containers";
+import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 import { Text } from "../../infrastructure/typography/text.component";
-import { Product_Cart_Item_Tile } from "../../components/tiles/product_cart_item.tile";
 import { Product_Cart_Item_For_Review_Tile } from "../../components/tiles/product_cart_item_for_review.tile";
 import { Order_Info_Tile } from "../../components/tiles/order_info.tile";
 import { RT_Delivery_Information_Order_Tile } from "../../components/tiles/rt_delivery_information_order_tile";
 import { Splitter_Component } from "../../components/others/grey_splitter.component";
 import { Payment_method_Info_Tile } from "../../components/tiles/payment_method_used_info.tile";
 import { Refunded_Information_Order_Tile } from "../../components/tiles/refunded_information_order.tile";
-import { Order_Pickup_QR } from "../../components/others/order_pickup_qr.components";
-import ChevronRightIcon from "../../../assets/my_icons/chevron-right.svg";
-
-import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
-import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
-import { GlobalContext } from "../../infrastructure/services/global/global.context";
 
 export default function Order_View() {
   const theme = useTheme();
@@ -37,11 +27,6 @@ export default function Order_View() {
   const tabBarHeight = useBottomTabBarHeight();
   const route = useRoute();
   const { order } = route.params;
-  console.log("ORDER ITEM AT ORDER VIEW :", JSON.stringify(order, null, 2));
-  // const { snackbar, showSnackbar, hideSnackbar } = useContext(GlobalContext);
-
-  //   const { myWarehouse } = useContext(WarehouseContext);
-  //   const { distance_in_miles } = myWarehouse || {};
 
   const [pickupSnackbarVisible, setPickupSnackbarVisible] = useState(false);
 
@@ -232,48 +217,6 @@ export default function Order_View() {
               {renderingOrderProducts()}
             </Container>
             <Spacer position="top" size="large" />
-
-            {/* ****************************************************************** */}
-
-            {/* <Action_Container
-              width="95%"
-              // color={theme.colors.bg.screens_bg}
-              color={theme.colors.ui.tertiary}
-              padding_vertical={"5%"}
-              align="flex-start"
-              direction="row"
-              onPress={() =>
-                navigation.navigate("Order_Pickup_QR_View", {
-                  token,
-                  size: 300,
-                })
-              }
-            >
-              <Container
-                width="80%"
-                padding_vertical="4%"
-                //color={theme.colors.bg.screens_bg}
-                color={theme.colors.ui.tertiary}
-                // color={"red"}
-                justify="center"
-                align="flex-start"
-              >
-                <Spacer position="left" size="large">
-                  <Text variant="dm_sans_bold_18">Order QR code</Text>
-                </Spacer>
-              </Container>
-              <Container
-                width="10%"
-                padding_vertical="4%"
-                color={theme.colors.ui.tertiary}
-                //color={"blue"}
-                justify="center"
-                align="center"
-              >
-                <ChevronRightIcon width={20} height={20} />
-              </Container>
-            </Action_Container> */}
-            {/* ****************************************************************** */}
           </Container>
         </ScrollView>
         <Snackbar

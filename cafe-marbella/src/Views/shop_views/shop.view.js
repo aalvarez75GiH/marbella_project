@@ -35,15 +35,16 @@ export default function Shop_View() {
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
-      style={{ flex: 1, paddingBottom: tabBarHeight }}
+      style={{ flex: 1 }}
     >
       <Container
         width="100%"
         height="100%"
-        color={theme.colors.bg.screens_bg}
+        color={theme.colors.bg.elements_bg}
         // color={"green"}
         justify="flex-start"
         align="center"
+        style={{ paddingBottom: tabBarHeight }}
       >
         <Go_Back_Header_With_Label_And_Menu
           action_1={() => navigation.navigate("Shop_Products_View")}

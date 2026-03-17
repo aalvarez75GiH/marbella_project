@@ -1,7 +1,8 @@
 import React, { useContext, useCallback } from "react";
-import { FlatList } from "react-native";
+import { FlatList, Platform } from "react-native";
 import { useTheme } from "styled-components/native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
@@ -19,6 +20,8 @@ import { AuthenticationContext } from "../../infrastructure/services/authenticat
 import { createdAt } from "expo-updates";
 export default function Process_Shopping_Cart_View() {
   const theme = useTheme();
+  const tabBarHeight = useBottomTabBarHeight();
+  const iOS = Platform.OS === "ios";
   // *************
   const { cart, isLoading, cartTotalItems, isUpdatingQty } =
     useContext(CartContext);
@@ -59,6 +62,9 @@ export default function Process_Shopping_Cart_View() {
           // color={"green"}
           justify="flex-start"
           align="center"
+          style={{
+            paddingBottom: tabBarHeight,
+          }}
         >
           <Go_Back_Header action={() => navigation.popToTop()} label="" />
           <Spacer position="top" size="small" />
@@ -97,12 +103,17 @@ export default function Process_Shopping_Cart_View() {
           ) : (
             <Regular_CTA
               width="95%"
-              height="10%"
+              height="70px"
               color={theme.colors.ui.business}
               border_radius={"40px"}
               caption="Proceed to checkout"
               caption_text_variant="dm_sans_bold_20"
+              style={{ marginBottom: iOS ? 0 : tabBarHeight }}
               action={() => {
+                console.log(
+                  "CURRENT ROUTE NAME AT CTA PROCESS SCV:",
+                  navigation.getState()
+                );
                 const latestProducts = cart?.products ?? [];
 
                 // ✅ Use auth context, NOT cart.user_id
@@ -150,9 +161,7 @@ export default function Process_Shopping_Cart_View() {
                 }));
 
                 // ✅ Push onto THIS stack so GO_BACK works
-                navigation.navigate("Shop_Delivery_Type_View", {
-                  coming_from: "Process_Shopping_Cart_View",
-                });
+                navigation.push("Shop_Delivery_Type_View");
               }}
             />
           )}

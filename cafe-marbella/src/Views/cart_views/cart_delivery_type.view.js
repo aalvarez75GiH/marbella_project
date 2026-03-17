@@ -1,7 +1,8 @@
 import React, { useContext, useEffect } from "react";
+import { useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
-
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -17,10 +18,9 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
 
-export default function Shop_Delivery_Type_View() {
+export default function Cart_Delivery_Type_View() {
   const theme = useTheme();
   const navigation = useNavigation();
-  // Hiding tab bar for this screen
 
   const { cart: cartRaw, isLoading } = useContext(CartContext);
 
@@ -57,10 +57,10 @@ export default function Shop_Delivery_Type_View() {
     setMyOrder,
     isCheckoutLoading,
     differentAddress,
-    handlingDeliveryOption,
     setDeliveryOption,
     deliveryOption,
-    handlingPickupOption,
+    handlingDeliveryOption_Cart,
+    handlingPickupOption_Cart,
   } = useContext(OrdersContext);
 
   const { customer } = myOrder || {};
@@ -154,7 +154,7 @@ export default function Shop_Delivery_Type_View() {
                   delivery_type: "pickup",
                 };
 
-                handlingPickupOption({
+                handlingPickupOption_Cart({
                   navigation,
                   onTaxes,
                   user_id,
@@ -244,7 +244,7 @@ export default function Shop_Delivery_Type_View() {
                 customer_address={customer_address}
                 address_option={"current_address"}
                 action={async () => {
-                  await handlingDeliveryOption({
+                  await handlingDeliveryOption_Cart({
                     navigation,
                     onTaxes,
                     differentAddress,

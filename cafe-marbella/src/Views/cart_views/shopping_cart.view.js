@@ -171,7 +171,7 @@ export default function Shopping_Cart_View() {
                   }));
 
                   // ✅ Pushes onto Cart stack => GO_BACK returns to cart
-                  navigation.navigate("Shop_Delivery_Type_View", {
+                  navigation.navigate("Cart_Delivery_Type_View", {
                     coming_from: "Shopping_Cart_View",
                   });
                 }}

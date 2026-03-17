@@ -30,39 +30,43 @@ const TAB_BAR_BASE_STYLE = Platform.select({
   },
 });
 
-const HIDDEN_TAB_STYLE = {
-  ...TAB_BAR_BASE_STYLE,
-  backgroundColor: "transparent",
-  borderTopWidth: 0,
-  elevation: 0, // Android shadow
-  shadowOpacity: 0, // iOS shadow
-  opacity: 0,
-  pointerEvents: "none",
-};
+// const HIDDEN_TAB_STYLE = {
+//   ...TAB_BAR_BASE_STYLE,
+//   backgroundColor: "transparent",
+//   borderTopWidth: 0,
+//   elevation: 0, // Android shadow
+//   shadowOpacity: 0, // iOS shadow
+//   opacity: 0,
+//   pointerEvents: "none",
+// };
+// const HIDDEN_TAB_STYLE = {
+//   display: "none",
+// };
 
 const HIDE_TAB_ROUTES = new Set([
   "Menu_View",
   "Shop_Shopping_Cart_View",
+  "Shop_Delivery_Type_View",
   "Shop_Order_Review_View",
   "Payment_View",
-  "Shop_Order_Receipt_View",
-  "Shop_Delivery_Type_View",
   "Order_Confirmation_View",
+  "Shop_Order_Receipt_View",
 ]);
 
-function tabBarStyleFromNested(route, fallback) {
-  const nested = getFocusedRouteNameFromRoute(route) ?? fallback;
-  const shouldHide = HIDE_TAB_ROUTES.has(nested);
-  // 🔥 debug
-  console.log("Shop tab nested:", nested, "hide:", shouldHide);
-  return shouldHide ? HIDDEN_TAB_STYLE : TAB_BAR_BASE_STYLE;
-}
+// function tabBarStyleFromNested(route, fallback) {
+//   const nested = getFocusedRouteNameFromRoute(route) ?? fallback;
+//   const shouldHide = HIDE_TAB_ROUTES.has(nested);
+//   // 🔥 debug
+//   console.log("Shop tab nested:", nested, "hide:", shouldHide);
+//   return shouldHide ? HIDDEN_TAB_STYLE : TAB_BAR_BASE_STYLE;
+// }
 
 const Tabs = () => {
   const { cartTotalItems } = useContext(CartContext);
 
   return (
     <Tab.Navigator
+      id="MainTabs"
       screenOptions={{
         tabBarStyle: TAB_BAR_BASE_STYLE,
         tabBarBackground: () => null,
@@ -70,7 +74,6 @@ const Tabs = () => {
 
         // 🔥 ADD THIS
         sceneContainerStyle: {
-          // backgroundColor: "transparent",
           backgroundColor: theme.colors.bg.elements_bg,
         },
 
@@ -86,13 +89,19 @@ const Tabs = () => {
       <Tab.Screen
         name="Shop"
         component={Shop_Navigator}
-        options={({ route }) => ({
+        options={{
           title: "Shop",
-          tabBarStyle: tabBarStyleFromNested(route, "Shop_Products_View"),
           tabBarIcon: ({ color }) => (
             <ShopIcon width={25} height={25} fill={color} />
           ),
-        })}
+        }}
+        // options={({ route }) => ({
+        //   title: "Shop",
+        //   tabBarStyle: tabBarStyleFromNested(route, "Shop_Products_View"),
+        //   tabBarIcon: ({ color }) => (
+        //     <ShopIcon width={25} height={25} fill={color} />
+        //   ),
+        // })}
       />
 
       <Tab.Screen
@@ -109,9 +118,8 @@ const Tabs = () => {
       <Tab.Screen
         name="Cart"
         component={Cart_Navigator}
-        options={({ route }) => ({
+        options={{
           title: "Cart",
-          tabBarStyle: tabBarStyleFromNested(route, "Shopping_Cart_View"),
           tabBarIcon: ({ size, color }) => (
             <Cart_Active_With_Items_CTA
               size={size ?? 25}
@@ -121,7 +129,20 @@ const Tabs = () => {
               active_color={color}
             />
           ),
-        })}
+        }}
+        // options={({ route }) => ({
+        //   title: "Cart",
+        //   tabBarStyle: tabBarStyleFromNested(route, "Shopping_Cart_View"),
+        //   tabBarIcon: ({ size, color }) => (
+        //     <Cart_Active_With_Items_CTA
+        //       size={size ?? 25}
+        //       quantity={cartTotalItems}
+        //       type={1}
+        //       color={theme.colors.bg.elements_bg}
+        //       active_color={color}
+        //     />
+        //   ),
+        // })}
       />
     </Tab.Navigator>
   );

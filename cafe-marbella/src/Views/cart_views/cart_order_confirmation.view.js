@@ -1,8 +1,7 @@
 import React, { useLayoutEffect, useCallback } from "react";
 import { useTheme } from "styled-components/native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Image, StyleSheet } from "react-native";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import {
   Container,
@@ -13,21 +12,19 @@ import { SafeArea } from "../../components/spacers and globals/safe-area.compone
 
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 
-export default function Order_Confirmation_View({ route }) {
+export default function Cart_Order_Confirmation_View({ route }) {
   const theme = useTheme();
   const navigation = useNavigation();
-  const tabBarHeight = useBottomTabBarHeight();
+  useFocusEffect(
+    useCallback(() => {
+      const parent = navigation.getParent();
+      parent?.setOptions({ tabBarStyle: { display: "none" } });
 
-  // useLayoutEffect(
-  //   useCallback(() => {
-  //     const parent = navigation.getParent();
-  //     parent?.setOptions({ tabBarStyle: { display: "none" } });
-
-  //     return () => {
-  //       parent?.setOptions({ tabBarStyle: { display: "flex" } });
-  //     };
-  //   }, [navigation])
-  // );
+      return () => {
+        parent?.setOptions({ tabBarStyle: { display: "flex" } });
+      };
+    }, [navigation])
+  );
 
   return (
     <SafeArea
@@ -36,11 +33,11 @@ export default function Order_Confirmation_View({ route }) {
     >
       <Container
         width="100%"
-        style={{ flex: 1, paddingBottom: tabBarHeight }}
+        style={{ flex: 1 }}
         justify="flex-start"
         align="center"
-        color={theme.colors.brand.secondary}
-        // color={"red"}
+        // color={theme.colors.brand.secondary}
+        color={"red"}
       >
         <Container
           width="100%"
@@ -100,7 +97,6 @@ export default function Order_Confirmation_View({ route }) {
           //   color={"lightgrey"}
           direction="row"
           justify="space-between"
-          // style={{ paddingBottom: tabBarHeight }}
         >
           {/* <Spacer position="left" size="small" /> */}
           <Action_Container
@@ -111,7 +107,7 @@ export default function Order_Confirmation_View({ route }) {
             margin_left="5%"
             justify="center"
             align="center"
-            onPress={() => navigation.navigate("Shop_Order_Receipt_View")}
+            onPress={() => navigation.navigate("Cart_Order_Receipt_View")}
           >
             <Text
               variant="raleway_bold_16"

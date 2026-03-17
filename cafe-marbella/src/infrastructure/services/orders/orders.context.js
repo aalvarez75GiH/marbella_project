@@ -134,6 +134,65 @@ export const Orders_Context_Provider = ({ children }) => {
 
     return;
   };
+  const handlingDeliveryOption_Cart = async ({
+    navigation,
+    onTaxes,
+    differentAddress,
+    customer_address,
+  }) => {
+    // console.log(
+    //   "DIFFERENT ADDRESS AT HANDLING: ",
+    //   JSON.stringify(differentAddress, null, 2)
+    // );
+    setIsCheckoutLoading(true);
+
+    try {
+      // 1) Prepare nextOrder with changes
+      const nextOrder = {
+        ...myOrder,
+        order_products: myOrder.order_products, // ✅ force keep products
+        order_delivery_address: differentAddress || customer_address,
+      };
+      // 2) Call taxes with the order you JUST built
+      const taxesResults = await onTaxes(nextOrder);
+      console.log(
+        "Taxes Results (DELIVERY):",
+        JSON.stringify(taxesResults, null, 2)
+      );
+
+      // Optional: guard if your onTaxes returns an error shape instead of throwing
+      if (taxesResults?.error || taxesResults?.status === "failed") {
+        throw new Error(taxesResults?.error?.message || "Tax quote failed");
+      }
+
+      // 3) Build final order with Stripe totals
+      const orderWithTaxes = {
+        ...nextOrder,
+        pricing: {
+          ...nextOrder.pricing,
+          taxes: taxesResults.tax_amount,
+          total: taxesResults.total_amount,
+        },
+        tax_calculation_id: taxesResults.calculation_id,
+      };
+
+      // 4) Set it once
+      setMyOrder(orderWithTaxes);
+
+      // 5) Navigate (same style as pickup)
+      navigation.navigate("Cart_Order_Review_View", {
+        order: orderWithTaxes,
+      });
+    } catch (error) {
+      console.log("DELIVERY TAX FLOW ERROR:", error?.message || error);
+      // show alert/toast if you want
+    } finally {
+      // 6) Always stop loader
+      setIsCheckoutLoading(false);
+    }
+
+    return;
+  };
   const handlingPickupOption = async ({
     navigation,
     onTaxes,
@@ -229,6 +288,101 @@ export const Orders_Context_Provider = ({ children }) => {
 
     return;
   };
+  const handlingPickupOption_Cart = async ({
+    navigation,
+    onTaxes,
+    user_id,
+    cart_id,
+    sub_total,
+    quantity,
+    warehouse_id,
+    warehouse_name,
+    formatted_address,
+    geo,
+    phone,
+    warehouse_information,
+    distance_in_miles,
+    distance_time,
+    warehouse_distance_range_positive,
+    nextOrder,
+  }) => {
+    setIsCheckoutLoading(true);
+    setDeliveryOption("pickup");
+
+    try {
+      const enrichedOrder = {
+        ...nextOrder,
+        user_id,
+        cart_id,
+        // order_products: products,
+        order_products: nextOrder.order_products ?? products,
+        pricing: {
+          sub_total: sub_total,
+          taxes: 0,
+          total: 0,
+          shipping: 0,
+          discount: 0,
+        },
+        quantity,
+        warehouse_to_pickup: {
+          warehouse_id,
+          name: warehouse_name,
+          warehouse_address: formatted_address,
+          geo,
+          phone_number: phone,
+          closing_time: warehouse_information?.closing_time,
+          opening_time: warehouse_information?.opening_time,
+          distance_in_miles,
+        },
+        order_delivery_address: "",
+      };
+
+      console.log(
+        "NEXT ORDER SENT TO TAX:",
+        JSON.stringify(enrichedOrder, null, 2)
+      );
+
+      const taxesResults = await onTaxes(enrichedOrder);
+      console.log("Taxes Results:", JSON.stringify(taxesResults, null, 2));
+
+      // If your onTaxes returns { ok: false } or { status !== 200 }, handle it:
+      if (taxesResults?.error || taxesResults?.status === "failed") {
+        throw new Error(taxesResults?.error?.message || "Tax quote failed");
+      }
+
+      const orderWithTaxes = {
+        ...enrichedOrder,
+        pricing: {
+          ...enrichedOrder.pricing,
+          taxes: taxesResults.tax_amount,
+          total: taxesResults.total_amount,
+        },
+        tax_calculation_id: taxesResults.calculation_id,
+      };
+
+      setMyOrder(orderWithTaxes);
+
+      if (warehouse_distance_range_positive) {
+        navigation.navigate("Cart_Order_Review_View", {
+          order: orderWithTaxes,
+        });
+      } else {
+        navigation.navigate("Long_Distance_Warning_View", {
+          formatted_address,
+          distance_in_miles,
+          distance_time,
+          order: orderWithTaxes,
+        });
+      }
+    } catch (e) {
+      console.log("PICKUP TAX FLOW ERROR:", e?.message || e);
+      // optionally show a toast/alert here
+    } finally {
+      setIsCheckoutLoading(false);
+    }
+
+    return;
+  };
 
   // orders.context.js
   const prepareOrderFromCart = (cart, user) => {
@@ -299,6 +453,8 @@ export const Orders_Context_Provider = ({ children }) => {
         resetOrdersContext,
         isOrdersLoading,
         isCheckoutLoading,
+        handlingDeliveryOption_Cart,
+        handlingPickupOption_Cart,
       }}
     >
       {children}
