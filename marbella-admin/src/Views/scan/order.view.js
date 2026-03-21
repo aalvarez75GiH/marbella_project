@@ -341,6 +341,7 @@ export default function Order_View() {
                 label: "Close",
                 onPress: () => {
                   setStatusSnackbarVisible(false);
+                  navigation.popToTop();
                 },
               }}
               style={{

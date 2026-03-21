@@ -10,8 +10,14 @@ import {
   updateEmail,
   verifyBeforeUpdateEmail,
 } from "firebase/auth";
+import * as Notifications from "expo-notifications";
+import { navigationRef } from "../../../infrastructure/navigation/navigation_ref";
 
-import { Alert } from "react-native";
+import {
+  registerForPushNotificationsAsync,
+  saveExpoPushTokenToUser,
+} from "../../services/notifications/push.notifications";
+
 import {
   user_authenticated,
   usersInTheDevice,
@@ -22,11 +28,10 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
 } from "firebase/auth";
+
 import {
-  gettingUserByEmailRequest,
   put_new_pin_Request,
-} from "./authentication.sevices";
-import {
+  gettingUserByEmailRequest,
   post_user_Request,
   gettingUserByUIDRequest,
   put_update_userinfo_Request,
@@ -283,6 +288,106 @@ export const Authentication_Context_Provider = ({ children }) => {
       cancelled = true;
     };
   }, [user?.uid]);
+
+  const lastSavedPushTokenRef = useRef(null);
+
+  useEffect(() => {
+    console.log(
+      "USER UID AT PUSH NOTIFICATIONS SETUP EFFECT:",
+      JSON.stringify(user?.uid, null, 2)
+    );
+    if (!profileReady || !firebaseUser || !user?.uid) return;
+
+    let cancelled = false;
+
+    const setupPushToken = async () => {
+      try {
+        console.log("PUSH STEP 1: start register");
+        const token = await registerForPushNotificationsAsync();
+        console.log("PUSH STEP 2: token =", token);
+
+        if (!token) {
+          console.log("PUSH STEP 2 FAILED: no token returned");
+          return;
+        }
+
+        console.log("PUSH STEP 3: saving token to DB for uid:", user?.uid);
+        await saveExpoPushTokenToUser({
+          uid: user.uid,
+          token,
+        });
+
+        console.log("PUSH STEP 4: token saved successfully");
+      } catch (e) {
+        console.log("PUSH SETUP ERROR object:", e);
+        console.log("PUSH SETUP ERROR code:", e?.code);
+        console.log("PUSH SETUP ERROR message:", e?.message);
+      }
+    };
+
+    setupPushToken();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [profileReady, firebaseUser, user?.uid]);
+
+  useEffect(() => {
+    const receivedSub = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        console.log("NOTIFICATION RECEIVED:", notification);
+      }
+    );
+
+    const responseSub = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        const data = response?.notification?.request?.content?.data;
+
+        console.log("NOTIFICATION TAPPED:", data);
+
+        const orderId = data?.orderId;
+        console.log("ORDER ID FROM NOTIFICATION DATA:", orderId);
+        if (!orderId) return;
+
+        navigationRef.current?.navigate("Shop", {
+          screen: "Shop_Products_View",
+        });
+        // navigationRef.current?.navigate("Orders", {
+        //   screen: "Order_View",
+        //   params: {
+        //     orderId,
+        //   },
+        // });
+      }
+    );
+
+    const checkLastNotification = async () => {
+      try {
+        const response = await Notifications.getLastNotificationResponseAsync();
+        const data = response?.notification?.request?.content?.data;
+
+        if (!data?.orderId) return;
+
+        console.log("LAST NOTIFICATION RESPONSE:", data);
+
+        navigationRef.current?.navigate("Orders", {
+          screen: "Order_View",
+          params: {
+            orderId: data.orderId,
+          },
+        });
+      } catch (e) {
+        console.log("LAST NOTIFICATION CHECK ERROR:", e?.message ?? e);
+      }
+    };
+
+    checkLastNotification();
+
+    return () => {
+      receivedSub.remove();
+      responseSub.remove();
+    };
+  }, []);
 
   // helper regex to validate PIN format (6 digits)
   const isValidPin = /^\d{6}$/.test(pin);
@@ -640,15 +745,7 @@ export const Authentication_Context_Provider = ({ children }) => {
         resolve(u);
       });
     });
-  const getFreshIdToken = async (timeoutMs = 2500) => {
-    let fbUser = auth.currentUser;
-    if (!fbUser) fbUser = await waitForFirebaseUserOnce(timeoutMs);
-    if (!fbUser)
-      throw Object.assign(new Error("No Firebase session."), {
-        code: "NO_SESSION",
-      });
-    return fbUser.getIdToken(true);
-  };
+
   const getFirebaseUserOrWait = async (timeoutMs = 12000) => {
     if (auth.currentUser) return auth.currentUser;
     if (firebaseUser) return firebaseUser;
@@ -875,50 +972,7 @@ export const Authentication_Context_Provider = ({ children }) => {
   );
 
   return (
-    <AuthenticationContext.Provider
-      value={value}
-      // value={{
-      //   isLoading,
-      //   error,
-      //   user,
-      //   setUser, // (optional expose)
-      //   otherUsersInTheDevice,
-      //   emailToSwitch,
-      //   setEmailToSwitch,
-      //   gettingUserByEmailToAuthenticated,
-      //   isAuthenticated,
-      //   loginDevUser,
-      //   // logout,
-      //   setUserToDB,
-      //   userToDB,
-      //   registerUser,
-      //   authInitializing,
-      //   registerLocalUser,
-      //   comingFrom,
-      //   setComingFrom,
-      //   signOut,
-      //   setPin,
-      //   pin,
-      //   setEmail,
-      //   email,
-      //   loginUser,
-      //   emailError,
-      //   setEmailError,
-      //   generatePinNumberOnDemand,
-      //   firebaseReady,
-      //   firebaseUser,
-      //   isOtherUsers,
-      //   isValidPin,
-      //   reset_pin_1,
-      //   set_Reset_Pin_1,
-      //   reset_pin_2,
-      //   set_Reset_Pin_2,
-      //   handleUpdate,
-      //   finalizePendingEmailChange,
-      //   startEmailChange,
-      //   fbSignOut,
-      // }}
-    >
+    <AuthenticationContext.Provider value={value}>
       {children}
     </AuthenticationContext.Provider>
   );

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useTheme } from "styled-components/native";
 import { ScrollView } from "react-native-gesture-handler";
 import {
@@ -9,6 +9,7 @@ import {
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { Snackbar } from "react-native-paper";
 
+import { getOrderByIdRequest } from "../../infrastructure/services/orders/orders.services";
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -26,8 +27,12 @@ export default function Order_View() {
   const navigation = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
   const route = useRoute();
-  const { order } = route.params;
+  // const { order } = route.params;
+  const initialOrder = route?.params?.order ?? null;
+  const orderIdFromParams =
+    route?.params?.orderId ?? initialOrder?.order_id ?? null;
 
+  const [customerOrder, setCustomerOrder] = useState(initialOrder);
   const [pickupSnackbarVisible, setPickupSnackbarVisible] = useState(false);
 
   const {
@@ -44,7 +49,8 @@ export default function Order_View() {
     order_delivery_address,
     pickup_qr,
     customer,
-  } = order || {};
+    order_id,
+  } = customerOrder || {};
 
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
   const { last_four } = payment_information || {};
@@ -62,7 +68,7 @@ export default function Order_View() {
   const { customer_address } = customer || {};
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       const normalizedDeliveryType = String(delivery_type || "")
         .trim()
         .toLowerCase();
@@ -78,7 +84,7 @@ export default function Order_View() {
       if (shouldShow) {
         timer = setTimeout(() => {
           setPickupSnackbarVisible(true);
-        }, 900); // delay after screen becomes active
+        }, 600); // delay after screen becomes active
       }
 
       return () => {
@@ -86,6 +92,36 @@ export default function Order_View() {
       };
     }, [delivery_type, order_status, token])
   );
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadOrderFromOrderId = async () => {
+      if (customerOrder || !orderIdFromParams) return;
+
+      try {
+        console.log("Loading order from orderId:", orderIdFromParams);
+
+        const res = await getOrderByIdRequest(orderIdFromParams);
+
+        if (cancelled) return;
+
+        const fetchedOrder =
+          res?.order || res?.data?.order || res?.data || null;
+
+        if (fetchedOrder) {
+          setCustomerOrder(fetchedOrder);
+        }
+      } catch (error) {
+        console.log("Error loading order from push navigation:", error);
+      }
+    };
+
+    loadOrderFromOrderId();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [customerOrder, orderIdFromParams]);
 
   const renderingOrderProducts = () => {
     const products = Array.isArray(order_products) ? order_products : [];
@@ -229,9 +265,13 @@ export default function Order_View() {
             labelStyle: { color: "#FFFFFF" },
             onPress: () => {
               setPickupSnackbarVisible(false);
+
               navigation.navigate("Order_Pickup_QR_View", {
+                orderId: order_id,
                 token,
                 size: 300,
+                initialStatus: order_status,
+                orderNumber: order_number,
               });
             },
           }}

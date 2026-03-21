@@ -21,6 +21,7 @@ export const gettingAllOrdersByUserIDRequest = async (user_id) => {
 export const gettingAllOrdersByUserIDGroupedByMonthRequest = async (
   user_id
 ) => {
+  console.log("Fetching orders grouped by month for user_id:", user_id);
   const { ordersEndPoint } = environment;
 
   try {
@@ -37,3 +38,14 @@ export const gettingAllOrdersByUserIDGroupedByMonthRequest = async (
     throw error;
   }
 };
+
+export const getOrderByIdRequest = async (orderId) => {
+  const { ordersEndPoint } = environment;
+  const response = await axios.get(`${ordersEndPoint}/order/${orderId}`);
+  return response.data;
+};
+
+// export const getOrderByIdRequest = async (orderId) => {
+//   const response = await axios.get(`${ordersEndPoint}/${orderId}`);
+//   return response.data;
+// };

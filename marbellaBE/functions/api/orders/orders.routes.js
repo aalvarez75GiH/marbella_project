@@ -2,7 +2,10 @@
 
 const express = require("express");
 const ordersRouter = express.Router();
-const { sendingEmailToUserWhenOrderIsCreated } = require("./orders.handlers");
+const {
+  sendingEmailToUserWhenOrderIsCreated,
+  sendOrderStatusPush,
+} = require("./orders.handlers");
 
 const ordersControllers = require("./orders.controllers");
 
@@ -17,6 +20,7 @@ ordersRouter.get("/ordersByUserID", async (req, res) => {
     return res.status(500).json({ status: "Failed", msg: String(error) });
   }
 });
+
 ordersRouter.get("/ordersByUserIDGrouped", async (req, res) => {
   // const user_id = req.query.user_id;
   const user_id = String(req.query.user_id || "").trim();
@@ -26,6 +30,33 @@ ordersRouter.get("/ordersByUserIDGrouped", async (req, res) => {
     return res.status(200).json(orders);
   } catch (error) {
     return res.status(500).json({ status: "Failed", msg: String(error) });
+  }
+});
+
+ordersRouter.get("/order/:order_id", async (req, res) => {
+  const order_id = String(req.params.order_id || "").trim();
+
+  try {
+    const order = await ordersControllers.getOrdersByOrderID(order_id);
+
+    if (!order) {
+      return res.status(404).json({
+        ok: false,
+        status: "NotFound",
+        order_id,
+      });
+    }
+
+    return res.status(200).json({
+      ok: true,
+      order,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      ok: false,
+      status: "Failed",
+      msg: String(error),
+    });
   }
 });
 
@@ -72,7 +103,7 @@ ordersRouter.post("/testingEmail", async (req, res) => {
     });
   }
 });
-//this is just for testing email functionality & email style
+//this endpoint is called when the pickup QR code is scanned at the pickup station. It receives the pickup token from the QR code, looks up the corresponding order, and checks if it has already been picked up. If it has, it returns a 409 Conflict response. If not, it returns the order details so that the pickup station can proceed with the pickup process.
 ordersRouter.post("/order_qr_scanned", async (req, res) => {
   const token = req.body.token;
   console.log("Received order QR scanned with token:", token);
@@ -106,6 +137,7 @@ ordersRouter.post("/order_qr_scanned", async (req, res) => {
   }
 });
 
+//This endpoint is for the customer app to retrieve all their orders by scanning their customer QR code (which contains a token). It returns all orders associated with that customer QR token, which can be used to show the customer their order history or current orders. The token is expected to be unique per customer and is stored in the "customer.customer_qr.customer_token" field of the order documents in Firestore.
 ordersRouter.post("/orders_by_customer_qr", async (req, res) => {
   const token = String(req.body.token || "").trim();
 
@@ -182,10 +214,14 @@ ordersRouter.patch("/:order_id/status", async (req, res) => {
       });
     }
 
+    // send push after successful update
+    const pushResult = await sendOrderStatusPush({ order: updatedOrder });
+
     return res.status(200).json({
       ok: true,
       message: "Order status updated successfully.",
       order: updatedOrder,
+      push: pushResult,
     });
   } catch (error) {
     console.log("Error updating order status:", error);

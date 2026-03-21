@@ -100,22 +100,6 @@ paymentsRouter.post("/payments", async (req, res) => {
           used_by: null,
         },
       };
-      // const orderWithPaidStatus = {
-      //   ...order,
-      //   payment_information: {
-      //     ...order.payment_information, // ✅ correct source
-      //     payment_status: "paid",
-      //     paid_at: new Date().toISOString(),
-      //     pickup_qr: {
-      //       token: pickupToken,
-      //       created_at: now,
-      //       expires_at: null,
-      //       used: false,
-      //       used_at: null,
-      //       used_by: null,
-      //     },
-      //   },
-      // };
 
       createdOrder = await ordersControllers.createOrder(
         orderWithPaidStatus,
@@ -339,10 +323,6 @@ paymentsRouter.post("/calculatingtaxes", async (req, res) => {
       },
       line_items,
       expand: ["line_items"],
-      //   metadata: {
-      //     delivery_type: finalDeliveryType,
-      //     order_id: order?.order_number || order?.cart_id || "",
-      //   },
     };
 
     // Include ship_from_details + shipping_cost only for delivery
@@ -416,7 +396,5 @@ paymentsRouter.post("/calculatingtaxes", async (req, res) => {
     });
   }
 });
-
-module.exports = { paymentsRouter };
 
 module.exports = paymentsRouter;

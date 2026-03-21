@@ -19,6 +19,36 @@ const getAllOrdersByUserID = async (user_id) => {
       return orders;
     });
 };
+const getOrdersByOrderID = async (order_id) => {
+  const normalizedOrderId = String(order_id || "").trim();
+
+  if (!normalizedOrderId) {
+    throw new Error("order_id is required");
+  }
+
+  try {
+    const querySnapshot = await firebase_controller.db
+      .collection("orders")
+      .where("order_id", "==", normalizedOrderId)
+      .limit(1)
+      .get();
+
+    if (querySnapshot.empty) {
+      console.log("No order found with order_id:", normalizedOrderId);
+      return null;
+    }
+
+    const orderDoc = querySnapshot.docs[0];
+    const orderData = orderDoc.data();
+
+    console.log(orderDoc.id, " => ", orderData);
+
+    return orderData;
+  } catch (error) {
+    console.log("Error fetching order by order_id:", error);
+    throw error;
+  }
+};
 const createOrder = async (order, user_id, stripe_payment_id) => {
   console.log("NEW ORDER BEFORE CREATION AT CONTROLLER:", order);
 
@@ -270,4 +300,5 @@ module.exports = {
   updateOrderStatus,
   getOrdersByCustomerQrToken,
   getOrdersGroupedByCustomerQrToken,
+  getOrdersByOrderID,
 };

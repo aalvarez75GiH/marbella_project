@@ -7,6 +7,7 @@ import {
   initializeAuth,
   getReactNativePersistence,
 } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA7fPadDf73WRg1tkQPt7n2H-b5pV8ew70",
@@ -26,14 +27,15 @@ export let auth;
 if (Platform.OS === "web") {
   auth = getAuth(app);
 } else {
-  // ✅ IMPORTANT: initializeAuth FIRST so persistence is applied
   try {
     auth = initializeAuth(app, {
       persistence: getReactNativePersistence(AsyncStorage),
     });
   } catch (e) {
-    // If auth is already initialized somewhere else, reuse it
     auth = getAuth(app);
   }
 }
+
+export const db = getFirestore(app);
+
 console.log("fb.js auth app name on fb file:", auth?.app?.name);

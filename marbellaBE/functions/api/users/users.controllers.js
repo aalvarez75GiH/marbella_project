@@ -4,10 +4,12 @@ const firebase_controller = require("../../fb");
 
 const getUserByUID = async (uid) => {
   console.log("UID:", uid);
+
   try {
     const querySnapshot = await firebase_controller.db
       .collection("users")
       .where("uid", "==", uid)
+      .limit(1)
       .get();
 
     if (querySnapshot.empty) {
@@ -15,11 +17,8 @@ const getUserByUID = async (uid) => {
       return null;
     }
 
-    let userData = null;
-    querySnapshot.forEach((doc) => {
-      console.log(doc.id, " => ", doc.data());
-      userData = doc.data(); // Assuming only one user matches the UID
-    });
+    const userDoc = querySnapshot.docs[0];
+    const userData = userDoc.data();
 
     console.log("USER FOUND:", userData);
     return userData;
@@ -28,6 +27,32 @@ const getUserByUID = async (uid) => {
     throw error;
   }
 };
+// const getUserByUID = async (uid) => {
+//   console.log("UID:", uid);
+//   try {
+//     const querySnapshot = await firebase_controller.db
+//       .collection("users")
+//       .where("uid", "==", uid)
+//       .get();
+
+//     if (querySnapshot.empty) {
+//       console.log("No user found with UID:", uid);
+//       return null;
+//     }
+
+//     let userData = null;
+//     querySnapshot.forEach((doc) => {
+//       console.log(doc.id, " => ", doc.data());
+//       userData = doc.data(); // Assuming only one user matches the UID
+//     });
+
+//     console.log("USER FOUND:", userData);
+//     return userData;
+//   } catch (error) {
+//     console.error("Error fetching user by UID:", error);
+//     throw error;
+//   }
+// };
 const getUserByEmail = async (email) => {
   console.log("EMAIL AT CONTROLLER:", email);
   try {

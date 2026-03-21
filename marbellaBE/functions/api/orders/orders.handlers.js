@@ -4,6 +4,9 @@ const path = require("path");
 const {
   orderCreatedEmail,
 } = require("../emails_templates/order_created_email");
+const { admin } = require("../../fb");
+// const usersController = require("../users/users.controllers");
+const { getUserByUID } = require("../users/users.controllers"); // adjust path if needed
 
 const asset = (file) => path.join(__dirname, "../../assets", file);
 
@@ -163,8 +166,103 @@ const sendingEmailToUserWhenOrderIsCreated = async (order) => {
   }
 };
 
+// const fetch = require("node-fetch"); // only if your Node runtime needs it
+
+const sendOrderStatusPush = async ({ order }) => {
+  try {
+    if (!order) {
+      return { ok: false, reason: "missing_order" };
+    }
+
+    const customerUid = order?.customer?.uid;
+    const orderId = order?.order_id;
+    const status = order?.order_status;
+
+    if (!customerUid || !orderId || !status) {
+      return { ok: false, reason: "missing_required_order_fields" };
+    }
+
+    const userData = await getUserByUID(customerUid);
+
+    if (!userData) {
+      return { ok: false, reason: "user_not_found" };
+    }
+
+    const tokenEntries = Array.isArray(userData?.expo_push_tokens)
+      ? userData.expo_push_tokens
+      : [];
+
+    const activeTokens = tokenEntries
+      .filter((item) => item?.active && item?.token)
+      .map((item) => item.token);
+
+    if (!activeTokens.length) {
+      return { ok: false, reason: "no_active_tokens" };
+    }
+
+    let body = "Your order was updated.";
+
+    if (status === "Finished") {
+      body = "Your order has been delivered.";
+    } else if (status === "In Progress") {
+      body = "Your order has been re-opened.";
+    }
+
+    const messages = activeTokens.map((token) => ({
+      to: token,
+      sound: "default",
+      title: "Order updated",
+      body,
+      data: {
+        type: "order_status_updated",
+        orderId,
+        status,
+      },
+    }));
+
+    console.log("PUSH TOKENS:", activeTokens);
+    console.log("PUSH MESSAGES:", JSON.stringify(messages, null, 2));
+
+    const response = await fetch("https://exp.host/--/api/v2/push/send", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Accept-Encoding": "gzip, deflate",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(messages),
+    });
+
+    const result = await response.json();
+
+    console.log(
+      "Expo push result:",
+      JSON.stringify(
+        {
+          orderId,
+          customerUid,
+          status,
+          result,
+        },
+        null,
+        2
+      )
+    );
+
+    return { ok: true, result };
+  } catch (error) {
+    console.log("sendOrderStatusPush error:", error);
+    return {
+      ok: false,
+      reason: "push_send_failed",
+      error: String(error),
+    };
+  }
+};
+
 module.exports = {
   reserveUniqueOrderNumber,
   buildSkuQtyFromOrderProducts,
   sendingEmailToUserWhenOrderIsCreated,
+  sendOrderStatusPush,
 };
