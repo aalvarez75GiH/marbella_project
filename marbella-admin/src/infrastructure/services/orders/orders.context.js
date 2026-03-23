@@ -7,7 +7,9 @@ import {
   getOrderByPickupTokenRequest,
   updateOrderStatusRequest,
   getCustomersOrdersByTokenRequest,
+  getCustomersOrdersByCustomersEmailRequest,
 } from "./orders.services";
+import { refundOrderRequest } from "../payments/payments.services";
 import { AuthenticationContext } from "../authentication/authentication.context";
 
 export const OrdersContext = createContext();
@@ -316,21 +318,34 @@ export const Orders_Context_Provider = ({ children }) => {
       }
       setCustomerOrders(ordersByQrTokenInfo.orders);
       return ordersByQrTokenInfo;
-
-      // console.log(
-      //   "Order by QR Token :",
-      //   JSON.stringify(ordersByQrTokenInfo.orders, null, 2)
-      // );
-      // console.log(
-      //   "Order by QR Token response:",
-      //   JSON.stringify(ordersByQrTokenInfo.response, null, 2)
-      // );
-
-      // if (ordersByQrTokenInfo?.orders) {
-      //   return ordersByQrTokenInfo.orders;
-      // }
     } catch (error) {
       console.error("Error fetching order by QR token:", error);
+    }
+  };
+  // Getting customer's Orders by Customer's QR token
+  const getCustomersOrdersByEmail = async (email) => {
+    setIsLoading(true);
+    try {
+      const ordersByCustomersEmail =
+        await getCustomersOrdersByCustomersEmailRequest(email);
+      console.log(
+        "Orders by Customer QR Token :",
+        JSON.stringify(ordersByCustomersEmail, null, 2)
+      );
+
+      if (ordersByCustomersEmail?.length !== 0) {
+        return ordersByCustomersEmail;
+      }
+
+      // if (ordersByQrTokenInfo?.response?.status === 404) {
+      //   return ordersByQrTokenInfo?.response;
+      // }
+      // setCustomerOrders(ordersByQrTokenInfo.orders);
+      // return ordersByQrTokenInfo;
+    } catch (error) {
+      console.error("Error fetching order by QR token:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -364,6 +379,53 @@ export const Orders_Context_Provider = ({ children }) => {
     }
   };
 
+  const refundingAnOrder = async (order_id, stripe_payment_id, amount) => {
+    setIsLoading(true);
+    setError(null);
+    const refund_info = {
+      order_id,
+      stripe_payment_id,
+      amount,
+      reason: "requested_by_customer",
+      refund_details: "Customer did not like the product",
+      refunded_by: "admin_panel",
+    };
+
+    try {
+      if (!order_id) {
+        const e = {
+          status: 400,
+          message: "Please provide the order ID.",
+          code: "missing_order_id",
+        };
+        setError(e);
+        return { status: e.status, success: false, error: e };
+      }
+
+      const response = await refundOrderRequest(refund_info);
+      console.log(
+        "Refund response at context:",
+        JSON.stringify(response, null, 2)
+      );
+
+      if (response?.paymentData?.order_updated) {
+        return { ok: true, order: response.paymentData.order_updated };
+      }
+      return null;
+      // Implement the refund request here, e.g.:
+      // const result = await refundOrderRequest(order_id);
+
+      // For now, we'll just return a mock success response:
+    } catch (err) {
+      const e = normalizePaymentError(err);
+      setError(e);
+
+      return { status: e.status || 500, success: false, error: e };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <OrdersContext.Provider
       value={{
@@ -388,6 +450,8 @@ export const Orders_Context_Provider = ({ children }) => {
         getOrderByQRToken,
         updateOrderStatus,
         getCustomersOrdersByQRToken,
+        refundingAnOrder,
+        getCustomersOrdersByEmail,
       }}
     >
       {children}

@@ -208,10 +208,7 @@ export default function Merchant_Pickup_Scanner_View() {
         color={theme.colors.bg.primary}
       >
         <SafeArea>
-          <Exit_Header_With_Label
-            label="Scan order"
-            action={() => navigation.goBack()}
-          />
+          <Exit_Header_With_Label label="" action={() => navigation.goBack()} />
 
           <View
             style={{
@@ -233,10 +230,7 @@ export default function Merchant_Pickup_Scanner_View() {
   if (!permission.granted) {
     return (
       <SafeArea>
-        <Exit_Header_With_Label
-          label="Scan order"
-          action={() => navigation.goBack()}
-        />
+        <Exit_Header_With_Label label="" action={() => navigation.goBack()} />
 
         <Container
           width="100%"
@@ -284,10 +278,7 @@ export default function Merchant_Pickup_Scanner_View() {
 
   return (
     <SafeArea>
-      <Exit_Header_With_Label
-        label="Scan order"
-        action={() => navigation.goBack()}
-      />
+      <Exit_Header_With_Label label="" action={() => navigation.goBack()} />
       {isValidating && (
         <Container
           width="100%"
@@ -315,14 +306,12 @@ export default function Merchant_Pickup_Scanner_View() {
               paddingHorizontal: 24,
             }}
           >
-            <Text variant="dm_sans_bold_22">Scan Pickup QR</Text>
+            <Text variant="dm_sans_bold_22">Scan Order's QR</Text>
             <Spacer position="top" size="small" />
-            <Text variant="dm_sans_bold_16" textAlign="center">
-              Point the camera at the customer pickup QR code.
-            </Text>
           </View>
 
-          <Spacer position="top" size="large" />
+          <Spacer position="top" size="extraLarge" />
+          <Spacer position="top" size="extraLarge" />
 
           <View
             style={{

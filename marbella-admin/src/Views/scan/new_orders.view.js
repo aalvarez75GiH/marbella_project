@@ -51,13 +51,6 @@ export default function New_Orders_View() {
       monthKey: group.monthKey,
     })) || [];
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     if (!user_id) return;
-  //     gettingAllOrdersByUserIDGroupedByMonth(user_id);
-  //   }, [user_id, refresh])
-  // );
-
   const renderingOrdersFromBackendTile = ({ item }) => {
     const {
       pricing,

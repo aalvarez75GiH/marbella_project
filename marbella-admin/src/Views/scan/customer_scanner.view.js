@@ -207,10 +207,7 @@ export default function Customers_QR_Scanner_View() {
         color={theme.colors.bg.primary}
       >
         <SafeArea>
-          <Exit_Header_With_Label
-            label="Scan order"
-            action={() => navigation.goBack()}
-          />
+          <Exit_Header_With_Label label="" action={() => navigation.goBack()} />
 
           <View
             style={{
@@ -232,10 +229,7 @@ export default function Customers_QR_Scanner_View() {
   if (!permission.granted) {
     return (
       <SafeArea>
-        <Exit_Header_With_Label
-          label="Scan order"
-          action={() => navigation.goBack()}
-        />
+        <Exit_Header_With_Label label="" action={() => navigation.goBack()} />
 
         <Container
           width="100%"
@@ -283,10 +277,7 @@ export default function Customers_QR_Scanner_View() {
 
   return (
     <SafeArea>
-      <Exit_Header_With_Label
-        label="Scan order"
-        action={() => navigation.goBack()}
-      />
+      <Exit_Header_With_Label label="" action={() => navigation.goBack()} />
       {isValidating && (
         <Container
           width="100%"
@@ -316,12 +307,9 @@ export default function Customers_QR_Scanner_View() {
           >
             <Text variant="dm_sans_bold_22">Scan Customer's QR</Text>
             <Spacer position="top" size="small" />
-            <Text variant="dm_sans_bold_16" textAlign="center">
-              Point the camera at the customer's QR code.
-            </Text>
           </View>
 
-          <Spacer position="top" size="large" />
+          <Spacer position="top" size="extraLarge" />
 
           <View
             style={{

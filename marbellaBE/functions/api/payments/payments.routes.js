@@ -18,6 +18,7 @@ const {
 const {
   decrementWarehouseInventoryFromOrder,
 } = require("../warehouses/warehouses.controllers");
+const { sendOrderStatusPush } = require("../orders/orders.handlers");
 
 paymentsRouter.post("/payments", async (req, res) => {
   const totalForStripe = req.body.totalForStripe;
@@ -220,11 +221,25 @@ paymentsRouter.post("/refundOrder", async (req, res) => {
       );
     }
 
+    let pushResult = null;
+    if (order_updated) {
+      try {
+        pushResult = await sendOrderStatusPush({ order: order_updated });
+      } catch (pushError) {
+        console.log("Refund push send failed:", pushError);
+        pushResult = {
+          ok: false,
+          reason: "push_send_failed",
+          error: String(pushError),
+        };
+      }
+    }
     return res.status(200).json({
       ok: true,
       status: "success",
       refund,
       order_updated,
+      push: pushResult,
     });
   } catch (error) {
     console.log("ERROR CATCHED:", error);

@@ -206,6 +206,8 @@ const sendOrderStatusPush = async ({ order }) => {
       body = "Your order has been delivered.";
     } else if (status === "In Progress") {
       body = "Your order has been re-opened.";
+    } else if (status === "Refunded") {
+      body = "Your order has been refunded.";
     }
 
     const messages = activeTokens.map((token) => ({

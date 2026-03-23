@@ -11,7 +11,7 @@ import { Exit_Header_With_Label } from "../../components/headers/exit_with_label
 import { Text } from "../../infrastructure/typography/text.component";
 import { Menu_Sub_Title_Title } from "../../components/titles/menu_sub_titles.title";
 import { Menu_Tile } from "../../components/tiles/menu_tiles.tile";
-
+import { Splitter_Component } from "../../components/others/grey_splitter.component";
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
 import { GlobalContext } from "../../infrastructure/services/global/global.context";
 
@@ -58,45 +58,28 @@ export default function Orders_Admin_View() {
           contentContainerStyle={{ flexGrow: 1, alignItems: "center" }}
         >
           <Menu_Sub_Title_Title label="Retrieve orders by" />
+          <Splitter_Component width="95%" height="0.3%" color={"#EBEBEB"} />
           <Menu_Tile
             caption="Scanning Customer's QR code"
             // action={() => navigation.navigate("Personal_Information_View")}
             // action={() => null}
             action={() => navigation.navigate("Customers_QR_Scanner_View")}
           />
+
+          <Splitter_Component width="95%" height="0.3%" color={"#EBEBEB"} />
+
           <Menu_Tile
             caption="Scanning Order's QR code"
             // action={() => navigation.navigate("Orders_View")}
             action={() => navigation.navigate("Merchant_Pickup_Scanner_View")}
           />
-
-          {/* <Menu_Sub_Title_Title label="Credentials" />
+          <Splitter_Component width="95%" height="0.3%" color={"#EBEBEB"} />
           <Menu_Tile
-            caption="Get a new PIN"
-            action={() => navigation.navigate("Reset_PIN_View")}
+            caption="Customer's email"
+            // action={() => navigation.navigate("Orders_View")}
+            action={() => navigation.navigate("Admin_Enter_Email_View")}
           />
-          <Menu_Tile
-            caption="Switch to another account"
-            action={() => navigation.navigate("Switching_Accounts_View")}
-          />
-
-          <Menu_Sub_Title_Title label="Help & Support" />
-          <Switch_Language_Tile
-            caption={
-              globalLanguage === "en" ? "Cambia a español" : "Change to english"
-            }
-            action={() => togglingGlobalLanguage()}
-          />
-          <Menu_Tile
-            caption="Help & Support"
-            action={() => null}
-            disabled={true}
-          />
-          <Menu_Tile
-            caption="Sign out"
-            action={() => navigation.navigate("Sign_Out_Overlay_View")}
-          />
-          <Menu_Tile caption="" action={() => null} disabled={true} /> */}
+          <Splitter_Component width="95%" height="0.3%" color={"#EBEBEB"} />
         </ScrollView>
       </Container>
     </NewSafeArea>

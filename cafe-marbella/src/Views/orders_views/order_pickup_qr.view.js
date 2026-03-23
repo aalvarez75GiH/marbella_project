@@ -73,6 +73,19 @@ export default function Order_Pickup_QR_View() {
         }
         return;
       }
+      if (status === "Refunded") {
+        if (!handledFinishRef.current) {
+          handledFinishRef.current = true;
+          clearFinishTimer();
+          setScreenState("refunding");
+
+          finishTimerRef.current = setTimeout(() => {
+            setScreenState("Refunded");
+            finishTimerRef.current = null;
+          }, 1200);
+        }
+        return;
+      }
     });
 
     return () => {
@@ -90,6 +103,25 @@ export default function Order_Pickup_QR_View() {
         <Container width="100%" height="100%" justify="center" align="center">
           <Global_activity_indicator
             caption="Wait, we are finishing up your order..."
+            caption_width="65%"
+            // color={"red"}
+          />
+          {/* <ActivityIndicator size="large" /> */}
+          <Spacer position="top" size="large" />
+          <Text variant="dm_sans_bold_18">Updating your order...</Text>
+        </Container>
+      </SafeArea>
+    );
+  }
+  if (screenState === "refunding") {
+    return (
+      <SafeArea
+        background_color={theme.colors.bg.elements_bg}
+        style={{ flex: 1 }}
+      >
+        <Container width="100%" height="100%" justify="center" align="center">
+          <Global_activity_indicator
+            caption="Wait, we are refunding up your order..."
             caption_width="65%"
             // color={"red"}
           />
@@ -118,6 +150,42 @@ export default function Order_Pickup_QR_View() {
           <Spacer position="top" size="medium" />
           <Text variant="dm_sans_regular_16">
             Your order has been marked as finished.
+          </Text>
+          <Spacer position="top" size="extraLarge" />
+          <Regular_CTA
+            width="65%"
+            height="8%"
+            color={theme.colors.ui.primary}
+            border_radius={"40px"}
+            caption={"Continue"}
+            caption_text_variant="dm_sans_bold_20_white"
+            // disabled={isLoading} // ✅ prevent double taps if your CTA supports it
+            action={() => {
+              setScreenState("idle");
+              navigation.popToTop();
+            }}
+          />
+        </Container>
+      </SafeArea>
+    );
+  }
+  if (screenState === "Refunded") {
+    return (
+      <SafeArea
+        background_color={theme.colors.bg.elements_bg}
+        style={{ flex: 1 }}
+      >
+        <Container
+          width="100%"
+          height="100%"
+          justify="center"
+          align="center"
+          color={theme.colors.bg.elements_bg}
+        >
+          <Text variant="dm_sans_bold_20">Thank you for trusting us!</Text>
+          <Spacer position="top" size="medium" />
+          <Text variant="dm_sans_regular_16">
+            Your order has been marked as refunded.
           </Text>
           <Spacer position="top" size="extraLarge" />
           <Regular_CTA

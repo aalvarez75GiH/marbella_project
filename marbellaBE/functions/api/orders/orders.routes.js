@@ -32,6 +32,19 @@ ordersRouter.get("/ordersByUserIDGrouped", async (req, res) => {
     return res.status(500).json({ status: "Failed", msg: String(error) });
   }
 });
+ordersRouter.get("/ordersByCustomersEmail", async (req, res) => {
+  // const user_id = req.query.user_id;
+  const email = String(req.query.email || "").trim();
+  try {
+    const orders = await ordersControllers.getOrdersGroupedByCustomersEmail(
+      email
+    );
+    if (!orders) return res.status(404).json({ status: "NotFound", user_id });
+    return res.status(200).json(orders);
+  } catch (error) {
+    return res.status(500).json({ status: "Failed", msg: String(error) });
+  }
+});
 
 ordersRouter.get("/order/:order_id", async (req, res) => {
   const order_id = String(req.params.order_id || "").trim();

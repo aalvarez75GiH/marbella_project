@@ -25,6 +25,7 @@ import { Regular_CTA } from "../../components/ctas/regular.cta";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
+import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
 
 export default function Order_View() {
   const theme = useTheme();
@@ -43,7 +44,9 @@ export default function Order_View() {
   //   const { myWarehouse } = useContext(WarehouseContext);
   //   const { distance_in_miles } = myWarehouse || {};
 
-  const { updateOrderStatus, isLoading } = useContext(OrdersContext);
+  const { updateOrderStatus, isLoading, refundingAnOrder } =
+    useContext(OrdersContext);
+  // const { refundingAnOrder } = useContext(PaymentsContext);
   const [pickupSnackbarVisible, setPickupSnackbarVisible] = useState(false);
 
   const {
@@ -61,6 +64,7 @@ export default function Order_View() {
     pickup_qr,
     customer,
     order_id,
+    stripe_payment_id,
   } = customerOrder || {};
 
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
@@ -279,7 +283,7 @@ export default function Order_View() {
 
                         if (updatedOrder) {
                           setCustomerOrder(updatedOrder);
-                          showStatusSnackbar("Order marked as Finished");
+                          showStatusSnackbar("Order marked as refunded");
                         }
                       } catch (error) {
                         console.log("Error updating order status:", error);
@@ -293,7 +297,30 @@ export default function Order_View() {
                     border_radius={"10px"}
                     caption="Refund order"
                     caption_text_variant="dm_sans_bold_20_white"
-                    action={() => null}
+                    // action={() => null}
+                    action={async () => {
+                      console.log("Initiating refund for order_id:", order_id);
+                      try {
+                        const res = await refundingAnOrder(
+                          order_id,
+                          stripe_payment_id,
+                          total
+                        );
+                        console.log(
+                          "Refund response at screen (CTA):",
+                          JSON.stringify(res, null, 2)
+                        );
+                        const refundedOrder =
+                          res?.order || res?.data?.order || res;
+
+                        if (refundedOrder) {
+                          setCustomerOrder(refundedOrder);
+                          showStatusSnackbar("Order marked as refunded");
+                        }
+                      } catch (error) {
+                        console.log("Error refunding order :", error);
+                      }
+                    }}
                   />
                 </>
               )}

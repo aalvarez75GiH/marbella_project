@@ -19,6 +19,7 @@ const getAllOrdersByUserID = async (user_id) => {
       return orders;
     });
 };
+
 const getOrdersByOrderID = async (order_id) => {
   const normalizedOrderId = String(order_id || "").trim();
 
@@ -290,6 +291,83 @@ const getOrdersGroupedByCustomerQrToken = async (token) => {
 
   return grouped;
 };
+const getOrdersGroupedByCustomersEmail = async (email) => {
+  const snap = await firebase_controller.db
+    .collection("orders")
+    .where("customer.email", "==", email)
+    .get();
+
+  const buckets = new Map(); // monthKey -> { monthKey, label, orders: [] }
+
+  snap.forEach((doc) => {
+    const order = doc.data();
+    const createdAtIso = order?.createdAt;
+
+    if (!createdAtIso) return;
+
+    const d = new Date(createdAtIso);
+    if (Number.isNaN(d.getTime())) return;
+
+    const year = d.getFullYear();
+    const monthIndex = d.getMonth(); // 0-11
+    const monthKey = `${year}-${String(monthIndex + 1).padStart(2, "0")}`;
+
+    const label = `${MONTHS[monthIndex].slice(0, 3)}, ${year}`;
+
+    if (!buckets.has(monthKey)) {
+      buckets.set(monthKey, {
+        monthKey,
+        label,
+        orders: [],
+      });
+    }
+
+    buckets.get(monthKey).orders.push(order);
+  });
+
+  const grouped = Array.from(buckets.values()).sort((a, b) =>
+    b.monthKey.localeCompare(a.monthKey)
+  );
+
+  grouped.forEach((group) => {
+    group.orders.sort((a, b) =>
+      String(b.createdAt).localeCompare(String(a.createdAt))
+    );
+  });
+
+  return grouped;
+};
+
+const getOrdersByCustomersEmail = async (email) => {
+  const normalizedEmail = String(email || "")
+    .trim()
+    .toLowerCase();
+
+  if (!normalizedEmail) {
+    throw new Error("email is required");
+  }
+
+  try {
+    const querySnapshot = await firebase_controller.db
+      .collection("orders")
+      .where("customer.email", "==", normalizedEmail)
+      .get();
+
+    const orders = [];
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      console.log("ORDER DOC:", doc.id, data?.customer?.email);
+      orders.push(data);
+    });
+
+    console.log("MATCHED ORDERS COUNT:", orders.length);
+    return orders;
+  } catch (error) {
+    console.log("Error fetching orders by customer email:", error);
+    throw error;
+  }
+};
 module.exports = {
   createOrder,
   getAllOrdersByUserID,
@@ -301,4 +379,6 @@ module.exports = {
   getOrdersByCustomerQrToken,
   getOrdersGroupedByCustomerQrToken,
   getOrdersByOrderID,
+  getOrdersByCustomersEmail,
+  getOrdersGroupedByCustomersEmail,
 };

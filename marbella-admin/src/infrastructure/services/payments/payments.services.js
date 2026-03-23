@@ -56,3 +56,28 @@ export const paymentRequest = async (
     order: response.data?.order ?? null,
   };
 };
+export const refundOrderRequest = async (refund_info) => {
+  console.log("REFUND INFO AT SERVICE:", JSON.stringify(refund_info, null, 2));
+
+  const response = await axios.post(
+    `${paymentsEndPoint}/refundOrder`,
+    refund_info,
+
+    {
+      headers: { "Content-Type": "application/json" },
+      timeout: 20000, // optional
+    }
+  );
+
+  console.log(
+    "REFUND RESPONSE AT SERVICE:",
+    JSON.stringify(response.data, null, 2)
+  );
+
+  // Return a consistent success shape
+  return {
+    httpStatus: response.status,
+    paymentData: response.data,
+    order: response.data?.order_updated ?? null,
+  };
+};

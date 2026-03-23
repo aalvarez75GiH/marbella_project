@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useTheme } from "styled-components/native";
 import { ScrollView } from "react-native-gesture-handler";
 import {
@@ -25,23 +25,20 @@ import { Regular_CTA } from "../../components/ctas/regular.cta";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
+import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
 
 export default function Order_View() {
   const theme = useTheme();
   const navigation = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
-  // const { order } = route.params;
-  // console.log("ORDER ITEM AT ORDER VIEW :", JSON.stringify(order, null, 2));
+
+  const { refundingAnOrder } = useContext(PaymentsContext);
 
   const route = useRoute();
   const initialOrder = route?.params?.order ?? null;
   const [customerOrder, setCustomerOrder] = useState(initialOrder);
   const [statusSnackbarVisible, setStatusSnackbarVisible] = useState(false);
   const [statusSnackbarMessage, setStatusSnackbarMessage] = useState("");
-  // const { snackbar, showSnackbar, hideSnackbar } = useContext(GlobalContext);
-
-  //   const { myWarehouse } = useContext(WarehouseContext);
-  //   const { distance_in_miles } = myWarehouse || {};
 
   const { updateOrderStatus, isLoading } = useContext(OrdersContext);
   const [pickupSnackbarVisible, setPickupSnackbarVisible] = useState(false);
@@ -61,6 +58,7 @@ export default function Order_View() {
     pickup_qr,
     customer,
     order_id,
+    stripe_payment_id,
   } = customerOrder || {};
 
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
@@ -293,7 +291,22 @@ export default function Order_View() {
                     border_radius={"10px"}
                     caption="Refund order"
                     caption_text_variant="dm_sans_bold_20_white"
-                    action={() => null}
+                    action={async () => {
+                      console.log("Initiating refund for order_id:", order_id);
+                      try {
+                        const res = await refundingAnOrder(
+                          order_id,
+                          stripe_payment_id,
+                          total
+                        );
+                        console.log(
+                          "Refund response at screen (CTA):",
+                          JSON.stringify(res, null, 2)
+                        );
+                      } catch (error) {
+                        console.log("Error refunding order :", error);
+                      }
+                    }}
                   />
                 </>
               )}

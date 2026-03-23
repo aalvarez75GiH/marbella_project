@@ -37,6 +37,25 @@ export const gettingAllOrdersByUserIDGroupedByMonthRequest = async (
     throw error;
   }
 };
+export const getCustomersOrdersByCustomersEmailRequest = async (
+  email
+) => {
+  const { ordersEndPoint } = environment;
+
+  try {
+    const res = await axios.get(
+      `${ordersEndPoint}/ordersByCustomersEmail?email=${email}`,
+      {
+        timeout: 15000,
+      }
+    );
+    // console.log("RESPONSE:", JSON.stringify(res.data, null, 2));
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching products catalog:", error);
+    throw error;
+  }
+};
 
 export const getOrderByPickupTokenRequest = async (token) => {
   const { ordersEndPoint } = environment;
