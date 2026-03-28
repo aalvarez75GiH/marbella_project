@@ -28,6 +28,18 @@ warehousesRouter.get("/getWarehouse", async (req, res) => {
   }
 });
 
+warehousesRouter.get("/getAllWarehouses", async (req, res) => {
+  try {
+    const AllWarehouses = await warehousesControllers.getAllWarehouses();
+    if (AllWarehouses.length === 0) {
+      return res.status(404).json({ error: "Warehouses not found" });
+    }
+    return res.status(200).json(AllWarehouses);
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+});
+
 // Determine nearest warehose from device location
 warehousesRouter.get("/closestWH", async (req, res) => {
   // console.log("PASA AL MENOS X AQUI");
@@ -109,67 +121,3 @@ warehousesRouter.post("/createWarehouse", async (req, res) => {
 });
 
 module.exports = warehousesRouter;
-
-// // Geocoding endpoint
-// warehousesRouter.get("/geocoding", async (req, res) => {
-//   //   (async () => {
-//   const { lat, lng } = req.query;
-//   console.log("Lat:", lat, "Lng:", lng);
-
-//   var config = {
-//     method: "get",
-//     // url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&result_type=street_address&key=${process.env.GOOGLE_KEY}`,
-//     url: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&result_type=street_address&key=${key}`,
-//     headers: {},
-//   };
-
-//   await axios(config)
-//     .then((responseFromGoogle) => {
-//       res.json(responseFromGoogle.data.results[0]);
-//     })
-//     .catch((error) => {
-//       console.log("ERROR:", error);
-//     });
-//   //   })();
-// });
-
-// // Forward geocoding: address -> lat/lng
-// warehousesRouter.get("/geocode-address", async (req, res) => {
-//   try {
-//     const { address } = req.query;
-
-//     if (!address) {
-//       return res.status(400).json({ error: "Address is required" });
-//     }
-
-//     const response = await axios.get(
-//       "https://maps.googleapis.com/maps/api/geocode/json",
-//       {
-//         params: {
-//           address,
-//           key,
-//         },
-//       }
-//     );
-
-//     if (response.data.status !== "OK") {
-//       return res.status(400).json({
-//         error: response.data.status,
-//         details: response.data.error_message,
-//       });
-//     }
-
-//     const result = response.data.results[0];
-
-//     res.json({
-//       formatted_address: result.formatted_address,
-//       lat: result.geometry.location.lat,
-//       lng: result.geometry.location.lng,
-//       place_id: result.place_id,
-//       location_type: result.geometry.location_type,
-//     });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: "Geocoding failed" });
-//   }
-// });

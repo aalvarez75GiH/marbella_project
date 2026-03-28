@@ -3,13 +3,12 @@ import { Platform } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 
-import { Shop_Navigator } from "./shop.navigator";
-import { Orders_Navigator } from "./orders.navigator";
 import { Cart_Navigator } from "./cart.navigator";
 import { Scan_Order_Navigator } from "./scan.navigator";
+import { Warehouses_Navigator } from "./warehouses.navigator";
 
-import ShopIcon from "../../../assets/my_icons/shop_icon.svg";
 import OrdersIcon from "../../../assets/my_icons/receipt_orders.svg";
+import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
 import { Cart_Active_With_Items_CTA } from "../../components/ctas/my_cart_active_items.cta";
 import { theme } from "../theme";
 import { CartContext } from "../services/cart/cart.context";
@@ -85,13 +84,13 @@ const Tabs = () => {
       }}
     >
       <Tab.Screen
-        name="Shop"
-        component={Shop_Navigator}
+        name="Warehouses"
+        component={Warehouses_Navigator}
         options={({ route }) => ({
-          title: "Shop",
-          tabBarStyle: tabBarStyleFromNested(route, "Shop_Products_View"),
+          title: "Warehouses",
+          tabBarStyle: tabBarStyleFromNested(route, "Warehouses_View"),
           tabBarIcon: ({ color }) => (
-            <ShopIcon width={25} height={25} fill={color} />
+            <StoreIcon width={25} height={25} fill={color} />
           ),
         })}
       />
@@ -106,16 +105,6 @@ const Tabs = () => {
           ),
         }}
       />
-      {/* <Tab.Screen
-        name="Orders"
-        component={Orders_Navigator}
-        options={{
-          title: "Orders",
-          tabBarIcon: ({ color }) => (
-            <OrdersIcon width={25} height={25} fill={color} />
-          ),
-        }}
-      /> */}
 
       <Tab.Screen
         name="Cart"

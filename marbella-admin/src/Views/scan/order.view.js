@@ -16,23 +16,20 @@ import { Spacer } from "../../components/spacers and globals/optimized.spacer.co
 import { Text } from "../../infrastructure/typography/text.component";
 import { Product_Cart_Item_For_Review_Tile } from "../../components/tiles/product_cart_item_for_review.tile";
 import { Order_Info_Tile } from "../../components/tiles/order_info.tile";
-import { RT_Delivery_Information_Order_Tile } from "../../components/tiles/rt_delivery_information_order_tile";
 import { Customer_Order_Info_Tile } from "../../components/tiles/customer_order_info.tile";
 import { Splitter_Component } from "../../components/others/grey_splitter.component";
 import { Payment_method_Info_Tile } from "../../components/tiles/payment_method_used_info.tile";
 import { Refunded_Information_Order_Tile } from "../../components/tiles/refunded_information_order.tile";
 import { Regular_CTA } from "../../components/ctas/regular.cta";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
+import { Delivery_Information_Order_Tile } from "../../components/tiles/delivery_information_order.tile";
 
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
-import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
 
 export default function Order_View() {
   const theme = useTheme();
   const navigation = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
-  // const { order } = route.params;
-  // console.log("ORDER ITEM AT ORDER VIEW :", JSON.stringify(order, null, 2));
 
   const route = useRoute();
   const initialOrder = route?.params?.order ?? null;
@@ -200,7 +197,7 @@ export default function Order_View() {
                 </Spacer>
               </Container>
               {order_status !== "Refunded" ? (
-                <RT_Delivery_Information_Order_Tile
+                <Delivery_Information_Order_Tile
                   warehouse_name={warehouse_name}
                   warehouse_address={warehouse_address}
                   opening_time={opening_time}
@@ -283,7 +280,7 @@ export default function Order_View() {
 
                         if (updatedOrder) {
                           setCustomerOrder(updatedOrder);
-                          showStatusSnackbar("Order marked as refunded");
+                          showStatusSnackbar("Order marked as delivered");
                         }
                       } catch (error) {
                         console.log("Error updating order status:", error);

@@ -329,19 +329,16 @@ export const Orders_Context_Provider = ({ children }) => {
       const ordersByCustomersEmail =
         await getCustomersOrdersByCustomersEmailRequest(email);
       console.log(
-        "Orders by Customer QR Token :",
+        "Orders by Customer's Email :",
         JSON.stringify(ordersByCustomersEmail, null, 2)
       );
 
-      if (ordersByCustomersEmail?.length !== 0) {
+      if (ordersByCustomersEmail?.length === 0) {
         return ordersByCustomersEmail;
       }
 
-      // if (ordersByQrTokenInfo?.response?.status === 404) {
-      //   return ordersByQrTokenInfo?.response;
-      // }
-      // setCustomerOrders(ordersByQrTokenInfo.orders);
-      // return ordersByQrTokenInfo;
+      setCustomerOrders(ordersByCustomersEmail);
+      return ordersByCustomersEmail;
     } catch (error) {
       console.error("Error fetching order by QR token:", error);
     } finally {

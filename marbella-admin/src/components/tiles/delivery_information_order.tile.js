@@ -1,11 +1,7 @@
-import React, { useContext } from "react";
-import { Platform, Linking } from "react-native";
+import React from "react";
 
 import { Text } from "../../infrastructure/typography/text.component.js";
-import {
-  Container,
-  Action_Container,
-} from "../containers/general.containers.js";
+import { Container } from "../containers/general.containers.js";
 import { Spacer } from "../spacers and globals/optimized.spacer.component.js";
 import { theme } from "../../infrastructure/theme/index.js";
 import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
@@ -28,18 +24,6 @@ export const Delivery_Information_Order_Tile = ({
   console.log("latitude inside tile:", warehouse_lat);
   console.log("longitude inside tile:", warehouse_lng);
 
-  const openMapsToWarehouse = (latitude, longitude) => {
-    console.log("latitude inside function:", latitude);
-    console.log("longitude inside function:", longitude);
-    if (Platform.OS === "ios") {
-      const url = `maps://?daddr=${latitude},${longitude}&dirflg=d`;
-      Linking.openURL(url);
-    } else {
-      const url = `google.navigation:q=${latitude},${longitude}`;
-      Linking.openURL(url);
-    }
-  };
-
   return delivery_type === "pickup" ? (
     <Container
       width="100%"
@@ -47,7 +31,7 @@ export const Delivery_Information_Order_Tile = ({
       color={theme.colors.bg.elements_bg}
       align="center"
     >
-      <Action_Container
+      <Container
         width="90%"
         color={theme.colors.ui.tertiary}
         //color={"pink"}
@@ -57,7 +41,6 @@ export const Delivery_Information_Order_Tile = ({
         direction="row"
         overflow="hidden"
         padding_vertical="5%"
-        onPress={() => openMapsToWarehouse(warehouse_lat, warehouse_lng)}
       >
         <Container
           width="30%"
@@ -97,10 +80,7 @@ export const Delivery_Information_Order_Tile = ({
             //color="yellow"
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_regular_14">
-                {/* 2159 West Broad st suite B{"\n"}Athens GA, 30606 */}
-                {warehouse_address}
-              </Text>
+              <Text variant="dm_sans_regular_14">{warehouse_address}</Text>
             </Spacer>
           </Container>
           <Spacer position="top" size="small" />
@@ -132,7 +112,7 @@ export const Delivery_Information_Order_Tile = ({
             </Spacer>
           </Container>
         </Container>
-      </Action_Container>
+      </Container>
     </Container>
   ) : (
     <Container
@@ -140,7 +120,7 @@ export const Delivery_Information_Order_Tile = ({
       color={theme.colors.bg.elements_bg}
       overflow="hidden"
     >
-      <Action_Container
+      <Container
         padding_vertical="5%"
         width="95%"
         color={theme.colors.ui.tertiary}
@@ -150,14 +130,6 @@ export const Delivery_Information_Order_Tile = ({
         border_radius="20px"
         direction="row"
         overflow="hidden"
-        onPress={() =>
-          openMapsToWarehouse(
-            warehouse_lat,
-            warehouse_lng,
-            warehouse_address,
-            warehouse_name
-          )
-        }
       >
         <Container
           padding_vertical="5%"
@@ -212,7 +184,7 @@ export const Delivery_Information_Order_Tile = ({
             </Spacer>
           </Container>
         </Container>
-      </Action_Container>
+      </Container>
     </Container>
   );
 };
