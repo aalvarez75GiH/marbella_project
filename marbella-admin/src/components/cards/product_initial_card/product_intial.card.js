@@ -17,6 +17,7 @@ import { Product_Initial_OOS_Info_Component } from "./product_initial_oos_info.c
 import { AuthenticationContext } from "../../../infrastructure/services/authentication/authentication.context.js";
 
 export const Product_Initial_Card = ({ item = null }) => {
+  console.log("PRODUCT INITIAL CARD ITEM:", JSON.stringify(item, null, 2));
   const {
     // flag_image: FlagImage,
     flag_key,

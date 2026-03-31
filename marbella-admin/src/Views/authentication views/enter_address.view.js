@@ -49,25 +49,6 @@ export default function Enter_Address_View() {
       : {}),
   };
 
-  const debugPlaces = async (text) => {
-    try {
-      const key = process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY;
-      const url =
-        `https://maps.googleapis.com/maps/api/place/autocomplete/json` +
-        `?input=${encodeURIComponent(text)}` +
-        `&key=${encodeURIComponent(key)}` +
-        `&language=en` +
-        `&components=country:us`;
-
-      const res = await fetch(url);
-      const json = await res.json();
-      console.log("PLACES DEBUG:", json?.status, json?.error_message);
-      console.log("PLACES DEBUG predictions:", json?.predictions?.length);
-    } catch (e) {
-      console.log("PLACES DEBUG fetch error:", e?.message ?? e);
-    }
-  };
-
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}

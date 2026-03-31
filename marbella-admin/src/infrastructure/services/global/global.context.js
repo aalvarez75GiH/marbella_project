@@ -81,6 +81,18 @@ export const Global_Context_Provider = ({ children }) => {
     }, 500);
   };
 
+  const onlyDigits = (s = "") => String(s).replace(/\D/g, "");
+  //   const showCTA = isPhoneComplete; // ✅ CTA only when complete
+
+  const formatPhone = (input = "") => {
+    const digits = onlyDigits(input).slice(0, 10);
+
+    if (digits.length === 0) return "";
+    if (digits.length <= 3) return `(${digits}`;
+    if (digits.length <= 6) return `(${digits.slice(0, 3)})${digits.slice(3)}`;
+    return `(${digits.slice(0, 3)})${digits.slice(3, 6)}.${digits.slice(6)}`;
+  };
+
   //********** logic to control Snackbar from global context (for error handling and user feedback) **********/
   const [snackbar, setSnackbar] = useState({
     visible: false,
@@ -130,6 +142,7 @@ export const Global_Context_Provider = ({ children }) => {
         snackbar,
         showSnackbar,
         hideSnackbar,
+        formatPhone,
       }}
     >
       {children}

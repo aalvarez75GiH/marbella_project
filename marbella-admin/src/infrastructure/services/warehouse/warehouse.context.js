@@ -21,6 +21,22 @@ export const Warehouse_Context_Provider = ({ children }) => {
   const [myWarehouse, setMyWarehouse] = useState(null);
   const [productsChosenForShop, setProductsChosenForShop] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
+  const [warehouseSelected, setWarehouseSelected] = useState({
+    warehouse_name: "",
+    active: true,
+    max_delivery_time: 0,
+    max_limit_delivery_ratio: 32186.8,
+    max_limit_pickup_ratio: 32186.8,
+    physical_address: "",
+    warehouse_information: {
+      representative: "",
+      email: "",
+      phone: "",
+      opening_time: "08:00 AM",
+      closing_time: "05:00 PM",
+    },
+    inventory: {},
+  });
   // later you’ll set this based on geolocation
   const { productsCatalog } = useContext(GlobalContext);
 
@@ -37,6 +53,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
       try {
         const data = await gettingAllWarehousesRequest();
         setWarehouses(data || []);
+        setWarehouseSelected(data?.[0] || warehouseSelected);
       } catch (err) {
         console.error("Error fetching all warehouses:", err);
         setError(err);
@@ -88,6 +105,51 @@ export const Warehouse_Context_Provider = ({ children }) => {
     }
   };
 
+  const getWarehouseInventoryProducts = (
+    warehouse,
+    productsCatalog,
+    grindType
+  ) => {
+    if (!Array.isArray(productsCatalog)) return [];
+
+    return productsCatalog
+      .filter((p) => p.grindType === grindType)
+      .map((p) => {
+        const variantsWithStock = (p.size_variants ?? []).map((v) => ({
+          ...v,
+          stock: Number(warehouse?.inventory?.[`${p.id}:${v.id}`] ?? 0),
+        }));
+
+        const totalStock = variantsWithStock.reduce(
+          (sum, v) => sum + (v.stock ?? 0),
+          0
+        );
+
+        return {
+          ...p,
+          size_variants: variantsWithStock,
+          totalStock,
+          inStock: totalStock > 0,
+        };
+      });
+  };
+
+  const inventoryProductsGround = useMemo(() => {
+    return getWarehouseInventoryProducts(
+      warehouseSelected,
+      productsCatalog,
+      "ground"
+    );
+  }, [warehouseSelected, productsCatalog]);
+
+  const inventoryProductsWhole = useMemo(() => {
+    return getWarehouseInventoryProducts(
+      warehouseSelected,
+      productsCatalog,
+      "whole"
+    );
+  }, [warehouseSelected, productsCatalog]);
+
   return (
     <WarehouseContext.Provider
       value={{
@@ -101,6 +163,12 @@ export const Warehouse_Context_Provider = ({ children }) => {
 
         gettingAllWarehouses,
         warehouses,
+
+        inventoryProductsGround,
+        inventoryProductsWhole,
+
+        setWarehouseSelected,
+        warehouseSelected,
       }}
     >
       {children}

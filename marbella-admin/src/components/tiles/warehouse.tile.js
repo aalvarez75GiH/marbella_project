@@ -8,8 +8,10 @@ import {
 } from "../containers/general.containers.js";
 import { Spacer } from "../spacers and globals/optimized.spacer.component.js";
 import { theme } from "../../infrastructure/theme/index.js";
-import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
 import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
+
+import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
+import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context.js";
 
 export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
   console.log("WAREHOUSE INFO TILE:", item);
@@ -19,6 +21,7 @@ export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
   const { formatCentsToUSD } = useContext(GlobalContext);
   const formatted_currency = formatCentsToUSD;
 
+  const { setWarehouseSelected } = useContext(WarehouseContext);
   const navigation = useNavigation();
 
   return (
@@ -30,12 +33,28 @@ export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
         color="blue"
         justify="center"
         align="center"
-        onPress={() => null}
-        //   onPress={() =>
-        //     navigation.navigate("Order_View", {
-        //       order: item,
-        //     })
-        //   }
+        //onPress={() => null}
+        onPress={() => {
+          setWarehouseSelected({
+            warehouse_name: item?.warehouse_name || "",
+            active: item?.active || true,
+            max_delivery_time: item?.max_delivery_time || 60,
+            max_limit_delivery_ratio: item?.max_limit_delivery_ratio || 32186.8,
+            max_limit_pickup_ratio: item?.max_limit_pickup_ratio || 32186.8,
+            physical_address: item?.geo.formatted_address,
+            warehouse_information: {
+              representative: item?.warehouse_information.representative,
+              email: item?.warehouse_information.email,
+              phone: item?.warehouse_information.phone,
+              opening_time:
+                item?.warehouse_information.opening_time || "08:00 AM",
+              closing_time:
+                item?.warehouse_information.closing_time || "08:00 PM",
+            },
+            inventory: item?.inventory || [],
+          }),
+            navigation.navigate("Warehouse_Details_View");
+        }}
       >
         {/* SECTION 1 */}
         <Container
@@ -92,24 +111,6 @@ export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
             </Spacer>
           </Container>
         </Container>
-
-        {/* SECTION 4 (moved to the end) */}
-
-        {/* <Container
-        width="390px"
-        height="10px"
-        color={
-          order_status === "In Progress"
-            ? theme.colors.status_orders.inProgress
-            : order_status === "Finished"
-            ? theme.colors.ui.primary
-            : theme.colors.ui.error
-        }
-        margin_top="8px"
-        // border_width="1px"
-        // border_color="black"
-        align="stretch"
-      ></Container> */}
       </Action_Container>
     </>
   );

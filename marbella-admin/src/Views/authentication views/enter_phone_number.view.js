@@ -23,6 +23,7 @@ export default function Enter_Phone_Number_View() {
   const { setUserToDB, userToDB } = useContext(AuthenticationContext);
 
   // If your GlobalContext has validation helpers, use them; otherwise fallback locally.
+  const { formatPhone } = useContext(GlobalContext) || {};
   const global = useContext(GlobalContext);
 
   const isValidPhone =
@@ -35,18 +36,6 @@ export default function Enter_Phone_Number_View() {
 
   const [isPhoneFocused, setIsPhoneFocused] = useState(false);
   const [phoneError, setPhoneError] = useState(null);
-
-  const onlyDigits = (s = "") => String(s).replace(/\D/g, "");
-  //   const showCTA = isPhoneComplete; // ✅ CTA only when complete
-
-  const formatPhone = (input = "") => {
-    const digits = onlyDigits(input).slice(0, 10);
-
-    if (digits.length === 0) return "";
-    if (digits.length <= 3) return `(${digits}`;
-    if (digits.length <= 6) return `(${digits.slice(0, 3)})${digits.slice(3)}`;
-    return `(${digits.slice(0, 3)})${digits.slice(3, 6)}.${digits.slice(6)}`;
-  };
 
   const phoneDigits = useMemo(
     () => onlyDigits(userToDB?.phone_number || ""),
