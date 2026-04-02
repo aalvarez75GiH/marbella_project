@@ -567,12 +567,7 @@ export default function Warehouse_Details_View() {
                 justify="center"
                 align="flex-start"
                 direction="row"
-                onPress={() =>
-                  navigation.navigate("Warehouse_Inventory_View", {
-                    inventory: warehouseSelected.inventory,
-                    warehouse: warehouseSelected,
-                  })
-                }
+                onPress={() => navigation.navigate("Warehouse_Inventory_View")}
               >
                 <Container
                   width="75%"

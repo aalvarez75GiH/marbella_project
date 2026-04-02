@@ -53,7 +53,6 @@ export const Warehouse_Context_Provider = ({ children }) => {
       try {
         const data = await gettingAllWarehousesRequest();
         setWarehouses(data || []);
-        setWarehouseSelected(data?.[0] || warehouseSelected);
       } catch (err) {
         console.error("Error fetching all warehouses:", err);
         setError(err);
@@ -72,38 +71,24 @@ export const Warehouse_Context_Provider = ({ children }) => {
     return Number(warehouse?.inventory?.[sku] ?? 0);
   };
 
-  const gettingWarehouseByID = async (warehouse_id) => {
-    setIsLoading(true);
-    try {
-      const warehouse = await gettingWarehouseByIDRequest(warehouse_id);
-      console.log(
-        "WAREHOUSE BY ID AT CONTEXT REQUEST FUNCTION:",
-        JSON.stringify(warehouse, null, 2)
-      );
-      setMyWarehouse(warehouse);
-    } catch (error) {
-      setError(error);
-      console.error("Error fetching warehouse by ID:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const gettingWarehouseByID = async (warehouse_id) => {
+  //   setIsLoading(true);
+  //   try {
+  //     const warehouse = await gettingWarehouseByIDRequest(warehouse_id);
+  //     console.log(
+  //       "WAREHOUSE BY ID AT CONTEXT REQUEST FUNCTION:",
+  //       JSON.stringify(warehouse, null, 2)
+  //     );
+  //     setMyWarehouse(warehouse);
+  //   } catch (error) {
+  //     setError(error);
+  //     console.error("Error fetching warehouse by ID:", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   // Admin warehouses functions
-
-  const gettingAllWarehouses = async () => {
-    setIsLoading(true);
-    try {
-      const response = await gettingAllWarehousesRequest();
-      return response;
-    } catch (error) {
-      setError(error);
-      console.error("Error fetching all warehouses:", error);
-      return [];
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const getWarehouseInventoryProducts = (
     warehouse,
@@ -159,9 +144,8 @@ export const Warehouse_Context_Provider = ({ children }) => {
         makeSku,
         getStock,
 
-        gettingWarehouseByID,
+        // gettingWarehouseByID,
 
-        gettingAllWarehouses,
         warehouses,
 
         inventoryProductsGround,

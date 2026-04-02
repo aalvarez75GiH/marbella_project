@@ -17,20 +17,68 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 export default function Warehouse_Inventory_View() {
   const navigation = useNavigation();
   const theme = useTheme();
-  const [scrollEnabled, setScrollEnabled] = useState(true);
-  const [error, setError] = useState(null);
 
   const { warehouseSelected, inventoryProductsGround, inventoryProductsWhole } =
     useContext(WarehouseContext);
   const { inventory } = warehouseSelected || {};
+
+  const [scrollEnabled, setScrollEnabled] = useState(true);
+  const [error, setError] = useState(null);
+  const [editableInventory, setEditableInventory] = useState(inventory || {});
+
+  const applyInventoryToProducts = (products = [], inventoryMap = {}) => {
+    return products.map((product) => {
+      const size_variants = (product.size_variants || []).map((variant) => ({
+        ...variant,
+        qty: Number(inventoryMap[`${product.id}:${variant.id}`] ?? 0),
+      }));
+
+      const totalQty = size_variants.reduce(
+        (sum, variant) => sum + Number(variant.qty ?? 0),
+        0
+      );
+
+      return {
+        ...product,
+        size_variants,
+        totalQty,
+      };
+    });
+  };
+
+  const groundProductsForUI = applyInventoryToProducts(
+    inventoryProductsGround,
+    editableInventory
+  );
+
+  const wholeProductsForUI = applyInventoryToProducts(
+    inventoryProductsWhole,
+    editableInventory
+  );
+  // console.log(
+  //   " GROUND INVENTORY EDITABLE FROM CONTEXT   :",
+  //   JSON.stringify(groundProductsForUI, null, 2)
+  // );
   console.log(
-    " GROUND INVENTORY PASSED FROM CONTEXT   :",
+    " INVENTORY PRODUCTS GROUND FROM CONTEXT   :",
     JSON.stringify(inventoryProductsGround, null, 2)
   );
-  console.log(
-    " WHOLE INVENTORY PASSED FROM CONTEXT   :",
-    JSON.stringify(inventoryProductsWhole, null, 2)
-  );
+  // console.log(
+  //   " WHOLE INVENTORY FOR UI   :",
+  //   JSON.stringify(wholeProductsForUI, null, 2)
+  // );
+  // console.log(
+  //   " EDITABLE INVENTORY :",
+  //   JSON.stringify(editableInventory, null, 2)
+  // );
+  const handleChangeVariantQty = (productId, variantId, value) => {
+    const sku = `${productId}:${variantId}`;
+
+    setEditableInventory((prev) => ({
+      ...prev,
+      [sku]: Number(value || 0),
+    }));
+  };
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -90,8 +138,9 @@ export default function Warehouse_Inventory_View() {
                 style={{ alignSelf: "stretch" }}
               >
                 <Inventory_Accordion
-                  groundProducts={inventoryProductsGround}
-                  wholeProducts={inventoryProductsWhole}
+                  groundProducts={groundProductsForUI}
+                  wholeProducts={wholeProductsForUI}
+                  onChangeVariantQty={handleChangeVariantQty}
                 />
               </Container>
             </Container>

@@ -2,10 +2,12 @@ import React from "react";
 import { View } from "react-native";
 import { List } from "react-native-paper";
 import { Product_Initial_Card } from "../cards/product_initial_card/product_intial.card";
+import { Product_Inventory_Edit_Card } from "../cards/products_inventory.card";
 
 export const Inventory_Accordion = ({
   groundProducts = [],
   wholeProducts = [],
+  onChangeVariantQty = null,
 }) => {
   return (
     <View style={{ width: "100%" }}>
@@ -24,7 +26,11 @@ export const Inventory_Accordion = ({
         >
           <View style={{ padding: 12 }}>
             {groundProducts.map((product) => (
-              <Product_Initial_Card key={product.id} item={product} />
+              <Product_Inventory_Edit_Card
+                key={product.id}
+                product={product}
+                onChangeVariantStock={onChangeVariantStock}
+              />
             ))}
           </View>
         </List.Accordion>
@@ -43,7 +49,11 @@ export const Inventory_Accordion = ({
         >
           <View style={{ padding: 12 }}>
             {wholeProducts.map((product) => (
-              <Product_Initial_Card key={product.id} item={product} />
+              <Product_Inventory_Edit_Card
+                key={product.id}
+                product={product}
+                onChangeVariantStock={onChangeVariantQty}
+              />
             ))}
           </View>
         </List.Accordion>
