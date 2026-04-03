@@ -1,11 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useTheme } from "styled-components/native";
 import { ScrollView } from "react-native-gesture-handler";
-import {
-  useRoute,
-  useNavigation,
-  useFocusEffect,
-} from "@react-navigation/native";
+import { useRoute, useNavigation } from "@react-navigation/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { Snackbar } from "react-native-paper";
 
@@ -25,6 +21,7 @@ import { Global_activity_indicator } from "../../components/activity indicators/
 import { Delivery_Information_Order_Tile } from "../../components/tiles/delivery_information_order.tile";
 
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
+import { GlobalContext } from "../../infrastructure/services/global/global.context";
 
 export default function Order_View() {
   const theme = useTheme();
@@ -34,17 +31,15 @@ export default function Order_View() {
   const route = useRoute();
   const initialOrder = route?.params?.order ?? null;
   const [customerOrder, setCustomerOrder] = useState(initialOrder);
-  const [statusSnackbarVisible, setStatusSnackbarVisible] = useState(false);
-  const [statusSnackbarMessage, setStatusSnackbarMessage] = useState("");
-  // const { snackbar, showSnackbar, hideSnackbar } = useContext(GlobalContext);
-
-  //   const { myWarehouse } = useContext(WarehouseContext);
-  //   const { distance_in_miles } = myWarehouse || {};
 
   const { updateOrderStatus, isLoading, refundingAnOrder } =
     useContext(OrdersContext);
-  // const { refundingAnOrder } = useContext(PaymentsContext);
-  const [pickupSnackbarVisible, setPickupSnackbarVisible] = useState(false);
+  const {
+    statusSnackbarVisible,
+    setStatusSnackbarVisible,
+    statusSnackbarMessage,
+    showStatusSnackbar,
+  } = useContext(GlobalContext);
 
   const {
     pricing,
@@ -58,7 +53,6 @@ export default function Order_View() {
     refund_details = "Refunded",
     order_number,
     order_delivery_address,
-    pickup_qr,
     customer,
     order_id,
     stripe_payment_id,
@@ -66,7 +60,6 @@ export default function Order_View() {
 
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
   const { last_four } = payment_information || {};
-  const { token } = pickup_qr || {};
   const {
     warehouse_name,
     warehouse_address,
@@ -78,32 +71,6 @@ export default function Order_View() {
   const { lat, lng } = geo || {};
 
   const { customer_address } = customer || {};
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const normalizedDeliveryType = String(delivery_type || "")
-        .trim()
-        .toLowerCase();
-
-      const isPickup =
-        normalizedDeliveryType === "pick up" ||
-        normalizedDeliveryType === "pickup";
-
-      const shouldShow = isPickup && order_status === "In Progress" && !!token;
-
-      let timer;
-
-      if (shouldShow) {
-        timer = setTimeout(() => {
-          setPickupSnackbarVisible(true);
-        }, 900); // delay after screen becomes active
-      }
-
-      return () => {
-        if (timer) clearTimeout(timer);
-      };
-    }, [delivery_type, order_status, token])
-  );
 
   const renderingOrderProducts = () => {
     const products = Array.isArray(order_products) ? order_products : [];
@@ -121,11 +88,6 @@ export default function Order_View() {
         </Spacer>
       );
     });
-  };
-
-  const showStatusSnackbar = (message) => {
-    setStatusSnackbarMessage(message);
-    setStatusSnackbarVisible(true);
   };
 
   return (
@@ -263,7 +225,6 @@ export default function Order_View() {
                     border_radius={"10px"}
                     caption="Finish order"
                     caption_text_variant="dm_sans_bold_20_white"
-                    // action={() => updateOrderStatus(order_id, "Finished")}
                     action={async () => {
                       try {
                         const res = await updateOrderStatus(

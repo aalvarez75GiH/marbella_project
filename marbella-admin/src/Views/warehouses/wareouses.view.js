@@ -7,6 +7,7 @@ import { theme } from "../../infrastructure/theme/index";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header.js";
+import { Back_And_Add_Header } from "../../components/headers/back_and_add.header.js";
 import { Warehouse_Tile } from "../../components/tiles/warehouse.tile.js";
 
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context.js";
@@ -33,7 +34,11 @@ export default function Warehouses_View() {
       background_color={theme.colors.bg.elements_bg}
       style={{ flex: 1 }}
     >
-      <Go_Back_Header action={() => navigation.goBack()} label="Warehouses" />
+      <Back_And_Add_Header
+        action_1={() => navigation.goBack()}
+        action_2={() => null}
+        caption="Warehouses"
+      />
 
       <Container
         width="100%"

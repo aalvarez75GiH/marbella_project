@@ -11,7 +11,8 @@ export const Global_Context_Provider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [globalLanguage, setGlobalLanguage] = useState("en"); // default to English
-
+  const [statusSnackbarVisible, setStatusSnackbarVisible] = useState(false);
+  const [statusSnackbarMessage, setStatusSnackbarMessage] = useState("");
   useEffect(() => {
     const gettingAllProductsCatalog = async () => {
       try {
@@ -124,6 +125,11 @@ export const Global_Context_Provider = ({ children }) => {
     }));
   };
 
+  const showStatusSnackbar = (message) => {
+    setStatusSnackbarMessage(message);
+    setStatusSnackbarVisible(true);
+  };
+
   console.log("USER LANGUAGE AT GLOBAL CONTEXT:", globalLanguage);
   return (
     <GlobalContext.Provider
@@ -143,6 +149,10 @@ export const Global_Context_Provider = ({ children }) => {
         showSnackbar,
         hideSnackbar,
         formatPhone,
+        statusSnackbarVisible,
+        setStatusSnackbarVisible,
+        showStatusSnackbar,
+        statusSnackbarMessage,
       }}
     >
       {children}

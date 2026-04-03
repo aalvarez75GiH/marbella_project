@@ -155,29 +155,50 @@ export const Warehouse_Context_Provider = ({ children }) => {
   };
 
   const updateWarehouseInventory = async (warehouse_id, inventory) => {
+    setIsLoading(true);
     console.log("WAREHOUSE ID BEFORE GOING TO REQUEST:", warehouse_id);
-    if (!warehouse_id) {
-      throw new Error("warehouse_id is required");
+    try {
+      if (!warehouse_id) {
+        throw new Error("warehouse_id is required");
+      }
+
+      if (
+        !inventory ||
+        typeof inventory !== "object" ||
+        Array.isArray(inventory)
+      ) {
+        throw new Error("inventory must be an object map");
+      }
+      const warehouseUpdated = await updatingWarehouseInventoryRequest(
+        warehouse_id,
+        inventory
+      );
+
+      console.log(
+        "WAREHOUSE UPDATED RESPONSE:",
+        JSON.stringify(warehouseUpdated, null, 2)
+      );
+      if (warehouseUpdated && warehouseUpdated.warehouse_id) {
+        setWarehouseSelected(warehouseUpdated);
+        // Optionally update the warehouses list if needed
+        return {
+          success: true,
+          warehouse: warehouseUpdated,
+        };
+      }
+      if (!warehouseUpdated || !warehouseUpdated.warehouse_id) {
+        return {
+          success: false,
+          warehouse: warehouseSelected,
+        };
+      }
+    } catch (error) {
+      console.error("Error updating warehouse inventory:", error);
+      setError(error);
+    } finally {
+      setIsLoading(false);
     }
-
-    if (
-      !inventory ||
-      typeof inventory !== "object" ||
-      Array.isArray(inventory)
-    ) {
-      throw new Error("inventory must be an object map");
-    }
-
-    const warehouseUpdated = await updatingWarehouseInventoryRequest(
-      warehouse_id,
-      inventory
-    );
-    console.log(
-      "WAREHOUSE UPDATED RESPONSE:",
-      JSON.stringify(warehouseUpdated, null, 2)
-    );
-
-    
+  };
 
   return (
     <WarehouseContext.Provider
