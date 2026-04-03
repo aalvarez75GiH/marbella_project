@@ -154,10 +154,55 @@ const decrementWarehouseInventoryFromOrder = async ({
   return { ok: true };
 };
 
+const updateWarehouseInventory = async (warehouse_id, inventory) => {
+  if (!warehouse_id) {
+    throw new Error("warehouse_id is required");
+  }
+
+  if (!inventory || typeof inventory !== "object" || Array.isArray(inventory)) {
+    throw new Error("inventory must be an object map");
+  }
+
+  const warehouseRef = firebase_controller.db
+    .collection("warehouses")
+    .doc(String(warehouse_id));
+  const warehouseSnap = await warehouseRef.get();
+
+  if (!warehouseSnap.exists) {
+    throw new Error("Warehouse not found");
+  }
+
+  // optional: validate every qty is a non-negative number
+  const normalizedInventory = {};
+  for (const [sku, qty] of Object.entries(inventory)) {
+    const numericQty = Number(qty);
+
+    if (!sku || typeof sku !== "string") {
+      throw new Error("Invalid SKU key in inventory");
+    }
+
+    if (!Number.isFinite(numericQty) || numericQty < 0) {
+      throw new Error(`Invalid quantity for SKU ${sku}`);
+    }
+
+    normalizedInventory[sku] = numericQty;
+  }
+
+  await warehouseRef.update({
+    inventory: normalizedInventory,
+    updatedAt: new Date().toISOString(),
+  });
+
+  const updatedSnap = await warehouseRef.get();
+
+  return updatedSnap.data();
+};
+
 module.exports = {
   getAllWarehouses,
   getActiveWarehouses,
   createWarehouse,
   getWarehouseById,
   decrementWarehouseInventoryFromOrder,
+  updateWarehouseInventory,
 };

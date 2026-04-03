@@ -37,6 +37,7 @@ export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
         onPress={() => {
           setWarehouseSelected({
             warehouse_name: item?.warehouse_name || "",
+            warehouse_id: item?.warehouse_id || "",
             active: item?.active || true,
             max_delivery_time: item?.max_delivery_time || 60,
             max_limit_delivery_ratio: item?.max_limit_delivery_ratio || 32186.8,

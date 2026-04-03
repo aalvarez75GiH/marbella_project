@@ -54,3 +54,38 @@ export const gettingWarehouseByIDRequest = async (warehouse_id) => {
     throw error;
   }
 };
+
+export const updatingWarehouseInventoryRequest = async (
+  warehouse_id,
+  inventory_update
+) => {
+  const { warehouseEndPoint } = environment;
+
+  try {
+    try {
+      const res = await axios.patch(
+        `${warehouseEndPoint}/updateWarehouseInventory?warehouse_id=${warehouse_id}`,
+        {
+          inventory: inventory_update,
+        },
+        {
+          timeout: 15000,
+        }
+      );
+      console.log(
+        "WAREHOUSE INVENTORY UPDATE RESPONSE:",
+        JSON.stringify(res.data, null, 2)
+      );
+      return res.data;
+    } catch (error) {
+      console.log("AXIOS message:", error.message);
+      console.log("AXIOS code:", error.code);
+      console.log("AXIOS status:", error.response?.status);
+      console.log("AXIOS data:", error.response?.data);
+      throw error;
+    }
+  } catch (error) {
+    console.error("Error updating warehouse inventory:", error);
+    throw error;
+  }
+};

@@ -1,5 +1,10 @@
-import React, { useContext, useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import React, { useContext, useState, useMemo, useRef, useEffect } from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Keyboard,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 
@@ -18,59 +23,74 @@ export default function Warehouse_Inventory_View() {
   const navigation = useNavigation();
   const theme = useTheme();
 
-  const { warehouseSelected, inventoryProductsGround, inventoryProductsWhole } =
-    useContext(WarehouseContext);
+  const {
+    warehouseSelected,
+    productsCatalog,
+    buildInventoryProducts,
+    updateWarehouseInventory,
+  } = useContext(WarehouseContext);
+
   const { inventory } = warehouseSelected || {};
+
+  console.log("WAREHOUSE ID FROM CONTEXT: ", warehouseSelected.warehouse_id);
 
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [error, setError] = useState(null);
   const [editableInventory, setEditableInventory] = useState(inventory || {});
 
-  const applyInventoryToProducts = (products = [], inventoryMap = {}) => {
-    return products.map((product) => {
-      const size_variants = (product.size_variants || []).map((variant) => ({
-        ...variant,
-        qty: Number(inventoryMap[`${product.id}:${variant.id}`] ?? 0),
-      }));
+  const originalInventory = useRef(inventory || {});
 
-      const totalQty = size_variants.reduce(
-        (sum, variant) => sum + Number(variant.qty ?? 0),
-        0
-      );
+  const hasChanges = useMemo(() => {
+    const original = originalInventory.current || {};
+    const current = editableInventory || {};
 
-      return {
-        ...product,
-        size_variants,
-        totalQty,
-      };
+    const allKeys = new Set([
+      ...Object.keys(original),
+      ...Object.keys(current),
+    ]);
+
+    for (let key of allKeys) {
+      if (Number(original[key] || 0) !== Number(current[key] || 0)) {
+        return true;
+      }
+    }
+
+    return false;
+  }, [editableInventory]);
+
+  const groundProductsForUI = useMemo(() => {
+    return buildInventoryProducts({
+      productsCatalog,
+      inventoryMap: editableInventory,
+      grindType: "ground",
     });
-  };
+  }, [productsCatalog, editableInventory]);
 
-  const groundProductsForUI = applyInventoryToProducts(
-    inventoryProductsGround,
-    editableInventory
-  );
+  const wholeProductsForUI = useMemo(() => {
+    return buildInventoryProducts({
+      productsCatalog,
+      inventoryMap: editableInventory,
+      grindType: "whole",
+    });
+  }, [productsCatalog, editableInventory]);
 
-  const wholeProductsForUI = applyInventoryToProducts(
-    inventoryProductsWhole,
-    editableInventory
-  );
   // console.log(
   //   " GROUND INVENTORY EDITABLE FROM CONTEXT   :",
   //   JSON.stringify(groundProductsForUI, null, 2)
   // );
-  console.log(
-    " INVENTORY PRODUCTS GROUND FROM CONTEXT   :",
-    JSON.stringify(inventoryProductsGround, null, 2)
-  );
+  // console.log(
+  //   " INVENTORY PRODUCTS GROUND FROM CONTEXT   :",
+  //   JSON.stringify(inventoryProductsGround, null, 2)
+  // );
   // console.log(
   //   " WHOLE INVENTORY FOR UI   :",
   //   JSON.stringify(wholeProductsForUI, null, 2)
   // );
-  // console.log(
-  //   " EDITABLE INVENTORY :",
-  //   JSON.stringify(editableInventory, null, 2)
-  // );
+  console.log(
+    " EDITABLE INVENTORY :",
+    JSON.stringify(editableInventory, null, 2)
+  );
+
   const handleChangeVariantQty = (productId, variantId, value) => {
     const sku = `${productId}:${variantId}`;
 
@@ -79,6 +99,7 @@ export default function Warehouse_Inventory_View() {
       [sku]: Number(value || 0),
     }));
   };
+
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -96,7 +117,66 @@ export default function Warehouse_Inventory_View() {
           align="center"
         >
           <Go_Back_Header label="" action={() => navigation.goBack()} />
+          <Spacer position="top" size="large" />
+          <Spacer position="top" size="large" />
+          <Container
+            width="100%"
+            color={theme.colors.bg.elements_bg}
+            //color={"red"}
+            // align="center"
+            align={!hasChanges ? "flex-start" : "center"}
+            // justify="space-around"
+            justify={!hasChanges ? "flex-start" : "space-around"}
+            direction="row"
+          >
+            <Spacer position="left" size="extraLarge">
+              <Text variant="raleway_bold_18" textAlign="center">
+                Warehouse inventory
+              </Text>
+            </Spacer>
+            {hasChanges && (
+              <Regular_CTA
+                width="30%"
+                height={40}
+                color={theme.colors.ui.primary}
+                border_radius={"40px"}
+                caption={"Update"}
+                caption_text_variant="dm_sans_bold_16_white"
+                action={async () => {
+                  try {
+                    console.log("UPDATE CTA PRESSED");
+                    console.log(
+                      "WAREHOUSE ID:",
+                      warehouseSelected?.warehouse_id
+                    );
+                    console.log(
+                      "EDITABLE INVENTORY:",
+                      JSON.stringify(editableInventory, null, 2)
+                    );
 
+                    console.log(
+                      "WAREHOUSE ID BEFORE GOING TO CONTEXT:",
+                      warehouseSelected?.warehouse_id
+                    );
+                    await updateWarehouseInventory(
+                      warehouseSelected?.warehouse_id,
+                      editableInventory
+                    );
+
+                    console.log("UPDATE FINISHED");
+                  } catch (error) {
+                    console.log("UPDATE ERROR:", error?.message);
+                    console.log(
+                      "UPDATE ERROR RESPONSE:",
+                      error?.response?.data
+                    );
+                  }
+                }}
+              />
+            )}
+          </Container>
+          <Spacer position="top" size="large" />
+          <Spacer position="top" size="large" />
           <ScrollView
             style={{ flex: 1, width: "100%" }}
             contentContainerStyle={{
@@ -107,20 +187,6 @@ export default function Warehouse_Inventory_View() {
             nestedScrollEnabled
             scrollEnabled={scrollEnabled}
           >
-            <Spacer position="top" size="large" />
-            <Spacer position="top" size="large" />
-            <Container
-              width="100%"
-              color={theme.colors.bg.elements_bg}
-              align="flex-start"
-            >
-              <Spacer position="left" size="extraLarge">
-                <Text variant="raleway_bold_18" textAlign="center">
-                  Warehouse inventory
-                </Text>
-              </Spacer>
-            </Container>
-
             <Spacer position="top" size="large" />
             <Spacer position="top" size="large" />
 

@@ -8,6 +8,7 @@ import React, {
 import {
   gettingWarehouseByIDRequest,
   gettingAllWarehousesRequest,
+  updatingWarehouseInventoryRequest,
 } from "./warehouse.services";
 
 import { GlobalContext } from "../global/global.context";
@@ -23,6 +24,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
   const [warehouses, setWarehouses] = useState([]);
   const [warehouseSelected, setWarehouseSelected] = useState({
     warehouse_name: "",
+    warehouse_id: "",
     active: true,
     max_delivery_time: 0,
     max_limit_delivery_ratio: 32186.8,
@@ -66,7 +68,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
 
   const makeSku = (productId, variantId) => `${productId}:${variantId}`;
 
-  const getStock = (warehouse, productId, variantId) => {
+  const getQty = (warehouse, productId, variantId) => {
     const sku = makeSku(productId, variantId);
     return Number(warehouse?.inventory?.[sku] ?? 0);
   };
@@ -119,40 +121,78 @@ export const Warehouse_Context_Provider = ({ children }) => {
       });
   };
 
-  const inventoryProductsGround = useMemo(() => {
-    return getWarehouseInventoryProducts(
-      warehouseSelected,
-      productsCatalog,
-      "ground"
-    );
-  }, [warehouseSelected, productsCatalog]);
+  const buildInventoryProducts = ({
+    productsCatalog = [],
+    inventoryMap = {},
+    grindType,
+  }) => {
+    if (!Array.isArray(productsCatalog)) return [];
 
-  const inventoryProductsWhole = useMemo(() => {
-    return getWarehouseInventoryProducts(
-      warehouseSelected,
-      productsCatalog,
-      "whole"
+    return productsCatalog
+      .filter((p) => p.grindType === grindType)
+      .map((p) => {
+        const size_variants = (p.size_variants ?? []).map((v) => {
+          const qty = Number(inventoryMap[`${p.id}:${v.id}`] ?? 0);
+
+          return {
+            ...v,
+            qty,
+          };
+        });
+
+        const totalQty = size_variants.reduce(
+          (sum, v) => sum + Number(v.qty ?? 0),
+          0
+        );
+
+        return {
+          ...p,
+          size_variants,
+          totalQty,
+          inStock: totalQty > 0,
+        };
+      });
+  };
+
+  const updateWarehouseInventory = async (warehouse_id, inventory) => {
+    console.log("WAREHOUSE ID BEFORE GOING TO REQUEST:", warehouse_id);
+    if (!warehouse_id) {
+      throw new Error("warehouse_id is required");
+    }
+
+    if (
+      !inventory ||
+      typeof inventory !== "object" ||
+      Array.isArray(inventory)
+    ) {
+      throw new Error("inventory must be an object map");
+    }
+
+    const warehouseUpdated = await updatingWarehouseInventoryRequest(
+      warehouse_id,
+      inventory
     );
-  }, [warehouseSelected, productsCatalog]);
+    console.log(
+      "WAREHOUSE UPDATED RESPONSE:",
+      JSON.stringify(warehouseUpdated, null, 2)
+    );
+
+    
 
   return (
     <WarehouseContext.Provider
       value={{
         isLoading,
         error,
-
-        makeSku,
-        getStock,
-
-        // gettingWarehouseByID,
-
         warehouses,
-
-        inventoryProductsGround,
-        inventoryProductsWhole,
-
-        setWarehouseSelected,
         warehouseSelected,
+        productsCatalog,
+        setWarehouseSelected,
+        getQty,
+        makeSku,
+        buildInventoryProducts,
+        // gettingWarehouseByID,
+        updateWarehouseInventory,
       }}
     >
       {children}

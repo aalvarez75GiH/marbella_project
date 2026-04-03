@@ -119,5 +119,20 @@ warehousesRouter.post("/createWarehouse", async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
+// Create a new warehouse
+warehousesRouter.patch("/updateWarehouseInventory", async (req, res) => {
+  const warehouse_id = req.query.warehouse_id;
+  const inventory = req.body.inventory;
+  try {
+    const warehouseUpdated =
+      await warehousesControllers.updateWarehouseInventory(
+        warehouse_id,
+        inventory
+      );
+    return res.status(201).json(warehouseUpdated);
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+});
 
 module.exports = warehousesRouter;

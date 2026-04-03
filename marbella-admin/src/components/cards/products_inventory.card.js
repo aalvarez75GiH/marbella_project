@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { Keyboard } from "react-native";
 
 import {
   Container,
@@ -11,7 +11,7 @@ import { theme } from "../../infrastructure/theme/index.js";
 
 export const Product_Inventory_Edit_Card = ({
   product,
-  onChangeVariantStock,
+  onChangeVariantQty,
 }) => {
   const {
     id: productId,
@@ -76,7 +76,7 @@ export const Product_Inventory_Edit_Card = ({
                 value={String(variant.qty ?? 0)}
                 onChangeText={(value) => {
                   const numericValue = value.replace(/[^0-9]/g, "");
-                  onChangeVariantStock(productId, variant.id, numericValue);
+                  onChangeVariantQty(productId, variant.id, numericValue);
                 }}
                 keyboardType="numeric"
                 label=""

@@ -29,7 +29,7 @@ export const Inventory_Accordion = ({
               <Product_Inventory_Edit_Card
                 key={product.id}
                 product={product}
-                onChangeVariantStock={onChangeVariantStock}
+                onChangeVariantQty={onChangeVariantQty}
               />
             ))}
           </View>
@@ -52,7 +52,7 @@ export const Inventory_Accordion = ({
               <Product_Inventory_Edit_Card
                 key={product.id}
                 product={product}
-                onChangeVariantStock={onChangeVariantQty}
+                onChangeVariantQty={onChangeVariantQty}
               />
             ))}
           </View>
