@@ -38,12 +38,12 @@ import { GeolocationContext } from "../../infrastructure/services/geolocation/ge
 import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context.js";
 
-export default function Warehouse_Details_View() {
+export default function Add_Warehouse_View() {
   const navigation = useNavigation();
   const theme = useTheme();
   const route = useRoute();
   const { coming_from } = route?.params ?? {};
-  console.log("COMING FROM AT DETAILS WAREHOUSE:", coming_from);
+  console.log("COMING FROM AT ADD WAREHOUSE:", coming_from);
   const { warehouseSelected, setWarehouseSelected } =
     useContext(WarehouseContext);
   const [isWarehouseNameFocused, setWarehouseNameFocused] = useState(false);
@@ -440,11 +440,11 @@ export default function Warehouse_Details_View() {
                 underlineColor={theme.colors.inputs.bottom_lines_disabled}
                 border_width={"0.3px"}
                 activeUnderlineColor={theme.colors.ui.primary}
-                keyboardType="default"
-                autoCapitalize="words"
+                keyboardType="email-address"
+                autoCapitalize="none"
                 autoCorrect={false}
-                textContentType="givenName"
-                autoComplete="name"
+                textContentType="emailAddress"
+                autoComplete="email"
                 returnKeyType="done"
                 blurOnSubmit
                 style={{
@@ -475,11 +475,13 @@ export default function Warehouse_Details_View() {
                 underlineColor={theme.colors.inputs.bottom_lines_disabled}
                 border_width={"0.3px"}
                 activeUnderlineColor={theme.colors.ui.primary}
-                keyboardType="default"
-                autoCapitalize="words"
+                keyboardType={
+                  Platform.OS === "ios" ? "number-pad" : "phone-pad"
+                }
+                autoCapitalize="none"
                 autoCorrect={false}
-                textContentType="givenName"
-                autoComplete="name"
+                textContentType="telephoneNumber"
+                autoComplete="tel"
                 returnKeyType="done"
                 blurOnSubmit
                 style={{
@@ -560,6 +562,44 @@ export default function Warehouse_Details_View() {
                 }}
               />
               <Spacer position="top" size="medium" />
+              <Action_Container
+                width="95%"
+                // height="15%"
+                padding_vertical="25px"
+                color={theme.colors.bg.screens_bg}
+                // color={"lightgreen"}
+                justify="center"
+                align="flex-start"
+                direction="row"
+                onPress={() =>
+                  navigation.navigate("Warehouse_Representative_View")
+                }
+              >
+                <Container
+                  width="75%"
+                  style={{ alignSelf: "stretch" }}
+                  color={theme.colors.bg.screens_bg}
+                  //   color={"red"}
+                  justify="center"
+                  align="flex-start"
+                >
+                  <Spacer position="left" size="large">
+                    <Text variant="raleway_bold_18">
+                      Warehouse Representative
+                    </Text>
+                  </Spacer>
+                </Container>
+                <Container
+                  width="25%"
+                  style={{ alignSelf: "stretch" }}
+                  color={theme.colors.bg.screens_bg}
+                  //   color={"blue"}
+                  justify="center"
+                  align="flex-end"
+                >
+                  <RightArrowIcon width={20} height={20} />
+                </Container>
+              </Action_Container>
               <Action_Container
                 width="95%"
                 // height="15%"

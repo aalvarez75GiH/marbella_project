@@ -4,6 +4,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Warehouses_View from "../../Views/warehouses/wareouses.view";
 import Warehouse_Details_View from "../../Views/warehouses/warehouse_details.view";
 import Warehouse_Inventory_View from "../../Views/warehouses/warehouse_inventory.view";
+import Add_Warehouse_View from "../../Views/warehouses/add_warehouse.view";
+import Warehouse_Representative_View from "../../Views/warehouses/warehouse_representative.view";
 
 const WarehousesStack = createNativeStackNavigator();
 
@@ -25,6 +27,14 @@ export const Warehouses_Navigator = () => {
       <WarehousesStack.Screen
         name="Warehouse_Inventory_View"
         component={Warehouse_Inventory_View}
+      />
+      <WarehousesStack.Screen
+        name="Add_Warehouse_View"
+        component={Add_Warehouse_View}
+      />
+      <WarehousesStack.Screen
+        name="Warehouse_Representative_View"
+        component={Warehouse_Representative_View}
       />
     </WarehousesStack.Navigator>
   );

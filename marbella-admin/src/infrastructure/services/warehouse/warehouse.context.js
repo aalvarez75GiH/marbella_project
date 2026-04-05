@@ -19,8 +19,6 @@ export const WarehouseContext = createContext();
 export const Warehouse_Context_Provider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [myWarehouse, setMyWarehouse] = useState(null);
-  const [productsChosenForShop, setProductsChosenForShop] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [warehouseSelected, setWarehouseSelected] = useState({
     warehouse_name: "",
@@ -31,7 +29,11 @@ export const Warehouse_Context_Provider = ({ children }) => {
     max_limit_pickup_ratio: 32186.8,
     physical_address: "",
     warehouse_information: {
-      representative: "",
+      representative: {
+        name: "",
+        email: "",
+        phone_number: "",
+      },
       email: "",
       phone: "",
       opening_time: "08:00 AM",
@@ -91,35 +93,6 @@ export const Warehouse_Context_Provider = ({ children }) => {
   // };
 
   // Admin warehouses functions
-
-  const getWarehouseInventoryProducts = (
-    warehouse,
-    productsCatalog,
-    grindType
-  ) => {
-    if (!Array.isArray(productsCatalog)) return [];
-
-    return productsCatalog
-      .filter((p) => p.grindType === grindType)
-      .map((p) => {
-        const variantsWithStock = (p.size_variants ?? []).map((v) => ({
-          ...v,
-          stock: Number(warehouse?.inventory?.[`${p.id}:${v.id}`] ?? 0),
-        }));
-
-        const totalStock = variantsWithStock.reduce(
-          (sum, v) => sum + (v.stock ?? 0),
-          0
-        );
-
-        return {
-          ...p,
-          size_variants: variantsWithStock,
-          totalStock,
-          inStock: totalStock > 0,
-        };
-      });
-  };
 
   const buildInventoryProducts = ({
     productsCatalog = [],
@@ -198,6 +171,10 @@ export const Warehouse_Context_Provider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const createWarehouse = async (warehoseToCreate) => {
+    // TODO: implement create warehouse function that calls the API and updates the warehouses state
   };
 
   return (

@@ -54,7 +54,9 @@ export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
             },
             inventory: item?.inventory || [],
           }),
-            navigation.navigate("Warehouse_Details_View");
+            navigation.navigate("Warehouse_Details_View", {
+              coming_from: "warehouse_tile",
+            });
         }}
       >
         {/* SECTION 1 */}

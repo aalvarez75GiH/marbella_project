@@ -5,7 +5,7 @@ import {
   ScrollView,
   Keyboard,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { Snackbar } from "react-native-paper";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -26,6 +26,9 @@ export default function Warehouse_Inventory_View() {
   const navigation = useNavigation();
   const theme = useTheme();
   const tabBarHeight = useBottomTabBarHeight();
+  const route = useRoute();
+  const { coming_from } = route?.params ?? {};
+  console.log("COMING FROM PARAM:", coming_from);
 
   const {
     warehouseSelected,
@@ -35,8 +38,6 @@ export default function Warehouse_Inventory_View() {
     isLoading,
   } = useContext(WarehouseContext);
 
-  const { inventory } = warehouseSelected || {};
-
   const {
     statusSnackbarVisible,
     setStatusSnackbarVisible,
@@ -44,14 +45,10 @@ export default function Warehouse_Inventory_View() {
     showStatusSnackbar,
   } = useContext(GlobalContext);
 
-  console.log("WAREHOUSE ID FROM CONTEXT: ", warehouseSelected.warehouse_id);
-
-  const [scrollEnabled, setScrollEnabled] = useState(true);
-  const [error, setError] = useState(null);
-  const [editableInventory, setEditableInventory] = useState(inventory || {});
+  const { inventory } = warehouseSelected || {};
+  console.log("INVENTORY FROM CONTEXT: ", JSON.stringify(inventory, null, 2));
 
   const originalInventory = useRef(inventory || {});
-
   const hasChanges = useMemo(() => {
     const original = originalInventory.current || {};
     const current = editableInventory || {};
@@ -69,6 +66,16 @@ export default function Warehouse_Inventory_View() {
 
     return false;
   }, [editableInventory]);
+
+  const [scrollEnabled, setScrollEnabled] = useState(true);
+  const [error, setError] = useState(null);
+  const [editableInventory, setEditableInventory] = useState(inventory || {});
+
+  const isCreate = coming_from === "add_cta";
+  const isUpdate = hasChanges && coming_from === "warehouse_tile";
+  const shouldShowCTA = isCreate || isUpdate;
+
+  console.log("WAREHOUSE ID FROM CONTEXT: ", warehouseSelected.warehouse_id);
 
   const groundProductsForUI = useMemo(() => {
     return buildInventoryProducts({
@@ -112,6 +119,31 @@ export default function Warehouse_Inventory_View() {
     }));
   };
 
+  const handleInventoryCTA = async () => {
+    try {
+      console.log("CTA PRESSED");
+
+      if (isCreate) {
+        const res = await createWarehouse(warehouseSelected);
+        showStatusSnackbar("Warehouse created successfully!");
+        console.log("CREATE FINISHED:", res);
+        return;
+      }
+
+      if (isUpdate) {
+        const res = await updateWarehouseInventory(
+          warehouseSelected?.warehouse_id ?? warehouseSelected?.id,
+          editableInventory
+        );
+        showStatusSnackbar("Inventory updated successfully!");
+        console.log("UPDATE FINISHED:", res);
+      }
+    } catch (error) {
+      console.log("ERROR:", error?.message);
+      console.log("ERROR RESPONSE:", error?.response?.data);
+    }
+  };
+
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -140,6 +172,34 @@ export default function Warehouse_Inventory_View() {
             <Container
               width="100%"
               color={theme.colors.bg.elements_bg}
+              align="center"
+              justify="space-around"
+              direction="row"
+            >
+              <Spacer position="left" size="extraLarge">
+                <Text variant="raleway_bold_18" textAlign="center">
+                  Warehouse inventory
+                </Text>
+              </Spacer>
+
+              {shouldShowCTA ? (
+                <Regular_CTA
+                  width="30%"
+                  height={40}
+                  color={theme.colors.ui.primary}
+                  border_radius={"40px"}
+                  caption={coming_from === "add_cta" ? "Create" : "Update"}
+                  caption_text_variant="dm_sans_bold_16_white"
+                  action={async () => handleInventoryCTA()}
+                />
+              ) : (
+                // 👇 keeps layout stable when CTA is hidden
+                <Container width="30%" />
+              )}
+            </Container>
+            {/* <Container
+              width="100%"
+              color={theme.colors.bg.elements_bg}
               //color={"red"}
               // align="center"
               align={!hasChanges ? "flex-start" : "center"}
@@ -152,7 +212,7 @@ export default function Warehouse_Inventory_View() {
                   Warehouse inventory
                 </Text>
               </Spacer>
-              {hasChanges && (
+              {hasChanges && coming_from === "warehouse_tile" && (
                 <Regular_CTA
                   width="30%"
                   height={40}
@@ -196,7 +256,51 @@ export default function Warehouse_Inventory_View() {
                   }}
                 />
               )}
-            </Container>
+              {coming_from === "add_cta" && (
+                <Regular_CTA
+                  width="30%"
+                  height={40}
+                  color={theme.colors.ui.primary}
+                  border_radius={"40px"}
+                  caption={"Create"}
+                  caption_text_variant="dm_sans_bold_16_white"
+                  action={async () => {
+                    try {
+                      console.log("UPDATE CTA PRESSED");
+                      console.log(
+                        "WAREHOUSE ID:",
+                        warehouseSelected?.warehouse_id
+                      );
+                      console.log(
+                        "EDITABLE INVENTORY:",
+                        JSON.stringify(editableInventory, null, 2)
+                      );
+
+                      console.log(
+                        "WAREHOUSE ID BEFORE GOING TO CONTEXT:",
+                        warehouseSelected?.warehouse_id
+                      );
+                      const res = await updateWarehouseInventory(
+                        warehouseSelected?.warehouse_id,
+                        editableInventory
+                      );
+
+                      if (res.success) {
+                        showStatusSnackbar("Inventory updated successfully!");
+                      }
+
+                      console.log("UPDATE FINISHED");
+                    } catch (error) {
+                      console.log("UPDATE ERROR:", error?.message);
+                      console.log(
+                        "UPDATE ERROR RESPONSE:",
+                        error?.response?.data
+                      );
+                    }
+                  }}
+                />
+              )}
+            </Container> */}
             <Spacer position="top" size="large" />
             <Spacer position="top" size="large" />
             <ScrollView
