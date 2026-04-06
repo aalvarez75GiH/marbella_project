@@ -45,12 +45,16 @@ const createWarehouse = async (warehouse) => {
   const now = new Date().toISOString();
 
   // 🔑 Generate the ID ONCE
-  const warehouse_id = warehouse.warehouse_id || uuidv4();
+  // const warehouse_id = warehouse.warehouse_id || uuidv4();
+  const warehouse_id =
+    warehouse.warehouse_id === ""
+      ? uuidv4()
+      : String(warehouse.warehouse_id || "").trim() || uuidv4();
 
   // ✅ Build inventory from warehouse_products (if provided)
-  const computedInventory = buildInventoryFromWarehouseProducts(
-    warehouse.warehouse_products || []
-  );
+  // const computedInventory = buildInventoryFromWarehouseProducts(
+  //   warehouse.warehouse_products || []
+  // );
 
   // ✅ Build a clean address string (use what you actually store)
   // If warehouse.location is already a string address, use it directly.
@@ -84,7 +88,7 @@ const createWarehouse = async (warehouse) => {
     warehouse_information: warehouse.warehouse_information,
 
     // ✅ store inventory map (computed)
-    inventory: computedInventory,
+    inventory: warehouse.inventory,
 
     // optional: store products too, if you want (usually not necessary)
     // warehouse_products: warehouse.warehouse_products,

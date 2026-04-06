@@ -225,12 +225,12 @@ export default function Add_Warehouse_View() {
                         setWarehouseSelected({
                           ...warehouseSelected,
                           physical_address: formatted,
-                          geo: {
-                            formatted_address: formatted,
-                            lat,
-                            lng,
-                            place_id: details?.place_id ?? data?.place_id,
-                          },
+                          //   geo: {
+                          //     formatted_address: formatted,
+                          //     lat,
+                          //     lng,
+                          //     place_id: details?.place_id ?? data?.place_id,
+                          //   },
                         });
 
                         setSelectedAddress({
@@ -340,12 +340,12 @@ export default function Add_Warehouse_View() {
                           setWarehouseSelected({
                             ...warehouseSelected,
                             physical_address: formatted,
-                            geo: {
-                              formatted_address: formatted,
-                              lat,
-                              lng,
-                              place_id: details?.place_id ?? data?.place_id,
-                            },
+                            // geo: {
+                            //   formatted_address: formatted,
+                            //   lat,
+                            //   lng,
+                            //   place_id: details?.place_id ?? data?.place_id,
+                            // },
                           });
                           setSelectedAddress({
                             formatted_address: formatted,

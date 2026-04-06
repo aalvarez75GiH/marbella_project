@@ -27,6 +27,7 @@ export default function Warehouse_Inventory_View() {
   const theme = useTheme();
   const tabBarHeight = useBottomTabBarHeight();
   const route = useRoute();
+
   const { coming_from } = route?.params ?? {};
   console.log("COMING FROM PARAM:", coming_from);
 
@@ -48,7 +49,18 @@ export default function Warehouse_Inventory_View() {
   const { inventory } = warehouseSelected || {};
   console.log("INVENTORY FROM CONTEXT: ", JSON.stringify(inventory, null, 2));
 
+  const [scrollEnabled, setScrollEnabled] = useState(true);
+  const [error, setError] = useState(null);
+  const [editableInventory, setEditableInventory] = useState(inventory || {});
   const originalInventory = useRef(inventory || {});
+
+  useEffect(() => {
+    const nextInventory = warehouseSelected?.inventory || {};
+
+    setEditableInventory(nextInventory);
+    originalInventory.current = nextInventory;
+  }, [warehouseSelected?.warehouse_id]);
+
   const hasChanges = useMemo(() => {
     const original = originalInventory.current || {};
     const current = editableInventory || {};
@@ -67,15 +79,21 @@ export default function Warehouse_Inventory_View() {
     return false;
   }, [editableInventory]);
 
-  const [scrollEnabled, setScrollEnabled] = useState(true);
-  const [error, setError] = useState(null);
-  const [editableInventory, setEditableInventory] = useState(inventory || {});
+  const isCreateMode = coming_from === "add_cta";
+  const isEditMode = coming_from === "warehouse_tile";
+  const showUpdateCTA = isEditMode && hasChanges;
+  const shouldShowCTA = isCreateMode || showUpdateCTA;
 
-  const isCreate = coming_from === "add_cta";
-  const isUpdate = hasChanges && coming_from === "warehouse_tile";
-  const shouldShowCTA = isCreate || isUpdate;
+  console.log("HAS CHANGES:", hasChanges);
+  console.log("IS CREATE MODE:", isCreateMode);
+  console.log("IS EDIT MODE:", isEditMode);
+  console.log("SHOW UPDATE CTA:", showUpdateCTA);
+  console.log("SHOW  CTA:", shouldShowCTA);
 
-  console.log("WAREHOUSE ID FROM CONTEXT: ", warehouseSelected.warehouse_id);
+  console.log(
+    "WAREHOUSE SELECTED FROM CONTEXT: ",
+    JSON.stringify(warehouseSelected, null, 2)
+  );
 
   const groundProductsForUI = useMemo(() => {
     return buildInventoryProducts({
@@ -93,18 +111,6 @@ export default function Warehouse_Inventory_View() {
     });
   }, [productsCatalog, editableInventory]);
 
-  // console.log(
-  //   " GROUND INVENTORY EDITABLE FROM CONTEXT   :",
-  //   JSON.stringify(groundProductsForUI, null, 2)
-  // );
-  // console.log(
-  //   " INVENTORY PRODUCTS GROUND FROM CONTEXT   :",
-  //   JSON.stringify(inventoryProductsGround, null, 2)
-  // );
-  // console.log(
-  //   " WHOLE INVENTORY FOR UI   :",
-  //   JSON.stringify(wholeProductsForUI, null, 2)
-  // );
   console.log(
     " EDITABLE INVENTORY :",
     JSON.stringify(editableInventory, null, 2)
@@ -123,14 +129,18 @@ export default function Warehouse_Inventory_View() {
     try {
       console.log("CTA PRESSED");
 
-      if (isCreate) {
-        const res = await createWarehouse(warehouseSelected);
+      if (isCreateMode) {
+        const warehousePayload = {
+          ...warehouseSelected,
+          inventory: editableInventory,
+        };
+        const res = await createWarehouse(warehousePayload);
         showStatusSnackbar("Warehouse created successfully!");
         console.log("CREATE FINISHED:", res);
         return;
       }
 
-      if (isUpdate) {
+      if (isEditMode) {
         const res = await updateWarehouseInventory(
           warehouseSelected?.warehouse_id ?? warehouseSelected?.id,
           editableInventory
@@ -197,110 +207,7 @@ export default function Warehouse_Inventory_View() {
                 <Container width="30%" />
               )}
             </Container>
-            {/* <Container
-              width="100%"
-              color={theme.colors.bg.elements_bg}
-              //color={"red"}
-              // align="center"
-              align={!hasChanges ? "flex-start" : "center"}
-              // justify="space-around"
-              justify={!hasChanges ? "flex-start" : "space-around"}
-              direction="row"
-            >
-              <Spacer position="left" size="extraLarge">
-                <Text variant="raleway_bold_18" textAlign="center">
-                  Warehouse inventory
-                </Text>
-              </Spacer>
-              {hasChanges && coming_from === "warehouse_tile" && (
-                <Regular_CTA
-                  width="30%"
-                  height={40}
-                  color={theme.colors.ui.primary}
-                  border_radius={"40px"}
-                  caption={"Update"}
-                  caption_text_variant="dm_sans_bold_16_white"
-                  action={async () => {
-                    try {
-                      console.log("UPDATE CTA PRESSED");
-                      console.log(
-                        "WAREHOUSE ID:",
-                        warehouseSelected?.warehouse_id
-                      );
-                      console.log(
-                        "EDITABLE INVENTORY:",
-                        JSON.stringify(editableInventory, null, 2)
-                      );
 
-                      console.log(
-                        "WAREHOUSE ID BEFORE GOING TO CONTEXT:",
-                        warehouseSelected?.warehouse_id
-                      );
-                      const res = await updateWarehouseInventory(
-                        warehouseSelected?.warehouse_id,
-                        editableInventory
-                      );
-
-                      if (res.success) {
-                        showStatusSnackbar("Inventory updated successfully!");
-                      }
-
-                      console.log("UPDATE FINISHED");
-                    } catch (error) {
-                      console.log("UPDATE ERROR:", error?.message);
-                      console.log(
-                        "UPDATE ERROR RESPONSE:",
-                        error?.response?.data
-                      );
-                    }
-                  }}
-                />
-              )}
-              {coming_from === "add_cta" && (
-                <Regular_CTA
-                  width="30%"
-                  height={40}
-                  color={theme.colors.ui.primary}
-                  border_radius={"40px"}
-                  caption={"Create"}
-                  caption_text_variant="dm_sans_bold_16_white"
-                  action={async () => {
-                    try {
-                      console.log("UPDATE CTA PRESSED");
-                      console.log(
-                        "WAREHOUSE ID:",
-                        warehouseSelected?.warehouse_id
-                      );
-                      console.log(
-                        "EDITABLE INVENTORY:",
-                        JSON.stringify(editableInventory, null, 2)
-                      );
-
-                      console.log(
-                        "WAREHOUSE ID BEFORE GOING TO CONTEXT:",
-                        warehouseSelected?.warehouse_id
-                      );
-                      const res = await updateWarehouseInventory(
-                        warehouseSelected?.warehouse_id,
-                        editableInventory
-                      );
-
-                      if (res.success) {
-                        showStatusSnackbar("Inventory updated successfully!");
-                      }
-
-                      console.log("UPDATE FINISHED");
-                    } catch (error) {
-                      console.log("UPDATE ERROR:", error?.message);
-                      console.log(
-                        "UPDATE ERROR RESPONSE:",
-                        error?.response?.data
-                      );
-                    }
-                  }}
-                />
-              )}
-            </Container> */}
             <Spacer position="top" size="large" />
             <Spacer position="top" size="large" />
             <ScrollView
