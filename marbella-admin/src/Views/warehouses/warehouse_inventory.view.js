@@ -1,14 +1,7 @@
 import React, { useContext, useState, useMemo, useRef, useEffect } from "react";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Keyboard,
-} from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
-import { Snackbar } from "react-native-paper";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import { Container } from "../../components/containers/general.containers.js";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header.js";
@@ -16,35 +9,28 @@ import { SafeArea } from "../../components/spacers and globals/safe-area.compone
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component.js";
 import { Text } from "../../infrastructure/typography/text.component.js";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component.js";
-import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 import { Inventory_Accordion } from "../../components/others/inventory_accordion.component.js";
 
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context.js";
-import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
 
 export default function Warehouse_Inventory_View() {
   const navigation = useNavigation();
   const theme = useTheme();
-  const tabBarHeight = useBottomTabBarHeight();
-  const route = useRoute();
-
-  const { coming_from } = route?.params ?? {};
-  console.log("COMING FROM PARAM:", coming_from);
 
   const {
     warehouseSelected,
+    setWarehouseSelected,
     productsCatalog,
     buildInventoryProducts,
-    updateWarehouseInventory,
     isLoading,
   } = useContext(WarehouseContext);
 
-  const {
-    statusSnackbarVisible,
-    setStatusSnackbarVisible,
-    statusSnackbarMessage,
-    showStatusSnackbar,
-  } = useContext(GlobalContext);
+  const syncInventoryToWarehouseDraft = () => {
+    setWarehouseSelected((prev) => ({
+      ...prev,
+      inventory: editableInventory,
+    }));
+  };
 
   const { inventory } = warehouseSelected || {};
   console.log("INVENTORY FROM CONTEXT: ", JSON.stringify(inventory, null, 2));
@@ -60,35 +46,6 @@ export default function Warehouse_Inventory_View() {
     setEditableInventory(nextInventory);
     originalInventory.current = nextInventory;
   }, [warehouseSelected?.warehouse_id]);
-
-  const hasChanges = useMemo(() => {
-    const original = originalInventory.current || {};
-    const current = editableInventory || {};
-
-    const allKeys = new Set([
-      ...Object.keys(original),
-      ...Object.keys(current),
-    ]);
-
-    for (let key of allKeys) {
-      if (Number(original[key] || 0) !== Number(current[key] || 0)) {
-        return true;
-      }
-    }
-
-    return false;
-  }, [editableInventory]);
-
-  const isCreateMode = coming_from === "add_cta";
-  const isEditMode = coming_from === "warehouse_tile";
-  const showUpdateCTA = isEditMode && hasChanges;
-  const shouldShowCTA = isCreateMode || showUpdateCTA;
-
-  console.log("HAS CHANGES:", hasChanges);
-  console.log("IS CREATE MODE:", isCreateMode);
-  console.log("IS EDIT MODE:", isEditMode);
-  console.log("SHOW UPDATE CTA:", showUpdateCTA);
-  console.log("SHOW  CTA:", shouldShowCTA);
 
   console.log(
     "WAREHOUSE SELECTED FROM CONTEXT: ",
@@ -125,35 +82,6 @@ export default function Warehouse_Inventory_View() {
     }));
   };
 
-  const handleInventoryCTA = async () => {
-    try {
-      console.log("CTA PRESSED");
-
-      if (isCreateMode) {
-        const warehousePayload = {
-          ...warehouseSelected,
-          inventory: editableInventory,
-        };
-        const res = await createWarehouse(warehousePayload);
-        showStatusSnackbar("Warehouse created successfully!");
-        console.log("CREATE FINISHED:", res);
-        return;
-      }
-
-      if (isEditMode) {
-        const res = await updateWarehouseInventory(
-          warehouseSelected?.warehouse_id ?? warehouseSelected?.id,
-          editableInventory
-        );
-        showStatusSnackbar("Inventory updated successfully!");
-        console.log("UPDATE FINISHED:", res);
-      }
-    } catch (error) {
-      console.log("ERROR:", error?.message);
-      console.log("ERROR RESPONSE:", error?.response?.data);
-    }
-  };
-
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -176,14 +104,20 @@ export default function Warehouse_Inventory_View() {
             justify="flex-start"
             align="center"
           >
-            <Go_Back_Header label="" action={() => navigation.goBack()} />
+            <Go_Back_Header
+              label=""
+              action={() => {
+                syncInventoryToWarehouseDraft();
+                navigation.goBack();
+              }}
+            />
             <Spacer position="top" size="large" />
             <Spacer position="top" size="large" />
             <Container
               width="100%"
               color={theme.colors.bg.elements_bg}
               align="center"
-              justify="space-around"
+              justify="flex-start"
               direction="row"
             >
               <Spacer position="left" size="extraLarge">
@@ -191,21 +125,6 @@ export default function Warehouse_Inventory_View() {
                   Warehouse inventory
                 </Text>
               </Spacer>
-
-              {shouldShowCTA ? (
-                <Regular_CTA
-                  width="30%"
-                  height={40}
-                  color={theme.colors.ui.primary}
-                  border_radius={"40px"}
-                  caption={coming_from === "add_cta" ? "Create" : "Update"}
-                  caption_text_variant="dm_sans_bold_16_white"
-                  action={async () => handleInventoryCTA()}
-                />
-              ) : (
-                // 👇 keeps layout stable when CTA is hidden
-                <Container width="30%" />
-              )}
             </Container>
 
             <Spacer position="top" size="large" />
@@ -247,28 +166,6 @@ export default function Warehouse_Inventory_View() {
           </Container>
         </KeyboardAvoidingView>
       )}
-      <>
-        <Snackbar
-          visible={statusSnackbarVisible}
-          onDismiss={() => setStatusSnackbarVisible(false)}
-          duration={Number.POSITIVE_INFINITY}
-          action={{
-            label: "Close",
-            onPress: () => {
-              setStatusSnackbarVisible(false);
-              navigation.popToTop();
-            },
-          }}
-          style={{
-            minHeight: 80,
-            marginHorizontal: 10,
-            marginBottom: tabBarHeight,
-            backgroundColor: theme.colors.ui.primary,
-          }}
-        >
-          {statusSnackbarMessage}
-        </Snackbar>
-      </>
     </SafeArea>
   );
 }

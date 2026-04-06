@@ -173,9 +173,23 @@ export const Warehouse_Context_Provider = ({ children }) => {
     }
   };
 
+  // const handleChangeVariantQty = (productId, variantId, value) => {
+  //   const sku = `${productId}:${variantId}`;
+
+  //   setWarehouseSelected((prev) => ({
+  //     ...prev,
+  //     inventory: {
+  //       ...(prev?.inventory || {}),
+  //       [sku]: Number(value || 0),
+  //     },
+  //   }));
+  // };
+
   const createWarehouse = async (warehoseToCreate) => {
     // TODO: implement create warehouse function that calls the API and updates the warehouses state
   };
+
+  const updateWarehouse = async (warehouse) => {};
 
   return (
     <WarehouseContext.Provider
@@ -191,6 +205,8 @@ export const Warehouse_Context_Provider = ({ children }) => {
         buildInventoryProducts,
         // gettingWarehouseByID,
         updateWarehouseInventory,
+
+        // handleChangeVariantQty,
       }}
     >
       {children}

@@ -1,4 +1,4 @@
-import React, { use, useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState, useRef, useMemo } from "react";
 import {
   FlatList,
   View,
@@ -46,6 +46,34 @@ export default function Warehouse_Details_View() {
   console.log("COMING FROM AT DETAILS WAREHOUSE:", coming_from);
   const { warehouseSelected, setWarehouseSelected } =
     useContext(WarehouseContext);
+
+  const originalWarehouseRef = useRef(null);
+
+  useEffect(() => {
+    if (coming_from !== "warehouse_tile") return;
+    if (!warehouseSelected?.warehouse_id) return;
+    if (originalWarehouseRef.current) return;
+
+    originalWarehouseRef.current = JSON.parse(
+      JSON.stringify(warehouseSelected)
+    );
+  }, [coming_from, warehouseSelected]);
+
+  const hasChanges = useMemo(() => {
+    if (coming_from === "add_cta") return true;
+
+    const original = originalWarehouseRef.current;
+    const current = warehouseSelected;
+
+    if (!original || !current) return false;
+
+    return JSON.stringify(original) !== JSON.stringify(current);
+  }, [coming_from, warehouseSelected]);
+
+  const isCreateMode = coming_from === "add_cta";
+  const isEditMode = coming_from === "warehouse_tile";
+  const shouldShowCTA = isCreateMode || (isEditMode && hasChanges);
+
   const [isWarehouseNameFocused, setWarehouseNameFocused] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [addressText, setAddressText] = useState("");
@@ -101,7 +129,6 @@ export default function Warehouse_Details_View() {
   };
 
   console.log("PLACES QUERY:", placesQuery);
-
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -119,6 +146,30 @@ export default function Warehouse_Details_View() {
           align="center"
         >
           <Go_Back_Header label="" action={() => navigation.goBack()} />
+
+          <Container
+            width="100%"
+            color={theme.colors.bg.elements_bg}
+            align="center"
+            justify="flex-end"
+            direction="row"
+            style={{ marginRight: 20, marginTop: 10 }}
+          >
+            {shouldShowCTA ? (
+              <Regular_CTA
+                width="30%"
+                height={40}
+                color={theme.colors.ui.primary}
+                border_radius={"40px"}
+                caption={coming_from === "add_cta" ? "Create" : "Update"}
+                caption_text_variant="dm_sans_bold_16_white"
+                action={async () => null}
+              />
+            ) : (
+              // 👇 keeps layout stable when CTA is hidden
+              <Container width="30%" />
+            )}
+          </Container>
 
           <ScrollView
             style={{ flex: 1, width: "100%" }}
