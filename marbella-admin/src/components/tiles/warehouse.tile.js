@@ -14,7 +14,7 @@ import { GlobalContext } from "../../infrastructure/services/global/global.conte
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context.js";
 
 export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
-  console.log("WAREHOUSE INFO TILE:", item);
+  //   console.log("WAREHOUSE INFO TILE:", item);
   const { warehouse_information } = item || {};
   const { email, phone, opening_time, closing_time } =
     warehouse_information || {};

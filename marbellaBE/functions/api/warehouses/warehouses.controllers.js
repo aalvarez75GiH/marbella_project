@@ -202,6 +202,41 @@ const updateWarehouseInventory = async (warehouse_id, inventory) => {
   return updatedSnap.data();
 };
 
+const updateWarehouse = async (warehouse_id, warehouse) => {
+  if (!warehouse_id) {
+    throw new Error("warehouse_id is required");
+  }
+
+  const warehouseRef = firebase_controller.db
+    .collection("warehouses")
+    .doc(warehouse_id);
+
+  const warehouseSnap = await warehouseRef.get();
+
+  if (!warehouseSnap.exists) {
+    throw new Error("Warehouse not found");
+  }
+
+  const payload = {
+    warehouse_name: warehouse.warehouse_name ?? "",
+    warehouse_id,
+    active: warehouse.active ?? true,
+    max_delivery_time: Number(warehouse.max_delivery_time ?? 0),
+    max_limit_delivery_ratio: Number(warehouse.max_limit_delivery_ratio ?? 0),
+    max_limit_pickup_ratio: Number(warehouse.max_limit_pickup_ratio ?? 0),
+    physical_address: warehouse.physical_address ?? "",
+    geo: warehouse.geo ?? null,
+    warehouse_information: warehouse.warehouse_information ?? {},
+    inventory: warehouse.inventory ?? {},
+    updatedAt: new Date().toISOString(),
+  };
+
+  await warehouseRef.update(payload);
+
+  const updatedSnap = await warehouseRef.get();
+  return updatedSnap.data();
+};
+
 module.exports = {
   getAllWarehouses,
   getActiveWarehouses,
@@ -209,4 +244,5 @@ module.exports = {
   getWarehouseById,
   decrementWarehouseInventoryFromOrder,
   updateWarehouseInventory,
+  updateWarehouse,
 };

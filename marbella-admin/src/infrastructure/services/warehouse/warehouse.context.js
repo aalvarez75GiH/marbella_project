@@ -9,6 +9,7 @@ import {
   gettingWarehouseByIDRequest,
   gettingAllWarehousesRequest,
   updatingWarehouseInventoryRequest,
+  updateWarehouseRequest,
 } from "./warehouse.services";
 
 import { GlobalContext } from "../global/global.context";
@@ -189,7 +190,37 @@ export const Warehouse_Context_Provider = ({ children }) => {
     // TODO: implement create warehouse function that calls the API and updates the warehouses state
   };
 
-  const updateWarehouse = async (warehouse) => {};
+  const updateWarehouse = async (warehouse) => {
+    setIsLoading(true);
+    try {
+      const warehouseUpdated = await updateWarehouseRequest(warehouse);
+      console.log(
+        "WAREHOUSE UPDATE RESPONSE:",
+        JSON.stringify(warehouseUpdated, null, 2)
+      );
+      if (warehouseUpdated && warehouseUpdated.warehouse_id) {
+        setWarehouseSelected(warehouseUpdated);
+        // Optionally update the warehouses list if needed
+        return {
+          success: true,
+          warehouse: warehouseUpdated,
+          error: null,
+        };
+      }
+      if (!warehouseUpdated || !warehouseUpdated.warehouse_id) {
+        return {
+          success: false,
+          warehouse: warehouseSelected,
+          error: new Error("Failed to update warehouse"),
+        };
+      }
+    } catch (error) {
+      console.error("Error updating warehouse:", error);
+      setError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <WarehouseContext.Provider
@@ -205,6 +236,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
         buildInventoryProducts,
         // gettingWarehouseByID,
         updateWarehouseInventory,
+        updateWarehouse,
 
         // handleChangeVariantQty,
       }}

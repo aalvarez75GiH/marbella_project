@@ -15,7 +15,7 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 export default function Warehouses_View() {
   const navigation = useNavigation();
   const { warehouses } = useContext(WarehouseContext);
-  console.log("WAREHOUSES:", warehouses);
+  //   console.log("WAREHOUSES:", warehouses);
 
   const renderingWarehousesFromBackendTile = ({ item }) => {
     const { warehouse_name, geo } = item;

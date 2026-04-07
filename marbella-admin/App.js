@@ -20,10 +20,10 @@ export default function App() {
     const logAsyncStorageKeys = async () => {
       try {
         const keys = await AsyncStorage.getAllKeys();
-        console.log("📦 AsyncStorage KEYS:", JSON.stringify(keys, null, 2));
+        // console.log("📦 AsyncStorage KEYS:", JSON.stringify(keys, null, 2));
         const entries = await AsyncStorage.multiGet(keys);
         entries.forEach(([key, value]) => {
-          console.log(`🧩 ${key}:`, JSON.stringify(value, null, 2));
+          // console.log(`🧩 ${key}:`, JSON.stringify(value, null, 2));
         });
       } catch (e) {
         console.log("❌ Error reading AsyncStorage keys:", e);

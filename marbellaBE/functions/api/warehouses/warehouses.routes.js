@@ -119,7 +119,26 @@ warehousesRouter.post("/createWarehouse", async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
-// Create a new warehouse
+
+// Update a existing warehouse
+warehousesRouter.put("/updateWarehouse", async (req, res) => {
+  const warehouseToUpdate = req.body;
+  const warehouse_id = warehouseToUpdate.warehouse_id;
+  try {
+    if (!warehouse_id) {
+      return res.status(400).json({ error: "warehouse_id is required" });
+    }
+    const warehouseUpdated = await warehousesControllers.updateWarehouse(
+      warehouse_id,
+      warehouseToUpdate
+    );
+    return res.status(200).json(warehouseUpdated);
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+});
+
+// Update warehouse inventory
 warehousesRouter.patch("/updateWarehouseInventory", async (req, res) => {
   const warehouse_id = req.query.warehouse_id;
   const inventory = req.body.inventory;
