@@ -38,11 +38,13 @@ export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
           setWarehouseSelected({
             warehouse_name: item?.warehouse_name || "",
             warehouse_id: item?.warehouse_id || "",
-            active: item?.active || true,
+            // active: item?.active || true,
+            active: item?.active ?? true,
             max_delivery_time: item?.max_delivery_time || 60,
             max_limit_delivery_ratio: item?.max_limit_delivery_ratio || 32186.8,
             max_limit_pickup_ratio: item?.max_limit_pickup_ratio || 32186.8,
             physical_address: item?.geo.formatted_address,
+            geo: item?.geo || {},
             warehouse_information: {
               representative: item?.warehouse_information.representative,
               email: item?.warehouse_information.email,
@@ -52,7 +54,7 @@ export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
               closing_time:
                 item?.warehouse_information.closing_time || "08:00 PM",
             },
-            inventory: item?.inventory || [],
+            inventory: item?.inventory || {},
           }),
             navigation.navigate("Warehouse_Details_View", {
               coming_from: "warehouse_tile",

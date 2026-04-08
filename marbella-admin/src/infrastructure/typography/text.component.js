@@ -288,6 +288,11 @@ font-size: ${theme.fontSizes.text_14};
 font-family: ${theme.fonts.ralewayBold};
 color: ${theme.colors.text.black};
 `;
+const raleway_bold_14_regular = (theme) => `
+font-size: ${theme.fontSizes.text_14};
+font-family: ${theme.fonts.ralewayRegular};
+color: ${theme.colors.text.black};
+`;
 const raleway_bold_14_white = (theme) => `
 font-size: ${theme.fontSizes.text_14};
 font-family: ${theme.fonts.ralewayBold};
@@ -365,6 +370,7 @@ const variants = {
   raleway_medium_16_white,
   raleway_bold_14,
   raleway_bold_14_white,
+  raleway_bold_14_regular,
   raleway_bold_12_white,
   raleway_bold_10,
   raleway_bold_10_white,

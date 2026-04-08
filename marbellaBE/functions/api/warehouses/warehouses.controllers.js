@@ -69,6 +69,7 @@ const createWarehouse = async (warehouse) => {
   const payload = {
     // include only what you want to persist
     warehouse_name: warehouse.warehouse_name,
+    physical_address: fullAddress,
     // location: warehouse.location,
     geo: {
       address_input: fullAddress,
@@ -206,7 +207,11 @@ const updateWarehouse = async (warehouse_id, warehouse) => {
   if (!warehouse_id) {
     throw new Error("warehouse_id is required");
   }
+  const fullAddress = warehouse.physical_address;
 
+  // ✅ Forward geocode
+  // Use the same key variable you already have in your routes/controllers.
+  const geo = await forwardGeocodeAddress(fullAddress, key);
   const warehouseRef = firebase_controller.db
     .collection("warehouses")
     .doc(warehouse_id);
@@ -225,7 +230,8 @@ const updateWarehouse = async (warehouse_id, warehouse) => {
     max_limit_delivery_ratio: Number(warehouse.max_limit_delivery_ratio ?? 0),
     max_limit_pickup_ratio: Number(warehouse.max_limit_pickup_ratio ?? 0),
     physical_address: warehouse.physical_address ?? "",
-    geo: warehouse.geo ?? null,
+    // geo: warehouse.geo ?? null,
+    geo: geo ?? null,
     warehouse_information: warehouse.warehouse_information ?? {},
     inventory: warehouse.inventory ?? {},
     updatedAt: new Date().toISOString(),

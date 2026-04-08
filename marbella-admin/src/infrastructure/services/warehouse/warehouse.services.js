@@ -119,3 +119,32 @@ export const updateWarehouseRequest = async (warehouseData) => {
     throw error;
   }
 };
+export const createdWarehouseRequest = async (warehouseData) => {
+  const { warehouseEndPoint } = environment;
+
+  try {
+    try {
+      const res = await axios.post(
+        `${warehouseEndPoint}/createWarehouse`,
+        warehouseData,
+        {
+          timeout: 15000,
+        }
+      );
+      console.log(
+        "WAREHOUSE UPDATE RESPONSE:",
+        JSON.stringify(res.data, null, 2)
+      );
+      return res.data;
+    } catch (error) {
+      console.log("AXIOS message:", error.message);
+      console.log("AXIOS code:", error.code);
+      console.log("AXIOS status:", error.response?.status);
+      console.log("AXIOS data:", error.response?.data);
+      throw error;
+    }
+  } catch (error) {
+    console.error("Error updating warehouse:", error);
+    throw error;
+  }
+};

@@ -10,6 +10,7 @@ import {
   gettingAllWarehousesRequest,
   updatingWarehouseInventoryRequest,
   updateWarehouseRequest,
+  createdWarehouseRequest,
 } from "./warehouse.services";
 
 import { GlobalContext } from "../global/global.context";
@@ -29,6 +30,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
     max_limit_delivery_ratio: 32186.8,
     max_limit_pickup_ratio: 32186.8,
     physical_address: "",
+    geo: {},
     warehouse_information: {
       representative: {
         name: "",
@@ -186,8 +188,53 @@ export const Warehouse_Context_Provider = ({ children }) => {
   //   }));
   // };
 
-  const createWarehouse = async (warehoseToCreate) => {
+  // TODO: createWarehouse and updateWarehouse functions that call the API and update the warehouses state accordingly
+  const createWarehouse = async (warehouseToCreate) => {
     // TODO: implement create warehouse function that calls the API and updates the warehouses state
+    setIsLoading(true);
+    try {
+      const warehouseCreated = await createdWarehouseRequest(warehouseToCreate);
+      console.log(
+        "WAREHOUSE UPDATE RESPONSE:",
+        JSON.stringify(warehouseCreated, null, 2)
+      );
+      if (warehouseCreated && warehouseCreated.warehouse_id) {
+        setWarehouseSelected(warehouseCreated);
+        setWarehouses((prev) => {
+          const exists = prev.some(
+            (item) => item.warehouse_id === warehouseCreated.warehouse_id
+          );
+
+          if (exists) {
+            return prev.map((item) =>
+              item.warehouse_id === warehouseCreated.warehouse_id
+                ? warehouseCreated
+                : item
+            );
+          }
+
+          return [warehouseCreated, ...prev];
+        });
+        // setWarehouses((prev) => [warehouseCreated, ...prev]);
+        // Optionally update the warehouses list if needed
+        return {
+          success: true,
+          warehouse: warehouseCreated,
+          error: null,
+        };
+      }
+      if (!warehouseCreated || !warehouseCreated.warehouse_id) {
+        return {
+          success: false,
+          error: new Error("Failed to update warehouse"),
+        };
+      }
+    } catch (error) {
+      console.error("Error updating warehouse:", error);
+      setError(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const updateWarehouse = async (warehouse) => {
@@ -200,7 +247,13 @@ export const Warehouse_Context_Provider = ({ children }) => {
       );
       if (warehouseUpdated && warehouseUpdated.warehouse_id) {
         setWarehouseSelected(warehouseUpdated);
-        // Optionally update the warehouses list if needed
+        setWarehouses((prev) =>
+          prev.map((item) =>
+            item.warehouse_id === warehouseUpdated.warehouse_id
+              ? warehouseUpdated
+              : item
+          )
+        );
         return {
           success: true,
           warehouse: warehouseUpdated,
@@ -237,6 +290,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
         // gettingWarehouseByID,
         updateWarehouseInventory,
         updateWarehouse,
+        createWarehouse,
 
         // handleChangeVariantQty,
       }}

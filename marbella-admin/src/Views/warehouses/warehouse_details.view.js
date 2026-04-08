@@ -1,9 +1,6 @@
 import React, { useContext, useEffect, useState, useRef, useMemo } from "react";
 import {
-  FlatList,
   View,
-  SectionList,
-  StyleSheet,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -15,20 +12,18 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import { Checkbox } from "react-native-paper";
 
 import {
   Container,
   Action_Container,
 } from "../../components/containers/general.containers";
-import { Just_Caption_Header } from "../../components/headers/just_caption.header.js";
-import { Exit_Header_With_Label } from "../../components/headers/exit_with_label.header";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header.js";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 import { Text } from "../../infrastructure/typography/text.component";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { DataInput } from "../../components/inputs/data_text_input.js";
-import { Underlined_CTA } from "../../components/ctas/underlined.cta.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 
 import RightArrowIcon from "../../../assets/my_icons/chevron-right.svg";
@@ -48,6 +43,7 @@ export default function Warehouse_Details_View() {
     warehouseSelected,
     setWarehouseSelected,
     updateWarehouse,
+    createWarehouse,
     isLoading,
   } = useContext(WarehouseContext);
 
@@ -82,8 +78,8 @@ export default function Warehouse_Details_View() {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [addressText, setAddressText] = useState("");
   const [scrollEnabled, setScrollEnabled] = useState(true);
-
   const [error, setError] = useState(null);
+  const [checked, setChecked] = useState(warehouseSelected?.active ?? true);
 
   const warehouseNameInputRef = useRef(null);
   const addressDataInputRef = useRef(null);
@@ -133,6 +129,12 @@ export default function Warehouse_Details_View() {
   };
 
   console.log("PLACES QUERY:", placesQuery);
+  console.log(
+    "WAREHOUSE ACTIVE VALUE:",
+    warehouseSelected?.active,
+    "TYPE:",
+    typeof warehouseSelected?.active
+  );
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -181,7 +183,23 @@ export default function Warehouse_Details_View() {
                     if (isEditMode) {
                       const { success, warehouse, error } =
                         await updateWarehouse(warehouseSelected); // pass true for create mode
-
+                      console.log(
+                        "UPDATE WAREHOUSE RESULT:",
+                        JSON.stringify(warehouse, null, 2)
+                      );
+                      if (success) {
+                        navigation.popToTop();
+                      } else {
+                        setError(error || "Failed to create warehouse");
+                      }
+                    }
+                    if (isCreateMode) {
+                      const { success, warehouse, error } =
+                        await createWarehouse(warehouseSelected); // pass true for create mode
+                      console.log(
+                        "CREATE WAREHOUSE RESULT:",
+                        JSON.stringify(warehouse, null, 2)
+                      );
                       if (success) {
                         navigation.popToTop();
                       } else {
@@ -516,11 +534,11 @@ export default function Warehouse_Details_View() {
                   underlineColor={theme.colors.inputs.bottom_lines_disabled}
                   border_width={"0.3px"}
                   activeUnderlineColor={theme.colors.ui.primary}
-                  keyboardType="default"
-                  autoCapitalize="words"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
                   autoCorrect={false}
-                  textContentType="givenName"
-                  autoComplete="name"
+                  textContentType="emailAddress"
+                  autoComplete="email"
                   returnKeyType="done"
                   blurOnSubmit
                   style={{
@@ -551,11 +569,13 @@ export default function Warehouse_Details_View() {
                   underlineColor={theme.colors.inputs.bottom_lines_disabled}
                   border_width={"0.3px"}
                   activeUnderlineColor={theme.colors.ui.primary}
-                  keyboardType="default"
-                  autoCapitalize="words"
+                  keyboardType={
+                    Platform.OS === "ios" ? "number-pad" : "phone-pad"
+                  }
+                  autoCapitalize="none"
                   autoCorrect={false}
-                  textContentType="givenName"
-                  autoComplete="name"
+                  textContentType="telephoneNumber"
+                  autoComplete="tel"
                   returnKeyType="done"
                   blurOnSubmit
                   style={{
@@ -635,6 +655,148 @@ export default function Warehouse_Details_View() {
                     fontSize: 16,
                   }}
                 />
+                <Spacer position="top" size="medium" />
+                <Action_Container
+                  width="95%"
+                  // height="15%"
+                  padding_vertical="25px"
+                  color={theme.colors.bg.screens_bg}
+                  // color={"lightgreen"}
+                  justify="center"
+                  align="flex-start"
+                  direction="row"
+                  onPress={() => {
+                    setWarehouseSelected({
+                      ...warehouseSelected,
+                      active: warehouseSelected?.active === true ? false : true,
+                    });
+                  }}
+                >
+                  <Container
+                    width="75%"
+                    style={{ alignSelf: "stretch" }}
+                    color={theme.colors.bg.screens_bg}
+                    justify="center"
+                    align="flex-start"
+                  >
+                    <Spacer position="left" size="large">
+                      <Text variant="raleway_bold_18">Warehouse active</Text>
+                    </Spacer>
+                    <Spacer position="left" size="large">
+                      <Text variant="raleway_bold_14_regular">
+                        (Tap to change status)
+                      </Text>
+                    </Spacer>
+                  </Container>
+                  <Container
+                    width="25%"
+                    style={{ alignSelf: "stretch" }}
+                    color={theme.colors.bg.screens_bg}
+                    //color={"green"}
+                    justify="center"
+                    align="flex-end"
+                  >
+                    <Checkbox
+                      color={theme.colors.ui.primary}
+                      uncheckedColor="#A5A5A5"
+                      status={
+                        warehouseSelected?.active === true
+                          ? "checked"
+                          : "unchecked"
+                      }
+                      onPress={() => {
+                        setWarehouseSelected({
+                          ...warehouseSelected,
+                          active:
+                            warehouseSelected?.active === true ? false : true,
+                        });
+                      }}
+                    />
+                    {/* <RightArrowIcon width={20} height={20} /> */}
+                  </Container>
+                  <Spacer position="top" size="medium" />
+                </Action_Container>
+                {coming_from === "add_cta" && (
+                  <Action_Container
+                    width="95%"
+                    // height="15%"
+                    padding_vertical="25px"
+                    color={theme.colors.bg.screens_bg}
+                    // color={"lightgreen"}
+                    justify="center"
+                    align="flex-start"
+                    direction="row"
+                    onPress={() =>
+                      navigation.navigate("Warehouse_Representative_View")
+                    }
+                  >
+                    <Container
+                      width="75%"
+                      style={{ alignSelf: "stretch" }}
+                      color={theme.colors.bg.screens_bg}
+                      //   color={"red"}
+                      justify="center"
+                      align="flex-start"
+                    >
+                      <Spacer position="left" size="large">
+                        <Text variant="raleway_bold_18">
+                          Warehouse Representative
+                        </Text>
+                      </Spacer>
+                    </Container>
+                    <Container
+                      width="25%"
+                      style={{ alignSelf: "stretch" }}
+                      color={theme.colors.bg.screens_bg}
+                      //   color={"blue"}
+                      justify="center"
+                      align="flex-end"
+                    >
+                      <RightArrowIcon width={20} height={20} />
+                    </Container>
+                  </Action_Container>
+                )}
+                <Spacer position="top" size="medium" />
+                {coming_from === "warehouse_tile" && (
+                  <Action_Container
+                    width="95%"
+                    // height="15%"
+                    padding_vertical="25px"
+                    color={theme.colors.bg.screens_bg}
+                    // color={"lightgreen"}
+                    justify="center"
+                    align="flex-start"
+                    direction="row"
+                    onPress={() =>
+                      navigation.navigate("Warehouse_Representative_View")
+                    }
+                  >
+                    <Container
+                      width="75%"
+                      style={{ alignSelf: "stretch" }}
+                      color={theme.colors.bg.screens_bg}
+                      //   color={"red"}
+                      justify="center"
+                      align="flex-start"
+                    >
+                      <Spacer position="left" size="large">
+                        <Text variant="raleway_bold_18">
+                          Warehouse Representative
+                        </Text>
+                      </Spacer>
+                    </Container>
+                    <Container
+                      width="25%"
+                      style={{ alignSelf: "stretch" }}
+                      color={theme.colors.bg.screens_bg}
+                      //   color={"blue"}
+                      justify="center"
+                      align="flex-end"
+                    >
+                      <RightArrowIcon width={20} height={20} />
+                    </Container>
+                  </Action_Container>
+                )}
                 <Spacer position="top" size="medium" />
                 <Action_Container
                   width="95%"

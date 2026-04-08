@@ -37,7 +37,8 @@ export default function Warehouses_View() {
       <Back_And_Add_Header
         action_1={() => navigation.goBack()}
         action_2={() =>
-          navigation.navigate("Add_Warehouse_View", {
+          //   navigation.navigate("Add_Warehouse_View", {
+          navigation.navigate("Warehouse_Details_View", {
             coming_from: "add_cta",
           })
         }
