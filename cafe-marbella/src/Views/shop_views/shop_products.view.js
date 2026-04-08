@@ -94,7 +94,9 @@ export default function Shop_Products_View() {
 
                 // setTimeout(async () => {
                 setProductsChosenForShop(shopProductsWhole);
-                navigation.navigate("Home_View");
+                navigation.navigate("Home_View", {
+                  coming_from: "whole_beans",
+                });
                 // }, 200);
               }}
             >
@@ -156,7 +158,9 @@ export default function Shop_Products_View() {
 
                 // setTimeout(async () => {
                 setProductsChosenForShop(shopProductsGround);
-                navigation.navigate("Home_View");
+                navigation.navigate("Home_View", {
+                  coming_from: "ground_beans",
+                });
                 // }, 0);
               }}
             >

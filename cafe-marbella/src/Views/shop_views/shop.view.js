@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { FlatList } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
@@ -15,7 +15,8 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 export default function Shop_View() {
   const navigation = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
-
+  const route = useRoute();
+  const { coming_from } = route.params || {};
   const { productsChosenForShop } = useContext(WarehouseContext);
   // const data = productsChosenForShop.length > 0 ? productsChosenForShop : [];
   const data = Array.isArray(productsChosenForShop)
@@ -49,7 +50,11 @@ export default function Shop_View() {
         <Go_Back_Header_With_Label_And_Menu
           action_1={() => navigation.navigate("Shop_Products_View")}
           action_2={() => navigation.navigate("Menu_View")}
-          label="Whole bean coffee"
+          label={
+            coming_from === "whole_beans"
+              ? "Whole beans coffee"
+              : "Ground beans coffee"
+          }
         />
         <Spacer position="top" size="large" />
         {/* <Product_Initial_Card /> */}

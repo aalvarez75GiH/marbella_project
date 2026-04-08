@@ -18,6 +18,7 @@ import { Global_activity_indicator } from "../../components/activity indicators/
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
 import { GlobalContext } from "../../infrastructure/services/global/global.context";
+import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
 
 export default function Menu_View() {
   const theme = useTheme();
@@ -34,6 +35,8 @@ export default function Menu_View() {
 
   const { globalLanguage, togglingGlobalLanguage, isLoading } =
     useContext(GlobalContext);
+  const { myWarehouse } = useContext(WarehouseContext);
+  const { warehouse_name } = myWarehouse || {};
 
   return (
     <NewSafeArea
@@ -148,6 +151,10 @@ export default function Menu_View() {
             <Menu_Tile
               caption="Sign out"
               action={() => navigation.navigate("Sign_Out_Overlay_View")}
+            />
+            <Menu_Tile
+              caption={`Connected to warehouse: ${warehouse_name}`}
+              action={() => null}
             />
             <Menu_Tile caption="" action={() => null} disabled={true} />
           </ScrollView>
