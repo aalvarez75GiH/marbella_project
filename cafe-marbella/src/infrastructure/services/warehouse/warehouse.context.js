@@ -117,9 +117,48 @@ export const Warehouse_Context_Provider = ({ children }) => {
     }
   };
   // Getting all products of the closest warehouse not matter stock
+  // const getWarehouseProductsAll = (catalogProducts, warehouse, grindType) => {
+  //   return catalogProducts
+  //     .filter((p) => p.grindType === grindType)
+  //     .map((p) => {
+  //       const variantsWithStock = (p.size_variants ?? []).map((v) => ({
+  //         ...v,
+  //         stock: getStock(warehouse, p.id, v.id),
+  //       }));
+
+  //       const totalStock = variantsWithStock.reduce(
+  //         (sum, v) => sum + (v.stock ?? 0),
+  //         0
+  //       );
+
+  //       return {
+  //         ...p,
+  //         size_variants: variantsWithStock,
+  //         totalStock,
+  //         inStock: totalStock > 0,
+  //       };
+  //     });
+  // };
+
   const getWarehouseProductsAll = (catalogProducts, warehouse, grindType) => {
+    const roastOrder = {
+      light: 1,
+      medium: 2,
+      dark: 3,
+    };
+
     return catalogProducts
-      .filter((p) => p.grindType === grindType)
+      .filter((p) => {
+        const productGrindType = String(p?.grindType || "")
+          .trim()
+          .toLowerCase();
+        const requestedGrindType = String(grindType || "")
+          .trim()
+          .toLowerCase();
+        const isActive = p?.active !== false;
+
+        return productGrindType === requestedGrindType && isActive;
+      })
       .map((p) => {
         const variantsWithStock = (p.size_variants ?? []).map((v) => ({
           ...v,
@@ -127,7 +166,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
         }));
 
         const totalStock = variantsWithStock.reduce(
-          (sum, v) => sum + (v.stock ?? 0),
+          (sum, v) => sum + Number(v.stock ?? 0),
           0
         );
 
@@ -137,6 +176,41 @@ export const Warehouse_Context_Provider = ({ children }) => {
           totalStock,
           inStock: totalStock > 0,
         };
+      })
+      .sort((a, b) => {
+        const aPriority = Number(a?.priority ?? Number.MAX_SAFE_INTEGER);
+        const bPriority = Number(b?.priority ?? Number.MAX_SAFE_INTEGER);
+
+        if (aPriority !== bPriority) {
+          return aPriority - bPriority;
+        }
+
+        const aCountry = String(a?.country || a?.originCountry || "")
+          .trim()
+          .toLowerCase();
+        const bCountry = String(b?.country || b?.originCountry || "")
+          .trim()
+          .toLowerCase();
+
+        if (aCountry !== bCountry) {
+          return aCountry.localeCompare(bCountry);
+        }
+
+        const aRoast = String(a?.roast || "")
+          .trim()
+          .toLowerCase();
+        const bRoast = String(b?.roast || "")
+          .trim()
+          .toLowerCase();
+
+        const aRoastOrder = roastOrder[aRoast] ?? 999;
+        const bRoastOrder = roastOrder[bRoast] ?? 999;
+
+        if (aRoastOrder !== bRoastOrder) {
+          return aRoastOrder - bRoastOrder;
+        }
+
+        return String(a?.name || "").localeCompare(String(b?.name || ""));
       });
   };
 
