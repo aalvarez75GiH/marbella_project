@@ -13,6 +13,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { Checkbox } from "react-native-paper";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 import {
   Container,
@@ -25,7 +26,7 @@ import { Text } from "../../infrastructure/typography/text.component";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { DataInput } from "../../components/inputs/data_text_input.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
-
+import { Time_Picker_Component } from "../../components/others/time_picker.component.js";
 import RightArrowIcon from "../../../assets/my_icons/chevron-right.svg";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
@@ -80,12 +81,12 @@ export default function Warehouse_Details_View() {
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [error, setError] = useState(null);
   const [checked, setChecked] = useState(warehouseSelected?.active ?? true);
+  const [showOpenPicker, setShowOpenPicker] = useState(false);
+  const [openTime, setOpenTime] = useState(new Date());
 
   const warehouseNameInputRef = useRef(null);
   const addressDataInputRef = useRef(null);
   const emailDataInputRef = useRef(null);
-  const openAtInputRef = useRef(null);
-  const closeAtInputRef = useRef(null);
 
   const { deviceLat, deviceLng } = useContext(GeolocationContext);
   const { formatPhone } = useContext(GlobalContext);
@@ -588,73 +589,18 @@ export default function Warehouse_Details_View() {
                   }}
                 />
                 <Spacer position="top" size="medium" />
-                <DataInput
-                  ref={openAtInputRef}
-                  label="Open At:"
-                  value={warehouseSelected.warehouse_information.opening_time}
-                  onChangeText={(value) => {
-                    setWarehouseSelected({
-                      ...warehouseSelected,
-                      warehouse_information: {
-                        ...warehouseSelected.warehouse_information,
-                        opening_time: value,
-                      },
-                    });
-                  }}
-                  border_color={theme.colors.inputs.bottom_lines_disabled}
-                  underlineColor={theme.colors.inputs.bottom_lines_disabled}
-                  border_width={"0.3px"}
-                  activeUnderlineColor={theme.colors.ui.primary}
-                  keyboardType="default"
-                  autoCapitalize="words"
-                  autoCorrect={false}
-                  textContentType="givenName"
-                  autoComplete="name"
-                  returnKeyType="done"
-                  blurOnSubmit
-                  style={{
-                    backgroundColor: "#F5F5F5",
-                    fontSize: 16,
-                  }}
-                  contentStyle={{
-                    fontFamily: "ralewayBold",
-                    fontSize: 16,
-                  }}
+                {/* {showOpenPicker && ( */}
+
+                <Time_Picker_Component
+                  type="opening_time"
+                  coming_from={coming_from}
                 />
                 <Spacer position="top" size="medium" />
-                <DataInput
-                  ref={openAtInputRef}
-                  label="Close At:"
-                  value={warehouseSelected.warehouse_information.closing_time}
-                  onChangeText={(value) => {
-                    setWarehouseSelected({
-                      ...warehouseSelected,
-                      warehouse_information: {
-                        ...warehouseSelected.warehouse_information,
-                        closing_time: value,
-                      },
-                    });
-                  }}
-                  border_color={theme.colors.inputs.bottom_lines_disabled}
-                  underlineColor={theme.colors.inputs.bottom_lines_disabled}
-                  border_width={"0.3px"}
-                  activeUnderlineColor={theme.colors.ui.primary}
-                  keyboardType="default"
-                  autoCapitalize="words"
-                  autoCorrect={false}
-                  textContentType="givenName"
-                  autoComplete="name"
-                  returnKeyType="done"
-                  blurOnSubmit
-                  style={{
-                    backgroundColor: "#F5F5F5",
-                    fontSize: 16,
-                  }}
-                  contentStyle={{
-                    fontFamily: "ralewayBold",
-                    fontSize: 16,
-                  }}
+                <Time_Picker_Component
+                  type="closing_time"
+                  coming_from={coming_from}
                 />
+
                 <Spacer position="top" size="medium" />
                 <Action_Container
                   width="95%"
@@ -714,13 +660,13 @@ export default function Warehouse_Details_View() {
                     />
                     {/* <RightArrowIcon width={20} height={20} /> */}
                   </Container>
-                  <Spacer position="top" size="medium" />
                 </Action_Container>
+                <Spacer position="top" size="medium" />
                 {coming_from === "add_cta" && (
                   <Action_Container
                     width="95%"
                     // height="15%"
-                    padding_vertical="25px"
+                    padding_vertical="35px"
                     color={theme.colors.bg.screens_bg}
                     // color={"lightgreen"}
                     justify="center"
@@ -756,12 +702,11 @@ export default function Warehouse_Details_View() {
                     </Container>
                   </Action_Container>
                 )}
-                <Spacer position="top" size="medium" />
                 {coming_from === "warehouse_tile" && (
                   <Action_Container
                     width="95%"
                     // height="15%"
-                    padding_vertical="25px"
+                    padding_vertical="35px"
                     color={theme.colors.bg.screens_bg}
                     // color={"lightgreen"}
                     justify="center"
@@ -800,8 +745,7 @@ export default function Warehouse_Details_View() {
                 <Spacer position="top" size="medium" />
                 <Action_Container
                   width="95%"
-                  // height="15%"
-                  padding_vertical="25px"
+                  padding_vertical="35px"
                   color={theme.colors.bg.screens_bg}
                   // color={"lightgreen"}
                   justify="center"
