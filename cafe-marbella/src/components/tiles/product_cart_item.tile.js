@@ -27,6 +27,7 @@ export const Product_Cart_Item_Tile = ({ product, image }) => {
   const price_formatted = formatCentsToUSD(price);
 
   const cartTitle = product.title; // "Cafe Marbella"
+  const cartRoast = product.roast; // "Medium roast"
   const cartCountry = product.originCountry;
   const cartDesc =
     product.grindType === "whole" ? "Whole bean coffee" : "Ground bean coffee";
@@ -109,6 +110,7 @@ export const Product_Cart_Item_Tile = ({ product, image }) => {
                 <Text variant="raleway_bold_14_white">{cartTitle}</Text>
                 <Text variant="raleway_bold_24_white">{cartCountry}</Text>
                 <Text variant="raleway_bold_14_white">{cartDesc}</Text>
+                <Text variant="raleway_bold_14_white">{cartRoast} roast</Text>
                 <Text variant="raleway_bold_14_white">
                   {sizeLabel} - {sizeLabel_ounces}
                 </Text>

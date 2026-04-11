@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { FlatList } from "react-native";
+import React, { useContext, useMemo } from "react";
+import { SectionList, View } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -9,6 +9,7 @@ import { Go_Back_Header_With_Label_And_Menu } from "../../components/headers/goB
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 import { Product_Initial_Card } from "../../components/cards/product_initial_card/product_intial.card";
+import { Text } from "../../infrastructure/typography/text.component";
 
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
 
@@ -18,20 +19,28 @@ export default function Shop_View() {
   const route = useRoute();
   const { coming_from } = route.params || {};
   const { productsChosenForShop } = useContext(WarehouseContext);
-  // const data = productsChosenForShop.length > 0 ? productsChosenForShop : [];
-  const data = Array.isArray(productsChosenForShop)
-    ? productsChosenForShop
-    : [];
-
-  const renderProductInitialCard = ({ item }) => {
-    return (
-      <Spacer position="bottom" size="medium">
-        <Product_Initial_Card item={item} />
-      </Spacer>
-    );
-  };
-
   const theme = useTheme();
+
+  const sections = useMemo(() => {
+    if (!Array.isArray(productsChosenForShop)) return [];
+
+    const grouped = productsChosenForShop.reduce((acc, product) => {
+      const country =
+        product?.country || product?.originCountry || "Other origins";
+
+      if (!acc[country]) {
+        acc[country] = [];
+      }
+
+      acc[country].push(product);
+      return acc;
+    }, {});
+
+    return Object.entries(grouped).map(([title, data]) => ({
+      title,
+      data,
+    }));
+  }, [productsChosenForShop]);
 
   return (
     <SafeArea
@@ -42,7 +51,6 @@ export default function Shop_View() {
         width="100%"
         height="100%"
         color={theme.colors.bg.elements_bg}
-        // color={"green"}
         justify="flex-start"
         align="center"
         style={{ paddingBottom: tabBarHeight }}
@@ -56,16 +64,37 @@ export default function Shop_View() {
               : "Ground beans coffee"
           }
         />
+
         <Spacer position="top" size="large" />
-        {/* <Product_Initial_Card /> */}
-        <FlatList
-          showsHorizontalScrollIndicator={false}
+
+        <SectionList
+          sections={sections}
+          keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
-          data={data}
-          renderItem={renderProductInitialCard}
-          keyExtractor={(item, id) => {
-            return item.id;
+          contentContainerStyle={{
+            alignItems: "flex-start",
+            width: "100%",
+            paddingBottom: 24,
+            flexGrow: 1,
+            backgroundColor: theme.colors.bg.elements_bg,
           }}
+          renderSectionHeader={({ section }) => (
+            <Container
+              width="100%"
+              margin_top="16px"
+              margin_bottom="12px"
+              color={theme.colors.bg.elements_bg}
+              justify="flex-start"
+              align="flex-start"
+            >
+              <Text variant="dm_sans_bold_22">Coffee from {section.title}</Text>
+            </Container>
+          )}
+          renderItem={({ item }) => (
+            <Spacer position="bottom" size="medium">
+              <Product_Initial_Card item={item} />
+            </Spacer>
+          )}
         />
       </Container>
     </SafeArea>
