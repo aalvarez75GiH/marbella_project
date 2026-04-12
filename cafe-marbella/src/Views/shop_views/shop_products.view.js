@@ -134,7 +134,7 @@ export default function Shop_Products_View() {
                   Premium
                 </Text>
                 <Text variant="raleway_bold_16_white" textAlign="center">
-                  Whole bean
+                  Whole beans
                 </Text>
                 <Text variant="raleway_bold_16_white" textAlign="center">
                   coffee
@@ -178,7 +178,7 @@ export default function Shop_Products_View() {
                   Premium
                 </Text>
                 <Text variant="raleway_bold_16" textAlign="center">
-                  Ground bean
+                  Ground beans
                 </Text>
                 <Text variant="raleway_bold_16" textAlign="center">
                   coffee

@@ -1,5 +1,5 @@
 import React, { useContext, useMemo } from "react";
-import { SectionList, View } from "react-native";
+import { SectionList } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -60,13 +60,12 @@ export default function Shop_View() {
           action_2={() => navigation.navigate("Menu_View")}
           label={
             coming_from === "whole_beans"
-              ? "Whole beans coffee"
-              : "Ground beans coffee"
+              ? "Whole beans coffee from"
+              : "Ground beans coffee from"
           }
         />
 
         <Spacer position="top" size="large" />
-
         <SectionList
           sections={sections}
           keyExtractor={(item) => item.id}
@@ -81,13 +80,14 @@ export default function Shop_View() {
           renderSectionHeader={({ section }) => (
             <Container
               width="100%"
+              padding_vertical="12px"
               margin_top="16px"
               margin_bottom="12px"
               color={theme.colors.bg.elements_bg}
               justify="flex-start"
               align="flex-start"
             >
-              <Text variant="dm_sans_bold_22">Coffee from {section.title}</Text>
+              <Text variant="dm_sans_bold_20">{section.title}</Text>
             </Container>
           )}
           renderItem={({ item }) => (
@@ -96,6 +96,7 @@ export default function Shop_View() {
             </Spacer>
           )}
         />
+        <Spacer position="top" size="large" />
       </Container>
     </SafeArea>
   );
