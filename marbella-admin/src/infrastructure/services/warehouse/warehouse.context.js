@@ -176,18 +176,6 @@ export const Warehouse_Context_Provider = ({ children }) => {
     }
   };
 
-  // const handleChangeVariantQty = (productId, variantId, value) => {
-  //   const sku = `${productId}:${variantId}`;
-
-  //   setWarehouseSelected((prev) => ({
-  //     ...prev,
-  //     inventory: {
-  //       ...(prev?.inventory || {}),
-  //       [sku]: Number(value || 0),
-  //     },
-  //   }));
-  // };
-
   // TODO: createWarehouse and updateWarehouse functions that call the API and update the warehouses state accordingly
   const createWarehouse = async (warehouseToCreate) => {
     // TODO: implement create warehouse function that calls the API and updates the warehouses state
@@ -275,6 +263,35 @@ export const Warehouse_Context_Provider = ({ children }) => {
     }
   };
 
+  const validateWarehouse = () => {
+    const w = warehouseSelected;
+
+    if (!w.warehouse_name?.trim()) return "Warehouse name is required";
+    if (!w.physical_address?.trim()) return "Warehouse address is required";
+
+    if (!w.warehouse_information?.email?.trim())
+      return "Warehouse Email is required";
+
+    if (!w.warehouse_information?.phone?.trim())
+      return "Warehouse Phone number is required";
+
+    if (!w.warehouse_information?.opening_time?.trim())
+      return "Opening time is required";
+
+    if (!w.warehouse_information?.closing_time?.trim())
+      return "Closing time is required";
+
+    const rep = w.warehouse_information?.representative;
+
+    if (!rep?.name?.trim()) return "Representative name is required";
+
+    if (!rep?.email?.trim()) return "Representative email is required";
+
+    if (!rep?.phone_number?.trim()) return "Representative phone is required";
+
+    return null; // ✅ no errors
+  };
+
   return (
     <WarehouseContext.Provider
       value={{
@@ -291,6 +308,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
         updateWarehouseInventory,
         updateWarehouse,
         createWarehouse,
+        validateWarehouse,
 
         // handleChangeVariantQty,
       }}

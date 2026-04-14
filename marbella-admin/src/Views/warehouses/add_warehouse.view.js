@@ -1,10 +1,6 @@
 import React, { use, useContext, useEffect, useState, useRef } from "react";
 import {
-  FlatList,
   View,
-  SectionList,
-  StyleSheet,
-  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -12,23 +8,20 @@ import {
   Text as RNText,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import { Snackbar } from "react-native-paper";
 
 import {
   Container,
   Action_Container,
 } from "../../components/containers/general.containers";
-import { Just_Caption_Header } from "../../components/headers/just_caption.header.js";
-import { Exit_Header_With_Label } from "../../components/headers/exit_with_label.header";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header.js";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 import { Text } from "../../infrastructure/typography/text.component";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { DataInput } from "../../components/inputs/data_text_input.js";
-import { Underlined_CTA } from "../../components/ctas/underlined.cta.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 
 import RightArrowIcon from "../../../assets/my_icons/chevron-right.svg";
@@ -49,6 +42,7 @@ export default function Add_Warehouse_View() {
     setWarehouseSelected,
     createWarehouse,
     isLoading,
+    validateWarehouse,
   } = useContext(WarehouseContext);
   const [isWarehouseNameFocused, setWarehouseNameFocused] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -64,7 +58,13 @@ export default function Add_Warehouse_View() {
   const closeAtInputRef = useRef(null);
 
   const { deviceLat, deviceLng } = useContext(GeolocationContext);
-  const { formatPhone } = useContext(GlobalContext);
+  const {
+    formatPhone,
+    statusSnackbarVisible,
+    setStatusSnackbarVisible,
+    statusSnackbarMessage,
+    showStatusSnackbar,
+  } = useContext(GlobalContext);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -73,6 +73,31 @@ export default function Add_Warehouse_View() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    setWarehouseSelected({
+      warehouse_name: "",
+      warehouse_id: "",
+      active: true,
+      max_delivery_time: 0,
+      max_limit_delivery_ratio: 32186.8,
+      max_limit_pickup_ratio: 32186.8,
+      physical_address: "",
+      geo: {},
+      warehouse_information: {
+        representative: {
+          name: "",
+          email: "",
+          phone_number: "",
+        },
+        email: "",
+        phone: "",
+        opening_time: "08:00 AM",
+        closing_time: "05:00 PM",
+      },
+      inventory: {},
+    });
+  }, [setWarehouseSelected]);
 
   const warehouseFormattedAddress =
     warehouseSelected?.geo?.formatted_address ||
@@ -146,6 +171,18 @@ export default function Add_Warehouse_View() {
                 caption={coming_from === "add_cta" ? "Create" : "Update"}
                 caption_text_variant="dm_sans_bold_16_white"
                 action={async () => {
+                  console.log(
+                    "VALIDATING WAREHOUSE:",
+                    JSON.stringify(warehouseSelected, null, 2)
+                  );
+                  const validationError = validateWarehouse();
+
+                  if (validationError) {
+                    showStatusSnackbar(validationError);
+                    // setError(validationError);
+                    return;
+                  }
+
                   const { success, warehouse, error } = await createWarehouse(
                     warehouseSelected
                   ); // pass true for create mode
@@ -689,6 +726,26 @@ export default function Add_Warehouse_View() {
           </Container>
         )}
       </KeyboardAvoidingView>
+      <Snackbar
+        visible={statusSnackbarVisible}
+        onDismiss={() => setStatusSnackbarVisible(false)}
+        duration={Number.POSITIVE_INFINITY}
+        action={{
+          label: "Close",
+          onPress: () => {
+            setStatusSnackbarVisible(false);
+            navigation.popToTop();
+          },
+        }}
+        style={{
+          minHeight: 80,
+          marginHorizontal: 10,
+          marginBottom: tabBarHeight,
+          backgroundColor: theme.colors.ui.primary,
+        }}
+      >
+        {statusSnackbarMessage}
+      </Snackbar>
     </SafeArea>
   );
 }

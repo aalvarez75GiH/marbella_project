@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { FlatList } from "react-native";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import { Container } from "../../components/containers/general.containers";
 import { theme } from "../../infrastructure/theme/index";
@@ -14,6 +15,7 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 
 export default function Warehouses_View() {
   const navigation = useNavigation();
+  const tabBarHeight = useBottomTabBarHeight();
   const { warehouses } = useContext(WarehouseContext);
   //   console.log("WAREHOUSES:", warehouses);
 
@@ -22,11 +24,15 @@ export default function Warehouses_View() {
     const { formatted_address } = geo || {};
 
     return (
-      <Warehouse_Tile
-        warehouse_name={warehouse_name}
-        warehouse_address={formatted_address}
-        item={item}
-      />
+      <>
+        <Warehouse_Tile
+          warehouse_name={warehouse_name}
+          warehouse_address={formatted_address}
+          item={item}
+        />
+        <Spacer position="top" size="extraLarge" />
+        <Spacer position="top" size="medium" />
+      </>
     );
   };
   return (
@@ -63,8 +69,9 @@ export default function Warehouses_View() {
           showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={() => <Spacer position="top" size="medium" />}
           contentContainerStyle={{
-            alignItems: "center", // 👈 THIS is the key
-            paddingVertical: 16,
+            alignItems: "center",
+            paddingTop: 45,
+            paddingBottom: tabBarHeight,
           }}
         />
       </Container>

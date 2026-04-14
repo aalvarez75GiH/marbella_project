@@ -1,19 +1,19 @@
 import React, { useContext, useEffect, useState, useRef, useMemo } from "react";
 import {
   View,
-  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   TouchableOpacity,
   Text as RNText,
+  Keyboard,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { Checkbox } from "react-native-paper";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import { Snackbar } from "react-native-paper";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import {
   Container,
@@ -37,6 +37,7 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 export default function Warehouse_Details_View() {
   const navigation = useNavigation();
   const theme = useTheme();
+  const tabBarHeight = useBottomTabBarHeight();
   const route = useRoute();
   const { coming_from } = route?.params ?? {};
   console.log("COMING FROM AT DETAILS WAREHOUSE:", coming_from);
@@ -46,6 +47,7 @@ export default function Warehouse_Details_View() {
     updateWarehouse,
     createWarehouse,
     isLoading,
+    validateWarehouse,
   } = useContext(WarehouseContext);
 
   const originalWarehouseRef = useRef(null);
@@ -75,21 +77,27 @@ export default function Warehouse_Details_View() {
   const isEditMode = coming_from === "warehouse_tile";
   const shouldShowCTA = isCreateMode || (isEditMode && hasChanges);
 
-  const [isWarehouseNameFocused, setWarehouseNameFocused] = useState(false);
-  const [selectedAddress, setSelectedAddress] = useState(null);
+  // const [selectedAddress, setSelectedAddress] = useState(null);
   const [addressText, setAddressText] = useState("");
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [error, setError] = useState(null);
-  const [checked, setChecked] = useState(warehouseSelected?.active ?? true);
-  const [showOpenPicker, setShowOpenPicker] = useState(false);
-  const [openTime, setOpenTime] = useState(new Date());
+  const [unLocked, setUnlocked] = useState(false);
+  // const [checked, setChecked] = useState(warehouseSelected?.active ?? true);
+  const [isSnackbarLocked, setIsSnackbarLocked] = useState(false);
+  const [isScreenLocked, setIsScreenLocked] = useState(false);
 
   const warehouseNameInputRef = useRef(null);
   const addressDataInputRef = useRef(null);
   const emailDataInputRef = useRef(null);
 
   const { deviceLat, deviceLng } = useContext(GeolocationContext);
-  const { formatPhone } = useContext(GlobalContext);
+  const {
+    formatPhone,
+    statusSnackbarVisible,
+    setStatusSnackbarVisible,
+    statusSnackbarMessage,
+    showStatusSnackbar,
+  } = useContext(GlobalContext);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -172,7 +180,7 @@ export default function Warehouse_Details_View() {
               direction="row"
               style={{ marginRight: 20, marginTop: 10 }}
             >
-              {shouldShowCTA ? (
+              {shouldShowCTA && !isScreenLocked ? (
                 <Regular_CTA
                   width="30%"
                   height={40}
@@ -181,20 +189,42 @@ export default function Warehouse_Details_View() {
                   caption={coming_from === "add_cta" ? "Create" : "Update"}
                   caption_text_variant="dm_sans_bold_16_white"
                   action={async () => {
+                    Keyboard.dismiss(); // ✅ CLOSE KEYBOARD FIRST
                     if (isEditMode) {
+                      const validationError = validateWarehouse();
+                      setError(validationError); // reset previous errors
+                      if (validationError) {
+                        showStatusSnackbar(validationError);
+                        return;
+                      }
                       const { success, warehouse, error } =
                         await updateWarehouse(warehouseSelected); // pass true for create mode
                       console.log(
                         "UPDATE WAREHOUSE RESULT:",
                         JSON.stringify(warehouse, null, 2)
                       );
+
                       if (success) {
-                        navigation.popToTop();
+                        setUnlocked(true);
+                        setIsSnackbarLocked(true); // 🔒 LOCK
+                        setIsScreenLocked(true); // LOCK SCREEN (optional, for extra safety)
+                        showStatusSnackbar("Warehouse updated successfully!");
                       } else {
                         setError(error || "Failed to create warehouse");
                       }
                     }
                     if (isCreateMode) {
+                      console.log(
+                        "VALIDATING WAREHOUSE:",
+                        JSON.stringify(warehouseSelected, null, 2)
+                      );
+                      const validationError = validateWarehouse();
+                      setError(validationError); // reset previous errors
+
+                      if (validationError) {
+                        showStatusSnackbar(validationError);
+                        return;
+                      }
                       const { success, warehouse, error } =
                         await createWarehouse(warehouseSelected); // pass true for create mode
                       console.log(
@@ -202,7 +232,10 @@ export default function Warehouse_Details_View() {
                         JSON.stringify(warehouse, null, 2)
                       );
                       if (success) {
-                        navigation.popToTop();
+                        setUnlocked(true);
+                        setIsSnackbarLocked(true); // 🔒 LOCK
+                        setIsScreenLocked(true); // LOCK SCREEN (optional, for extra safety)
+                        showStatusSnackbar("Warehouse created successfully!");
                       } else {
                         setError(error || "Failed to create warehouse");
                       }
@@ -218,7 +251,8 @@ export default function Warehouse_Details_View() {
             <ScrollView
               style={{ flex: 1, width: "100%" }}
               contentContainerStyle={{
-                paddingBottom: 40,
+                // paddingBottom: 40,
+                paddingBottom: tabBarHeight,
                 alignItems: "center",
               }}
               keyboardShouldPersistTaps="handled"
@@ -306,9 +340,10 @@ export default function Warehouse_Details_View() {
                       onNotFound={() => console.log("PLACES NOT FOUND")}
                       onTimeout={() => console.log("PLACES TIMEOUT")}
                       onPress={(data, details = null) => {
+                        if (isScreenLocked) return;
+
                         const formatted =
                           details?.formatted_address ?? data.description;
-
                         const lat = details?.geometry?.location?.lat;
                         const lng = details?.geometry?.location?.lng;
 
@@ -317,6 +352,7 @@ export default function Warehouse_Details_View() {
                           typeof lat === "number" &&
                           typeof lng === "number"
                         ) {
+                          setAddressText(formatted);
                           setWarehouseSelected({
                             ...warehouseSelected,
                             physical_address: formatted,
@@ -327,24 +363,25 @@ export default function Warehouse_Details_View() {
                               place_id: details?.place_id ?? data?.place_id,
                             },
                           });
-
-                          setSelectedAddress({
-                            formatted_address: formatted,
-                            lat,
-                            lng,
-                            place_id: details?.place_id ?? data?.place_id,
-                          });
                         } else {
-                          setSelectedAddress(null);
+                          // setSelectedAddress(null);
                         }
 
                         setScrollEnabled(true);
                       }}
                       textInputProps={{
+                        value: addressText,
                         autoCorrect: false,
                         autoCapitalize: "none",
-                        onFocus: () => setScrollEnabled(false),
+                        editable: !isScreenLocked,
+                        onFocus: () => {
+                          if (!isScreenLocked) setScrollEnabled(false);
+                        },
                         onBlur: () => setScrollEnabled(true),
+                        onChangeText: (t) => {
+                          if (isScreenLocked) return;
+                          setAddressText(t);
+                        },
                       }}
                       styles={{
                         container: {
@@ -417,7 +454,7 @@ export default function Warehouse_Details_View() {
                           onBlur: () => setScrollEnabled(true),
                           onChangeText: (t) => {
                             setAddressText(t); // ✅ sync state
-                            setSelectedAddress(null);
+                            // setSelectedAddress(null);
                           },
                         }}
                         onPress={(data, details = null) => {
@@ -442,14 +479,7 @@ export default function Warehouse_Details_View() {
                                 place_id: details?.place_id ?? data?.place_id,
                               },
                             });
-                            setSelectedAddress({
-                              formatted_address: formatted,
-                              lat,
-                              lng,
-                              place_id: details?.place_id ?? data?.place_id,
-                            });
                           } else {
-                            setSelectedAddress(null);
                           }
                         }}
                         styles={{
@@ -485,7 +515,7 @@ export default function Warehouse_Details_View() {
                         onPress={() => {
                           setAddressText("");
                           addressDataInputRef.current?.setAddressText("");
-                          setSelectedAddress(null);
+                          // setSelectedAddress(null);
                           requestAnimationFrame(() => {
                             addressDataInputRef.current?.focus?.();
                           });
@@ -781,10 +811,60 @@ export default function Warehouse_Details_View() {
                   </Container>
                 </Action_Container>
               </Container>
+              {isScreenLocked && (
+                <View
+                  pointerEvents="auto"
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    zIndex: 10,
+                    backgroundColor: "transparent",
+                  }}
+                />
+              )}
             </ScrollView>
           </Container>
         )}
       </KeyboardAvoidingView>
+
+      <Snackbar
+        visible={statusSnackbarVisible}
+        // onDismiss={() => setStatusSnackbarVisible(false)}
+        onDismiss={() => {
+          if (!isSnackbarLocked) {
+            setStatusSnackbarVisible(false);
+          }
+        }}
+        duration={Number.POSITIVE_INFINITY}
+        action={{
+          label: "Close",
+          onPress: () => {
+            if (unLocked) {
+              setUnlocked(false);
+              setIsSnackbarLocked(false); // 🔓 UNLOCK
+              setIsScreenLocked(false);
+              setStatusSnackbarVisible(false);
+              navigation.popToTop();
+            }
+            if (error) {
+              setStatusSnackbarVisible(false);
+            }
+          },
+        }}
+        style={{
+          minHeight: 80,
+          marginHorizontal: 10,
+          marginBottom: 50,
+          backgroundColor: error ? "red" : theme.colors.ui.primary,
+          zIndex: 20,
+          elevation: 20,
+        }}
+      >
+        {statusSnackbarMessage}
+      </Snackbar>
     </SafeArea>
   );
 }
