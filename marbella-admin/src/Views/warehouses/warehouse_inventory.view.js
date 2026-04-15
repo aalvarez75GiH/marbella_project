@@ -2,6 +2,7 @@ import React, { useContext, useState, useMemo, useRef, useEffect } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import { Container } from "../../components/containers/general.containers.js";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header.js";
@@ -16,6 +17,7 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 export default function Warehouse_Inventory_View() {
   const navigation = useNavigation();
   const theme = useTheme();
+  const tabBarHeight = useBottomTabBarHeight();
 
   const {
     warehouseSelected,
@@ -129,40 +131,27 @@ export default function Warehouse_Inventory_View() {
 
             <Spacer position="top" size="large" />
             <Spacer position="top" size="large" />
-            <ScrollView
-              style={{ flex: 1, width: "100%" }}
-              contentContainerStyle={{
-                paddingBottom: 40,
-                alignItems: "center",
-              }}
-              keyboardShouldPersistTaps="handled"
-              nestedScrollEnabled
-              scrollEnabled={scrollEnabled}
-            >
-              <Spacer position="top" size="large" />
-              <Spacer position="top" size="large" />
 
+            <Container
+              width="100%"
+              color={theme.colors.bg.elements_bg}
+              align="center"
+              justify="flex-start"
+              direction="column"
+              style={{ overflow: "visible" }}
+            >
               <Container
                 width="100%"
-                color={theme.colors.bg.elements_bg}
-                align="center"
-                justify="flex-start"
-                direction="column"
-                style={{ overflow: "visible" }}
+                color={theme.colors.bg.screens_bg}
+                style={{ alignSelf: "stretch" }}
               >
-                <Container
-                  width="100%"
-                  color={theme.colors.bg.screens_bg}
-                  style={{ alignSelf: "stretch" }}
-                >
-                  <Inventory_Accordion
-                    groundProducts={groundProductsForUI}
-                    wholeProducts={wholeProductsForUI}
-                    onChangeVariantQty={handleChangeVariantQty}
-                  />
-                </Container>
+                <Inventory_Accordion
+                  groundProducts={groundProductsForUI}
+                  wholeProducts={wholeProductsForUI}
+                  onChangeVariantQty={handleChangeVariantQty}
+                />
               </Container>
-            </ScrollView>
+            </Container>
           </Container>
         </KeyboardAvoidingView>
       )}
