@@ -61,39 +61,6 @@ export const Warehouse_Context_Provider = ({ children }) => {
     return Number(warehouse?.inventory?.[sku] ?? 0);
   };
 
-  // const getWarehouseById = (warehouseId) => {
-  //   return warehouses.find((w) => w.id === warehouseId);
-  // };
-
-  // Getting products of the closest warehouse with positive stock
-  const getWarehouseProductsWithPositiveStock = (
-    productsList,
-    warehouse,
-    grindType
-  ) => {
-    return productsList
-      .filter((p) => p.grindType === grindType)
-      .map((p) => {
-        const variantsWithStock = (p.size_variants ?? []).map((v) => ({
-          ...v,
-          stock: getStock(warehouse, p.id, v.id),
-        }));
-
-        const totalStock = variantsWithStock.reduce(
-          (sum, v) => sum + (v.stock ?? 0),
-          0
-        );
-
-        return {
-          ...p,
-          size_variants: variantsWithStock,
-          totalStock,
-          inStock: totalStock > 0,
-        };
-      })
-      .filter((p) => p.inStock);
-  };
-
   const gettingRealTimeDistanceToOrderWH = async (
     deviceLat,
     deviceLng,
@@ -116,31 +83,8 @@ export const Warehouse_Context_Provider = ({ children }) => {
       setIsLoading(false);
     }
   };
-  // Getting all products of the closest warehouse not matter stock
-  // const getWarehouseProductsAll = (catalogProducts, warehouse, grindType) => {
-  //   return catalogProducts
-  //     .filter((p) => p.grindType === grindType)
-  //     .map((p) => {
-  //       const variantsWithStock = (p.size_variants ?? []).map((v) => ({
-  //         ...v,
-  //         stock: getStock(warehouse, p.id, v.id),
-  //       }));
 
-  //       const totalStock = variantsWithStock.reduce(
-  //         (sum, v) => sum + (v.stock ?? 0),
-  //         0
-  //       );
-
-  //       return {
-  //         ...p,
-  //         size_variants: variantsWithStock,
-  //         totalStock,
-  //         inStock: totalStock > 0,
-  //       };
-  //     });
-  // };
-
-  const getWarehouseProductsAll = (catalogProducts, warehouse, grindType) => {
+  const buildInventoryProducts = (catalogProducts, warehouse, grindType) => {
     const roastOrder = {
       light: 1,
       medium: 2,
@@ -235,12 +179,12 @@ export const Warehouse_Context_Provider = ({ children }) => {
   const shopProductsGround = useMemo(() => {
     if (!myWarehouse) return [];
     // return getWarehouseShopProductsAll(productsCatalog, myWarehouse, "ground");
-    return getWarehouseProductsAll(productsCatalog, myWarehouse, "ground");
+    return buildInventoryProducts(productsCatalog, myWarehouse, "ground");
   }, [myWarehouse, productsCatalog]);
 
   const shopProductsWhole = useMemo(() => {
     if (!myWarehouse) return [];
-    return getWarehouseProductsAll(productsCatalog, myWarehouse, "whole");
+    return buildInventoryProducts(productsCatalog, myWarehouse, "whole");
     // return getWarehouseShopProductsAll(productsCatalog, myWarehouse, "whole");
   }, [myWarehouse, productsCatalog]);
 

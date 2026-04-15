@@ -78,23 +78,6 @@ export const Warehouse_Context_Provider = ({ children }) => {
     return Number(warehouse?.inventory?.[sku] ?? 0);
   };
 
-  // const gettingWarehouseByID = async (warehouse_id) => {
-  //   setIsLoading(true);
-  //   try {
-  //     const warehouse = await gettingWarehouseByIDRequest(warehouse_id);
-  //     console.log(
-  //       "WAREHOUSE BY ID AT CONTEXT REQUEST FUNCTION:",
-  //       JSON.stringify(warehouse, null, 2)
-  //     );
-  //     setMyWarehouse(warehouse);
-  //   } catch (error) {
-  //     setError(error);
-  //     console.error("Error fetching warehouse by ID:", error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
   // Admin warehouses functions
 
   const buildInventoryProducts = ({
@@ -104,8 +87,24 @@ export const Warehouse_Context_Provider = ({ children }) => {
   }) => {
     if (!Array.isArray(productsCatalog)) return [];
 
+    const roastOrder = {
+      light: 1,
+      medium: 2,
+      dark: 3,
+    };
+
     return productsCatalog
-      .filter((p) => p.grindType === grindType)
+      .filter((p) => {
+        const productGrindType = String(p?.grindType || "")
+          .trim()
+          .toLowerCase();
+
+        const requestedGrindType = String(grindType || "")
+          .trim()
+          .toLowerCase();
+
+        return productGrindType === requestedGrindType;
+      })
       .map((p) => {
         const size_variants = (p.size_variants ?? []).map((v) => {
           const qty = Number(inventoryMap[`${p.id}:${v.id}`] ?? 0);
@@ -127,6 +126,43 @@ export const Warehouse_Context_Provider = ({ children }) => {
           totalQty,
           inStock: totalQty > 0,
         };
+      })
+      .sort((a, b) => {
+        const aPriority = Number(a?.priority ?? Number.MAX_SAFE_INTEGER);
+        const bPriority = Number(b?.priority ?? Number.MAX_SAFE_INTEGER);
+
+        if (aPriority !== bPriority) {
+          return aPriority - bPriority;
+        }
+
+        const aCountry = String(a?.country || a?.originCountry || "")
+          .trim()
+          .toLowerCase();
+
+        const bCountry = String(b?.country || b?.originCountry || "")
+          .trim()
+          .toLowerCase();
+
+        if (aCountry !== bCountry) {
+          return aCountry.localeCompare(bCountry);
+        }
+
+        const aRoast = String(a?.roast || "")
+          .trim()
+          .toLowerCase();
+
+        const bRoast = String(b?.roast || "")
+          .trim()
+          .toLowerCase();
+
+        const aRoastOrder = roastOrder[aRoast] ?? 999;
+        const bRoastOrder = roastOrder[bRoast] ?? 999;
+
+        if (aRoastOrder !== bRoastOrder) {
+          return aRoastOrder - bRoastOrder;
+        }
+
+        return String(a?.name || "").localeCompare(String(b?.name || ""));
       });
   };
 

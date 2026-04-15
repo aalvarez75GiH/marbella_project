@@ -21,7 +21,7 @@ export const Product_Inventory_Edit_Card = ({
   } = product || {};
 
   return (
-    <Action_Container
+    <Container
       width="100%"
       color={theme.colors.bg.elements_bg}
       justify="flex-start"
@@ -32,7 +32,6 @@ export const Product_Inventory_Edit_Card = ({
         paddingVertical: 16,
         marginBottom: 12,
       }}
-      onPress={() => null}
     >
       <Container
         width="92%"
@@ -96,6 +95,6 @@ export const Product_Inventory_Edit_Card = ({
           </Container>
         ))}
       </Container>
-    </Action_Container>
+    </Container>
   );
 };
