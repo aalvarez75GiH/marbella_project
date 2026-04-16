@@ -1,8 +1,12 @@
 export const IMAGES_BY_KEY = {
   "vzla_bag_wb.png": require("../../../../assets/products_images/vzla_bag_wb.png"),
+  "vzla_bag_wb_rotated.png": require("../../../../assets/products_images/vzla_bag_wb_rotated.png"),
   "vzla_bag_gb.png": require("../../../../assets/products_images/vzla_bag_gb.png"),
+  "vzla_bag_gb_rotated.png": require("../../../../assets/products_images/vzla_bag_gb_rotated.png"),
   "mexico_bag_wb.png": require("../../../../assets/products_images/mexico_bag_wb.png"),
+  "mexico_bag_wb_rotated.png": require("../../../../assets/products_images/mexico_bag_wb_rotated.png"),
   "mexico_bag_gb.png": require("../../../../assets/products_images/mexico_bag_gb.png"),
+  "mexico_bag_gb_rotated.png": require("../../../../assets/products_images/mexico_bag_gb_rotated.png"),
   "honduras_bag_wb.png": require("../../../../assets/products_images/honduras_bag_wb.png"),
   "honduras_bag_gb.png": require("../../../../assets/products_images/honduras_bag_gb.png"),
   "nicaragua_bag_wb.png": require("../../../../assets/products_images/nicaragua_bag_wb.png"),
