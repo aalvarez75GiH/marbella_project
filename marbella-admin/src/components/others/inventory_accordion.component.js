@@ -1,10 +1,9 @@
 import React, { useMemo } from "react";
-import { SectionList } from "react-native";
-import { View } from "react-native";
+import { SectionList, View } from "react-native";
 import { List } from "react-native-paper";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
-import { Product_Inventory_Edit_Card } from "../cards/products_inventory.card";
+import { Products_Inventory_Card } from "../cards/products_inventory_card/products_inventory.card";
 
 export const Inventory_Accordion = ({
   groundProducts = [],
@@ -12,6 +11,7 @@ export const Inventory_Accordion = ({
   onChangeVariantQty = null,
 }) => {
   const tabBarHeight = useBottomTabBarHeight();
+
   const buildSectionsByCountry = (products = []) => {
     const grouped = products.reduce((acc, product) => {
       const country =
@@ -36,18 +36,24 @@ export const Inventory_Accordion = ({
     [groundProducts]
   );
 
-  console.log("GROUND SECTIONS:", JSON.stringify(groundSections, null, 2));
-
   const wholeSections = useMemo(
     () => buildSectionsByCountry(wholeProducts),
     [wholeProducts]
   );
 
   const renderProduct = ({ item }) => (
-    <Product_Inventory_Edit_Card
-      product={item}
-      onChangeVariantQty={onChangeVariantQty}
-    />
+    <View
+      style={{
+        width: "100%",
+        alignItems: "center",
+        paddingVertical: 8,
+      }}
+    >
+      <Products_Inventory_Card
+        item={item}
+        onChangeVariantQty={onChangeVariantQty}
+      />
+    </View>
   );
 
   const renderSectionHeader = ({ section }) => (
@@ -81,7 +87,6 @@ export const Inventory_Accordion = ({
           style={{
             width: "100%",
             backgroundColor: "#FFFFFF",
-            // paddingBottom: tabBarHeight,
           }}
           titleStyle={{
             color: "#000000",
@@ -94,11 +99,11 @@ export const Inventory_Accordion = ({
               keyExtractor={(item, index) => `${item.id}-${index}`}
               renderItem={renderProduct}
               renderSectionHeader={renderSectionHeader}
-              stickySectionHeadersEnabled={true}
+              stickySectionHeadersEnabled={false}
               scrollEnabled={true}
               nestedScrollEnabled={true}
               style={{ maxHeight: 500 }}
-              contentContainerStyle={{ paddingBottom: tabBarHeight }}
+              contentContainerStyle={{ paddingBottom: tabBarHeight + 24 }}
               ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
               SectionSeparatorComponent={() => <View style={{ height: 8 }} />}
             />
@@ -123,12 +128,12 @@ export const Inventory_Accordion = ({
               keyExtractor={(item, index) => `${item.id}-${index}`}
               renderItem={renderProduct}
               renderSectionHeader={renderSectionHeader}
-              stickySectionHeadersEnabled={true}
+              stickySectionHeadersEnabled={false}
               scrollEnabled={true}
               nestedScrollEnabled={true}
               style={{ maxHeight: 500 }}
-              contentContainerStyle={{ paddingBottom: tabBarHeight }}
-              ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+              contentContainerStyle={{ paddingBottom: tabBarHeight + 24 }}
+              ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
               SectionSeparatorComponent={() => <View style={{ height: 8 }} />}
             />
           </View>
