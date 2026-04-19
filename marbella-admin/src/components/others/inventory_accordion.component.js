@@ -99,7 +99,7 @@ export const Inventory_Accordion = ({
               keyExtractor={(item, index) => `${item.id}-${index}`}
               renderItem={renderProduct}
               renderSectionHeader={renderSectionHeader}
-              stickySectionHeadersEnabled={false}
+              stickySectionHeadersEnabled={true}
               scrollEnabled={true}
               nestedScrollEnabled={true}
               style={{ maxHeight: 500 }}
@@ -128,7 +128,7 @@ export const Inventory_Accordion = ({
               keyExtractor={(item, index) => `${item.id}-${index}`}
               renderItem={renderProduct}
               renderSectionHeader={renderSectionHeader}
-              stickySectionHeadersEnabled={false}
+              stickySectionHeadersEnabled={true}
               scrollEnabled={true}
               nestedScrollEnabled={true}
               style={{ maxHeight: 500 }}
