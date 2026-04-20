@@ -29,7 +29,12 @@ productsRouter.post("/", async (req, res) => {
     const productCreated = await productsControllers.createProduct(product);
     return res.status(201).json(productCreated);
   } catch (e) {
-    return res.status(500).json({ error: e.message });
+    console.log("PRODUCT ERROR:", JSON.stringify(e.message, null, 2));
+    console.error("ERROR CREATING PRODUCT:", e.message);
+
+    return res.status(e.statusCode || 500).json({
+      error: e.message,
+    });
   }
 });
 productsRouter.put("/addSpecs", async (req, res) => {

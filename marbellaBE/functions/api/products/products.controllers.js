@@ -1,8 +1,47 @@
 /* eslint-disable */
 const firebase_controller = require("../../fb");
 
+// const createProduct = async (product) => {
+//   if (!product?.id) throw new Error("Product missing id");
+
+//   const now = new Date().toISOString();
+
+//   const payload = {
+//     ...product,
+//     createdAt: product.createdAt || now,
+//     updatedAt: now,
+//   };
+
+//   await firebase_controller.db
+//     .collection("productsCatalog")
+//     .doc(String(product.id))
+//     .set(payload, { merge: false });
+
+//   const snap = await firebase_controller.db
+//     .collection("products")
+//     .doc(String(product.id))
+//     .get();
+
+//   return snap.data();
+// };
+
 const createProduct = async (product) => {
   if (!product?.id) throw new Error("Product missing id");
+
+  const productId = String(product.id);
+
+  const productRef = firebase_controller.db
+    .collection("productsCatalog")
+    .doc(productId);
+
+  // 🔍 Check if product already exists
+  const existingDoc = await productRef.get();
+
+  if (existingDoc.exists) {
+    const error = new Error(`Product with id "${productId}" already exists`);
+    error.statusCode = 409;
+    throw error;
+  }
 
   const now = new Date().toISOString();
 
@@ -12,14 +51,13 @@ const createProduct = async (product) => {
     updatedAt: now,
   };
 
-  await firebase_controller.db
-    .collection("productsCatalog")
-    .doc(String(product.id))
-    .set(payload, { merge: false });
+  // ✅ Only create if it does NOT exist
+  await productRef.set(payload);
 
+  // ⚠️ NOTE: You were reading from a different collection ("products")
   const snap = await firebase_controller.db
-    .collection("products")
-    .doc(String(product.id))
+    .collection("productsCatalog")
+    .doc(productId)
     .get();
 
   return snap.data();
