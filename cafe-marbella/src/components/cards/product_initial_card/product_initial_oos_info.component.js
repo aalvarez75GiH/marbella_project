@@ -22,33 +22,27 @@ export const Product_Initial_OOS_Info_Component = ({
       direction="row"
     >
       <Container
-        width="40%"
+        width="70%"
         height="100%"
         justify="center"
-        align="center"
+        align="flex-start"
         color={theme.colors.bg.elements_bg}
         // color={theme.colors.ui.error_light}
-        //color="green"
+        // color="green"
         padding_horizontal="15px"
       >
+        <Text variant="raleway_bold_18">{product_name}</Text>
+        <Text variant="raleway_bold_18">{product_subtitle}</Text>
+        <Spacer position="top" size="medium" />
         <Text
-          variant="dm_sans_bold_16"
+          variant="dm_sans_bold_18"
           style={{ color: theme.colors.ui.error }}
         >
           Out of Stock
         </Text>
-        <Text
-          variant="dm_sans_bold_16"
-          style={{
-            textAlign: "center",
-            color: theme.colors.ui.error,
-          }}
-        >
-          unavailable
-        </Text>
       </Container>
       <Container
-        width="60%"
+        width="30%"
         height="100%"
         justify="center"
         align="center"
@@ -57,7 +51,7 @@ export const Product_Initial_OOS_Info_Component = ({
       >
         <Text
           variant="dm_sans_bold_16"
-          style={{ textDecorationLine: "underline" }}
+          style={{ textDecorationLine: "underline", textAlign: "center" }}
         >
           Where to buy?
         </Text>

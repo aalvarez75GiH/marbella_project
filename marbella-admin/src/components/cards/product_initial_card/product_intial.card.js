@@ -34,7 +34,7 @@ export const Product_Initial_Card = ({ item = null }) => {
     .trim()
     .toLowerCase();
   const FlagImage = FLAGS_BY_KEY[normalizedFlagKey] ?? null;
-
+  console.log("TOTAL STOCK: ", totalStock);
   const defaultVariant =
     item.size_variants.find((v) => v.isDefault) || item.size_variants[0];
   const productMainImage = defaultVariant.images[0];
@@ -67,13 +67,13 @@ export const Product_Initial_Card = ({ item = null }) => {
         FlagImage={FlagImage}
       />
       <Product_Image_Component image={productMainImage} />
-      {totalStock > 0 && (
-        <Product_Initial_Info_Component
-          product_name={product_name}
-          product_subtitle={product_subtitle}
-          size_variants={size_variants}
-        />
-      )}
+      {/* {totalStock > 0 && ( */}
+      <Product_Initial_Info_Component
+        product_name={product_name}
+        product_subtitle={product_subtitle}
+        size_variants={size_variants}
+      />
+      {/* )} */}
       {totalStock === 0 && <Product_Initial_OOS_Info_Component />}
 
       <Product_Identification_Line product_color={"#CA7B53"} />

@@ -1,5 +1,5 @@
 import React, { useContext, useMemo } from "react";
-import { SectionList } from "react-native";
+import { SectionList, View } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -50,10 +50,12 @@ export default function Shop_View() {
       <Container
         width="100%"
         height="100%"
-        color={theme.colors.bg.elements_bg}
+        // color={theme.colors.bg.elements_bg}
+        color={theme.colors.bg.screens_bg}
+        // color={"red"}
         justify="flex-start"
         align="center"
-        style={{ paddingBottom: tabBarHeight }}
+        style={{ paddingBottom: 50 }}
       >
         <Go_Back_Header_With_Label_And_Menu
           action_1={() => navigation.navigate("Shop_Products_View")}
@@ -68,6 +70,15 @@ export default function Shop_View() {
         <Spacer position="top" size="large" />
         <SectionList
           sections={sections}
+          // ItemSeparatorComponent={() => <Spacer position="top" size="medium" />}
+          ItemSeparatorComponent={() => (
+            <View
+              style={{
+                height: 20,
+                backgroundColor: theme.colors.bg.screens_bg,
+              }}
+            />
+          )}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
@@ -87,13 +98,15 @@ export default function Shop_View() {
               justify="flex-start"
               align="flex-start"
             >
-              <Text variant="dm_sans_bold_20">{section.title}</Text>
+              <Spacer position="left" size="large">
+                <Text variant="dm_sans_bold_20">{section.title}</Text>
+              </Spacer>
             </Container>
           )}
           renderItem={({ item }) => (
-            <Spacer position="bottom" size="medium">
-              <Product_Initial_Card item={item} />
-            </Spacer>
+            // <Spacer position="bottom" size="medium">
+            <Product_Initial_Card item={item} />
+            // </Spacer>
           )}
         />
         <Spacer position="top" size="large" />

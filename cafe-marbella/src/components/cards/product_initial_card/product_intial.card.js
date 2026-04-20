@@ -1,10 +1,7 @@
 import React, { useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
 
-import {
-  Action_Container,
-  Container,
-} from "../../containers/general.containers.js";
+import { Action_Container } from "../../containers/general.containers.js";
 import { theme } from "../../../infrastructure/theme/index.js";
 import { Rating_And_Country_Flag_Component } from "./rating_and_country_flag.component.js";
 import { Product_Image_Component } from "./product_image.component.js";
@@ -18,7 +15,6 @@ import { AuthenticationContext } from "../../../infrastructure/services/authenti
 
 export const Product_Initial_Card = ({ item = null }) => {
   const {
-    // flag_image: FlagImage,
     flag_key,
     product_name,
     product_subtitle,
@@ -27,7 +23,7 @@ export const Product_Initial_Card = ({ item = null }) => {
     totalStock,
   } = item || {};
 
-  const { comingFrom, setComingFrom } = useContext(AuthenticationContext);
+  const { setComingFrom } = useContext(AuthenticationContext);
 
   const normalizedFlagKey = String(flag_key ?? "")
     .trim()
@@ -56,10 +52,12 @@ export const Product_Initial_Card = ({ item = null }) => {
       direction="column"
       justify="flex-start"
       color={theme.colors.bg.elements_bg}
-      // onPress={() => handleNavigate(item)}
+      // color={"red"}
+      style={{ minHeight: 480 }}
       onPress={
         () => (totalStock > 0 ? handleNavigate(item) : null) // Replace with your desired action
       }
+      border_radius={"70px"}
     >
       <Rating_And_Country_Flag_Component
         rating={rating}
@@ -73,7 +71,12 @@ export const Product_Initial_Card = ({ item = null }) => {
           size_variants={size_variants}
         />
       )}
-      {totalStock === 0 && <Product_Initial_OOS_Info_Component />}
+      {totalStock === 0 && (
+        <Product_Initial_OOS_Info_Component
+          product_name={product_name}
+          product_subtitle={product_subtitle}
+        />
+      )}
 
       <Product_Identification_Line product_color={"#CA7B53"} />
     </Action_Container>
