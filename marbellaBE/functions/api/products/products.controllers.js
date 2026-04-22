@@ -1,30 +1,6 @@
 /* eslint-disable */
 const firebase_controller = require("../../fb");
 
-// const createProduct = async (product) => {
-//   if (!product?.id) throw new Error("Product missing id");
-
-//   const now = new Date().toISOString();
-
-//   const payload = {
-//     ...product,
-//     createdAt: product.createdAt || now,
-//     updatedAt: now,
-//   };
-
-//   await firebase_controller.db
-//     .collection("productsCatalog")
-//     .doc(String(product.id))
-//     .set(payload, { merge: false });
-
-//   const snap = await firebase_controller.db
-//     .collection("products")
-//     .doc(String(product.id))
-//     .get();
-
-//   return snap.data();
-// };
-
 const createProduct = async (product) => {
   if (!product?.id) throw new Error("Product missing id");
 
@@ -120,8 +96,85 @@ const updateProductById = async (id, updates) => {
   return snap.exists ? snap.data() : null;
 };
 
+/**
+ * Build images_path for one variant
+ */
+const buildImagesPath = ({
+  originCountry,
+  grindType,
+  roast,
+  variantSize,
+  imageKeys = [],
+}) => {
+  if (!originCountry || !grindType || !roast || !variantSize) {
+    return [];
+  }
+
+  return imageKeys.map(
+    (fileName) =>
+      `${originCountry}/${grindType}/${roast}/${variantSize}/${fileName}`
+  );
+};
+/**
+ * Add images_path under every size_variants item for one product
+ */
+const addImagesPathToProductVariants = async (id) => {
+  const ref = firebase_controller.db
+    .collection("productsCatalog")
+    .doc(String(id));
+
+  const snap = await ref.get();
+
+  if (!snap.exists) {
+    const error = new Error("Product not found");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const product = snap.data();
+
+  if (
+    !Array.isArray(product.size_variants) ||
+    product.size_variants.length === 0
+  ) {
+    const error = new Error("Product has no size_variants");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const { originCountry, grindType, roast } = product;
+
+  const updatedVariants = product.size_variants.map((variant) => {
+    const variantSize = String(variant.id || variant.sizeGrams);
+
+    return {
+      ...variant,
+      images_path: buildImagesPath({
+        originCountry,
+        grindType,
+        roast,
+        variantSize,
+        imageKeys: variant.image_keys || [],
+      }),
+    };
+  });
+
+  await ref.set(
+    {
+      size_variants: updatedVariants,
+      updatedAt: new Date().toISOString(),
+    },
+    { merge: true }
+  );
+
+  const updatedSnap = await ref.get();
+  return updatedSnap.data();
+};
 const deleteProductById = async (id) => {
-  await firebase_controller.db.collection("products").doc(String(id)).delete();
+  await firebase_controller.db
+    .collection("productsCatalog")
+    .doc(String(id))
+    .delete();
   return { deleted: true, id: String(id) };
 };
 
@@ -132,4 +185,5 @@ module.exports = {
   getProductById,
   updateProductById,
   deleteProductById,
+  addImagesPathToProductVariants,
 };

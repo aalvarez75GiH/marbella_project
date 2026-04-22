@@ -13,6 +13,12 @@ export const Product_Details_Carousel_Component = ({
   selectedVariant,
   selectedImageIndex,
 }) => {
+  console.log(
+    "SELECTED VARIANT AT CAROUSEL: ",
+    JSON.stringify(selectedVariant, null, 2)
+  );
+  const images = selectedVariant?.images || [];
+  // const imageSource = typeof image === "string" ? { uri: image } : image;
   return (
     <Container
       width="100%"
@@ -25,7 +31,8 @@ export const Product_Details_Carousel_Component = ({
     >
       <FlatList
         horizontal
-        data={selectedVariant.images}
+        data={images}
+        // data={selectedVariant.images}
         keyExtractor={(_, index) => index.toString()}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item, index }) => (
@@ -44,7 +51,8 @@ export const Product_Details_Carousel_Component = ({
             color="#F8F8F8"
           >
             <Image
-              source={item}
+              // source={item}
+              source={{ uri: item }}
               style={{
                 width: "100%",
                 height: "100%",

@@ -8,6 +8,7 @@ import {
   getReactNativePersistence,
 } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA7fPadDf73WRg1tkQPt7n2H-b5pV8ew70",
@@ -37,5 +38,6 @@ if (Platform.OS === "web") {
 }
 
 export const db = getFirestore(app);
+export const storage = getStorage(app);
 
 console.log("fb.js auth app name on fb file:", auth?.app?.name);

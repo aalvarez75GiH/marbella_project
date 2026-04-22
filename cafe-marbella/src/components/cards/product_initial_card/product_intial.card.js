@@ -1,7 +1,10 @@
 import React, { useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
 
-import { Action_Container } from "../../containers/general.containers.js";
+import {
+  Action_Container,
+  Container,
+} from "../../containers/general.containers.js";
 import { theme } from "../../../infrastructure/theme/index.js";
 import { Rating_And_Country_Flag_Component } from "./rating_and_country_flag.component.js";
 import { Product_Image_Component } from "./product_image.component.js";
@@ -15,6 +18,7 @@ import { AuthenticationContext } from "../../../infrastructure/services/authenti
 
 export const Product_Initial_Card = ({ item = null }) => {
   const {
+    // flag_image: FlagImage,
     flag_key,
     product_name,
     product_subtitle,
@@ -23,7 +27,7 @@ export const Product_Initial_Card = ({ item = null }) => {
     totalStock,
   } = item || {};
 
-  const { setComingFrom } = useContext(AuthenticationContext);
+  const { comingFrom, setComingFrom } = useContext(AuthenticationContext);
 
   const normalizedFlagKey = String(flag_key ?? "")
     .trim()
@@ -31,8 +35,9 @@ export const Product_Initial_Card = ({ item = null }) => {
   const FlagImage = FLAGS_BY_KEY[normalizedFlagKey] ?? null;
 
   const defaultVariant =
-    item.size_variants.find((v) => v.isDefault) || item.size_variants[0];
-  const productMainImage = defaultVariant.images[0];
+    item?.size_variants?.find((v) => v.isDefault) || item?.size_variants?.[0];
+
+  const productMainImage = defaultVariant?.images?.[0] ?? null;
 
   const navigation = useNavigation();
 
@@ -52,12 +57,10 @@ export const Product_Initial_Card = ({ item = null }) => {
       direction="column"
       justify="flex-start"
       color={theme.colors.bg.elements_bg}
-      // color={"red"}
-      style={{ minHeight: 480 }}
+      // onPress={() => handleNavigate(item)}
       onPress={
         () => (totalStock > 0 ? handleNavigate(item) : null) // Replace with your desired action
       }
-      border_radius={"70px"}
     >
       <Rating_And_Country_Flag_Component
         rating={rating}
@@ -71,14 +74,23 @@ export const Product_Initial_Card = ({ item = null }) => {
           size_variants={size_variants}
         />
       )}
-      {totalStock === 0 && (
-        <Product_Initial_OOS_Info_Component
-          product_name={product_name}
-          product_subtitle={product_subtitle}
-        />
-      )}
+      {totalStock === 0 && <Product_Initial_OOS_Info_Component />}
 
       <Product_Identification_Line product_color={"#CA7B53"} />
     </Action_Container>
   );
 };
+
+// Venezuela / ground / light / 500 / vzla_bag_gb.png;
+// Venezuela / ground / light / 500 / vzla_bag_gb_rotated.png;
+// Venezuela / ground / medium / 250 / vzla_bag_gb.png;
+// Venezuela / ground / medium / 250 / vzla_bag_gb_rotated.png;
+// Venezuela / ground / medium / 500 / vzla_bag_gb.png;
+// Venezuela / ground / medium / 500 / vzla_bag_gb_rotated.png;
+
+// images_path: [
+//   "Venezuela/ground/light/250/vzla_bag_gb.png",
+//   "Venezuela/ground/light/250/alternate_image_1.png",
+//   "Venezuela/ground/light/250/alternate_image_2.png",
+//   "Venezuela/ground/light/250/vzla_bag_gb_rotated.png",
+// ];

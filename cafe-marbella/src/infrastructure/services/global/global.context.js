@@ -17,8 +17,35 @@ export const Global_Context_Provider = ({ children }) => {
       try {
         const allProductsAtCatalog = await gettingAllProductsCatalogRequest();
 
-        const normalized = allProductsAtCatalog.map(
-          normalizeProductFromBackend
+        const normalized = await Promise.all(
+          allProductsAtCatalog.map((p) => normalizeProductFromBackend(p))
+        );
+        const vzlaGroundLightProduct = normalized.find((p) =>
+          p?.size_variants?.some(
+            (v) =>
+              Array.isArray(v?.images_path) &&
+              v.images_path.includes(
+                "Venezuela/ground/light/250/vzla_bag_gb.png"
+              )
+          )
+        );
+
+        console.log(
+          "TARGET PRODUCT FOUND:",
+          JSON.stringify(vzlaGroundLightProduct, null, 2)
+        );
+
+        console.log(
+          "TARGET PRODUCT VARIANT IMAGES:",
+          JSON.stringify(
+            vzlaGroundLightProduct?.size_variants?.map((v) => ({
+              size: v.sizeLabel,
+              images_path: v.images_path,
+              images: v.images,
+            })),
+            null,
+            2
+          )
         );
 
         setProductsCatalog(normalized);

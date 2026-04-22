@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import { Container } from "../../containers/general.containers.js";
@@ -34,6 +34,10 @@ export const Product_Details_Card = ({ item = null }) => {
       },
     ],
   };
+  useEffect(() => {
+    setSelectedImageIndex(0);
+  }, [selectedVariantId]);
+  console.log("SELECTED VARIANT: ", JSON.stringify(selectedVariant, null, 2));
 
   return (
     <Container
@@ -50,7 +54,8 @@ export const Product_Details_Card = ({ item = null }) => {
         stock={selectedVariant.stock}
       />
       <Product_Image_Component
-        image={selectedVariant.images[selectedImageIndex]}
+        // image={selectedVariant.images[selectedImageIndex]}
+        image={selectedVariant?.images?.[selectedImageIndex]}
       />
       <Spacer position="top" size="small" />
       <Product_Details_Carousel_Component
