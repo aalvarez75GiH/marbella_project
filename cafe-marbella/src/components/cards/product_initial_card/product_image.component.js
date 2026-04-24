@@ -1,5 +1,5 @@
 import React from "react";
-import { Image } from "react-native";
+import { Image } from "expo-image";
 import { theme } from "../../../infrastructure/theme/index.js";
 import { Container } from "../../containers/general.containers.js";
 
@@ -19,11 +19,10 @@ export const Product_Image_Component = ({ image }) => {
     >
       <Image
         source={imageSource}
-        style={{
-          width: "90%",
-          height: "90%",
-        }}
-        resizeMode="contain"
+        style={{ width: "90%", height: "90%" }}
+        contentFit="contain" // replaces resizeMode
+        transition={300} // smooth fade-in
+        placeholder="blurhash-string"
       />
     </Container>
   );

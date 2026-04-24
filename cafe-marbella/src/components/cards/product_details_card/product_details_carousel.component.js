@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Image, ScrollView } from "react-native";
+import React from "react";
+import { Image } from "expo-image";
 import { FlatList } from "react-native";
 
 import {
@@ -31,7 +31,6 @@ export const Product_Details_Carousel_Component = ({
       <FlatList
         horizontal
         data={images}
-        // data={selectedVariant.images}
         keyExtractor={(_, index) => index.toString()}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item, index }) => {
@@ -56,11 +55,10 @@ export const Product_Details_Carousel_Component = ({
             >
               <Image
                 source={imageSource}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  resizeMode: "contain",
-                }}
+                style={{ width: "100%", height: "100%" }}
+                contentFit="contain" // replaces resizeMode
+                transition={300}
+                placeholder="blurhash-string"
               />
             </Pressable_Container>
           );
