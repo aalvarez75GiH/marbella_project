@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Image } from "react-native";
+import { Image } from "expo-image";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -17,6 +17,7 @@ import { GlobalContext } from "../../infrastructure/services/global/global.conte
 export const Product_Cart_Item_For_Review_Tile = ({ product, image }) => {
   const theme = useTheme();
   const navigation = useNavigation();
+  const imageSource = typeof image === "string" ? { uri: image } : image;
   const { increaseCartItemQty, decreaseCartItemQty, removingProductFromCart } =
     useContext(CartContext);
 
@@ -52,11 +53,12 @@ export const Product_Cart_Item_For_Review_Tile = ({ product, image }) => {
         <Container width="30%" height="100%" color={theme.colors.ui.secondary}>
           <Image
             // source={images[item.image]}
-            source={image}
+            source={imageSource}
+            contentFit="contain"
+            transition={300} // smooth fade-in // replaces resizeMode
             style={{
               width: "65%",
               height: "65%",
-              resizeMode: "contain", // Ensures the image fits without distortion
             }}
           />
         </Container>
