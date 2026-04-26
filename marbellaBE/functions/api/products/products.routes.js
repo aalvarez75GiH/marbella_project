@@ -74,33 +74,5 @@ productsRouter.put("/addSpecs", async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
-productsRouter.put("/addImagesPath", async (req, res) => {
-  const id = req.query.id;
 
-  if (!id) {
-    return res.status(400).json({ error: "Missing query param: id" });
-  }
-
-  try {
-    const productById = await productsControllers.getProductById(id);
-
-    if (!productById) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-
-    const updatedProduct =
-      await productsControllers.addImagesPathToProductVariants(id);
-
-    return res.status(200).json({
-      message: "images_path added successfully to size_variants.",
-      product: updatedProduct,
-    });
-  } catch (e) {
-    console.error("ERROR ADDING images_path:", e.message);
-
-    return res.status(e.statusCode || 500).json({
-      error: e.message,
-    });
-  }
-});
 module.exports = productsRouter;
