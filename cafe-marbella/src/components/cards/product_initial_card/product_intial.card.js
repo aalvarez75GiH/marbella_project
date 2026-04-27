@@ -18,7 +18,6 @@ import { AuthenticationContext } from "../../../infrastructure/services/authenti
 
 export const Product_Initial_Card = ({ item = null }) => {
   const {
-    // flag_image: FlagImage,
     flag_key,
     product_name,
     product_subtitle,
@@ -76,23 +75,14 @@ export const Product_Initial_Card = ({ item = null }) => {
           size_variants={size_variants}
         />
       )}
-      {totalStock === 0 && <Product_Initial_OOS_Info_Component />}
+      {totalStock === 0 && (
+        <Product_Initial_OOS_Info_Component
+          product_name={product_name}
+          product_subtitle={product_subtitle}
+        />
+      )}
 
       <Product_Identification_Line product_color={"#CA7B53"} />
     </Action_Container>
   );
 };
-
-// Venezuela / ground / light / 500 / vzla_bag_gb.png;
-// Venezuela / ground / light / 500 / vzla_bag_gb_rotated.png;
-// Venezuela / ground / medium / 250 / vzla_bag_gb.png;
-// Venezuela / ground / medium / 250 / vzla_bag_gb_rotated.png;
-// Venezuela / ground / medium / 500 / vzla_bag_gb.png;
-// Venezuela / ground / medium / 500 / vzla_bag_gb_rotated.png;
-
-// images_path: [
-//   "Venezuela/ground/light/250/vzla_bag_gb.png",
-//   "Venezuela/ground/light/250/alternate_image_1.png",
-//   "Venezuela/ground/light/250/alternate_image_2.png",
-//   "Venezuela/ground/light/250/vzla_bag_gb_rotated.png",
-// ];
