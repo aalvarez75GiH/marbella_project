@@ -1,9 +1,11 @@
 import React from "react";
-import { View, Image } from "react-native";
+import { View } from "react-native";
+import { Image } from "expo-image";
 import { Text } from "../../../infrastructure/typography/text.component.js";
 import { theme } from "../../../infrastructure/theme/index.js";
 import { Product_Initial_Info_Component } from "./product_intial_info.component.js";
 import { DataInput } from "../../inputs/data_text_input.js";
+import NotImageYet from "../../../../assets/my_icons/broken-image.png";
 
 export const Products_Inventory_Card = ({
   item = null,
@@ -20,7 +22,12 @@ export const Products_Inventory_Card = ({
     size_variants.find((v) => v.isDefault) || size_variants[0];
 
   const productMainImage = defaultVariant?.images?.[0];
-
+  const imageSource =
+    typeof productMainImage === "string"
+      ? { uri: productMainImage }
+      : productMainImage;
+  console.log("PRODUCT MAIN IMAGE SOURCE:", imageSource);
+  const isValidImage = imageSource === undefined;
   return (
     <View
       style={{
@@ -40,10 +47,23 @@ export const Products_Inventory_Card = ({
         }}
       >
         <Image
-          source={productMainImage}
-          style={{ width: "100%", height: "100%" }}
-          resizeMode="contain"
+          source={isValidImage ? NotImageYet : imageSource}
+          style={{
+            width: isValidImage ? "190%" : "90%",
+            height: isValidImage ? "50%" : "90%",
+          }}
+          contentFit="contain" // replaces resizeMode
+          transition={300} // smooth fade-in
+          placeholder="blurhash-string"
         />
+        {isValidImage && (
+          <Text
+            variant="dm_sans_bold_14"
+            style={{ color: theme.colors.ui.error, marginTop: "10px" }}
+          >
+            Not image yet
+          </Text>
+        )}
       </View>
 
       <View style={{ height: 12 }} />

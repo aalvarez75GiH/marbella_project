@@ -13,20 +13,29 @@ export const Global_Context_Provider = ({ children }) => {
   const [globalLanguage, setGlobalLanguage] = useState("en"); // default to English
   const [statusSnackbarVisible, setStatusSnackbarVisible] = useState(false);
   const [statusSnackbarMessage, setStatusSnackbarMessage] = useState("");
+
   useEffect(() => {
     const gettingAllProductsCatalog = async () => {
+      setIsLoading(true);
+      setError(null);
+
       try {
         const allProductsAtCatalog = await gettingAllProductsCatalogRequest();
 
-        const normalized = allProductsAtCatalog.map(
-          normalizeProductFromBackend
+        const normalized = await Promise.all(
+          allProductsAtCatalog.map((product) =>
+            normalizeProductFromBackend(product)
+          )
         );
 
         setProductsCatalog(normalized);
       } catch (err) {
         setError(err.message);
+      } finally {
+        setIsLoading(false);
       }
     };
+
     gettingAllProductsCatalog();
   }, []);
 

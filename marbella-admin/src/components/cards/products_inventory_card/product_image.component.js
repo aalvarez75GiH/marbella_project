@@ -4,6 +4,9 @@ import { theme } from "../../../infrastructure/theme/index.js";
 import { Container } from "../../containers/general.containers.js";
 
 export const Product_Image_Component = ({ image }) => {
+  console.log("IMAGE IN PRODUCT IMAGE COMPONENT: ", image);
+  const imageSource = typeof image === "string" ? { uri: image } : image;
+  const isValidImage = imageSource === null;
   return (
     <Container
       width="100%"
@@ -13,7 +16,9 @@ export const Product_Image_Component = ({ image }) => {
       align="center"
     >
       <Image
-        source={image}
+        source={imageSource}
+        // source={isValidImage ? NotImageYet : imageSource}
+        // source={image}
         style={{
           width: "90%",
           height: "90%",
