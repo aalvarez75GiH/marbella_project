@@ -8,7 +8,6 @@ import { Cart_Context_Provider } from "../services/cart/cart.context";
 import { Orders_Context_Provider } from "../services/orders/orders.context";
 import { Payments_Context_Provider } from "../services/payments/payments.context";
 import { Authentication_Context_Provider } from "../services/authentication/authentication.context";
-// import { Geolocation_Context_Provider } from "../services/geolocation/geolocation.context";
 
 export const AppProviders = ({ children }) => {
   return (

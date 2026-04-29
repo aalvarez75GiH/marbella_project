@@ -1,21 +1,18 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Platform } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 
-import { Cart_Navigator } from "./cart.navigator";
 import { Scan_Order_Navigator } from "./scan.navigator";
 import { Warehouses_Navigator } from "./warehouses.navigator";
 import { Shop_Navigator } from "./shop.navigator";
 
 import OrdersIcon from "../../../assets/my_icons/receipt_orders.svg";
 import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
-import ProductsIcon from "../../../assets/my_icons/shop_icon.svg";
-import ShopIcon from "../../../assets/my_icons/shop_icon.svg";
+// import ProductsIcon from "../../../assets/my_icons/shop_icon.svg";
+// import ShopIcon from "../../../assets/my_icons/shop_icon.svg";
 
-import { Cart_Active_With_Items_CTA } from "../../components/ctas/my_cart_active_items.cta";
 import { theme } from "../theme";
-import { CartContext } from "../services/cart/cart.context";
 
 const Tab = createBottomTabNavigator();
 
@@ -63,8 +60,6 @@ function tabBarStyleFromNested(route, fallback) {
 }
 
 const Tabs = () => {
-  const { cartTotalItems } = useContext(CartContext);
-
   return (
     <Tab.Navigator
       screenOptions={{
@@ -110,7 +105,7 @@ const Tabs = () => {
         }}
       />
 
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Shop"
         component={Shop_Navigator}
         options={{
@@ -119,14 +114,8 @@ const Tabs = () => {
             <ShopIcon width={25} height={25} fill={color} />
           ),
         }}
-        // options={({ route }) => ({
-        //   title: "Shop",
-        //   tabBarStyle: tabBarStyleFromNested(route, "Shop_Products_View"),
-        //   tabBarIcon: ({ color }) => (
-        //     <ShopIcon width={25} height={25} fill={color} />
-        //   ),
-        // })}
-      />
+        
+      /> */}
     </Tab.Navigator>
   );
 };
