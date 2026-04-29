@@ -1,7 +1,9 @@
 import React, { useContext, useState, useCallback } from "react";
-import { Image, ScrollView } from "react-native";
+import { ScrollView } from "react-native";
+import { Image } from "expo-image";
 import { useTheme } from "styled-components/native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import {
   Container,
@@ -14,8 +16,10 @@ import { Text } from "../../infrastructure/typography/text.component";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
+
 export default function Shop_Products_View() {
   const theme = useTheme();
+  const tabBarHeight = useBottomTabBarHeight();
   const navigation = useNavigation();
   const CARD_HEIGHT = 290; // ✅ pick the height you want
 
@@ -73,10 +77,79 @@ export default function Shop_Products_View() {
             contentContainerStyle={{
               alignItems: "center",
               paddingTop: 24,
-              paddingBottom: 40,
+              paddingBottom: tabBarHeight,
             }}
             showsVerticalScrollIndicator={false}
           >
+            <Action_Container
+              width="90%"
+              style={{ height: CARD_HEIGHT }}
+              color={theme.colors.bg.elements_bg}
+              // color={"red"}
+              justify="flex-start"
+              align="center"
+              // border_radius_top_right={"10px"}
+              // border_radius_bottom_right={"10px"}
+              border_radius={"10px"}
+              direction="row"
+              overflow="hidden"
+              onPress={() => {
+                setIsLoading(true);
+
+                // setTimeout(async () => {
+                setProductsChosenForShop(shopProductsGround);
+                navigation.navigate("Home_View", {
+                  coming_from: "ground_beans",
+                });
+                // }, 0);
+              }}
+            >
+              <Container
+                width="35%"
+                height="100%"
+                //color={theme.colors.bg.elements_bg}
+                color={"#E7B672"}
+                justify="center"
+                align="center"
+                border_radius_top_left={"0px"}
+                border_radius_bottom_left={"0px"}
+              >
+                <Image
+                  source={require("../../../assets/brand_images/ground_beans_badge.png")}
+                  style={{
+                    width: "100%",
+                    height: "65%",
+                    // width: "80%",
+                    // height: "45%",
+                    // resizeMode: "content", // Ensures the image fits without distortion
+                  }}
+                  contentFit="cover" // replaces resizeMode
+                  transition={300} // smooth fade-in
+                />
+              </Container>
+              <Container
+                width="65%"
+                height="100%"
+                //color={theme.colors.bg.elements_bg}
+                color={"lightblue"}
+                justify="flex-start"
+                align="center"
+                border_radius_top_right={"10px"}
+                border_radius_bottom_right={"10px"}
+              >
+                <Image
+                  source={require("../../../assets/ilustrations/ground_beans_poster.png")}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    // resizeMode: "content", // Ensures the image fits without distortion
+                  }}
+                  contentFit="cover" // replaces resizeMode
+                  transition={300} // smooth fade-in
+                />
+              </Container>
+            </Action_Container>
+            <Spacer position="top" size="medium" />
             <Action_Container
               width="90%"
               // height="40%"
@@ -85,8 +158,9 @@ export default function Shop_Products_View() {
               color={"green"}
               justify="flex-start"
               align="center"
-              border_radius_top_left={"10px"}
-              border_radius_bottom_left={"10px"}
+              // border_radius_top_left={"10px"}
+              // border_radius_bottom_left={"10px"}
+              border_radius={"10px"}
               direction="row"
               overflow="hidden"
               onPress={() => {
@@ -116,8 +190,10 @@ export default function Shop_Products_View() {
                   style={{
                     width: "100%",
                     height: "100%",
-                    resizeMode: "content", // Ensures the image fits without distortion
+                    // resizeMode: "content", // Ensures the image fits without distortion
                   }}
+                  contentFit="cover" // replaces resizeMode
+                  transition={300} // smooth fade-in
                 />
               </Container>
               <Container
@@ -130,59 +206,64 @@ export default function Shop_Products_View() {
                 border_radius_bottom_left={"0px"}
                 overflow="hidden"
               >
-                <Text variant="raleway_bold_16_white" textAlign="center">
-                  Premium
-                </Text>
-                <Text variant="raleway_bold_16_white" textAlign="center">
-                  Whole beans
-                </Text>
-                <Text variant="raleway_bold_16_white" textAlign="center">
-                  coffee
-                </Text>
+                <Image
+                  source={require("../../../assets/brand_images/whole_beans_badge.png")}
+                  style={{
+                    width: "100%",
+                    height: "65%",
+                    // resizeMode: "content", // Ensures the image fits without distortion
+                  }}
+                  contentFit="cover" // replaces resizeMode
+                  transition={300} // smooth fade-in
+                />
               </Container>
             </Action_Container>
             <Spacer position="top" size="medium" />
             <Action_Container
               width="90%"
+              // height="40%"
               style={{ height: CARD_HEIGHT }}
-              color={theme.colors.bg.elements_bg}
-              // color={"red"}
+              //color={theme.colors.bg.elements_bg}
+              color={"green"}
               justify="flex-start"
               align="center"
-              border_radius_top_right={"10px"}
-              border_radius_bottom_right={"10px"}
+              // border_radius_top_left={"10px"}
+              // border_radius_bottom_left={"10px"}
+              border_radius={"10px"}
               direction="row"
               overflow="hidden"
-              onPress={() => {
-                setIsLoading(true);
+              // onPress={() => {
+              //   setIsLoading(true);
 
-                // setTimeout(async () => {
-                setProductsChosenForShop(shopProductsGround);
-                navigation.navigate("Home_View", {
-                  coming_from: "ground_beans",
-                });
-                // }, 0);
-              }}
+              //   // setTimeout(async () => {
+              //   setProductsChosenForShop(shopProductsWhole);
+              //   navigation.navigate("Home_View", {
+              //     coming_from: "whole_beans",
+              //   });
+              //   // }, 200);
+              // }}
+              onPress={() => null}
             >
               <Container
                 width="35%"
                 height="100%"
-                //color={theme.colors.bg.elements_bg}
-                color={"#E7B672"}
+                color={"#D6E2CC"}
                 justify="center"
                 align="center"
                 border_radius_top_left={"0px"}
                 border_radius_bottom_left={"0px"}
+                overflow="hidden"
               >
-                <Text variant="raleway_bold_16" textAlign="center">
-                  Premium
-                </Text>
-                <Text variant="raleway_bold_16" textAlign="center">
-                  Ground beans
-                </Text>
-                <Text variant="raleway_bold_16" textAlign="center">
-                  coffee
-                </Text>
+                <Image
+                  source={require("../../../assets/brand_images/green_beans_badge.png")}
+                  style={{
+                    width: "100%",
+                    height: "65%",
+                    // resizeMode: "content", // Ensures the image fits without distortion
+                  }}
+                  contentFit="cover" // replaces resizeMode
+                  transition={300} // smooth fade-in
+                />
               </Container>
               <Container
                 width="65%"
@@ -191,16 +272,19 @@ export default function Shop_Products_View() {
                 color={"lightblue"}
                 justify="flex-start"
                 align="center"
-                border_radius_top_right={"10px"}
-                border_radius_bottom_right={"10px"}
+                border_radius_top_left={"10px"}
+                border_radius_bottom_left={"10px"}
+                overflow="hidden"
               >
                 <Image
-                  source={require("../../../assets/ilustrations/ground_beans_poster.png")}
+                  source={require("../../../assets/ilustrations/green_beans_poster.png")}
                   style={{
                     width: "100%",
                     height: "100%",
-                    resizeMode: "content", // Ensures the image fits without distortion
+                    // resizeMode: "content", // Ensures the image fits without distortion
                   }}
+                  contentFit="cover" // replaces resizeMode
+                  transition={300} // smooth fade-in
                 />
               </Container>
             </Action_Container>

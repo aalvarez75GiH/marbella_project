@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useCallback } from "react";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import React, { useContext, useEffect } from "react";
+import { useNavigation } from "@react-navigation/native";
 
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
