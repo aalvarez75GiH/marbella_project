@@ -12,31 +12,39 @@ import { theme } from "../../infrastructure/theme/index.js";
 export const Main_Header = ({
   action_1,
   action_2,
-  label = "",
+  label = "Explore coffee",
+  subtitle = "Ground · Whole · Green",
   hide_icon = false,
 }) => {
   return (
     <Container
-      width="100%"
+      width="92%"
       height="8%"
       align="center"
       direction="row"
-      justify={hide_icon ? "space-around" : "center"}
+      justify="center"
       color={theme.colors.bg.elements_bg}
+      style={{
+        paddingHorizontal: 16,
+        paddingTop: 8,
+      }}
     >
       {!hide_icon && (
         <Action_Container
           width="15%"
           height="100%"
           color={theme.colors.bg.elements_bg}
-          //color={"red"}
           onPress={action_1}
+          style={{
+            justifyContent: "center",
+            alignItems: "flex-start",
+          }}
         >
           <Image
             source={require("../../../assets/brand_images/isoLogo_black.png")}
             style={{
-              width: "100%", // control size here
-              aspectRatio: 0.04, // keeps proportions (1 = square)
+              width: 44,
+              height: 44,
             }}
             resizeMode="contain"
           />
@@ -44,24 +52,39 @@ export const Main_Header = ({
       )}
 
       <Container
-        width="70%"
+        width={hide_icon ? "85%" : "70%"}
         height="100%"
         color={theme.colors.bg.elements_bg}
-        // color={"blue"}
         justify="center"
         align="center"
-        style={{ paddingRight: "5%" }}
       >
-        <Text variant="dm_sans_bold_18">{label}</Text>
+        <Text variant="dm_sans_bold_20">{label}</Text>
+
+        {!!subtitle && (
+          <Text
+            variant="dm_sans_regular_14"
+            style={{
+              marginTop: 4,
+              color: theme.colors.text.secondary || "#3A2A22",
+              letterSpacing: 0.3,
+            }}
+          >
+            {subtitle}
+          </Text>
+        )}
       </Container>
+
       <Action_Container
         width="15%"
         height="100%"
         color={theme.colors.bg.elements_bg}
-        // color={"red"}
         onPress={action_2}
+        style={{
+          justifyContent: "center",
+          alignItems: "flex-end",
+        }}
       >
-        <MenuIcon width={30} height={30} fill={"#000000"} />
+        <MenuIcon width={32} height={32} fill="#000000" />
       </Action_Container>
     </Container>
   );
