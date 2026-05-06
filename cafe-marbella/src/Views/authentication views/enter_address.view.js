@@ -22,7 +22,9 @@ export default function Enter_Address_View() {
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [selectedAddress, setSelectedAddress] = useState(null);
 
-  const { setUserToDB, userToDB } = useContext(AuthenticationContext);
+  const { setUserToDB, userToDB, buildShipToFromGooglePlace } = useContext(
+    AuthenticationContext
+  );
   const { deviceLat, deviceLng } = useContext(GeolocationContext);
   const CTA_HEIGHT = 65; // ✅ fixed height so it never shrinks
 
@@ -48,6 +50,46 @@ export default function Enter_Address_View() {
       ? { location: `${deviceLat},${deviceLng}`, radius: 50000 }
       : {}),
   };
+
+  // const getAddressComponent = (components = [], type, useShortName = false) => {
+  //   const component = components.find((item) => item.types.includes(type));
+  //   return useShortName ? component?.short_name : component?.long_name;
+  // };
+
+  // const buildShipToFromGooglePlace = ({ details, user }) => {
+  //   const components = details?.address_components || [];
+
+  //   const streetNumber = getAddressComponent(components, "street_number");
+  //   const route = getAddressComponent(components, "route");
+
+  //   const city =
+  //     getAddressComponent(components, "locality") ||
+  //     getAddressComponent(components, "sublocality") ||
+  //     getAddressComponent(components, "administrative_area_level_2");
+
+  //   const state = getAddressComponent(
+  //     components,
+  //     "administrative_area_level_1",
+  //     true
+  //   );
+
+  //   const postalCode = getAddressComponent(components, "postal_code");
+
+  //   const country = getAddressComponent(components, "country", true);
+
+  //   return {
+  //     name: user.name,
+  //     phone: user.phone,
+
+  //     address_line1: [streetNumber, route].filter(Boolean).join(" "),
+  //     city_locality: city,
+  //     state_province: state,
+  //     postal_code: postalCode,
+  //     country_code: country,
+
+  //     address_residential_indicator: "yes",
+  //   };
+  // };
 
   const debugPlaces = async (text) => {
     try {
@@ -150,6 +192,19 @@ export default function Enter_Address_View() {
                       const formatted =
                         details?.formatted_address ?? data.description;
 
+                      const ship_to = buildShipToFromGooglePlace({
+                        details: details,
+                        user: {
+                          name: `${userToDB.first_name} ${userToDB.last_name}`,
+                          phone: userToDB.phone_number,
+                        },
+                      });
+
+                      console.log(
+                        "SHIP TO SELECTED:",
+                        JSON.stringify(ship_to, null, 2)
+                      );
+
                       const lat = details?.geometry?.location?.lat;
                       const lng = details?.geometry?.location?.lng;
 
@@ -162,6 +217,7 @@ export default function Enter_Address_View() {
                         setUserToDB({
                           ...userToDB,
                           address: formatted,
+                          ship_to,
                         });
                         // setDifferentAddress(formatted);
 

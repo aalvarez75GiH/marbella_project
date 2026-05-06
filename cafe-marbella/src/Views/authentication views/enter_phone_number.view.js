@@ -68,6 +68,11 @@ export default function Enter_Phone_Number_View() {
     return () => clearTimeout(timer);
   }, []);
 
+  console.log(
+    "USER TO DB IN ENTER PHONE NUMBER VIEW:",
+    JSON.stringify(userToDB, null, 2)
+  );
+
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -119,7 +124,15 @@ export default function Enter_Phone_Number_View() {
               onChangeText={(value) => {
                 const formatted = formatPhone(value);
 
-                setUserToDB({ ...userToDB, phone_number: formatted });
+                // setUserToDB({ ...userToDB, phone_number: formatted });
+                setUserToDB((prev) => ({
+                  ...prev,
+                  phone_number: formatted,
+                  ship_to: {
+                    ...prev.ship_to,
+                    phone: formatted,
+                  },
+                }));
 
                 if (phoneError) setPhoneError(null);
               }}

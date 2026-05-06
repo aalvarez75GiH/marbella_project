@@ -42,10 +42,10 @@ export const Warehouse_Context_Provider = ({ children }) => {
         );
 
         setMyWarehouse(closestWarehouse);
-        // console.log(
-        //   "CLOSEST WAREHOUSE AT CONTEXT:",
-        //   JSON.stringify(closestWarehouse, null, 2)
-        // );
+        console.log(
+          "CLOSEST WAREHOUSE AT CONTEXT:",
+          JSON.stringify(closestWarehouse, null, 2)
+        );
       } catch (error) {
         console.error("Error fetching closest warehouse:", error);
       }

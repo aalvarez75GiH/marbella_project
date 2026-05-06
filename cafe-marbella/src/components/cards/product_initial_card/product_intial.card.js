@@ -26,7 +26,7 @@ export const Product_Initial_Card = ({ item = null }) => {
     totalStock,
   } = item || {};
 
-  console.log("PRODUCT INITIAL CARD ITEM:", JSON.stringify(item, null, 2));
+  // console.log("PRODUCT INITIAL CARD ITEM:", JSON.stringify(item, null, 2));
 
   const { comingFrom, setComingFrom } = useContext(AuthenticationContext);
 

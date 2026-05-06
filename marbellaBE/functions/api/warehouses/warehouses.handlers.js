@@ -140,11 +140,14 @@ const gettingMostClosestWarehouse = async (allWarehouses, origin) => {
 
   // ✅ find closest
   const closest = valid.reduce((best, cur) =>
-    cur.customer_distance_to_warehouse_meters <
-    best.customer_distance_to_warehouse_meters
-      ? cur
-      : best
+    cur.distance_in_meters < best.distance_in_meters ? cur : best
   );
+  // const closest = valid.reduce((best, cur) =>
+  //   cur.customer_distance_to_warehouse_meters <
+  //   best.customer_distance_to_warehouse_meters
+  //     ? cur
+  //     : best
+  // );
 
   return { closest, warehouses: warehousesWithDistance };
 };

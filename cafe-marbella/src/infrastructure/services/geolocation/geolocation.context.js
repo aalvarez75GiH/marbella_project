@@ -75,6 +75,13 @@ export const Geolocation_Context_Provider = ({ children }) => {
     };
   }, []);
 
+  console.log("GEOLOCATION CONTEXT VALUES:", {
+    isLoading,
+    deviceLat,
+    deviceLng,
+    error,
+  });
+
   return (
     <GeolocationContext.Provider
       value={{

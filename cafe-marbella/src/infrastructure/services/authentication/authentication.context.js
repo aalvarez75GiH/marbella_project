@@ -898,6 +898,46 @@ export const Authentication_Context_Provider = ({ children }) => {
     }
   };
 
+  // *********** GOOGLE AUTOCOMPLETE ADDRESS PARSING FOR SHIPPING LABEL (example) ***********
+  const getAddressComponent = (components = [], type, useShortName = false) => {
+    const component = components.find((item) => item.types.includes(type));
+    return useShortName ? component?.short_name : component?.long_name;
+  };
+
+  const buildShipToFromGooglePlace = ({ details, user }) => {
+    const components = details?.address_components || [];
+
+    const streetNumber = getAddressComponent(components, "street_number");
+    const route = getAddressComponent(components, "route");
+
+    const city =
+      getAddressComponent(components, "locality") ||
+      getAddressComponent(components, "sublocality") ||
+      getAddressComponent(components, "administrative_area_level_2");
+
+    const state = getAddressComponent(
+      components,
+      "administrative_area_level_1",
+      true
+    );
+
+    const postalCode = getAddressComponent(components, "postal_code");
+
+    const country = getAddressComponent(components, "country", true);
+
+    return {
+      name: user.name,
+      phone: user.phone,
+
+      address_line1: [streetNumber, route].filter(Boolean).join(" "),
+      city_locality: city,
+      state_province: state,
+      postal_code: postalCode,
+      country_code: country,
+
+      address_residential_indicator: "yes",
+    };
+  };
   const value = useMemo(
     () => ({
       isLoading,
@@ -940,6 +980,7 @@ export const Authentication_Context_Provider = ({ children }) => {
       fbSignOut,
       profileWarning,
       profileReady,
+      buildShipToFromGooglePlace,
     }),
     [
       isLoading,
@@ -968,6 +1009,7 @@ export const Authentication_Context_Provider = ({ children }) => {
       handleUpdate,
       profileReady,
       profileWarning,
+      buildShipToFromGooglePlace,
     ]
   );
 

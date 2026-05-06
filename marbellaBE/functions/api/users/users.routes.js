@@ -103,6 +103,7 @@ usersRouter.post("/", verifyFirebaseToken, async (req, res) => {
       created_at: now,
       active: true,
     },
+    ship_to: req.body.ship_to || null, // optional field for delivery address if different from main address
   };
 
   try {
