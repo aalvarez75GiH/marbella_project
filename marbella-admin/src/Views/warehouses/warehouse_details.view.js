@@ -137,13 +137,55 @@ export default function Warehouse_Details_View() {
       : {}),
   };
 
-  console.log("PLACES QUERY:", placesQuery);
-  console.log(
-    "WAREHOUSE ACTIVE VALUE:",
-    warehouseSelected?.active,
-    "TYPE:",
-    typeof warehouseSelected?.active
-  );
+  // console.log("PLACES QUERY:", placesQuery);
+  // console.log(
+  //   "WAREHOUSE ACTIVE VALUE:",
+  //   warehouseSelected?.active,
+  //   "TYPE:",
+  //   typeof warehouseSelected?.active
+  // );
+
+  const getAddressComponent = (components = [], type, useShortName = false) => {
+    const component = components.find((item) => item.types.includes(type));
+    return useShortName ? component?.short_name : component?.long_name;
+  };
+
+  const buildShipFromFromGooglePlace = ({ details, warehouse }) => {
+    const components = details?.address_components || [];
+
+    const streetNumber = getAddressComponent(components, "street_number");
+    const route = getAddressComponent(components, "route", true);
+    const subpremise = getAddressComponent(components, "subpremise");
+
+    const city =
+      getAddressComponent(components, "locality") ||
+      getAddressComponent(components, "administrative_area_level_2");
+
+    const state = getAddressComponent(
+      components,
+      "administrative_area_level_1",
+      true
+    );
+
+    const postalCode = getAddressComponent(components, "postal_code");
+    const country = getAddressComponent(components, "country", true);
+
+    return {
+      name: warehouse?.warehouse_name || "Cafe Marbella Warehouse",
+      phone: warehouse?.warehouse_information?.phone || "",
+      company_name: "Cafe Marbella",
+
+      address_line1: [streetNumber, route].filter(Boolean).join(" "),
+      address_line2: subpremise || null,
+
+      city_locality: city,
+      state_province: state,
+      postal_code: postalCode,
+      country_code: country,
+
+      address_residential_indicator: "no",
+    };
+  };
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -353,16 +395,34 @@ export default function Warehouse_Details_View() {
                           typeof lng === "number"
                         ) {
                           setAddressText(formatted);
-                          setWarehouseSelected({
-                            ...warehouseSelected,
+                          // setWarehouseSelected({
+                          //   ...warehouseSelected,
+                          //   physical_address: formatted,
+                          //   geo: {
+                          //     formatted_address: formatted,
+                          //     lat,
+                          //     lng,
+                          //     place_id: details?.place_id ?? data?.place_id,
+                          //   },
+                          // });
+                          const ship_from = buildShipFromFromGooglePlace({
+                            details,
+                            warehouse: warehouseSelected,
+                          });
+
+                          setWarehouseSelected((prev) => ({
+                            ...prev,
                             physical_address: formatted,
                             geo: {
                               formatted_address: formatted,
                               lat,
                               lng,
                               place_id: details?.place_id ?? data?.place_id,
+                              address_components:
+                                details?.address_components || [],
                             },
-                          });
+                            ship_from,
+                          }));
                         } else {
                           // setSelectedAddress(null);
                         }

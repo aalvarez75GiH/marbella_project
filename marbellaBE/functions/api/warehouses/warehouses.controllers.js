@@ -87,6 +87,7 @@ const createWarehouse = async (warehouse) => {
     max_limit_delivery_ratio: Number(warehouse.max_limit_delivery_ratio ?? 0),
     max_limit_pickup_ratio: Number(warehouse.max_limit_pickup_ratio ?? 0),
     warehouse_information: warehouse.warehouse_information,
+    ship_from: warehouse.ship_from ?? null,
 
     // ✅ store inventory map (computed)
     inventory: warehouse.inventory,
@@ -235,6 +236,7 @@ const updateWarehouse = async (warehouse_id, warehouse) => {
     warehouse_information: warehouse.warehouse_information ?? {},
     inventory: warehouse.inventory ?? {},
     updatedAt: new Date().toISOString(),
+    ship_from: warehouse.ship_from ?? null,
   };
 
   await warehouseRef.update(payload);

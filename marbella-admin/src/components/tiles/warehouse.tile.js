@@ -52,6 +52,7 @@ export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
                 item?.warehouse_information.closing_time || "08:00 PM",
             },
             inventory: item?.inventory || {},
+            ship_from: item?.ship_from || { lat: 0, lng: 0 },
           }),
             navigation.navigate("Warehouse_Details_View", {
               coming_from: "warehouse_tile",

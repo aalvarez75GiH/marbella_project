@@ -43,6 +43,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
       closing_time: "05:00 PM",
     },
     inventory: {},
+    ship_from: {},
   });
   // later you’ll set this based on geolocation
   const { productsCatalog } = useContext(GlobalContext);
