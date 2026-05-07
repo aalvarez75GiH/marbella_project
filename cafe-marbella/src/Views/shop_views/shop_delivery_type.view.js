@@ -34,7 +34,11 @@ export default function Shop_Delivery_Type_View() {
 
   const { user_id, sub_total, quantity, cart_id } = cart;
 
-  const { myWarehouse } = useContext(WarehouseContext);
+  const { myWarehouse, gettingRateForDelivery } = useContext(WarehouseContext);
+  console.log(
+    "WAREHOUSE SHIP FROM:",
+    JSON.stringify(myWarehouse.ship_from, null, 2)
+  );
   const {
     warehouse_id,
     warehouse_name,
@@ -43,6 +47,7 @@ export default function Shop_Delivery_Type_View() {
     distance_in_miles,
     distance_time,
     max_limit_pickup_ratio,
+    ship_from,
   } = myWarehouse;
   console.log("DISTANCE IN MILES:", distance_in_miles);
   const { formatted_address } = geo || {};
@@ -64,13 +69,13 @@ export default function Shop_Delivery_Type_View() {
   } = useContext(OrdersContext);
 
   const { customer } = myOrder || {};
-  const { customer_address } = customer || {};
+  const { customer_address, ship_to } = customer || {};
   // console.log("DELIVERY TYPE OPTION:", deliveryOption);
 
-  // console.log(
-  //   "MY ORDER AT DELIVERY TYPE VIEW:",
-  //   JSON.stringify(myOrder, null, 2)
-  // );
+  console.log(
+    "MY ORDER AT DELIVERY TYPE VIEW:",
+    JSON.stringify(myOrder, null, 2)
+  );
   // console.log(
   //   "CART RAW AT DELIVERY TYPE VIEW:",
   //   JSON.stringify(cartRaw, null, 2)
@@ -91,6 +96,17 @@ export default function Shop_Delivery_Type_View() {
     user_id.trim().length > 0 &&
     typeof cart_id === "string" &&
     cart_id.trim().length > 0;
+
+  const handlingDeliveryRate = async () => {
+    try {
+      const cheapestRate = await gettingRateForDelivery(ship_to, ship_from);
+
+      return cheapestRate;
+    } catch (error) {
+      console.log("Error getting delivery rate:", error);
+      return null;
+    }
+  };
 
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
@@ -184,7 +200,7 @@ export default function Shop_Delivery_Type_View() {
               border_radius="10px"
               delivery_fee=""
               // action={() => settingMyOrderDeliveryType("delivery")}
-              action={() => {
+              action={async () => {
                 if (!hasValidCart) {
                   console.log(
                     "DeliveryType: blocked pickup, missing cart/user",
@@ -196,7 +212,13 @@ export default function Shop_Delivery_Type_View() {
                   return;
                 }
                 setDeliveryOption("delivery");
-                // setTimeout(() => {
+                const rateResponse = await handlingDeliveryRate();
+                const cheapestRate = rateResponse?.cheapest_rate;
+                const shippingAmountInDollars = cheapestRate?.amount || 0;
+                const shippingAmountInCents = Math.round(
+                  shippingAmountInDollars * 100
+                );
+
                 setMyOrder((prevOrder) => ({
                   ...prevOrder,
                   delivery_type: "delivery",
@@ -206,7 +228,8 @@ export default function Shop_Delivery_Type_View() {
                     sub_total: sub_total,
                     taxes: 0,
                     total: 0,
-                    shipping: 500,
+                    // shipping: 500,
+                    shipping: shippingAmountInCents,
                     discount: 0,
                   },
                   quantity: quantity,
@@ -221,10 +244,19 @@ export default function Shop_Delivery_Type_View() {
                     distance_in_miles: distance_in_miles,
                   },
                   order_delivery_address: customer_address,
+                  shipping_rate: {
+                    rate_id: cheapestRate.rate_id,
+                    service_code: cheapestRate.service_code,
+                    service_type: cheapestRate.service_type,
+                    amount: shippingAmountInCents,
+                    currency: cheapestRate.currency,
+                    estimated_delivery_date:
+                      cheapestRate.estimated_delivery_date,
+                    carrier_delivery_days: cheapestRate.carrier_delivery_days,
+                  },
                   // ✅ explicitly preserve products (optional but makes intent clear)
                   order_products: prevOrder.order_products,
                 }));
-                // }, 500); // Simulate a brief loading period
               }}
             />
           </Container>

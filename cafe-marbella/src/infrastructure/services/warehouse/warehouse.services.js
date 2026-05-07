@@ -77,6 +77,88 @@ export const gettingRealTimeDistanceToOrderWHRequest = async (
   return res.data;
 };
 
+// export const gettingRateRequestToShipStation = async (
+//   ship_to,
+//   ship_from,
+//   weight = 6,
+//   dimensions
+// ) => {
+//   try {
+//     const res = await axios.post(
+//       `${warehouseEndPoint}/gettingRateFromWarehouse`,
+//       {
+//         timeout: 15000,
+//       }
+//     );
+//     // console.log("RESPONSE:", JSON.stringify(res.data, null, 2));
+//     return res.data;
+//   } catch (error) {
+//     console.error("Error fetching products catalog:", error);
+//     throw error;
+//   }
+// };
+export const gettingRateRequestToShipStation = async (
+  ship_to,
+  ship_from,
+  weight = 6,
+  dimensions = null
+) => {
+  const { warehouseEndPoint } = environment;
+  try {
+    // const body = {
+    //   ship_to,
+    //   ship_from,
+    //   packages: [
+    //     {
+    //       package_code: "package",
+    //       weight: {
+    //         value: weight,
+    //         unit: "ounce",
+    //       },
+    //       ...(dimensions && {
+    //         dimensions: {
+    //           unit: "inch",
+    //           length: dimensions.length,
+    //           width: dimensions.width,
+    //           height: dimensions.height,
+    //         },
+    //       }),
+    //     },
+    //   ],
+    // };
+    const body = {
+      shipment: {
+        ship_to,
+        ship_from,
+        packages: [
+          {
+            package_code: "package",
+            weight: {
+              value: weight,
+              unit: "ounce",
+            },
+          },
+        ],
+      },
+    };
+
+    const res = await axios.post(
+      `${warehouseEndPoint}/gettingRateFromWarehouse`,
+      body,
+      {
+        timeout: 15000,
+      }
+    );
+
+    return res.data;
+  } catch (error) {
+    console.error(
+      "Error getting shipping rate:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
 // const gettingWarehouseByIDRequest = async (warehouse_id) => {
 //   const { warehouseEndPoint } = environment;
 //   // console.log("WAREHOUSE ID AT SERVICE:", warehouse_id);

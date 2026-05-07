@@ -33,8 +33,16 @@ export default function Process_Shopping_Cart_View() {
   const { setMyOrder } = useContext(OrdersContext);
 
   const { user } = useContext(AuthenticationContext);
-  const { first_name, last_name, email, phone_number, uid, address } =
-    user || {};
+  const {
+    first_name,
+    last_name,
+    email,
+    phone_number,
+    uid,
+    address,
+    ship_to,
+    customer_qr,
+  } = user || {};
   // *************
   const navigation = useNavigation();
 
@@ -137,17 +145,18 @@ export default function Process_Shopping_Cart_View() {
                 setMyOrder((prevOrder) => ({
                   ...prevOrder,
                   customer: {
-                    first_name: user?.first_name ?? "",
-                    last_name: user?.last_name ?? "",
-                    email: user?.email ?? "",
-                    phone_number: user?.phone_number ?? "",
-                    customer_address: user?.address ?? "",
-                    uid: user?.uid ?? "",
+                    first_name: first_name ?? "",
+                    last_name: last_name ?? "",
+                    email: email ?? "",
+                    phone_number: phone_number ?? "",
+                    customer_address: address ?? "",
+                    uid: uid ?? "",
                     customer_qr: {
                       active: true,
                       createdAt: new Date().toISOString(),
-                      customer_token: user?.customer_qr.customer_token ?? "",
+                      customer_token: customer_qr.customer_token ?? "",
                     },
+                    ship_to: ship_to ?? [],
                   },
                   order_status: "In Progress",
                   order_products: latestProducts,

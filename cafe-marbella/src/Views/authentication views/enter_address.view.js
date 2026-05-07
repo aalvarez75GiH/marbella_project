@@ -296,6 +296,20 @@ export default function Enter_Address_View() {
                         onPress={(data, details = null) => {
                           const formatted =
                             details?.formatted_address ?? data.description;
+
+                          const ship_to = buildShipToFromGooglePlace({
+                            details: details,
+                            user: {
+                              name: `${userToDB.first_name} ${userToDB.last_name}`,
+                              phone: userToDB.phone_number,
+                            },
+                          });
+
+                          console.log(
+                            "SHIP TO SELECTED:",
+                            JSON.stringify(ship_to, null, 2)
+                          );
+
                           const lat = details?.geometry?.location?.lat;
                           const lng = details?.geometry?.location?.lng;
 
@@ -304,7 +318,11 @@ export default function Enter_Address_View() {
                             typeof lat === "number" &&
                             typeof lng === "number"
                           ) {
-                            setUserToDB({ ...userToDB, address: formatted });
+                            setUserToDB({
+                              ...userToDB,
+                              address: formatted,
+                              ship_to,
+                            });
                             setSelectedAddress({
                               formatted_address: formatted,
                               lat,

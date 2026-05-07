@@ -35,21 +35,11 @@ export default function Payment_View() {
   } = useContext(PaymentsContext);
 
   const { myOrder, setMyOrder } = useContext(OrdersContext);
+  //console.log("MY ORDER IN PAYMENT VIEW:", JSON.stringify(myOrder, null, 2));
   const { user_id } = myOrder || {};
   const { resettingCart, setCart } = useContext(CartContext);
 
   const navigation = useNavigation();
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const tabs = navigation.getParent("MainTabs");
-  //     tabs?.setOptions({ tabBarStyle: { display: "none" } });
-
-  //     return () => {
-  //       tabs?.setOptions({ tabBarStyle: { display: "flex" } });
-  //     };
-  //   }, [navigation])
-  // );
 
   useEffect(() => {
     setMyOrder((prev) => ({
@@ -65,7 +55,10 @@ export default function Payment_View() {
   }, []);
 
   console.log("CARD VERIFIED STATE:", cardVerified);
-  console.log("MY ORDER IN PAYMENT VIEW:", JSON.stringify(myOrder, null, 2));
+  console.log(
+    "MY ORDER IN PAYMENT VIEW WITH SHIPMENT INFO:",
+    JSON.stringify(myOrder, null, 2)
+  );
 
   return (
     <SafeArea background_color="#FFFFFF">

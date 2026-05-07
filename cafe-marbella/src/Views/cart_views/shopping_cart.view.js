@@ -158,6 +158,7 @@ export default function Shopping_Cart_View() {
                         createdAt: new Date().toISOString(),
                         customer_token: user?.customer_qr.customer_token ?? "",
                       },
+                      ship_to: user.ship_to ?? [],
                     },
                     order_status: "In Progress",
                     order_products: latestProducts,

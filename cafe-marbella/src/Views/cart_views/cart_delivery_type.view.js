@@ -34,7 +34,7 @@ export default function Cart_Delivery_Type_View() {
 
   const { user_id, sub_total, quantity, cart_id } = cart;
 
-  const { myWarehouse } = useContext(WarehouseContext);
+  const { myWarehouse, gettingRateForDelivery } = useContext(WarehouseContext);
   const {
     warehouse_id,
     warehouse_name,
@@ -43,6 +43,7 @@ export default function Cart_Delivery_Type_View() {
     distance_in_miles,
     distance_time,
     max_limit_pickup_ratio,
+    ship_from,
   } = myWarehouse;
   console.log("DISTANCE IN MILES:", distance_in_miles);
   const { formatted_address } = geo || {};
@@ -64,7 +65,7 @@ export default function Cart_Delivery_Type_View() {
   } = useContext(OrdersContext);
 
   const { customer } = myOrder || {};
-  const { customer_address } = customer || {};
+  const { customer_address, ship_to } = customer || {};
   // console.log("DELIVERY TYPE OPTION:", deliveryOption);
 
   // console.log(
@@ -91,6 +92,17 @@ export default function Cart_Delivery_Type_View() {
     user_id.trim().length > 0 &&
     typeof cart_id === "string" &&
     cart_id.trim().length > 0;
+
+  const handlingDeliveryRate = async () => {
+    try {
+      const cheapestRate = await gettingRateForDelivery(ship_to, ship_from);
+
+      return cheapestRate;
+    } catch (error) {
+      console.log("Error getting delivery rate:", error);
+      return null;
+    }
+  };
 
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
@@ -184,7 +196,7 @@ export default function Cart_Delivery_Type_View() {
               border_radius="10px"
               delivery_fee=""
               // action={() => settingMyOrderDeliveryType("delivery")}
-              action={() => {
+              action={async () => {
                 if (!hasValidCart) {
                   console.log(
                     "DeliveryType: blocked pickup, missing cart/user",
@@ -196,6 +208,12 @@ export default function Cart_Delivery_Type_View() {
                   return;
                 }
                 setDeliveryOption("delivery");
+                const rateResponse = await handlingDeliveryRate();
+                const cheapestRate = rateResponse?.cheapest_rate;
+                const shippingAmountInDollars = cheapestRate?.amount || 0;
+                const shippingAmountInCents = Math.round(
+                  shippingAmountInDollars * 100
+                );
                 // setTimeout(() => {
                 setMyOrder((prevOrder) => ({
                   ...prevOrder,
@@ -206,7 +224,7 @@ export default function Cart_Delivery_Type_View() {
                     sub_total: sub_total,
                     taxes: 0,
                     total: 0,
-                    shipping: 500,
+                    shipping: shippingAmountInCents,
                     discount: 0,
                   },
                   quantity: quantity,

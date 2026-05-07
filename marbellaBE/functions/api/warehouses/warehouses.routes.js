@@ -120,6 +120,60 @@ warehousesRouter.post("/createWarehouse", async (req, res) => {
   }
 });
 
+// Getting cheapest delivery rate depending on warehouse
+warehousesRouter.post("/gettingRateFromWarehouse", async (req, res) => {
+  try {
+    const shipmentInfo = req.body;
+    console.log("shipmentInfo:", JSON.stringify(shipmentInfo, null, 2));
+    const { shipment } = shipmentInfo;
+    const { ship_to, ship_from, packages } = shipment;
+
+    if (!ship_to || !ship_from || !packages?.length) {
+      return res.status(400).json({
+        error: true,
+        message: "Missing ship_to, ship_from, or packages",
+      });
+    }
+
+    const cheapestRateResponse =
+      await warehousesControllers.getCheapestShippingRate(
+        ship_to,
+        ship_from,
+        packages
+      );
+
+    const { response, cheapestRate } = cheapestRateResponse || {};
+    return res.status(200).json({
+      success: true,
+      shipment_id: response.data?.shipment_id,
+      rate_request_id: response.data?.rate_response?.rate_request_id,
+
+      cheapest_rate: {
+        rate_id: cheapestRate.rate_id,
+        carrier_id: cheapestRate.carrier_id,
+        carrier_code: cheapestRate.carrier_code,
+        carrier_name: cheapestRate.carrier_friendly_name,
+
+        service_type: cheapestRate.service_type,
+        service_code: cheapestRate.service_code,
+
+        amount: cheapestRate.shipping_amount.amount,
+        currency: cheapestRate.shipping_amount.currency,
+
+        delivery_days: cheapestRate.delivery_days,
+        estimated_delivery_date: cheapestRate.estimated_delivery_date,
+        carrier_delivery_days: cheapestRate.carrier_delivery_days,
+
+        trackable: cheapestRate.trackable,
+        guaranteed_service: cheapestRate.guaranteed_service,
+      },
+    });
+    // return res.status(201).json(cheapestRate);
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+});
+
 // Update a existing warehouse
 warehousesRouter.put("/updateWarehouse", async (req, res) => {
   const warehouseToUpdate = req.body;

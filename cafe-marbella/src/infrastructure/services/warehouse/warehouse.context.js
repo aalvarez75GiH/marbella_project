@@ -9,6 +9,7 @@ import {
   gettingWarehouseByIDRequest,
   gettingClosestWarehouseForDeviceRequest,
   gettingRealTimeDistanceToOrderWHRequest,
+  gettingRateRequestToShipStation,
 } from "./warehouse.services";
 
 import { GlobalContext } from "../global/global.context";
@@ -175,6 +176,22 @@ export const Warehouse_Context_Provider = ({ children }) => {
     }
   };
 
+  const gettingRateForDelivery = async (ship_to, ship_from) => {
+    try {
+      const cheapestRate = await gettingRateRequestToShipStation(
+        ship_to,
+        ship_from
+      );
+      console.log(
+        "CHEAPEST RATE RESPONSE AT CONTEXT:",
+        JSON.stringify(cheapestRate, null, 2)
+      );
+      return cheapestRate;
+    } catch (error) {
+      console.log("Error getting delivery rate:", error);
+    }
+  };
+
   // ✅ compute data for shop
   const shopProductsGround = useMemo(() => {
     if (!myWarehouse) return [];
@@ -208,6 +225,8 @@ export const Warehouse_Context_Provider = ({ children }) => {
 
         productsChosenForShop,
         setProductsChosenForShop,
+
+        gettingRateForDelivery,
       }}
     >
       {children}
