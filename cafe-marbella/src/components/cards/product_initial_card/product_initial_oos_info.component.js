@@ -11,7 +11,7 @@ export const Product_Initial_OOS_Info_Component = ({
   product_subtitle,
   size_variants,
 }) => {
-  console.log("PRODUCT NAME:", product_name);
+  // console.log("PRODUCT NAME:", product_name);
   return (
     <Container
       width="100%"

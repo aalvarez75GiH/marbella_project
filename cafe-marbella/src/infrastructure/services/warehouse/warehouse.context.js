@@ -43,10 +43,10 @@ export const Warehouse_Context_Provider = ({ children }) => {
         );
 
         setMyWarehouse(closestWarehouse);
-        console.log(
-          "CLOSEST WAREHOUSE AT CONTEXT:",
-          JSON.stringify(closestWarehouse, null, 2)
-        );
+        // console.log(
+        //   "CLOSEST WAREHOUSE AT CONTEXT:",
+        //   JSON.stringify(closestWarehouse, null, 2)
+        // );
       } catch (error) {
         console.error("Error fetching closest warehouse:", error);
       }
@@ -163,14 +163,14 @@ export const Warehouse_Context_Provider = ({ children }) => {
     setIsLoading(true);
     try {
       const warehouse = await gettingWarehouseByIDRequest(warehouse_id);
-      console.log(
-        "WAREHOUSE BY ID AT CONTEXT REQUEST FUNCTION:",
-        JSON.stringify(warehouse, null, 2)
-      );
+      // console.log(
+      //   "WAREHOUSE BY ID AT CONTEXT REQUEST FUNCTION:",
+      //   JSON.stringify(warehouse, null, 2)
+      // );
       setMyWarehouse(warehouse);
     } catch (error) {
       setError(error);
-      console.error("Error fetching warehouse by ID:", error);
+      // console.error("Error fetching warehouse by ID:", error);
     } finally {
       setIsLoading(false);
     }

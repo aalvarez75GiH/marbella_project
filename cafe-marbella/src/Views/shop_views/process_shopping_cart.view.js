@@ -1,4 +1,4 @@
-import React, { useContext, useCallback } from "react";
+import React, { useContext } from "react";
 import { FlatList, Platform } from "react-native";
 import { useTheme } from "styled-components/native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
@@ -17,7 +17,7 @@ import { Global_activity_indicator } from "../../components/activity indicators/
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
-import { createdAt } from "expo-updates";
+
 export default function Process_Shopping_Cart_View() {
   const theme = useTheme();
   const tabBarHeight = useBottomTabBarHeight();
@@ -118,10 +118,6 @@ export default function Process_Shopping_Cart_View() {
               caption_text_variant="dm_sans_bold_20"
               style={{ marginBottom: iOS ? 0 : tabBarHeight }}
               action={() => {
-                console.log(
-                  "CURRENT ROUTE NAME AT CTA PROCESS SCV:",
-                  navigation.getState()
-                );
                 const latestProducts = cart?.products ?? [];
 
                 // ✅ Use auth context, NOT cart.user_id

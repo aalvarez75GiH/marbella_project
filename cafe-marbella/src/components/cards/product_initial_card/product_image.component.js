@@ -9,9 +9,9 @@ export const Product_Image_Component = ({ image }) => {
   const imageSource = typeof image === "string" ? { uri: image } : image;
 
   const isValidImage = imageSource === null;
-  console.log("IS VALID IMAGE: ", isValidImage);
+  // console.log("IS VALID IMAGE: ", isValidImage);
 
-  console.log("IMAGE SOURCE IN PRODUCT IMAGE COMPONENT: ", imageSource);
+  // console.log("IMAGE SOURCE IN PRODUCT IMAGE COMPONENT: ", imageSource);
 
   return (
     <Container

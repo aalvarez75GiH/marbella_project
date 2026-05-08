@@ -78,19 +78,19 @@ export const Authentication_Context_Provider = ({ children }) => {
   const { CURRENT_USER_KEY, USERS_ON_DEVICE_KEY } = STORAGE_KEYS;
   //**************** */ Local user persistency logic
   // *********************************************************
-  useEffect(() => {
-    console.log("auth.context auth app name on context:", auth?.app?.name);
-  }, []);
+  // useEffect(() => {
+  //   console.log("auth.context auth app name on context:", auth?.app?.name);
+  // }, []);
 
   useEffect(() => {
-    console.log("AUTH PROVIDER MOUNTED");
+    // console.log("AUTH PROVIDER MOUNTED");
     return () => console.log("AUTH PROVIDER UNMOUNTED");
   }, []);
 
   useEffect(() => {
     const orig = auth.signOut.bind(auth);
     auth.signOut = async (...args) => {
-      console.log("🔥 FIREBASE SIGNOUT CALLED 🔥", new Error().stack);
+      // console.log("🔥 FIREBASE SIGNOUT CALLED 🔥", new Error().stack);
       return orig(...args);
     };
     return () => {
@@ -111,14 +111,14 @@ export const Authentication_Context_Provider = ({ children }) => {
       // ✅ If we're unmounting, ignore everything
       if (cancelled) return;
 
-      console.log("Firebase auth state:", fbUser ? fbUser.uid : "signed out");
+      // console.log("Firebase auth state:", fbUser ? fbUser.uid : "signed out");
 
       // -------------------------
       // SIGNED OUT
       // -------------------------
       if (!fbUser) {
         // ✅ This is a real "decision": guest
-        console.log("AUTH: profileReady -> false (signed out cycle)");
+        // console.log("AUTH: profileReady -> false (signed out cycle)");
         setProfileReady(false);
         setProfileWarning(null);
 
@@ -135,7 +135,7 @@ export const Authentication_Context_Provider = ({ children }) => {
         } catch {}
 
         if (cancelled) return;
-        console.log("AUTH: profileReady -> true (signed out)");
+        // console.log("AUTH: profileReady -> true (signed out)");
         setProfileReady(true);
         return;
       }
@@ -144,12 +144,12 @@ export const Authentication_Context_Provider = ({ children }) => {
       // SIGNED IN: ignore duplicates *BEFORE* touching profileReady
       // -------------------------
       if (hydrationInFlightRef.current) {
-        console.log("AUTH: ignore duplicate auth event (hydration in flight)");
+        // console.log("AUTH: ignore duplicate auth event (hydration in flight)");
         return;
       }
 
       if (lastHydratedUidRef.current === fbUser.uid) {
-        console.log("AUTH: already hydrated uid, ensure ready");
+        // console.log("AUTH: already hydrated uid, ensure ready");
         // ✅ ensure ready in case something else left it false
         setProfileReady(true);
         return;
@@ -159,7 +159,7 @@ export const Authentication_Context_Provider = ({ children }) => {
       const myCycleId = ++authCycleIdRef.current;
       hydrationInFlightRef.current = true;
 
-      console.log("AUTH: profileReady -> false (start hydration)");
+      // console.log("AUTH: profileReady -> false (start hydration)");
       setProfileReady(false);
       setProfileWarning(null);
 
@@ -177,13 +177,13 @@ export const Authentication_Context_Provider = ({ children }) => {
 
           if (cachedRaw) {
             cachedUser = JSON.parse(cachedRaw);
-            console.log("AUTH: cachedUser? true");
+            // console.log("AUTH: cachedUser? true");
             setUser(cachedUser);
           } else {
-            console.log("AUTH: cachedUser? false");
+            // console.log("AUTH: cachedUser? false");
           }
         } catch {
-          console.log("AUTH: cachedUser? false (read failed)");
+          // console.log("AUTH: cachedUser? false (read failed)");
         }
 
         // 2) finalize pending email (don’t block hydration)
@@ -197,7 +197,7 @@ export const Authentication_Context_Provider = ({ children }) => {
         if (cancelled || myCycleId !== authCycleIdRef.current) return;
 
         const userByUID = Array.isArray(raw) ? raw[0] : raw;
-        console.log("AUTH: DB user loaded?", !!userByUID);
+        // console.log("AUTH: DB user loaded?", !!userByUID);
 
         // NOT FOUND -> treat as no profile (guest-ish state)
         if (!userByUID) {
@@ -209,7 +209,7 @@ export const Authentication_Context_Provider = ({ children }) => {
           lastHydratedUidRef.current = fbUser.uid;
 
           if (cancelled || myCycleId !== authCycleIdRef.current) return;
-          console.log("AUTH: profileReady -> true (db not found)");
+          // console.log("AUTH: profileReady -> true (db not found)");
           setProfileReady(true);
           return;
         }
@@ -226,20 +226,20 @@ export const Authentication_Context_Provider = ({ children }) => {
         lastHydratedUidRef.current = fbUser.uid;
 
         if (cancelled || myCycleId !== authCycleIdRef.current) return;
-        console.log("AUTH: profileReady -> true (success)");
+        // console.log("AUTH: profileReady -> true (success)");
         setProfileReady(true);
         return;
       } catch (e) {
         if (cancelled || myCycleId !== authCycleIdRef.current) return;
 
-        console.log("AUTH: DB fetch failed:", e?.message ?? e);
+        // console.log("AUTH: DB fetch failed:", e?.message ?? e);
 
         // transient error -> keep cached user if any
         if (!cachedUser) setUser(null);
 
         setProfileWarning("Could not refresh your profile. Check connection.");
 
-        console.log("AUTH: profileReady -> true (transient error)");
+        // console.log("AUTH: profileReady -> true (transient error)");
         setProfileReady(true);
         return;
       } finally {
@@ -278,7 +278,7 @@ export const Authentication_Context_Provider = ({ children }) => {
 
         if (!cancelled) setOtherUsersInTheDevice(others);
       } catch (e) {
-        console.log("Failed reading USERS_ON_DEVICE_KEY:", e);
+        // console.log("Failed reading USERS_ON_DEVICE_KEY:", e);
         if (!cancelled) setOtherUsersInTheDevice([]);
       }
     };
@@ -292,36 +292,36 @@ export const Authentication_Context_Provider = ({ children }) => {
   const lastSavedPushTokenRef = useRef(null);
 
   useEffect(() => {
-    console.log(
-      "USER UID AT PUSH NOTIFICATIONS SETUP EFFECT:",
-      JSON.stringify(user?.uid, null, 2)
-    );
+    // console.log(
+    //   "USER UID AT PUSH NOTIFICATIONS SETUP EFFECT:",
+    //   JSON.stringify(user?.uid, null, 2)
+    // );
     if (!profileReady || !firebaseUser || !user?.uid) return;
 
     let cancelled = false;
 
     const setupPushToken = async () => {
       try {
-        console.log("PUSH STEP 1: start register");
+        // console.log("PUSH STEP 1: start register");
         const token = await registerForPushNotificationsAsync();
-        console.log("PUSH STEP 2: token =", token);
+        // console.log("PUSH STEP 2: token =", token);
 
         if (!token) {
-          console.log("PUSH STEP 2 FAILED: no token returned");
+          // console.log("PUSH STEP 2 FAILED: no token returned");
           return;
         }
 
-        console.log("PUSH STEP 3: saving token to DB for uid:", user?.uid);
+        // console.log("PUSH STEP 3: saving token to DB for uid:", user?.uid);
         await saveExpoPushTokenToUser({
           uid: user.uid,
           token,
         });
 
-        console.log("PUSH STEP 4: token saved successfully");
+        // console.log("PUSH STEP 4: token saved successfully");
       } catch (e) {
-        console.log("PUSH SETUP ERROR object:", e);
-        console.log("PUSH SETUP ERROR code:", e?.code);
-        console.log("PUSH SETUP ERROR message:", e?.message);
+        // console.log("PUSH SETUP ERROR object:", e);
+        // console.log("PUSH SETUP ERROR code:", e?.code);
+        // console.log("PUSH SETUP ERROR message:", e?.message);
       }
     };
 
@@ -335,7 +335,7 @@ export const Authentication_Context_Provider = ({ children }) => {
   useEffect(() => {
     const receivedSub = Notifications.addNotificationReceivedListener(
       (notification) => {
-        console.log("NOTIFICATION RECEIVED:", notification);
+        // console.log("NOTIFICATION RECEIVED:", notification);
       }
     );
 
@@ -343,10 +343,10 @@ export const Authentication_Context_Provider = ({ children }) => {
       (response) => {
         const data = response?.notification?.request?.content?.data;
 
-        console.log("NOTIFICATION TAPPED:", data);
+        // console.log("NOTIFICATION TAPPED:", data);
 
         const orderId = data?.orderId;
-        console.log("ORDER ID FROM NOTIFICATION DATA:", orderId);
+        // console.log("ORDER ID FROM NOTIFICATION DATA:", orderId);
         if (!orderId) return;
 
         navigationRef.current?.navigate("Shop", {
@@ -368,7 +368,7 @@ export const Authentication_Context_Provider = ({ children }) => {
 
         if (!data?.orderId) return;
 
-        console.log("LAST NOTIFICATION RESPONSE:", data);
+        // console.log("LAST NOTIFICATION RESPONSE:", data);
 
         navigationRef.current?.navigate("Orders", {
           screen: "Order_View",
@@ -436,7 +436,7 @@ export const Authentication_Context_Provider = ({ children }) => {
 
   const gettingUserByEmailToAuthenticated = async (email) => {
     const MIN_LOADING_TIME = 800; // ms (tweak: 600–1200 feels good)
-    console.log("EMAIL TO SWITCH:", email);
+    // console.log("EMAIL TO SWITCH:", email);
 
     const startTime = Date.now();
     setIsLoading(true);
@@ -505,7 +505,7 @@ export const Authentication_Context_Provider = ({ children }) => {
       const idToken = await userCredential.user.getIdToken();
       // console.log("USER ID TOKEN:", idToken);
 
-      console.log("PIN GENERATED BEFORE ENCRYPTION:", pinGenerated);
+      // console.log("PIN GENERATED BEFORE ENCRYPTION:", pinGenerated);
       const encrypted_pin = encryptPinWithServerPublicKey(pinGenerated);
       // console.log("ENCRYPTED PIN:", encrypted_pin);
 
@@ -564,7 +564,7 @@ export const Authentication_Context_Provider = ({ children }) => {
           const finalize = await finalizePendingEmailChange(
             userCredential.user
           );
-          console.log("finalize after login:", finalize);
+          // console.log("finalize after login:", finalize);
         } catch (e) {
           console.log("finalize failed:", e?.message ?? e);
         }
@@ -602,7 +602,7 @@ export const Authentication_Context_Provider = ({ children }) => {
         };
       }
     } catch (error) {
-      console.log("LOGIN USER ERROR:", error);
+      // console.log("LOGIN USER ERROR:", error);
       return {
         ok: false,
         error: error?.message || "Login failed",

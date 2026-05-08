@@ -30,23 +30,23 @@ export const Global_Context_Provider = ({ children }) => {
           )
         );
 
-        console.log(
-          "TARGET PRODUCT FOUND:",
-          JSON.stringify(vzlaGroundLightProduct, null, 2)
-        );
+        // console.log(
+        //   "TARGET PRODUCT FOUND:",
+        //   JSON.stringify(vzlaGroundLightProduct, null, 2)
+        // );
 
-        console.log(
-          "TARGET PRODUCT VARIANT IMAGES:",
-          JSON.stringify(
-            vzlaGroundLightProduct?.size_variants?.map((v) => ({
-              size: v.sizeLabel,
-              images_path: v.images_path,
-              images: v.images,
-            })),
-            null,
-            2
-          )
-        );
+        // console.log(
+        //   "TARGET PRODUCT VARIANT IMAGES:",
+        //   JSON.stringify(
+        //     vzlaGroundLightProduct?.size_variants?.map((v) => ({
+        //       size: v.sizeLabel,
+        //       images_path: v.images_path,
+        //       images: v.images,
+        //     })),
+        //     null,
+        //     2
+        //   )
+        // );
 
         setProductsCatalog(normalized);
       } catch (err) {
@@ -139,7 +139,7 @@ export const Global_Context_Provider = ({ children }) => {
     }));
   };
 
-  console.log("USER LANGUAGE AT GLOBAL CONTEXT:", globalLanguage);
+  // console.log("USER LANGUAGE AT GLOBAL CONTEXT:", globalLanguage);
   return (
     <GlobalContext.Provider
       value={{

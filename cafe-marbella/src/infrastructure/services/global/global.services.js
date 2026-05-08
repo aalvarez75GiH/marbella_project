@@ -11,7 +11,7 @@ export const gettingAllProductsCatalogRequest = async () => {
     // console.log("RESPONSE:", JSON.stringify(res.data, null, 2));
     return res.data;
   } catch (error) {
-    console.error("Error fetching products catalog:", error);
+    // console.error("Error fetching products catalog:", error);
     throw error;
   }
 };

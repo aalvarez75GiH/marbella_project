@@ -8,7 +8,7 @@ export const getImageUrlFromPath = async (path) => {
     const imageRef = ref(storage, path);
     return await getDownloadURL(imageRef);
   } catch (error) {
-    console.log("Error getting image URL for path:", path, error);
+    // console.log("Error getting image URL for path:", path, error);
     return null;
   }
 };

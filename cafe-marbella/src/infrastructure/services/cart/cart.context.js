@@ -153,7 +153,7 @@ export const Cart_Context_Provider = ({ children }) => {
   );
 
   useEffect(() => {
-    console.log("CartProvider mounted");
+    // console.log("CartProvider mounted");
     return () => console.log("CartProvider unmounted");
   }, []);
 

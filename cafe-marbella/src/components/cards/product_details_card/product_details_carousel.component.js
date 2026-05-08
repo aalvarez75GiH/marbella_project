@@ -13,10 +13,10 @@ export const Product_Details_Carousel_Component = ({
   selectedVariant,
   selectedImageIndex,
 }) => {
-  console.log(
-    "SELECTED VARIANT AT CAROUSEL: ",
-    JSON.stringify(selectedVariant, null, 2)
-  );
+  // console.log(
+  //   "SELECTED VARIANT AT CAROUSEL: ",
+  //   JSON.stringify(selectedVariant, null, 2)
+  // );
   const images = selectedVariant?.images || [];
   return (
     <Container

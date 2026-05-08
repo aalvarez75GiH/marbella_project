@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import { Platform } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 
 import { Shop_Navigator } from "./shop.navigator";
 import { Orders_Navigator } from "./orders.navigator";
@@ -30,19 +29,6 @@ const TAB_BAR_BASE_STYLE = Platform.select({
   },
 });
 
-// const HIDDEN_TAB_STYLE = {
-//   ...TAB_BAR_BASE_STYLE,
-//   backgroundColor: "transparent",
-//   borderTopWidth: 0,
-//   elevation: 0, // Android shadow
-//   shadowOpacity: 0, // iOS shadow
-//   opacity: 0,
-//   pointerEvents: "none",
-// };
-// const HIDDEN_TAB_STYLE = {
-//   display: "none",
-// };
-
 const HIDE_TAB_ROUTES = new Set([
   "Menu_View",
   "Shop_Shopping_Cart_View",
@@ -52,14 +38,6 @@ const HIDE_TAB_ROUTES = new Set([
   "Order_Confirmation_View",
   "Shop_Order_Receipt_View",
 ]);
-
-// function tabBarStyleFromNested(route, fallback) {
-//   const nested = getFocusedRouteNameFromRoute(route) ?? fallback;
-//   const shouldHide = HIDE_TAB_ROUTES.has(nested);
-//   // 🔥 debug
-//   console.log("Shop tab nested:", nested, "hide:", shouldHide);
-//   return shouldHide ? HIDDEN_TAB_STYLE : TAB_BAR_BASE_STYLE;
-// }
 
 const Tabs = () => {
   const { cartTotalItems } = useContext(CartContext);
@@ -72,7 +50,6 @@ const Tabs = () => {
         tabBarBackground: () => null,
         headerShown: false,
 
-        // 🔥 ADD THIS
         sceneContainerStyle: {
           backgroundColor: theme.colors.bg.elements_bg,
         },
@@ -95,13 +72,6 @@ const Tabs = () => {
             <ShopIcon width={25} height={25} fill={color} />
           ),
         }}
-        // options={({ route }) => ({
-        //   title: "Shop",
-        //   tabBarStyle: tabBarStyleFromNested(route, "Shop_Products_View"),
-        //   tabBarIcon: ({ color }) => (
-        //     <ShopIcon width={25} height={25} fill={color} />
-        //   ),
-        // })}
       />
 
       <Tab.Screen
@@ -130,19 +100,6 @@ const Tabs = () => {
             />
           ),
         }}
-        // options={({ route }) => ({
-        //   title: "Cart",
-        //   tabBarStyle: tabBarStyleFromNested(route, "Shopping_Cart_View"),
-        //   tabBarIcon: ({ size, color }) => (
-        //     <Cart_Active_With_Items_CTA
-        //       size={size ?? 25}
-        //       quantity={cartTotalItems}
-        //       type={1}
-        //       color={theme.colors.bg.elements_bg}
-        //       active_color={color}
-        //     />
-        //   ),
-        // })}
       />
     </Tab.Navigator>
   );

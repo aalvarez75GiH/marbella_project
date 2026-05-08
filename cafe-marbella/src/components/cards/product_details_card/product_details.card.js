@@ -37,7 +37,7 @@ export const Product_Details_Card = ({ item = null }) => {
   useEffect(() => {
     setSelectedImageIndex(0);
   }, [selectedVariantId]);
-  console.log("SELECTED VARIANT: ", JSON.stringify(selectedVariant, null, 2));
+  // console.log("SELECTED VARIANT: ", JSON.stringify(selectedVariant, null, 2));
 
   return (
     <Container

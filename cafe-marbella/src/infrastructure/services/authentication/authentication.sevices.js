@@ -43,10 +43,10 @@ export const post_user_Request = async (
   cart_payload,
   idToken
 ) => {
-  console.log(
-    "USER TO DB BEFORE REQUEST:",
-    JSON.stringify(userToCreateAtFirebaseAndDB, null, 2)
-  );
+  // console.log(
+  //   "USER TO DB BEFORE REQUEST:",
+  //   JSON.stringify(userToCreateAtFirebaseAndDB, null, 2)
+  // );
 
   const { usersEndPoint } = environment;
   const endpoint = `${usersEndPoint}/`;

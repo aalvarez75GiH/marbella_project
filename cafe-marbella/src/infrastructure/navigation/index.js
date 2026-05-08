@@ -24,7 +24,7 @@ const BootScreen = () => {
 };
 
 const NavigationInner = () => {
-  console.log("NAV: profileReady =", profileReady);
+  // console.log("NAV: profileReady =", profileReady);
   const { profileReady } = useContext(AuthenticationContext);
 
   // ✅ hard gate: nothing under RootNavigator runs until user vs guest decided
@@ -35,8 +35,8 @@ const NavigationInner = () => {
       setHasBootstrapped(true);
     }
   }, [profileReady, hasBootstrapped]);
-  console.log("NAV: profileReady =", profileReady);
-  console.log("NAV: hasBootstrapped =", hasBootstrapped);
+  // console.log("NAV: profileReady =", profileReady);
+  // console.log("NAV: hasBootstrapped =", hasBootstrapped);
   // ✅ only block the VERY FIRST app boot
   if (!hasBootstrapped) return <BootScreen />;
 

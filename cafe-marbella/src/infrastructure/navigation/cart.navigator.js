@@ -16,10 +16,10 @@ const CartStack = createNativeStackNavigator();
 
 export const Cart_Navigator = () => {
   const { cartTotalItems } = useContext(CartContext);
-  console.log(
-    "CART TOTAL ITEMS AT NAVIGATOR: ",
-    JSON.stringify(cartTotalItems, null, 2)
-  );
+  // console.log(
+  //   "CART TOTAL ITEMS AT NAVIGATOR: ",
+  //   JSON.stringify(cartTotalItems, null, 2)
+  // );
   return (
     <CartStack.Navigator
       screenOptions={{
