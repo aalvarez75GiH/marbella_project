@@ -74,39 +74,10 @@ export const Orders_Context_Provider = ({ children }) => {
     }
     // }, 1000); // Simulate network delay
   };
-
-  const handlingDeliveryOption = async ({
-    navigation,
-    onTaxes,
-    differentAddress,
-    customer_address,
-  }) => {
-    // console.log(
-    //   "DIFFERENT ADDRESS AT HANDLING: ",
-    //   JSON.stringify(differentAddress, null, 2)
-    // );
-    setIsCheckoutLoading(true);
-
+  const handlingDeliveryOption = async ({ navigation, onTaxes, nextOrder }) => {
     try {
-      // 1) Prepare nextOrder with changes
-      const nextOrder = {
-        ...myOrder,
-        order_products: myOrder.order_products, // ✅ force keep products
-        order_delivery_address: differentAddress || customer_address,
-      };
-      // 2) Call taxes with the order you JUST built
       const taxesResults = await onTaxes(nextOrder);
-      console.log(
-        "Taxes Results (DELIVERY):",
-        JSON.stringify(taxesResults, null, 2)
-      );
 
-      // Optional: guard if your onTaxes returns an error shape instead of throwing
-      if (taxesResults?.error || taxesResults?.status === "failed") {
-        throw new Error(taxesResults?.error?.message || "Tax quote failed");
-      }
-
-      // 3) Build final order with Stripe totals
       const orderWithTaxes = {
         ...nextOrder,
         pricing: {
@@ -117,55 +88,26 @@ export const Orders_Context_Provider = ({ children }) => {
         tax_calculation_id: taxesResults.calculation_id,
       };
 
-      // 4) Set it once
       setMyOrder(orderWithTaxes);
 
-      // 5) Navigate (same style as pickup)
       navigation.navigate("Shop_Order_Review_View", {
         order: orderWithTaxes,
       });
-    } catch (error) {
-      console.log("DELIVERY TAX FLOW ERROR:", error?.message || error);
-      // show alert/toast if you want
-    } finally {
-      // 6) Always stop loader
-      setIsCheckoutLoading(false);
+    } catch (e) {
+      console.log("DELIVERY TAX FLOW ERROR:", e?.message || e);
+      // optionally show a toast/alert here
     }
-
-    return;
   };
   const handlingDeliveryOption_Cart = async ({
     navigation,
     onTaxes,
-    differentAddress,
-    customer_address,
+    nextOrder,
   }) => {
-    // console.log(
-    //   "DIFFERENT ADDRESS AT HANDLING: ",
-    //   JSON.stringify(differentAddress, null, 2)
-    // );
-    setIsCheckoutLoading(true);
+    // setIsCheckoutLoading(true);
 
     try {
-      // 1) Prepare nextOrder with changes
-      const nextOrder = {
-        ...myOrder,
-        order_products: myOrder.order_products, // ✅ force keep products
-        order_delivery_address: differentAddress || customer_address,
-      };
-      // 2) Call taxes with the order you JUST built
       const taxesResults = await onTaxes(nextOrder);
-      console.log(
-        "Taxes Results (DELIVERY):",
-        JSON.stringify(taxesResults, null, 2)
-      );
 
-      // Optional: guard if your onTaxes returns an error shape instead of throwing
-      if (taxesResults?.error || taxesResults?.status === "failed") {
-        throw new Error(taxesResults?.error?.message || "Tax quote failed");
-      }
-
-      // 3) Build final order with Stripe totals
       const orderWithTaxes = {
         ...nextOrder,
         pricing: {
@@ -176,23 +118,16 @@ export const Orders_Context_Provider = ({ children }) => {
         tax_calculation_id: taxesResults.calculation_id,
       };
 
-      // 4) Set it once
       setMyOrder(orderWithTaxes);
 
-      // 5) Navigate (same style as pickup)
       navigation.navigate("Cart_Order_Review_View", {
         order: orderWithTaxes,
       });
-    } catch (error) {
-      console.log("DELIVERY TAX FLOW ERROR:", error?.message || error);
-      // show alert/toast if you want
     } finally {
-      // 6) Always stop loader
-      setIsCheckoutLoading(false);
+      // setIsCheckoutLoading(false);
     }
-
-    return;
   };
+
   const handlingPickupOption = async ({
     navigation,
     onTaxes,
@@ -432,6 +367,70 @@ export const Orders_Context_Provider = ({ children }) => {
     setDifferentAddress("");
   };
 
+  // orders.utils.js
+
+  const buildDeliveryOrder = async ({
+    myOrder,
+    user_id,
+    cart_id,
+    sub_total,
+    quantity,
+    warehouse,
+    customer_address,
+    ship_to,
+    ship_from,
+    gettingRateForDelivery,
+  }) => {
+    if (!ship_to || !ship_from) {
+      throw new Error("Missing ship_to or ship_from");
+    }
+
+    const rateResponse = await gettingRateForDelivery(ship_to, ship_from);
+    const cheapestRate = rateResponse?.cheapest_rate;
+
+    if (!cheapestRate) {
+      throw new Error("No delivery rate found");
+    }
+
+    const shippingAmountInCents = Math.round((cheapestRate.amount || 0) * 100);
+
+    return {
+      ...myOrder,
+      delivery_type: "delivery",
+      user_id,
+      cart_id,
+      pricing: {
+        sub_total,
+        taxes: 0,
+        total: 0,
+        shipping: shippingAmountInCents,
+        discount: 0,
+      },
+      quantity,
+      warehouse_to_pickup: {
+        warehouse_id: warehouse.warehouse_id,
+        name: warehouse.warehouse_name,
+        warehouse_address: warehouse.geo?.formatted_address,
+        geo: warehouse.geo,
+        phone_number: warehouse.warehouse_information?.phone,
+        closing_time: warehouse.warehouse_information?.closing_time,
+        opening_time: warehouse.warehouse_information?.opening_time,
+        distance_in_miles: warehouse.distance_in_miles,
+      },
+      order_delivery_address: customer_address,
+      shipping_rate: {
+        rate_id: cheapestRate.rate_id,
+        service_code: cheapestRate.service_code,
+        service_type: cheapestRate.service_type,
+        amount: shippingAmountInCents,
+        currency: cheapestRate.currency,
+        estimated_delivery_date: cheapestRate.estimated_delivery_date,
+        carrier_delivery_days: cheapestRate.carrier_delivery_days,
+      },
+      order_products: myOrder.order_products,
+    };
+  };
+
   return (
     <OrdersContext.Provider
       value={{
@@ -455,6 +454,9 @@ export const Orders_Context_Provider = ({ children }) => {
         isCheckoutLoading,
         handlingDeliveryOption_Cart,
         handlingPickupOption_Cart,
+        setIsCheckoutLoading,
+        isCheckoutLoading,
+        buildDeliveryOrder,
       }}
     >
       {children}

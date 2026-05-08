@@ -61,11 +61,13 @@ export default function Shop_Delivery_Type_View() {
     myOrder,
     setMyOrder,
     isCheckoutLoading,
+    setIsCheckoutLoading,
     differentAddress,
     handlingDeliveryOption,
     setDeliveryOption,
     deliveryOption,
     handlingPickupOption,
+    buildDeliveryOrder,
   } = useContext(OrdersContext);
 
   const { customer } = myOrder || {};
@@ -97,22 +99,11 @@ export default function Shop_Delivery_Type_View() {
     typeof cart_id === "string" &&
     cart_id.trim().length > 0;
 
-  const handlingDeliveryRate = async () => {
-    try {
-      const cheapestRate = await gettingRateForDelivery(ship_to, ship_from);
-
-      return cheapestRate;
-    } catch (error) {
-      console.log("Error getting delivery rate:", error);
-      return null;
-    }
-  };
-
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
       {isCheckoutLoading ? (
         <Global_activity_indicator
-          caption="Wait, we are setting up your delivery option..."
+          caption="Wait, we are calculating delivery fees..."
           caption_width="65%"
         />
       ) : (
@@ -199,64 +190,9 @@ export default function Shop_Delivery_Type_View() {
               type="delivery"
               border_radius="10px"
               delivery_fee=""
-              // action={() => settingMyOrderDeliveryType("delivery")}
-              action={async () => {
-                if (!hasValidCart) {
-                  console.log(
-                    "DeliveryType: blocked pickup, missing cart/user",
-                    {
-                      user_id,
-                      cart_id,
-                    }
-                  );
-                  return;
-                }
+              action={() => {
+                if (!hasValidCart) return;
                 setDeliveryOption("delivery");
-                const rateResponse = await handlingDeliveryRate();
-                const cheapestRate = rateResponse?.cheapest_rate;
-                const shippingAmountInDollars = cheapestRate?.amount || 0;
-                const shippingAmountInCents = Math.round(
-                  shippingAmountInDollars * 100
-                );
-
-                setMyOrder((prevOrder) => ({
-                  ...prevOrder,
-                  delivery_type: "delivery",
-                  user_id: user_id,
-                  cart_id: cart_id,
-                  pricing: {
-                    sub_total: sub_total,
-                    taxes: 0,
-                    total: 0,
-                    // shipping: 500,
-                    shipping: shippingAmountInCents,
-                    discount: 0,
-                  },
-                  quantity: quantity,
-                  warehouse_to_pickup: {
-                    warehouse_id: warehouse_id,
-                    name: warehouse_name,
-                    warehouse_address: formatted_address,
-                    geo: geo,
-                    phone_number: phone,
-                    closing_time: warehouse_information?.closing_time,
-                    opening_time: warehouse_information?.opening_time,
-                    distance_in_miles: distance_in_miles,
-                  },
-                  order_delivery_address: customer_address,
-                  shipping_rate: {
-                    rate_id: cheapestRate.rate_id,
-                    service_code: cheapestRate.service_code,
-                    service_type: cheapestRate.service_type,
-                    amount: shippingAmountInCents,
-                    currency: cheapestRate.currency,
-                    estimated_delivery_date:
-                      cheapestRate.estimated_delivery_date,
-                    carrier_delivery_days: cheapestRate.carrier_delivery_days,
-                  },
-                  // ✅ explicitly preserve products (optional but makes intent clear)
-                  order_products: prevOrder.order_products,
-                }));
               }}
             />
           </Container>
@@ -276,12 +212,40 @@ export default function Shop_Delivery_Type_View() {
                 customer_address={customer_address}
                 address_option={"current_address"}
                 action={async () => {
-                  await handlingDeliveryOption({
-                    navigation,
-                    onTaxes,
-                    differentAddress,
-                    customer_address,
-                  });
+                  setIsCheckoutLoading(true);
+                  try {
+                    // const nextOrder = await buildDeliveryOrder();
+                    const nextOrder = await buildDeliveryOrder({
+                      myOrder,
+                      user_id,
+                      cart_id,
+                      sub_total,
+                      quantity,
+                      warehouse: myWarehouse,
+                      customer_address,
+                      ship_to,
+                      ship_from,
+                      gettingRateForDelivery,
+                    });
+                    const finalNextOrder = {
+                      ...nextOrder,
+                      order_delivery_address:
+                        differentAddress || customer_address,
+                    };
+
+                    await handlingDeliveryOption({
+                      navigation,
+                      onTaxes,
+                      nextOrder: finalNextOrder,
+                    });
+                  } catch (error) {
+                    console.log(
+                      "Delivery option error:",
+                      error?.message || error
+                    );
+                  } finally {
+                    setIsCheckoutLoading(false);
+                  }
                 }}
               />
               <Delivery_Address_Option_Tile
