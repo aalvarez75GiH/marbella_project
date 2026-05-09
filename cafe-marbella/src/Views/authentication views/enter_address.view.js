@@ -51,65 +51,6 @@ export default function Enter_Address_View() {
       : {}),
   };
 
-  // const getAddressComponent = (components = [], type, useShortName = false) => {
-  //   const component = components.find((item) => item.types.includes(type));
-  //   return useShortName ? component?.short_name : component?.long_name;
-  // };
-
-  // const buildShipToFromGooglePlace = ({ details, user }) => {
-  //   const components = details?.address_components || [];
-
-  //   const streetNumber = getAddressComponent(components, "street_number");
-  //   const route = getAddressComponent(components, "route");
-
-  //   const city =
-  //     getAddressComponent(components, "locality") ||
-  //     getAddressComponent(components, "sublocality") ||
-  //     getAddressComponent(components, "administrative_area_level_2");
-
-  //   const state = getAddressComponent(
-  //     components,
-  //     "administrative_area_level_1",
-  //     true
-  //   );
-
-  //   const postalCode = getAddressComponent(components, "postal_code");
-
-  //   const country = getAddressComponent(components, "country", true);
-
-  //   return {
-  //     name: user.name,
-  //     phone: user.phone,
-
-  //     address_line1: [streetNumber, route].filter(Boolean).join(" "),
-  //     city_locality: city,
-  //     state_province: state,
-  //     postal_code: postalCode,
-  //     country_code: country,
-
-  //     address_residential_indicator: "yes",
-  //   };
-  // };
-
-  const debugPlaces = async (text) => {
-    try {
-      const key = process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY;
-      const url =
-        `https://maps.googleapis.com/maps/api/place/autocomplete/json` +
-        `?input=${encodeURIComponent(text)}` +
-        `&key=${encodeURIComponent(key)}` +
-        `&language=en` +
-        `&components=country:us`;
-
-      const res = await fetch(url);
-      const json = await res.json();
-      console.log("PLACES DEBUG:", json?.status, json?.error_message);
-      console.log("PLACES DEBUG predictions:", json?.predictions?.length);
-    } catch (e) {
-      console.log("PLACES DEBUG fetch error:", e?.message ?? e);
-    }
-  };
-
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
