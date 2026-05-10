@@ -35,10 +35,10 @@ export default function Shop_Delivery_Type_View() {
   const { user_id, sub_total, quantity, cart_id } = cart;
 
   const { myWarehouse, gettingRateForDelivery } = useContext(WarehouseContext);
-  console.log(
-    "WAREHOUSE SHIP FROM:",
-    JSON.stringify(myWarehouse.ship_from, null, 2)
-  );
+  // console.log(
+  //   "WAREHOUSE SHIP FROM:",
+  //   JSON.stringify(myWarehouse.ship_from, null, 2)
+  // );
   const {
     warehouse_id,
     warehouse_name,
@@ -49,7 +49,7 @@ export default function Shop_Delivery_Type_View() {
     max_limit_pickup_ratio,
     ship_from,
   } = myWarehouse;
-  console.log("DISTANCE IN MILES:", distance_in_miles);
+  // console.log("DISTANCE IN MILES:", distance_in_miles);
   const { formatted_address } = geo || {};
   const { phone } = warehouse_information || {};
   const distanceMilesNumber = parseFloat(distance_in_miles);
@@ -74,10 +74,10 @@ export default function Shop_Delivery_Type_View() {
   const { customer_address, ship_to } = customer || {};
   // console.log("DELIVERY TYPE OPTION:", deliveryOption);
 
-  console.log(
-    "MY ORDER AT DELIVERY TYPE VIEW:",
-    JSON.stringify(myOrder, null, 2)
-  );
+  // console.log(
+  //   "MY ORDER AT DELIVERY TYPE VIEW:",
+  //   JSON.stringify(myOrder, null, 2)
+  // );
   // console.log(
   //   "CART RAW AT DELIVERY TYPE VIEW:",
   //   JSON.stringify(cartRaw, null, 2)

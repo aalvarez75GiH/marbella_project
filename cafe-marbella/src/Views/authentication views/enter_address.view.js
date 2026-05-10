@@ -17,7 +17,7 @@ export default function Enter_Address_View() {
   const theme = useTheme();
   const navigation = useNavigation();
   const route = useRoute();
-  const { comingFrom, returnTo } = route?.params ?? {};
+  const { returnTo } = route?.params ?? {};
 
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [selectedAddress, setSelectedAddress] = useState(null);

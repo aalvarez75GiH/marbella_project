@@ -107,30 +107,35 @@ const normalizeRawAddressIntoStripeAddress = (rawAddress) => {
 
 // Helper: build Stripe Tax line items from your Order's order_products
 function buildLineItemsFromOrderProducts(order_products = []) {
-  // IMPORTANT:
-  // Stripe Tax expects amount = unit amount in cents
-  // quantity is required if you want correct totals
   return order_products.flatMap((p) => {
     const productId = p?.id || p?.product_id || p?.title || "item";
-
-    // Your items store quantity at variant-level in size_variants[0].quantity
     const variants = Array.isArray(p?.size_variants) ? p.size_variants : [];
 
     return variants
       .filter((v) => Number(v?.quantity) > 0)
       .map((v) => {
         const variantId = v?.id || v?.sizeLabel || v?.sizeGrams || "variant";
-        const unitAmount = Number(v?.price);
+
+        const unitAmount = Number(v?.price); // cents
+        const quantity = Number(v?.quantity);
 
         if (!Number.isInteger(unitAmount)) {
           throw new Error(`Invalid unit price for ${productId}/${variantId}`);
         }
 
+        if (!Number.isInteger(quantity) || quantity <= 0) {
+          throw new Error(`Invalid quantity for ${productId}/${variantId}`);
+        }
+
         return {
-          amount: unitAmount,
-          quantity: Number(v.quantity),
+          // IMPORTANT:
+          // Stripe Tax line_items.amount is the TOTAL amount for this line,
+          // not the unit price.
+          amount: unitAmount * quantity,
+          quantity,
           reference: `${productId}-${variantId}`,
-          // ✅ Coffee Beans / Ground Coffee (you can also store this per product)
+
+          // Coffee Beans / Ground Coffee
           tax_code: "txcd_41050006",
         };
       });

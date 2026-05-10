@@ -381,6 +381,11 @@ export const Orders_Context_Provider = ({ children }) => {
     ship_from,
     gettingRateForDelivery,
   }) => {
+    const { delivery_flat_rate } = warehouse || {};
+    console.log("DELIVERY FLAT RATE:", delivery_flat_rate);
+    const isFlatRated =
+      typeof delivery_flat_rate === "number" && delivery_flat_rate > 0;
+    console.log("IS FLAT RATED?", isFlatRated);
     if (!ship_to || !ship_from) {
       throw new Error("Missing ship_to or ship_from");
     }
@@ -393,6 +398,10 @@ export const Orders_Context_Provider = ({ children }) => {
     }
 
     const shippingAmountInCents = Math.round((cheapestRate.amount || 0) * 100);
+    const delivery_flat_rate_in_cents = delivery_flat_rate
+      ? Math.round(delivery_flat_rate * 100)
+      : 0;
+    console.log("DELIVERY FLAT RATE IN CENTS:", delivery_flat_rate_in_cents);
 
     return {
       ...myOrder,
@@ -403,7 +412,9 @@ export const Orders_Context_Provider = ({ children }) => {
         sub_total,
         taxes: 0,
         total: 0,
-        shipping: shippingAmountInCents,
+        shipping: isFlatRated
+          ? delivery_flat_rate_in_cents
+          : shippingAmountInCents,
         discount: 0,
       },
       quantity,
@@ -422,7 +433,10 @@ export const Orders_Context_Provider = ({ children }) => {
         rate_id: cheapestRate.rate_id,
         service_code: cheapestRate.service_code,
         service_type: cheapestRate.service_type,
-        amount: shippingAmountInCents,
+        // amount: shippingAmountInCents,
+        amount: isFlatRated
+          ? delivery_flat_rate_in_cents
+          : shippingAmountInCents,
         currency: cheapestRate.currency,
         estimated_delivery_date: cheapestRate.estimated_delivery_date,
         carrier_delivery_days: cheapestRate.carrier_delivery_days,

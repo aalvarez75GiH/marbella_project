@@ -251,22 +251,23 @@ paymentsRouter.post("/refundOrder", async (req, res) => {
     });
   }
 });
-// ***************************************************************
 
 paymentsRouter.post("/calculatingtaxes", async (req, res) => {
-  const order = req.body;
-  console.log("TAX QUOTE REQUEST ORDER:", order);
   try {
+    const order = req.body;
+
+    console.log("TAX QUOTE REQUEST ORDER:", JSON.stringify(order, null, 2));
+
     if (!order) {
-      return res
-        .status(400)
-        .json({ status: "failed", msg: "order is required" });
+      return res.status(400).json({
+        status: "failed",
+        msg: "order is required",
+      });
     }
 
     const order_products = order?.order_products || [];
     const pricing = order?.pricing || {};
 
-    // Required addresses:
     const warehouseAddressString =
       order?.warehouse_to_pickup?.warehouse_address ||
       order?.warehouse_to_pickup?.address ||
@@ -275,36 +276,28 @@ paymentsRouter.post("/calculatingtaxes", async (req, res) => {
     if (!warehouseAddressString) {
       return res.status(400).json({
         status: "failed",
-        msg: "warehouse address is required (order.warehouse_to_pickup.warehouse_address)",
+        msg: "warehouse address is required",
       });
     }
 
-    // Build line items
     const line_items = buildLineItemsFromOrderProducts(order_products);
 
     if (!line_items.length) {
       return res.status(400).json({
         status: "failed",
-        msg: "No line items found (check order_products size_variants.quantity)",
+        msg: "No line items found",
       });
     }
 
-    // Normalize warehouse address
     const warehouseAddress = normalizeRawAddressIntoStripeAddress(
       warehouseAddressString
     );
 
-    // Determine delivery type
-    // const finalDeliveryType = delivery_type || order?.delivery_type || "pickup";
     const finalDeliveryType = order?.delivery_type || "pickup";
 
-    // Shipping cost (delivery only)
     const shippingCents =
       finalDeliveryType === "delivery" ? Number(pricing?.shipping || 0) : 0;
 
-    // Destination address
-    // pickup -> destination is warehouse (customer comes there)
-    // delivery -> destination is customer delivery address
     let customerAddress;
 
     if (finalDeliveryType === "delivery") {
@@ -316,7 +309,7 @@ paymentsRouter.post("/calculatingtaxes", async (req, res) => {
       if (!customerAddressString) {
         return res.status(400).json({
           status: "failed",
-          msg: "customer delivery address is required for delivery orders (order.order_delivery_address)",
+          msg: "customer delivery address is required for delivery orders",
         });
       }
 
@@ -327,73 +320,74 @@ paymentsRouter.post("/calculatingtaxes", async (req, res) => {
       customerAddress = warehouseAddress;
     }
 
-    // ✅ Build Stripe Tax Calculation payload
     const calculationPayload = {
       currency: "usd",
       customer_details: {
         address: customerAddress,
-        // Stripe wants to know what kind of address this is
-        // (it’s fine to use "shipping" for pickup too since it’s the "customer location")
         address_source: "shipping",
       },
       line_items,
-      expand: ["line_items"],
+      expand: ["line_items", "tax_breakdown"],
     };
 
-    // Include ship_from_details + shipping_cost only for delivery
     if (finalDeliveryType === "delivery") {
-      calculationPayload.ship_from_details = { address: warehouseAddress };
+      calculationPayload.ship_from_details = {
+        address: warehouseAddress,
+      };
 
       if (Number.isInteger(shippingCents) && shippingCents > 0) {
-        calculationPayload.shipping_cost = { amount: shippingCents };
+        calculationPayload.shipping_cost = {
+          amount: shippingCents,
+        };
       }
     }
+
     console.log(
-      "LINE ITEMS SENT TO STRIPE:",
-      JSON.stringify(line_items, null, 2)
-    );
-    const calculation = await stripeClient.tax.calculations.create({
-      ...calculationPayload,
-      expand: ["line_items", "tax_breakdown"],
-    });
-    console.log("CALC:", JSON.stringify(calculation, null, 2));
-
-    // ****************************************************
-
-    // *****************************************************
-    // Stripe returns totals in cents:
-    // const tax_amount =
-    //   calculation?.tax_amount_exclusive ?? calculation?.tax_amount ?? 0;
-    // const total_amount = calculation?.amount_total ?? 0;
-
-    const li = calculation?.line_items?.data || [];
-    const shipping = calculation?.shipping_cost || null;
-
-    const items_subtotal = li.reduce(
-      (sum, x) => sum + (Number(x.amount) || 0) * (Number(x.quantity) || 0),
-      0
+      "STRIPE TAX PAYLOAD:",
+      JSON.stringify(calculationPayload, null, 2)
     );
 
-    const items_tax = li.reduce(
-      (sum, x) => sum + (Number(x.amount_tax) || 0) * (Number(x.quantity) || 0),
-      0
+    const calculation = await stripeClient.tax.calculations.create(
+      calculationPayload
     );
 
-    const shipping_amount = shipping?.amount ? Number(shipping.amount) : 0;
-    const shipping_tax = shipping?.amount_tax ? Number(shipping.amount_tax) : 0;
+    console.log("STRIPE TAX CALC:", JSON.stringify(calculation, null, 2));
 
-    const tax_amount = items_tax + shipping_tax;
-    const total_amount = items_subtotal + shipping_amount + tax_amount;
+    // IMPORTANT:
+    // Do not manually multiply amount_tax by quantity.
+    // Stripe already returns final tax totals in cents.
+    const tax_amount =
+      calculation?.tax_amount_exclusive ?? calculation?.tax_amount ?? 0;
+
+    const total_amount = calculation?.amount_total ?? 0;
+
+    const subtotal_amount =
+      calculation?.amount_subtotal ??
+      line_items.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+
+    const shipping_amount = calculation?.shipping_cost?.amount
+      ? Number(calculation.shipping_cost.amount)
+      : 0;
+
+    const shipping_tax = calculation?.shipping_cost?.amount_tax
+      ? Number(calculation.shipping_cost.amount_tax)
+      : 0;
 
     return res.status(200).json({
       status: "success",
       calculation_id: calculation.id,
+
       tax_amount,
       total_amount,
+      subtotal_amount,
+      shipping_amount,
+      shipping_tax,
+
       currency: calculation.currency,
-      // Optional: helpful during development
+
       line_items: calculation.line_items || null,
       shipping_cost: calculation.shipping_cost || null,
+      tax_breakdown: calculation.tax_breakdown || null,
     });
   } catch (error) {
     console.log("TAX QUOTE ERROR:", {

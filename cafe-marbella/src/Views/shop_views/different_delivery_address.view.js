@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
-import { Platform, KeyboardAvoidingView, ScrollView, View } from "react-native";
+import { Platform, KeyboardAvoidingView, View } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
