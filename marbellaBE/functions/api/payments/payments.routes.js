@@ -19,6 +19,7 @@ const {
   decrementWarehouseInventoryFromOrder,
 } = require("../warehouses/warehouses.controllers");
 const { sendOrderStatusPush } = require("../orders/orders.handlers");
+const warehousesControllers = require("../warehouses/warehouses.controllers");
 
 paymentsRouter.post("/payments", async (req, res) => {
   const totalForStripe = req.body.totalForStripe;
@@ -77,6 +78,29 @@ paymentsRouter.post("/payments", async (req, res) => {
         paymentIntentResponse.status
       );
       console.log("Payment succeeded, creating order...");
+      // ********************************************************
+      const { shipping_rate } = order || {};
+      const { rate_id } = shipping_rate || {};
+      // const label = await warehousesControllers.creatingShippingLabel(rate_id);
+
+      const labelResponseExample = {
+        label_id: "se-147174348",
+        shipment_id: "se-302806358",
+        tracking_number: "1Z2GJ1910320012015",
+        carrier_code: "ups",
+        service_code: "ups_ground",
+        label_url:
+          "https://api.shipengine.com/v1/downloads/14/iYxGupUhCEm2oulNrJdPfA/label-147174348.pdf",
+        status: "completed",
+        shipment_cost: {
+          currency: "usd",
+          amount: 7.1,
+        },
+        created_at: "2026-05-11T17:03:37.530773Z",
+        rate_id: rate_id,
+      };
+
+      // ********************************************************
 
       await decrementWarehouseInventoryFromOrder({
         warehouse_id,
@@ -100,6 +124,7 @@ paymentsRouter.post("/payments", async (req, res) => {
           used_at: null,
           used_by: null,
         },
+        labelResponseExample, // for testing, remove in <production></production>
       };
 
       createdOrder = await ordersControllers.createOrder(

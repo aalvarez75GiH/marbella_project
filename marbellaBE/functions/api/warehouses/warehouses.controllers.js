@@ -333,6 +333,36 @@ const getCheapestShippingRate = async (ship_to, ship_from, packages) => {
     });
   }
 };
+const creatingShippingLabel = async (rate_id) => {
+  try {
+    const response = await axios.post(
+      `https://api.shipengine.com/v1/labels/rates/${rate_id}`,
+      {
+        label_format: "pdf",
+        label_layout: "4x6",
+        label_download_type: "url",
+      },
+      {
+        headers: {
+          "API-Key": process.env.SHIPENGINE_API_KEY,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.log(
+      "SHIPENGINE CREATION LABEL ERROR:",
+      error.response?.data || error
+    );
+    throw error;
+    // return res.status(500).json({
+    //   error: true,
+    //   message: "Error getting shipping label",
+    //   details: error.response?.data || null,
+    // });
+  }
+};
 
 module.exports = {
   getAllWarehouses,
@@ -343,4 +373,5 @@ module.exports = {
   updateWarehouseInventory,
   updateWarehouse,
   getCheapestShippingRate,
+  creatingShippingLabel,
 };

@@ -173,6 +173,47 @@ warehousesRouter.post("/gettingRateFromWarehouse", async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
+// Getting cheapest delivery rate depending on warehouse
+warehousesRouter.post("/creatingShippingLabel", async (req, res) => {
+  try {
+    const { order_id, rate_id } = req.body;
+
+    if (!order_id || !rate_id) {
+      return res.status(400).json({
+        error: true,
+        message: "Missing order_id or rate_id",
+      });
+    }
+    const label = await warehousesControllers.creatingShippingLabel(rate_id);
+
+    // Save this into Firestore order
+    const shippingLabel = {
+      label_id: label.label_id,
+      shipment_id: label.shipment_id,
+      tracking_number: label.tracking_number,
+      carrier_code: label.carrier_code,
+      service_code: label.service_code,
+      label_url: label.label_download?.href,
+      status: label.status,
+      shipment_cost: label.shipment_cost,
+      created_at: label.created_at,
+    };
+
+    return res.status(201).json(shippingLabel);
+  } catch (e) {
+    console.log(
+      "CREATE SHIPPING LABEL ENDPOINT ERROR:",
+      e.response?.data || e.message
+    );
+
+    return res.status(500).json({
+      error: true,
+      message: "Error creating shipping label",
+      details: e.response?.data || e.message,
+    });
+    // return res.status(500).json({ error: e.message });
+  }
+});
 
 // Update a existing warehouse
 warehousesRouter.put("/updateWarehouse", async (req, res) => {
