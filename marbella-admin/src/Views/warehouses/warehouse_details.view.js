@@ -48,6 +48,7 @@ export default function Warehouse_Details_View() {
     createWarehouse,
     isLoading,
     validateWarehouse,
+    buildShipFromFromGooglePlace,
   } = useContext(WarehouseContext);
 
   const originalWarehouseRef = useRef(null);
@@ -137,55 +138,6 @@ export default function Warehouse_Details_View() {
       : {}),
   };
 
-  // console.log("PLACES QUERY:", placesQuery);
-  // console.log(
-  //   "WAREHOUSE ACTIVE VALUE:",
-  //   warehouseSelected?.active,
-  //   "TYPE:",
-  //   typeof warehouseSelected?.active
-  // );
-
-  const getAddressComponent = (components = [], type, useShortName = false) => {
-    const component = components.find((item) => item.types.includes(type));
-    return useShortName ? component?.short_name : component?.long_name;
-  };
-
-  const buildShipFromFromGooglePlace = ({ details, warehouse }) => {
-    const components = details?.address_components || [];
-
-    const streetNumber = getAddressComponent(components, "street_number");
-    const route = getAddressComponent(components, "route", true);
-    const subpremise = getAddressComponent(components, "subpremise");
-
-    const city =
-      getAddressComponent(components, "locality") ||
-      getAddressComponent(components, "administrative_area_level_2");
-
-    const state = getAddressComponent(
-      components,
-      "administrative_area_level_1",
-      true
-    );
-
-    const postalCode = getAddressComponent(components, "postal_code");
-    const country = getAddressComponent(components, "country", true);
-
-    return {
-      name: warehouse?.warehouse_name || "Cafe Marbella Warehouse",
-      phone: warehouse?.warehouse_information?.phone || "",
-      company_name: "Cafe Marbella",
-
-      address_line1: [streetNumber, route].filter(Boolean).join(" "),
-      address_line2: subpremise || null,
-
-      city_locality: city,
-      state_province: state,
-      postal_code: postalCode,
-      country_code: country,
-
-      address_residential_indicator: "no",
-    };
-  };
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -395,16 +347,7 @@ export default function Warehouse_Details_View() {
                           typeof lng === "number"
                         ) {
                           setAddressText(formatted);
-                          // setWarehouseSelected({
-                          //   ...warehouseSelected,
-                          //   physical_address: formatted,
-                          //   geo: {
-                          //     formatted_address: formatted,
-                          //     lat,
-                          //     lng,
-                          //     place_id: details?.place_id ?? data?.place_id,
-                          //   },
-                          // });
+
                           const ship_from = buildShipFromFromGooglePlace({
                             details,
                             warehouse: warehouseSelected,
@@ -692,6 +635,122 @@ export default function Warehouse_Details_View() {
                 />
 
                 <Spacer position="top" size="medium" />
+                {/* ***************************************************************************** */}
+                <Action_Container
+                  width="95%"
+                  // height="15%"
+                  padding_vertical="25px"
+                  color={theme.colors.bg.screens_bg}
+                  // color={"lightgreen"}
+                  justify="center"
+                  align="flex-start"
+                  direction="row"
+                  onPress={() => {
+                    setWarehouseSelected({
+                      ...warehouseSelected,
+                      shipping_information: {
+                        ...warehouseSelected.shipping_information,
+                        is_shipping_flat_rate_active:
+                          !warehouseSelected.shipping_information
+                            .is_shipping_flat_rate_active, // Toggle the value,
+                      },
+                    });
+                  }}
+                >
+                  <Container
+                    width="50%"
+                    style={{ alignSelf: "stretch" }}
+                    color={theme.colors.bg.screens_bg}
+                    //color={"lightblue"}
+                    justify="center"
+                    align="flex-start"
+                  >
+                    <Spacer position="left" size="large">
+                      <Text variant="raleway_bold_18">Shippipng Flat rate</Text>
+                    </Spacer>
+                    <Spacer position="left" size="large">
+                      <Text variant="raleway_bold_14_regular">
+                        (Tap to activate ship flat rate)
+                      </Text>
+                    </Spacer>
+                  </Container>
+                  <Container
+                    width="15%"
+                    style={{ alignSelf: "stretch" }}
+                    color={theme.colors.bg.screens_bg}
+                    //color={"lightgreen"}
+                    justify="center"
+                    align="center"
+                  >
+                    <Checkbox
+                      color={theme.colors.ui.primary}
+                      uncheckedColor="#A5A5A5"
+                      status={
+                        warehouseSelected?.shipping_information
+                          .is_shipping_flat_rate_active === true
+                          ? "checked"
+                          : "unchecked"
+                      }
+                      onPress={() => {
+                        setWarehouseSelected({
+                          ...warehouseSelected,
+                          active:
+                            warehouseSelected?.active === true ? false : true,
+                        });
+                      }}
+                    />
+                  </Container>
+                  <Container
+                    width="35%"
+                    style={{
+                      alignSelf: "stretch",
+                      overflow: "visible", // Ensure no clipping occurs
+                    }}
+                    color={theme.colors.bg.screens_bg}
+                    justify="center"
+                    align="flex-end"
+                  >
+                    {warehouseSelected.shipping_information
+                      .is_shipping_flat_rate_active && (
+                      <DataInput
+                        value={String(
+                          warehouseSelected.shipping_information
+                            .shipping_flat_rate ?? ""
+                        )}
+                        onChangeText={(value) => {
+                          const numericValue =
+                            parseFloat(value.replace(/[^1-9]/g, "")) || 0;
+                          setWarehouseSelected({
+                            ...warehouseSelected,
+                            shipping_information: {
+                              ...warehouseSelected.shipping_information,
+                              shipping_flat_rate: numericValue,
+                            },
+                          });
+                        }}
+                        keyboardType="numeric"
+                        label=""
+                        border_color={theme.colors.inputs.bottom_lines_disabled}
+                        underlineColor={
+                          theme.colors.inputs.bottom_lines_disabled
+                        }
+                        activeUnderlineColor={theme.colors.ui.primary}
+                        style={{
+                          backgroundColor: "#D5D5D8",
+                          // borderRadius: 20, // Ensure border radius is applied
+                          height: 45,
+                          overflow: "visible", // Prevent clipping
+                        }}
+                        contentStyle={{
+                          fontFamily: "ralewayBold",
+                          fontSize: 16,
+                        }}
+                      />
+                    )}
+                  </Container>
+                </Action_Container>
+                <Spacer position="top" size="medium" />
+                {/* ***************************************************************************** */}
                 <Action_Container
                   width="95%"
                   // height="15%"
@@ -751,6 +810,7 @@ export default function Warehouse_Details_View() {
                     {/* <RightArrowIcon width={20} height={20} /> */}
                   </Container>
                 </Action_Container>
+                {/* ***************************************************************************** */}
                 <Spacer position="top" size="medium" />
                 {coming_from === "add_cta" && (
                   <Action_Container
@@ -832,6 +892,7 @@ export default function Warehouse_Details_View() {
                     </Container>
                   </Action_Container>
                 )}
+                {/* ***************************************************************************** */}
                 <Spacer position="top" size="medium" />
                 <Action_Container
                   width="95%"

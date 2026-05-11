@@ -89,6 +89,13 @@ const createWarehouse = async (warehouse) => {
     max_limit_pickup_ratio: Number(warehouse.max_limit_pickup_ratio ?? 0),
     warehouse_information: warehouse.warehouse_information,
     ship_from: warehouse.ship_from ?? null,
+    shipping_information: {
+      is_shipping_flat_rate_active:
+        warehouse.shipping_information?.is_shipping_flat_rate_active ?? false,
+      shipping_flat_rate: Number(
+        warehouse.shipping_information?.shipping_flat_rate ?? 0
+      ),
+    },
 
     // ✅ store inventory map (computed)
     inventory: warehouse.inventory,
@@ -238,6 +245,13 @@ const updateWarehouse = async (warehouse_id, warehouse) => {
     inventory: warehouse.inventory ?? {},
     updatedAt: new Date().toISOString(),
     ship_from: warehouse.ship_from ?? null,
+    shipping_information: {
+      is_shipping_flat_rate_active:
+        warehouse.shipping_information?.is_shipping_flat_rate_active ?? false,
+      shipping_flat_rate: Number(
+        warehouse.shipping_information?.shipping_flat_rate ?? 0
+      ),
+    },
   };
 
   await warehouseRef.update(payload);

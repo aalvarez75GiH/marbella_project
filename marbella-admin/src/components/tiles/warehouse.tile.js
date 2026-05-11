@@ -53,6 +53,12 @@ export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
             },
             inventory: item?.inventory || {},
             ship_from: item?.ship_from || { lat: 0, lng: 0 },
+            shipping_information: {
+              is_shipping_flat_rate_active:
+                item?.shipping_information.is_shipping_flat_rate_active,
+              shipping_flat_rate:
+                item?.shipping_information.shipping_flat_rate || 0,
+            },
           }),
             navigation.navigate("Warehouse_Details_View", {
               coming_from: "warehouse_tile",

@@ -44,6 +44,10 @@ export const Warehouse_Context_Provider = ({ children }) => {
     },
     inventory: {},
     ship_from: {},
+    shipping_information: {
+      is_shipping_flat_rate_active: false,
+      shipping_flat_rate: 0,
+    },
   });
   // later you’ll set this based on geolocation
   const { productsCatalog } = useContext(GlobalContext);
@@ -329,6 +333,48 @@ export const Warehouse_Context_Provider = ({ children }) => {
     return null; // ✅ no errors
   };
 
+  const getAddressComponent = (components = [], type, useShortName = false) => {
+    const component = components.find((item) => item.types.includes(type));
+    return useShortName ? component?.short_name : component?.long_name;
+  };
+
+  const buildShipFromFromGooglePlace = ({ details, warehouse }) => {
+    const components = details?.address_components || [];
+
+    const streetNumber = getAddressComponent(components, "street_number");
+    const route = getAddressComponent(components, "route", true);
+    const subpremise = getAddressComponent(components, "subpremise");
+
+    const city =
+      getAddressComponent(components, "locality") ||
+      getAddressComponent(components, "administrative_area_level_2");
+
+    const state = getAddressComponent(
+      components,
+      "administrative_area_level_1",
+      true
+    );
+
+    const postalCode = getAddressComponent(components, "postal_code");
+    const country = getAddressComponent(components, "country", true);
+
+    return {
+      name: warehouse?.warehouse_name || "Cafe Marbella Warehouse",
+      phone: warehouse?.warehouse_information?.phone || "",
+      company_name: "Cafe Marbella",
+
+      address_line1: [streetNumber, route].filter(Boolean).join(" "),
+      address_line2: subpremise || null,
+
+      city_locality: city,
+      state_province: state,
+      postal_code: postalCode,
+      country_code: country,
+
+      address_residential_indicator: "no",
+    };
+  };
+
   return (
     <WarehouseContext.Provider
       value={{
@@ -346,6 +392,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
         updateWarehouse,
         createWarehouse,
         validateWarehouse,
+        buildShipFromFromGooglePlace,
 
         // handleChangeVariantQty,
       }}
