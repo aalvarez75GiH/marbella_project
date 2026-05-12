@@ -356,11 +356,6 @@ const creatingShippingLabel = async (rate_id) => {
       error.response?.data || error
     );
     throw error;
-    // return res.status(500).json({
-    //   error: true,
-    //   message: "Error getting shipping label",
-    //   details: error.response?.data || null,
-    // });
   }
 };
 
