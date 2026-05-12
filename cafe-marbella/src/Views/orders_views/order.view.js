@@ -50,7 +50,9 @@ export default function Order_View() {
     pickup_qr,
     customer,
     order_id,
+    shipping_rate,
   } = customerOrder || {};
+  const { carrier_name, delivery_days, carrier_delivery_days } = shipping_rate;
 
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
   const { last_four } = payment_information || {};
@@ -211,6 +213,9 @@ export default function Order_View() {
                 order_delivery_address={order_delivery_address}
                 warehouse_lat={lat}
                 warehouse_lng={lng}
+                delivery_days={delivery_days}
+                carrier_delivery_days={carrier_delivery_days}
+                carrier_name={carrier_name}
               />
             ) : (
               <Refunded_Information_Order_Tile

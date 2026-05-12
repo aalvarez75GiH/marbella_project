@@ -250,7 +250,7 @@ export default function Cart_Delivery_Type_View() {
                 address={customer_address}
                 address_option={"new_address"}
                 action={async () => {
-                  navigation.navigate("Different_Delivery_Address_View");
+                  navigation.navigate("Cart_Different_Delivery_Address_View");
                 }}
               />
             </>

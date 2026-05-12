@@ -83,6 +83,18 @@ paymentsRouter.post("/payments", async (req, res) => {
       const { rate_id } = shipping_rate || {};
       // const label = await warehousesControllers.creatingShippingLabel(rate_id);
 
+      // const labelResponse = {
+      //   label_id: label.label_id,
+      //   shipment_id: label.shipment_id,
+      //   tracking_number: label.tracking_number,
+      //   carrier_code: label.carrier_code,
+      //   service_code: label.service_code,
+      //   label_url: label.label_download?.href,
+      //   status: label.status,
+      //   shipment_cost: label.shipment_cost,
+      //   created_at: label.created_at,
+      // };
+
       const labelResponseExample = {
         label_id: "se-147174348",
         shipment_id: "se-302806358",
@@ -125,6 +137,7 @@ paymentsRouter.post("/payments", async (req, res) => {
           used_by: null,
         },
         labelResponseExample, // for testing, remove in <production></production>
+        //labelResponse, // for testing, remove in <production></production>
       };
 
       createdOrder = await ordersControllers.createOrder(

@@ -103,8 +103,6 @@ export const Orders_Context_Provider = ({ children }) => {
     onTaxes,
     nextOrder,
   }) => {
-    // setIsCheckoutLoading(true);
-
     try {
       const taxesResults = await onTaxes(nextOrder);
 
@@ -123,8 +121,9 @@ export const Orders_Context_Provider = ({ children }) => {
       navigation.navigate("Cart_Order_Review_View", {
         order: orderWithTaxes,
       });
-    } finally {
-      // setIsCheckoutLoading(false);
+    } catch (e) {
+      console.log("DELIVERY TAX FLOW ERROR:", e?.message || e);
+      // optionally show a toast/alert here
     }
   };
 
@@ -438,6 +437,7 @@ export const Orders_Context_Provider = ({ children }) => {
       },
       order_delivery_address: customer_address,
       shipping_rate: {
+        carrier_name: cheapestCarrierRate.carrier_name,
         rate_id: cheapestCarrierRate.rate_id,
         service_code: cheapestCarrierRate.service_code,
         service_type: cheapestCarrierRate.service_type,
@@ -447,6 +447,7 @@ export const Orders_Context_Provider = ({ children }) => {
         currency: cheapestCarrierRate.currency,
         estimated_delivery_date: cheapestCarrierRate.estimated_delivery_date,
         carrier_delivery_days: cheapestCarrierRate.carrier_delivery_days,
+        delivery_days: cheapestCarrierRate.delivery_days,
       },
       order_products: myOrder.order_products,
     };

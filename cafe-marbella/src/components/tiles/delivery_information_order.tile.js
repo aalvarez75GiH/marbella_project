@@ -23,11 +23,14 @@ export const Delivery_Information_Order_Tile = ({
   delivery_type,
   distance_to_warehouse_mi,
   order_delivery_address,
+  carrier_name,
+  carrier_delivery_days,
+  delivery_days,
 }) => {
   console.log("Delivery_Information_Order_Tile delivery_type:", delivery_type);
   console.log("latitude inside tile:", warehouse_lat);
   console.log("longitude inside tile:", warehouse_lng);
-
+  const day_or_days = delivery_days === 1 ? "day" : "days";
   const openMapsToWarehouse = (latitude, longitude) => {
     console.log("latitude inside function:", latitude);
     console.log("longitude inside function:", longitude);
@@ -206,8 +209,13 @@ export const Delivery_Information_Order_Tile = ({
             align="flex-start"
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_regular_14">
-                Delivery by USPS - 1 to 3 days
+              <Text variant="dm_sans_bold_14">
+                Delivery by {carrier_name} - {delivery_days} {day_or_days}
+              </Text>
+            </Spacer>
+            <Spacer position="left" size="large">
+              <Text variant="dm_sans_bold_14">
+                ETA: {carrier_delivery_days}
               </Text>
             </Spacer>
           </Container>

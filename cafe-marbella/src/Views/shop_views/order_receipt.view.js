@@ -45,7 +45,9 @@ export default function Shop_Order_Receipt_View() {
     payment_information,
     quantity,
     order_delivery_address,
+    shipping_rate,
   } = myOrder || {};
+  const { carrier_name, carrier_delivery_days } = shipping_rate;
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
   const { last_four } = payment_information || {};
   const {
@@ -159,6 +161,9 @@ export default function Shop_Order_Receipt_View() {
                 distance_to_warehouse_mi={distance_in_miles}
                 delivery_type={delivery_type}
                 order_delivery_address={order_delivery_address}
+                carrier_name={carrier_name}
+                delivery_days={delivery_days}
+                carrier_delivery_days={carrier_delivery_days}
               />
               <Spacer position="top" size="large" />
               <Payment_method_Info_Tile last_four={last_four} />

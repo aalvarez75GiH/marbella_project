@@ -173,6 +173,7 @@ warehousesRouter.post("/gettingRateFromWarehouse", async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
+
 // Getting cheapest delivery rate depending on warehouse
 warehousesRouter.post("/creatingShippingLabel", async (req, res) => {
   try {

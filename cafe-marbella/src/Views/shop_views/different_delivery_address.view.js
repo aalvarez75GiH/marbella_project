@@ -98,7 +98,7 @@ export default function Different_Delivery_Address_View() {
     >
       {isCheckoutLoading ? (
         <Global_activity_indicator
-          caption="Wait, we are working with your new delivery address..."
+          caption="Wait, Working with your new delivery address & delivery fees..."
           caption_width="65%"
         />
       ) : (

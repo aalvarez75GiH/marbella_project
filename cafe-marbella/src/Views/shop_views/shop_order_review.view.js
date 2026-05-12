@@ -38,7 +38,9 @@ export default function Shop_Order_Review_View() {
     delivery_type,
     quantity,
     order_delivery_address,
+    shipping_rate,
   } = order || {};
+  const { carrier_name, delivery_days, carrier_delivery_days } = shipping_rate;
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
 
   console.log("SHIPPING AMOUNT AT REVIEW ORDER:, ", shipping);
@@ -165,6 +167,9 @@ export default function Shop_Order_Review_View() {
                   distance_to_warehouse_mi={distance_in_miles}
                   delivery_type={delivery_type}
                   order_delivery_address={order_delivery_address}
+                  delivery_days={delivery_days}
+                  carrier_delivery_days={carrier_delivery_days}
+                  carrier_name={carrier_name}
                 />
               </>
 
