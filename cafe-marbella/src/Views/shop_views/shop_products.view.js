@@ -4,7 +4,6 @@ import { Image } from "expo-image";
 import { useTheme } from "styled-components/native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-
 import {
   Container,
   Action_Container,
@@ -106,9 +105,12 @@ export default function Shop_Products_View() {
               onPress={() => {
                 setIsLoading(true);
 
-                setProductsChosenForShop(shopProductsGround);
-                navigation.navigate("Home_View", {
-                  coming_from: "ground_beans",
+                requestAnimationFrame(() => {
+                  setProductsChosenForShop(shopProductsGround);
+
+                  navigation.navigate("Select_Roast_Type_View", {
+                    coming_from: "ground_beans",
+                  });
                 });
               }}
             >
@@ -161,10 +163,12 @@ export default function Shop_Products_View() {
               overflow="hidden"
               onPress={() => {
                 setIsLoading(true);
+                requestAnimationFrame(() => {
+                  setProductsChosenForShop(shopProductsWhole);
 
-                setProductsChosenForShop(shopProductsWhole);
-                navigation.navigate("Home_View", {
-                  coming_from: "whole_beans",
+                  navigation.navigate("Select_Roast_Type_View", {
+                    coming_from: "whole_beans",
+                  });
                 });
               }}
             >

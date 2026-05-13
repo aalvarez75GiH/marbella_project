@@ -58,7 +58,7 @@ export default function Shop_View() {
         style={{ paddingBottom: 50 }}
       >
         <Go_Back_Header_With_Label_And_Menu
-          action_1={() => navigation.navigate("Shop_Products_View")}
+          action_1={() => navigation.goBack()}
           action_2={() => navigation.navigate("Menu_View")}
           label={
             coming_from === "whole_beans"

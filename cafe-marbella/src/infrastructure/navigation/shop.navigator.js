@@ -23,6 +23,7 @@ import Shop_Login_Users_View from "../../Views/shop_views/shop_login.view";
 import Email_Verification_Sent_View from "../../Views/shop_views/email_verified.view";
 import Shop_Products_View from "../../Views/shop_views/shop_products.view";
 import Customer_QR_View from "../../Views/shop_views/customer_qr.view";
+import Select_Roast_Type_View from "../../Views/shop_views/select_roast_type.view";
 
 const ShopFlowStack = createNativeStackNavigator();
 
@@ -114,6 +115,10 @@ export const Shop_Navigator = () => {
       <ShopFlowStack.Screen
         name="Customer_QR_View"
         component={Customer_QR_View}
+      />
+      <ShopFlowStack.Screen
+        name="Select_Roast_Type_View"
+        component={Select_Roast_Type_View}
       />
       <ShopFlowStack.Screen name="Menu_View" component={Menu_View} />
     </ShopFlowStack.Navigator>
