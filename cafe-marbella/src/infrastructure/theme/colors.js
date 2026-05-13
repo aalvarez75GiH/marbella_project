@@ -48,4 +48,14 @@ export const colors = {
     finished: "#247F35",
     refunded: "#CD491B",
   },
+  roasts_borders: {
+    light: "#E8B65C",
+    medium: "#B56A12",
+    dark: "#4A2A1A",
+  },
+  roastBackgrounds: {
+    light: "#FFF6E8",
+    medium: "#F7EFE6",
+    dark: "#EEE7E3",
+  },
 };

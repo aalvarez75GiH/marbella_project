@@ -70,7 +70,7 @@ export default function Shop_View() {
         <Spacer position="top" size="large" />
         <SectionList
           sections={sections}
-          // ItemSeparatorComponent={() => <Spacer position="top" size="medium" />}
+          stickySectionHeadersEnabled={false}
           ItemSeparatorComponent={() => (
             <View
               style={{
@@ -103,11 +103,7 @@ export default function Shop_View() {
               </Spacer>
             </Container>
           )}
-          renderItem={({ item }) => (
-            // <Spacer position="bottom" size="medium">
-            <Product_Initial_Card item={item} />
-            // </Spacer>
-          )}
+          renderItem={({ item }) => <Product_Initial_Card item={item} />}
         />
         <Spacer position="top" size="large" />
       </Container>

@@ -1,8 +1,7 @@
-import React, { useContext, useCallback } from "react";
+import React, { useContext } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
-import { useFocusEffect } from "@react-navigation/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import { Container } from "../../components/containers/general.containers";
@@ -40,7 +39,8 @@ export default function Shop_Order_Review_View() {
     order_delivery_address,
     shipping_rate,
   } = order || {};
-  const { carrier_name, delivery_days, carrier_delivery_days } = shipping_rate;
+  const { carrier_name, delivery_days, carrier_delivery_days } =
+    shipping_rate || {};
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
 
   console.log("SHIPPING AMOUNT AT REVIEW ORDER:, ", shipping);
@@ -167,9 +167,15 @@ export default function Shop_Order_Review_View() {
                   distance_to_warehouse_mi={distance_in_miles}
                   delivery_type={delivery_type}
                   order_delivery_address={order_delivery_address}
-                  delivery_days={delivery_days}
-                  carrier_delivery_days={carrier_delivery_days}
-                  carrier_name={carrier_name}
+                  delivery_days={
+                    delivery_type === "delivery" ? delivery_days : null
+                  }
+                  carrier_delivery_days={
+                    delivery_type === "delivery" ? carrier_delivery_days : null
+                  }
+                  carrier_name={
+                    delivery_type === "delivery" ? carrier_name : null
+                  }
                 />
               </>
 
