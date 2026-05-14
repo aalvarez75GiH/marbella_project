@@ -53,8 +53,15 @@ export default function Personal_Information_View() {
   const addressYRef = useRef(0);
   const placesRef = useRef(null);
 
-  const { setUserToDB, userToDB, user, handleUpdate, setUser, isLoading } =
-    useContext(AuthenticationContext);
+  const {
+    setUserToDB,
+    userToDB,
+    user,
+    handleUpdate,
+    setUser,
+    isLoading,
+    buildShipToFromGooglePlace,
+  } = useContext(AuthenticationContext);
 
   const { deviceLat, deviceLng } = useContext(GeolocationContext);
   console.log("Device location at Personal Info View:", {
@@ -176,7 +183,39 @@ export default function Personal_Information_View() {
       ? { location: `${deviceLat},${deviceLng}`, radius: 50000 }
       : {}),
   };
+  const handleAddressPress = (data, details = null) => {
+    const formatted = details?.formatted_address ?? data.description;
 
+    const ship_to = buildShipToFromGooglePlace({
+      details: details,
+      user: {
+        name: `${userToDB.first_name} ${userToDB.last_name}`,
+        phone: userToDB.phone_number,
+      },
+    });
+
+    setUserToDB((prev) => ({
+      ...prev,
+      address: formatted,
+      ship_to,
+    }));
+    setSelectedAddress({
+      formatted_address: formatted,
+      lat: details?.geometry?.location?.lat,
+      lng: details?.geometry?.location?.lng,
+      place_id: details?.place_id ?? data?.place_id,
+    });
+  };
+
+  const scrollToAddress = () => {
+    setTimeout(() => {
+      scrollRef.current?.scrollTo({
+        // y: Math.max(addressYRef.current - 80, 0),
+        y: addressYRef.current + 300,
+        animated: true,
+      });
+    }, 250);
+  };
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -317,205 +356,144 @@ export default function Personal_Information_View() {
                 blurOnSubmit
               />
               <Spacer position="top" size="extraLarge" />
-              {Platform.OS === "ios" && (
-                <Container
-                  width="100%"
-                  align="center"
-                  justify="center"
-                  color={theme.colors.bg.elements_bg}
-                  //   color={"red"}
+              <Container
+                width="100%"
+                color={theme.colors.bg.elements_bg}
+                justify="flex-start"
+                align="center"
+                style={{
+                  paddingVertical: 10,
+                  zIndex: 9999,
+                  elevation: 9999,
+                }}
+              >
+                <View
+                  style={{
+                    width: "93%",
+                    alignSelf: "center",
+                    overflow: "visible",
+                    zIndex: 9999,
+                    elevation: 9999,
+                  }}
+                  pointerEvents="box-none"
+                  onLayout={(event) => {
+                    addressYRef.current = event.nativeEvent.layout.y;
+                  }}
                 >
-                  <View
-                    onLayout={(e) => {
-                      addressYRef.current = e.nativeEvent.layout.y;
+                  <GooglePlacesAutocomplete
+                    ref={placesRef}
+                    placeholder="Enter an address"
+                    fetchDetails
+                    listViewDisplayed="auto"
+                    keyboardShouldPersistTaps="handled"
+                    enablePoweredByContainer={false}
+                    minLength={Platform.OS === "ios" ? 1 : 2}
+                    debounce={250}
+                    query={{
+                      key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
+                      language: "en",
+                      components: "country:us",
+                      location: `${deviceLat},${deviceLng}`,
+                      radius: 50000,
+                      types: "geocode",
                     }}
-                    style={{
-                      width: "100%",
-                      zIndex: 999999,
-                      elevation: 999999,
-                      //   backgroundColor: "lightblue",
+                    textInputProps={{
+                      value: userToDB?.address ?? "",
+                      onFocus: scrollToAddress,
+                      onChangeText: (t) => {
+                        scrollToAddress();
+                        setUserToDB((prev) => ({ ...prev, address: t }));
+                        setSelectedAddress(null);
+                      },
                     }}
-                  >
-                    <GooglePlacesAutocomplete
-                      ref={placesRef}
-                      onFail={(err) =>
-                        console.log("PLACES FAIL:", JSON.stringify(err))
+                    onPress={(data, details = null) => {
+                      Keyboard.dismiss();
+                      handleAddressPress(data, details);
+                    }}
+                    styles={
+                      {
+                        // keep your current styles
                       }
-                      onNotFound={() => console.log("PLACES NOT FOUND")}
-                      onTimeout={() => console.log("PLACES TIMEOUT")}
-                      placeholder="Address"
-                      query={placesQuery}
-                      fetchDetails
-                      listViewDisplayed={true}
-                      onPress={(data, details = null) => {
-                        const formatted =
-                          details?.formatted_address ?? data.description;
-
-                        setUserToDB((prev) => ({
-                          ...prev,
-                          address: formatted,
-                        }));
-                        setSelectedAddress({
-                          formatted_address: formatted,
-                          lat: details?.geometry?.location?.lat,
-                          lng: details?.geometry?.location?.lng,
-                          place_id: details?.place_id ?? data?.place_id,
-                        });
-                      }}
-                      textInputProps={{
-                        value: userToDB?.address ?? "", // ✅ populate it
-                        onChangeText: (t) => {
-                          // ✅ allow editing
-                          setUserToDB((prev) => ({ ...prev, address: t }));
-                          setSelectedAddress(null); // typing invalidates selection
-                        },
-                      }}
-                      styles={{
-                        container: {
-                          flex: 0,
-                          width: "95%", // 👈 try matching what DataInput visually uses
-                          alignSelf: "center",
-                        },
-                        textInputContainer: {
-                          width: "100%",
-                          paddingHorizontal: 0,
-                        },
-                        textInput: {
-                          width: "100%",
-                          height: 50,
-                          borderBottomWidth: 1,
-                          borderBottomColor:
-                            theme.colors.inputs.bottom_lines_disabled,
-                          backgroundColor: "transparent",
-                          paddingLeft: 0, // match DataInput padding
-                        },
-                        listView: {
-                          position: "absolute",
-                          top: 50,
-                          left: 0,
-                          right: 0,
-                          maxHeight: 260,
-                          zIndex: 999999,
-                          elevation: 999999,
-                          backgroundColor: theme.colors.bg.elements_bg,
-                        },
-                      }}
-                      enablePoweredByContainer={false}
-                      keyboardShouldPersistTaps="handled"
-                      minLength={1}
-                    />
-                  </View>
-                </Container>
-              )}
-
-              {Platform.OS === "android" && (
-                <Container
-                  width="100%"
-                  align="center"
-                  justify="center"
-                  color={theme.colors.bg.elements_bg}
-                  //   color={"red"}
-                >
-                  <View
-                    style={{ width: "100%", zIndex: 999999, elevation: 999999 }}
-                  >
-                    <GooglePlacesAutocomplete
-                      ref={placesRef}
-                      placeholder="Address"
-                      fetchDetails
-                      debounce={250}
-                      minLength={2}
-                      enablePoweredByContainer={false}
-                      keyboardShouldPersistTaps="always"
-                      listViewDisplayed={true}
-                      keepResultsAfterBlur={true}
-                      query={{
-                        key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
-                        language: "en",
-                        components: "country:us",
-                        ...(typeof deviceLat === "number" &&
-                        typeof deviceLng === "number"
-                          ? {
-                              location: `${deviceLat},${deviceLng}`,
-                              radius: 50000,
-                            }
-                          : {}),
-                      }}
-                      onPress={(data, details = null) => {
-                        Keyboard.dismiss();
-                        const formatted =
-                          details?.formatted_address ?? data.description;
-                        const lat = details?.geometry?.location?.lat;
-                        const lng = details?.geometry?.location?.lng;
-
-                        setUserToDB((prev) => ({
-                          ...prev,
-                          address: formatted,
-                        }));
-
-                        if (
-                          typeof lat === "number" &&
-                          typeof lng === "number"
-                        ) {
-                          setSelectedAddress({
-                            formatted_address: formatted,
-                            lat,
-                            lng,
-                            place_id: details?.place_id ?? data?.place_id,
-                          });
-                        } else {
-                          setSelectedAddress(null);
-                        }
-                      }}
-                      styles={{
-                        container: {
-                          flex: 0,
-                          width: "95%", // 👈 try matching what DataInput visually uses
-                          alignSelf: "center",
-                        },
-                        textInputContainer: {
-                          width: "100%",
-                          paddingHorizontal: 0,
-                        },
-                        textInput: {
-                          width: "100%",
-                          height: 50,
-                          borderBottomWidth: 1,
-                          borderBottomColor:
-                            theme.colors.inputs.bottom_lines_disabled,
-                          backgroundColor: "transparent",
-                          paddingLeft: 5,
-                        },
-                        listView: {
-                          position: "absolute",
-                          top: 50,
-                          left: 0,
-                          right: 0,
-                          maxHeight: 260,
-                          zIndex: 999999,
-                          elevation: 999999,
-                          backgroundColor: theme.colors.bg.elements_bg,
-                        },
-                      }}
-                      renderRightButton={() => (
-                        <TouchableOpacity
-                          onPress={() => {
-                            placesRef.current?.setAddressText("");
-                            setUserToDB((prev) => ({ ...prev, address: "" }));
-                            setSelectedAddress(null);
-                          }}
-                          style={{
-                            justifyContent: "center",
-                            paddingHorizontal: 12,
-                          }}
-                        >
-                          <ClearIcon width={20} height={20} />
-                        </TouchableOpacity>
-                      )}
-                    />
-                  </View>
-                </Container>
-              )}
+                    }
+                  />
+                  {/* <GooglePlacesAutocomplete
+                    placeholder="Enter an address"
+                    fetchDetails
+                    listViewDisplayed="auto"
+                    keyboardShouldPersistTaps="handled"
+                    enablePoweredByContainer={false}
+                    minLength={Platform.OS === "ios" ? 1 : 2}
+                    debounce={250}
+                    query={{
+                      key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
+                      language: "en",
+                      components: "country:us",
+                      location: `${deviceLat},${deviceLng}`,
+                      radius: 50000,
+                      types: "geocode",
+                    }}
+                    textInputProps={{
+                      value: userToDB?.address ?? "", // ✅ populate it
+                      onChangeText: (t) => {
+                        // ✅ allow editing
+                        setUserToDB((prev) => ({ ...prev, address: t }));
+                        setSelectedAddress(null); // typing invalidates selection
+                      },
+                    }}
+                    onPress={handleAddressPress}
+                    styles={{
+                      container: {
+                        flex: 0,
+                        width: "100%",
+                        zIndex: 9999,
+                        elevation: 9999,
+                      },
+                      textInputContainer: {
+                        width: "100%",
+                        height: 58,
+                        paddingHorizontal: 0,
+                      },
+                      textInput: {
+                        width: "100%",
+                        height: 58,
+                        fontSize: 16,
+                        lineHeight: 22,
+                        color: theme.colors.text.primary,
+                        backgroundColor: "transparent",
+                        borderBottomWidth: 1,
+                        borderBottomColor: theme.colors.inputs.bottom_lines,
+                        paddingLeft: 5,
+                        paddingRight: 35,
+                        paddingTop: 0,
+                        paddingBottom: 0,
+                        marginLeft: 0,
+                        textAlign: "left",
+                      },
+                      listView: {
+                        marginTop: 8,
+                        maxHeight: 240,
+                        backgroundColor: theme.colors.bg.elements_bg,
+                        zIndex: 999999,
+                        elevation: 999999,
+                      },
+                      row: {
+                        minHeight: 62,
+                        paddingVertical: 14,
+                        paddingHorizontal: 16,
+                        backgroundColor: theme.colors.bg.elements_bg,
+                      },
+                      description: {
+                        fontSize: 16,
+                        color: theme.colors.text.primary,
+                      },
+                      separator: {
+                        height: 1,
+                        backgroundColor: "#D0D0D0",
+                      },
+                    }}
+                  /> */}
+                </View>
+              </Container>
 
               {!snackbar.visible && (
                 <Container

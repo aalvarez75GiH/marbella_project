@@ -286,6 +286,7 @@ usersRouter.put("/update_user_info", verifyFirebaseToken, async (req, res) => {
       updatedAt: new Date().toISOString(),
       display_name: body.display_name ?? "",
       phone_number: body.phone_number ?? "",
+      ship_to: body.ship_to ?? null, // optional field for delivery address if different from main address
     };
     // optional hardening: ensure DB email matches Firebase email
     const fbUser = await admin.auth().getUser(uid);

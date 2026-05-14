@@ -114,6 +114,7 @@ const updateUser = async (data, uid) => {
       "phone_number",
       "display_name",
       "encrypted_pin",
+      "ship_to",
     ]);
 
     const updatePayload = {};

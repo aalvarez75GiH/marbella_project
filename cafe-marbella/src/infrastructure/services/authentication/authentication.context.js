@@ -726,25 +726,25 @@ export const Authentication_Context_Provider = ({ children }) => {
     setUserToDB(userToDBInitialState);
   };
 
-  const waitForFirebaseUserOnce = (timeoutMs = 2500) =>
-    new Promise((resolve) => {
-      let done = false;
+  // const waitForFirebaseUserOnce = (timeoutMs = 2500) =>
+  //   new Promise((resolve) => {
+  //     let done = false;
 
-      const timer = setTimeout(() => {
-        if (done) return;
-        done = true;
-        unsub?.();
-        resolve(null);
-      }, timeoutMs);
+  //     const timer = setTimeout(() => {
+  //       if (done) return;
+  //       done = true;
+  //       unsub?.();
+  //       resolve(null);
+  //     }, timeoutMs);
 
-      const unsub = onAuthStateChanged(auth, (u) => {
-        if (done) return;
-        done = true;
-        clearTimeout(timer);
-        unsub();
-        resolve(u);
-      });
-    });
+  //     const unsub = onAuthStateChanged(auth, (u) => {
+  //       if (done) return;
+  //       done = true;
+  //       clearTimeout(timer);
+  //       unsub();
+  //       resolve(u);
+  //     });
+  //   });
 
   const getFirebaseUserOrWait = async (timeoutMs = 12000) => {
     if (auth.currentUser) return auth.currentUser;
