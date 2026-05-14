@@ -17,6 +17,8 @@ import { Go_Back_Header_With_Label_And_Menu } from "../../components/headers/goB
 import { Roast_Type_Tile } from "../../components/tiles/roast_type.tile";
 import { Text } from "../../infrastructure/typography/text.component";
 import { Icon_And_Caption_Footer } from "../../components/footers/icon_and_label.footer";
+import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
+import { Regular_UI_Title } from "../../components/uis_titles/regular_two_texts.title";
 
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
 
@@ -84,12 +86,7 @@ export default function Select_Roast_Type_View() {
         align="center"
         style={{ flex: 1 }}
       >
-        <Go_Back_Header_With_Label_And_Menu
-          action_1={() => navigation.goBack()}
-          action_2={() => navigation.navigate("Menu_View")}
-          label="Select Roast Type"
-          //   hide_icon={true}
-        />
+        <Go_Back_Header action={() => navigation.goBack()} label="" />
         <Spacer position="top" size="large" />
 
         {isLoading && (
@@ -97,42 +94,12 @@ export default function Select_Roast_Type_View() {
         )}
         {!isLoading && (
           <>
-            <Container
-              width="90%"
-              height={"10%"}
-              color={theme.colors.bg.screens_bg}
-              //color={"green"}
-              justify="center"
-              align="center"
-              direction="row"
-            >
-              <Container
-                width="20%"
-                height="100%"
-                color={theme.colors.bg.screens_bg}
-                //color={"red"}
-                justify="center"
-                align="center"
-              ></Container>
-              <Container
-                width="80%"
-                height="100%"
-                // color={theme.colors.bg.elements_bg}
-                color={theme.colors.bg.screens_bg}
-                // color={"lightblue"}
-                justify="center"
-                align="flex-start"
-              >
-                <Text variant="raleway_bold_18">Choose your roast</Text>
-                <Spacer position="top" size="small" />
-                <Text
-                  variant="raleway_bold_14_grey"
-                  style={{ color: "#6F7285" }}
-                >
-                  Each roast bring out unique flavors and aromas
-                </Text>
-              </Container>
-            </Container>
+            <Regular_UI_Title
+              main_title="Tap an option to select your roast type"
+              // main_title="Select your preferred roast type"
+              secondary_title="Each roast bring out unique flavors and aromas"
+            />
+
             <ScrollView
               style={{
                 flex: 1,

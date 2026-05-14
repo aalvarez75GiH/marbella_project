@@ -24,10 +24,18 @@ export const My_Orders_Tile = ({
   order_number,
   item,
 }) => {
-  const { formatCentsToUSD } = useContext(GlobalContext);
+  const { formatCentsToUSD, formatDate } = useContext(GlobalContext);
   const formatted_currency = formatCentsToUSD;
-  const { order_delivery_address } = item || {};
-
+  const { order_delivery_address, shipping_rate } = item || {};
+  const { estimated_delivery_date } = shipping_rate || {};
+  console.log(
+    "ORDER INFO TILE - ESTIMATED DELIVERY DATE:",
+    estimated_delivery_date
+  );
+  console.log(
+    "ORDER INFO TILE - ESTIMATED DELIVERY DATE FORMATTED:",
+    formatDate(estimated_delivery_date).short
+  );
   const iOs = Platform.OS === "ios";
 
   const navigation = useNavigation();
@@ -306,10 +314,12 @@ export const My_Orders_Tile = ({
           >
             <Spacer position="left" size="large">
               <Text variant="dm_sans_bold_14">
-                Deliver between 20 - 25 Dec, 2025
+                Shipping estimated by{" "}
+                {formatDate(estimated_delivery_date).short}
+                {/* Deliver between 20 - 25 Dec, 2025 */}
               </Text>
               <Text variant="dm_sans_regular_14">
-                at {order_delivery_address}
+                at {order_delivery_address} - more info...
               </Text>
             </Spacer>
           </Container>

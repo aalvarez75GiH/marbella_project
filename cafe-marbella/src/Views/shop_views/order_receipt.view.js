@@ -47,7 +47,8 @@ export default function Shop_Order_Receipt_View() {
     order_delivery_address,
     shipping_rate,
   } = myOrder || {};
-  const { carrier_name, carrier_delivery_days } = shipping_rate || {};
+  const { carrier_name, delivery_days, carrier_delivery_days } =
+    shipping_rate || {};
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
   const { last_four } = payment_information || {};
   const {
