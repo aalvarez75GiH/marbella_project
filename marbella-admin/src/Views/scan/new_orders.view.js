@@ -6,15 +6,13 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 import { useTheme } from "styled-components/native";
 import { Container } from "../../components/containers/general.containers.js";
-import { Just_Caption_Header } from "../../components/headers/just_caption.header.js";
 import { Exit_Header_With_Label } from "../../components/headers/exit_with_label.header.js";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component.js";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component.js";
-import { useEffect } from "react";
 import { Text } from "../../infrastructure/typography/text.component.js";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component.js";
 import { My_Orders_Tile } from "../../components/tiles/my_orders.tile.js";
-import Empty_My_Orders_View from "../orders_views/empty_my_orders.view.js";
+import Empty_My_Orders_View from "./empty_my_orders.view.js";
 
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context.js";
 import { GlobalContext } from "../../infrastructure/services/global/global.context.js";

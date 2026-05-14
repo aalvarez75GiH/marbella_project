@@ -669,7 +669,10 @@ export default function Warehouse_Details_View() {
                       <Text variant="raleway_bold_18">Shippipng Flat rate</Text>
                     </Spacer>
                     <Spacer position="left" size="large">
-                      <Text variant="raleway_bold_14_regular">
+                      <Text
+                        variant="raleway_bold_14_grey"
+                        style={{ color: "#6F7285" }}
+                      >
                         (Tap to activate ship flat rate)
                       </Text>
                     </Spacer>
@@ -778,7 +781,7 @@ export default function Warehouse_Details_View() {
                       <Text variant="raleway_bold_18">Warehouse active</Text>
                     </Spacer>
                     <Spacer position="left" size="large">
-                      <Text variant="raleway_bold_14_regular">
+                      <Text variant="raleway_regular_14">
                         (Tap to change status)
                       </Text>
                     </Spacer>
