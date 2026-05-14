@@ -56,7 +56,13 @@ export default function Order_View() {
     customer,
     order_id,
     stripe_payment_id,
+    shipping_rate,
+    labelResponseExample,
+    // labelResponse,
   } = customerOrder || {};
+
+  const { carrier_name, delivery_days, carrier_delivery_days } =
+    shipping_rate || {};
 
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
   const { last_four } = payment_information || {};
@@ -169,6 +175,10 @@ export default function Order_View() {
                   order_delivery_address={order_delivery_address}
                   warehouse_lat={lat}
                   warehouse_lng={lng}
+                  delivery_days={delivery_days}
+                  carrier_delivery_days={carrier_delivery_days}
+                  carrier_name={carrier_name}
+                  labelResponseExample={labelResponseExample}
                 />
               ) : (
                 <Refunded_Information_Order_Tile

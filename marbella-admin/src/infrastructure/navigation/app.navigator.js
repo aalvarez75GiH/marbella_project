@@ -5,7 +5,7 @@ import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 
 import { Scan_Order_Navigator } from "./scan.navigator";
 import { Warehouses_Navigator } from "./warehouses.navigator";
-import { Shop_Navigator } from "./shop.navigator";
+// import { Shop_Navigator } from "./shop.navigator";
 
 import OrdersIcon from "../../../assets/my_icons/receipt_orders.svg";
 import StoreIcon from "../../../assets/my_icons/storeIcon.svg";

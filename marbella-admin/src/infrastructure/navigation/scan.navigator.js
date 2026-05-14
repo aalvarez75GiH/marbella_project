@@ -7,6 +7,7 @@ import Customers_QR_Scanner_View from "../../Views/scan/customer_scanner.view";
 import New_Orders_View from "../../Views/scan/new_orders.view";
 import Order_View from "../../Views/scan/order.view";
 import Admin_Enter_Email_View from "../../Views/scan/enter_email.view";
+import Delivery_Order_Label_View from "../../Views/scan/delivery_order_label.view";
 
 const ScanOrderStack = createNativeStackNavigator();
 
@@ -37,6 +38,10 @@ export const Scan_Order_Navigator = () => {
       <ScanOrderStack.Screen
         name="Admin_Enter_Email_View"
         component={Admin_Enter_Email_View}
+      />
+      <ScanOrderStack.Screen
+        name="Delivery_Order_Label_View"
+        component={Delivery_Order_Label_View}
       />
     </ScanOrderStack.Navigator>
   );

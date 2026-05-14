@@ -52,7 +52,8 @@ export default function Order_View() {
     order_id,
     shipping_rate,
   } = customerOrder || {};
-  const { carrier_name, delivery_days, carrier_delivery_days } = shipping_rate;
+  const { carrier_name, delivery_days, carrier_delivery_days } =
+    shipping_rate || {};
 
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
   const { last_four } = payment_information || {};

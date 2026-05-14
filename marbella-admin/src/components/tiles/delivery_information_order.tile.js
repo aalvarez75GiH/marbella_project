@@ -1,7 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
+import { Platform, Linking } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 import { Text } from "../../infrastructure/typography/text.component.js";
-import { Container } from "../containers/general.containers.js";
+import {
+  Container,
+  Action_Container,
+} from "../containers/general.containers.js";
 import { Spacer } from "../spacers and globals/optimized.spacer.component.js";
 import { theme } from "../../infrastructure/theme/index.js";
 import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
@@ -19,10 +24,27 @@ export const Delivery_Information_Order_Tile = ({
   delivery_type,
   distance_to_warehouse_mi,
   order_delivery_address,
+  carrier_name,
+  carrier_delivery_days,
+  delivery_days,
+  labelResponseExample,
 }) => {
+  const navigation = useNavigation();
   console.log("Delivery_Information_Order_Tile delivery_type:", delivery_type);
   console.log("latitude inside tile:", warehouse_lat);
   console.log("longitude inside tile:", warehouse_lng);
+  const day_or_days = delivery_days === 1 ? "day" : "days";
+  const openMapsToWarehouse = (latitude, longitude) => {
+    console.log("latitude inside function:", latitude);
+    console.log("longitude inside function:", longitude);
+    if (Platform.OS === "ios") {
+      const url = `maps://?daddr=${latitude},${longitude}&dirflg=d`;
+      Linking.openURL(url);
+    } else {
+      const url = `google.navigation:q=${latitude},${longitude}`;
+      Linking.openURL(url);
+    }
+  };
 
   return delivery_type === "pickup" ? (
     <Container
@@ -31,7 +53,7 @@ export const Delivery_Information_Order_Tile = ({
       color={theme.colors.bg.elements_bg}
       align="center"
     >
-      <Container
+      <Action_Container
         width="90%"
         color={theme.colors.ui.tertiary}
         //color={"pink"}
@@ -41,6 +63,7 @@ export const Delivery_Information_Order_Tile = ({
         direction="row"
         overflow="hidden"
         padding_vertical="5%"
+        onPress={() => openMapsToWarehouse(warehouse_lat, warehouse_lng)}
       >
         <Container
           width="30%"
@@ -80,7 +103,10 @@ export const Delivery_Information_Order_Tile = ({
             //color="yellow"
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_regular_14">{warehouse_address}</Text>
+              <Text variant="dm_sans_regular_14">
+                {/* 2159 West Broad st suite B{"\n"}Athens GA, 30606 */}
+                {warehouse_address}
+              </Text>
             </Spacer>
           </Container>
           <Spacer position="top" size="small" />
@@ -112,7 +138,7 @@ export const Delivery_Information_Order_Tile = ({
             </Spacer>
           </Container>
         </Container>
-      </Container>
+      </Action_Container>
     </Container>
   ) : (
     <Container
@@ -120,7 +146,7 @@ export const Delivery_Information_Order_Tile = ({
       color={theme.colors.bg.elements_bg}
       overflow="hidden"
     >
-      <Container
+      <Action_Container
         padding_vertical="5%"
         width="95%"
         color={theme.colors.ui.tertiary}
@@ -130,6 +156,14 @@ export const Delivery_Information_Order_Tile = ({
         border_radius="20px"
         direction="row"
         overflow="hidden"
+        onPress={() =>
+          openMapsToWarehouse(
+            warehouse_lat,
+            warehouse_lng,
+            warehouse_address,
+            warehouse_name
+          )
+        }
       >
         <Container
           padding_vertical="5%"
@@ -178,13 +212,43 @@ export const Delivery_Information_Order_Tile = ({
             align="flex-start"
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_regular_14">
-                Delivery by USPS - 1 to 3 days
+              <Text variant="dm_sans_bold_14">
+                Delivery by {carrier_name} - {delivery_days} {day_or_days}
+              </Text>
+            </Spacer>
+            <Spacer position="left" size="large">
+              <Text variant="dm_sans_bold_14">
+                ETA: {carrier_delivery_days}
               </Text>
             </Spacer>
           </Container>
+          <Spacer position="top" size="medium" />
+          <Action_Container
+            width="100%"
+            padding_vertical="3%"
+            color="transparent"
+            // color="purple"
+            justify="center"
+            align="flex-start"
+            onPress={() =>
+              navigation.navigate("Delivery_Order_Label_View", {
+                labelResponseExample: labelResponseExample,
+              })
+            }
+          >
+            <Spacer position="left" size="large">
+              <Text
+                variant="dm_sans_bold_14"
+                style={{
+                  textDecorationLine: "underline",
+                }}
+              >
+                View Label
+              </Text>
+            </Spacer>
+          </Action_Container>
         </Container>
-      </Container>
+      </Action_Container>
     </Container>
   );
 };

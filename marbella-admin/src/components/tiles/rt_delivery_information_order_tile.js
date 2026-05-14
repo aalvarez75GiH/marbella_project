@@ -29,6 +29,9 @@ export const RT_Delivery_Information_Order_Tile = ({
   distance_to_warehouse_mi,
   customer_address = "",
   order_delivery_address,
+  carrier_name,
+  carrier_delivery_days,
+  delivery_days,
 }) => {
   const [realTimeDistanceInformation, setRealTimeDistanceInformation] =
     useState(null);
@@ -39,32 +42,7 @@ export const RT_Delivery_Information_Order_Tile = ({
   const { gettingRealTimeDistanceToOrderWH, isLoading } =
     useContext(WarehouseContext);
   const { deviceLat, deviceLng } = useContext(GeolocationContext);
-
-  //   useEffect(() => {
-  //     if (!deviceLat || !deviceLng || !warehouse_lat || !warehouse_lng) return;
-  //     const run = async () => {
-  //       try {
-  //         const response = await gettingRealTimeDistanceToOrderWH(
-  //           deviceLat,
-  //           deviceLng,
-  //           warehouse_lat,
-  //           warehouse_lng
-  //         );
-  //         console.log(
-  //           "Real-time distance to order warehouse response:",
-  //           response
-  //         );
-  //         setRealTimeDistanceInformation(response);
-  //       } catch (error) {
-  //         console.log(
-  //           "Error getting real-time distance to order warehouse:",
-  //           error
-  //         );
-  //       }
-  //     };
-  //     run();
-  //   }, [deviceLat, deviceLng, warehouse_lat, warehouse_lng]);
-
+  const day_or_days = delivery_days === 1 ? "day" : "days";
   useFocusEffect(
     useCallback(() => {
       if (!deviceLat || !deviceLng || !warehouse_lat || !warehouse_lng) return;
@@ -283,8 +261,13 @@ export const RT_Delivery_Information_Order_Tile = ({
             align="flex-start"
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_regular_14">
-                Delivery by USPS - 1 to 3 days
+              <Text variant="dm_sans_bold_14">
+                Delivery by {carrier_name} - {delivery_days} {day_or_days}
+              </Text>
+            </Spacer>
+            <Spacer position="left" size="large">
+              <Text variant="dm_sans_bold_14">
+                ETA: {carrier_delivery_days}
               </Text>
             </Spacer>
           </Container>
