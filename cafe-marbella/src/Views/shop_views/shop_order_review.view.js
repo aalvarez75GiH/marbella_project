@@ -1,6 +1,10 @@
 import React, { useContext } from "react";
 import { useTheme } from "styled-components/native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  useNavigation,
+  useRoute,
+  StackActions,
+} from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
@@ -80,25 +84,24 @@ export default function Shop_Order_Review_View() {
             action={() => {
               setDeliveryOption(null);
               setDifferentAddress("");
+
               const state = navigation.getState();
-              const hasDeliveryType = state.routes.some(
+
+              const deliveryTypeIndex = state.routes.findIndex(
                 (r) => r.name === "Shop_Delivery_Type_View"
               );
-              console.log("HAS DELIVERY TYPE IN STACK:", hasDeliveryType);
-              if (hasDeliveryType) {
-                // keep popping until it's on top
-                while (
-                  navigation.getState().routes.at(-1)?.name !==
-                  "Shop_Delivery_Type_View"
-                ) {
-                  navigation.goBack();
-                }
+
+              if (deliveryTypeIndex !== -1) {
+                navigation.dispatch(
+                  StackActions.pop(state.index - deliveryTypeIndex)
+                );
               } else {
-                navigation.navigate("Shop_Delivery_Type_View");
+                navigation.replace("Shop_Delivery_Type_View");
               }
             }}
             label="Order review"
           />
+
           <ScrollView
             contentContainerStyle={{
               flexGrow: 1,

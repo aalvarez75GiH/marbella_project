@@ -11,6 +11,7 @@ import { Text } from "../../infrastructure/typography/text.component";
 import { CreditCardInputComponent } from "../../components/payments/credit-card-input.component";
 import { Regular_CTA } from "../../components/ctas/regular.cta";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
+import { safeGoBack } from "../../infrastructure/navigation/navigation.helpers";
 
 import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
@@ -76,7 +77,14 @@ export default function Payment_View() {
           justify="flex-start"
           align="center"
         >
-          <Go_Back_Header label="Payment" action={() => navigation.goBack()} />
+          <Go_Back_Header
+            label="Payment"
+            action={() =>
+              safeGoBack(navigation, "Shop_Order_Review_View", {
+                order: myOrder,
+              })
+            }
+          />
           <Spacer position="top" size="large" />
           <Container
             width="100%"

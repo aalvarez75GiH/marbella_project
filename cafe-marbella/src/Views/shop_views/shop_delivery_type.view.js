@@ -11,6 +11,7 @@ import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
 import DeliveryTruckIcon from "../../../assets/my_icons/deliveryTruckIcon.svg";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { Delivery_Address_Option_Tile } from "../../components/tiles/delivery_address_option.tile";
+import { safeGoBack } from "../../infrastructure/navigation/navigation.helpers";
 
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
@@ -116,7 +117,8 @@ export default function Shop_Delivery_Type_View() {
           align="center"
         >
           <Go_Back_Header
-            action={() => navigation.goBack()}
+            action={() => safeGoBack(navigation, "Shop_Shopping_Cart_View")}
+            // action={() => navigation.goBack()}
             label="Delivery type"
           />
           <Container

@@ -11,6 +11,7 @@ import { Text } from "../../infrastructure/typography/text.component";
 import { CreditCardInputComponent } from "../../components/payments/credit-card-input.component";
 import { Regular_CTA } from "../../components/ctas/regular.cta";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
+import { safeGoBack } from "../../infrastructure/navigation/navigation.helpers";
 
 import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
@@ -51,17 +52,6 @@ export default function Cart_Payment_View() {
     }));
   }, []);
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const parent = navigation.getParent();
-  //     parent?.setOptions({ tabBarStyle: { display: "none" } });
-
-  //     return () => {
-  //       parent?.setOptions({ tabBarStyle: { display: "flex" } });
-  //     };
-  //   }, [navigation])
-  // );
-
   const navigation = useNavigation();
   console.log("CARD VERIFIED STATE:", cardVerified);
   console.log("MY ORDER IN PAYMENT VIEW:", JSON.stringify(myOrder, null, 2));
@@ -84,7 +74,11 @@ export default function Cart_Payment_View() {
         >
           <Go_Back_Header
             label="Card holder name"
-            action={() => navigation.goBack()}
+            action={() =>
+              safeGoBack(navigation, "Cart_Delivery_Type", {
+                order: myOrder,
+              })
+            }
           />
           <Spacer position="top" size="large" />
           <Container
