@@ -58,6 +58,7 @@ export default function Order_View() {
     stripe_payment_id,
     shipping_rate,
     labelResponseExample,
+    shipping_label,
     // labelResponse,
   } = customerOrder || {};
 
@@ -178,6 +179,7 @@ export default function Order_View() {
                   delivery_days={delivery_days}
                   carrier_delivery_days={carrier_delivery_days}
                   carrier_name={carrier_name}
+                  shipping_label={shipping_label}
                   labelResponseExample={labelResponseExample}
                 />
               ) : (

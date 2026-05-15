@@ -22,8 +22,8 @@ export default function Delivery_Order_Label_View() {
   const navigation = useNavigation();
   const route = useRoute();
 
-  const { labelResponseExample } = route.params || {};
-  const label = labelResponseExample;
+  const { shipping_label } = route.params || {};
+  const label = shipping_label;
 
   const printLabel = async () => {
     if (!label?.label_url) return;

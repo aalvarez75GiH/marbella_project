@@ -28,6 +28,7 @@ export const Delivery_Information_Order_Tile = ({
   carrier_delivery_days,
   delivery_days,
   labelResponseExample,
+  shipping_label,
 }) => {
   const navigation = useNavigation();
   console.log("Delivery_Information_Order_Tile delivery_type:", delivery_type);
@@ -232,7 +233,7 @@ export const Delivery_Information_Order_Tile = ({
             align="flex-start"
             onPress={() =>
               navigation.navigate("Delivery_Order_Label_View", {
-                labelResponseExample: labelResponseExample,
+                shipping_label: shipping_label,
               })
             }
           >

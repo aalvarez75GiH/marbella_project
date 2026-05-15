@@ -87,7 +87,7 @@ paymentsRouter.post("/payments", async (req, res) => {
     const stripe_payment_id = paymentIntentResponse.id;
     const now = new Date().toISOString();
 
-    let labelResponse = null;
+    // let labelResponse = null;
     let labelResponseExample = null; // for testing, remove in <production></production>
     let labelError = null;
 
