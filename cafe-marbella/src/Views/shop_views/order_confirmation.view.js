@@ -18,17 +18,6 @@ export default function Order_Confirmation_View({ route }) {
   const navigation = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
 
-  // useLayoutEffect(
-  //   useCallback(() => {
-  //     const parent = navigation.getParent();
-  //     parent?.setOptions({ tabBarStyle: { display: "none" } });
-
-  //     return () => {
-  //       parent?.setOptions({ tabBarStyle: { display: "flex" } });
-  //     };
-  //   }, [navigation])
-  // );
-
   return (
     <SafeArea
       background_color={theme.colors.brand.secondary}

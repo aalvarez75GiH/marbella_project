@@ -28,14 +28,14 @@ export const My_Orders_Tile = ({
   const formatted_currency = formatCentsToUSD;
   const { order_delivery_address, shipping_rate } = item || {};
   const { estimated_delivery_date } = shipping_rate || {};
-  console.log(
-    "ORDER INFO TILE - ESTIMATED DELIVERY DATE:",
-    estimated_delivery_date
-  );
-  console.log(
-    "ORDER INFO TILE - ESTIMATED DELIVERY DATE FORMATTED:",
-    formatDate(estimated_delivery_date).short
-  );
+
+  if (delivery_type === "delivery" && estimated_delivery_date) {
+    console.log(
+      "ORDER INFO TILE - ESTIMATED DELIVERY DATE FORMATTED:",
+      formatDate(estimated_delivery_date).short
+    );
+  }
+
   const iOs = Platform.OS === "ios";
 
   const navigation = useNavigation();

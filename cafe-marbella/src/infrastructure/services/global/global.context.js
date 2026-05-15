@@ -30,24 +30,6 @@ export const Global_Context_Provider = ({ children }) => {
           )
         );
 
-        // console.log(
-        //   "TARGET PRODUCT FOUND:",
-        //   JSON.stringify(vzlaGroundLightProduct, null, 2)
-        // );
-
-        // console.log(
-        //   "TARGET PRODUCT VARIANT IMAGES:",
-        //   JSON.stringify(
-        //     vzlaGroundLightProduct?.size_variants?.map((v) => ({
-        //       size: v.sizeLabel,
-        //       images_path: v.images_path,
-        //       images: v.images,
-        //     })),
-        //     null,
-        //     2
-        //   )
-        // );
-
         setProductsCatalog(normalized);
       } catch (err) {
         setError(err.message);
@@ -57,6 +39,7 @@ export const Global_Context_Provider = ({ children }) => {
   }, []);
 
   const formatDate = (inputDate) => {
+    console.log("INPUT DATE TO FORMAT:", inputDate);
     const date = new Date(inputDate);
 
     if (isNaN(date)) {

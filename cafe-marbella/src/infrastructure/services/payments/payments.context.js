@@ -95,11 +95,20 @@ export const Payments_Context_Provider = ({ children }) => {
       console.log("Card state before request:", JSON.stringify(card, null, 2));
       console.log("NAME ON CARD:", nameOnCard);
       console.log("MY ORDER BEFORE REQUEST:", JSON.stringify(myOrder, null, 2));
+
+      const orderToSend = {
+        ...myOrder,
+        payment_information: {
+          ...myOrder.payment_information,
+          card_id: card.id,
+        },
+      };
+
       const result = await paymentRequest(
         card.id,
         totalForStripe,
         nameOnCard,
-        myOrder
+        orderToSend
       );
 
       return {
@@ -111,6 +120,10 @@ export const Payments_Context_Provider = ({ children }) => {
     } catch (err) {
       const e = normalizePaymentError(err);
       setError(e);
+
+      // IMPORTANT: token cannot be reused
+      setCard(null);
+      setCardVerified(false);
 
       console.log("PAYMENT ERROR:", {
         status: e.status,

@@ -28,6 +28,9 @@ export const Delivery_Information_Order_Tile = ({
   delivery_days,
 }) => {
   console.log("Delivery_Information_Order_Tile delivery_type:", delivery_type);
+  console.log("carrier name:", carrier_name);
+  console.log("carrier delivery days:", carrier_delivery_days);
+  console.log("delivery days:", delivery_days);
   console.log("latitude inside tile:", warehouse_lat);
   console.log("longitude inside tile:", warehouse_lng);
   const day_or_days = delivery_days === 1 ? "day" : "days";

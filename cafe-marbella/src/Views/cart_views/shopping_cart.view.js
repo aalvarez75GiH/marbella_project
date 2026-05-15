@@ -34,7 +34,7 @@ export default function Shopping_Cart_View() {
   const { sub_total } = cart || {};
   const products = Array.isArray(cart?.products) ? cart.products : [];
 
-  // console.log("Shopping_Cart_View cart:", JSON.stringify(cart, null, 2));
+  console.log("Shopping_Cart_View cart:", JSON.stringify(cart, null, 2));
   useFocusEffect(
     useCallback(() => {
       // console.log("Cart screen fetch fired. user_id:", user_id);
