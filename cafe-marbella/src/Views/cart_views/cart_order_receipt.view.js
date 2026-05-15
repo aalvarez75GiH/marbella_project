@@ -41,7 +41,10 @@ export default function Cart_Order_Receipt_View() {
     payment_information,
     quantity,
     order_delivery_address,
+    shipping_rate,
   } = myOrder || {};
+  const { carrier_name, delivery_days, carrier_delivery_days } =
+    shipping_rate || {};
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
   const { last_four } = payment_information || {};
   const {
@@ -164,6 +167,15 @@ export default function Cart_Order_Receipt_View() {
                 distance_to_warehouse_mi={distance_in_miles}
                 delivery_type={delivery_type}
                 order_delivery_address={order_delivery_address}
+                delivery_days={
+                  delivery_type === "delivery" ? delivery_days : null
+                }
+                carrier_delivery_days={
+                  delivery_type === "delivery" ? carrier_delivery_days : null
+                }
+                carrier_name={
+                  delivery_type === "delivery" ? carrier_name : null
+                }
               />
               <Spacer position="top" size="large" />
               <Payment_method_Info_Tile last_four={last_four} />
