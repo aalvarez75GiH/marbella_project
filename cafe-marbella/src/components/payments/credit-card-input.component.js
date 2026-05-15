@@ -16,14 +16,31 @@ export const CreditCardInputComponent = ({
   name = "Jonh Doe",
   onSuccess,
   onError,
-  cardIsLoading,
-  whileIsSuccess,
-  // setCard,
-  // card,
 }) => {
   const { myOrder, setMyOrder } = useContext(OrdersContext);
   const [isLoading, setIsLoading] = useState(false);
   const { setCardError, setCardVerified } = useContext(PaymentsContext);
+
+  const onlyDigits = (value = "") => value.replace(/\D/g, "");
+
+  const isValidLuhn = (number) => {
+    let sum = 0;
+    let shouldDouble = false;
+
+    for (let i = number.length - 1; i >= 0; i--) {
+      let digit = parseInt(number[i], 10);
+
+      if (shouldDouble) {
+        digit *= 2;
+        if (digit > 9) digit -= 9;
+      }
+
+      sum += digit;
+      shouldDouble = !shouldDouble;
+    }
+
+    return sum % 10 === 0;
+  };
 
   const onChange = async (formData) => {
     setCardError(null);
@@ -31,8 +48,25 @@ export const CreditCardInputComponent = ({
 
     console.log("FORM DATA:", formData);
     const { values, status } = formData;
+
     const isIncomplete = Object.values(status).includes("incomplete");
     console.log("IS INCOMPLETE?", isIncomplete);
+
+    const cardNumberDigits = onlyDigits(values.number);
+
+    if (cardNumberDigits.length >= 16 && !isValidLuhn(cardNumberDigits)) {
+      setCardVerified(false);
+      setCardError("The card number is invalid. Try again.");
+      return;
+    }
+
+    // user is still typing valid/incomplete data
+    if (isIncomplete) {
+      setCardVerified(false);
+      setCardError(null);
+      return;
+    }
+
     const expiry = values.expiry.split("/");
     console.log("EXPIRY:", expiry);
 
@@ -44,14 +78,11 @@ export const CreditCardInputComponent = ({
       name: name,
     };
 
-    console.log("CARD INFO:", card);
-    console.log(
-      "MY ORDER AT INPUT COMPONENT:",
-      JSON.stringify(myOrder, null, 2)
-    );
-    // setCard(card);
+    // console.log("CARD INFO:", card);
+
     if (!isIncomplete) {
       setIsLoading(true);
+      setCardError(null);
       try {
         const card_from_stripe = await cardTokenRequest(card);
         console.log("CARD_TOKEN_FROM_STRIPE:", card_from_stripe);

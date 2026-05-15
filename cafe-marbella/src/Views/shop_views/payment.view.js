@@ -76,10 +76,7 @@ export default function Payment_View() {
           justify="flex-start"
           align="center"
         >
-          <Go_Back_Header
-            label="Card holder name"
-            action={() => navigation.goBack()}
-          />
+          <Go_Back_Header label="Payment" action={() => navigation.goBack()} />
           <Spacer position="top" size="large" />
           <Container
             width="100%"
@@ -187,9 +184,9 @@ export default function Payment_View() {
                 try {
                   console.log("Card state before onPay:", card);
                   console.log("NAME ON CARD:", nameOnCard);
-                  console.log("MY ORDER BEFORE PAYMENT:", myOrder);
+                  // console.log("MY ORDER BEFORE PAYMENT:", myOrder);
                   const response = await onPay(nameOnCard, card, myOrder);
-                  console.log("onPay response:", response);
+                  // console.log("onPay response:", response);
 
                   // ✅ Success
                   if (response?.status === 200) {
