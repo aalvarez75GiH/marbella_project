@@ -307,7 +307,7 @@ export default function Reset_PIN_View() {
                         navigationRef.current?.navigate("App", {
                           screen: returnTo?.tab ?? "Shop",
                           params: {
-                            screen: returnTo?.screen ?? "Home_View",
+                            screen: returnTo?.screen ?? "Shop_Products_View",
                             params: returnTo?.params ?? {},
                           },
                         });
