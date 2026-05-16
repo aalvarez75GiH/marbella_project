@@ -1,0 +1,22 @@
+{
+  "headers": {
+    "main": {
+      "title": "Explore our coffee",
+      "subtitle": "Ground · Whole · Merchandise"
+    },
+    "grind_type": {
+      "caption.ground": "Ground",
+      "caption.whole": "Whole"
+    }
+  },
+  "bottom_tab_bar": {
+    "home": "Shop",
+    "orders": "Orders",
+    "cart": "Cart"
+  },
+  "cart": "Cart",
+  "checkout": "Checkout",
+  "delivery": "Delivery",
+  "pickup": "Pickup",
+  "order_review": "Order review"
+}

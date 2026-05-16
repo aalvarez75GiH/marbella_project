@@ -37,7 +37,8 @@
       "url": "https://u.expo.dev/e8e16038-91a4-4262-ba02-52fbabe3210d"
     },
     "plugins": [
-      "expo-asset"
+      "expo-asset",
+      "expo-localization"
     ]
   }
 }

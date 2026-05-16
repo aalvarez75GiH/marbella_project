@@ -13,7 +13,7 @@ export const Main_Header = ({
   action_1,
   action_2,
   label = "Explore coffee",
-  subtitle = "Ground · Whole · Green",
+  subTitle = "Ground · Whole · Green",
   hide_icon = false,
 }) => {
   return (
@@ -60,7 +60,7 @@ export const Main_Header = ({
       >
         <Text variant="dm_sans_bold_20">{label}</Text>
 
-        {!!subtitle && (
+        {!!subTitle && (
           <Text
             variant="dm_sans_regular_14"
             style={{
@@ -69,7 +69,7 @@ export const Main_Header = ({
               letterSpacing: 0.3,
             }}
           >
-            {subtitle}
+            {subTitle}
           </Text>
         )}
       </Container>

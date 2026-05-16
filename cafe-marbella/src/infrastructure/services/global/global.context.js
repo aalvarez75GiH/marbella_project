@@ -3,6 +3,7 @@ import React, { useEffect, useState, createContext, useContext } from "react";
 import { gettingAllProductsCatalogRequest } from "./global.services";
 import { normalizeProductFromBackend } from "../../local_data/images_mapping/normalize_product_from_backend";
 import { theme } from "../../theme/index";
+import i18n from "../../translations/i18n";
 
 export const GlobalContext = createContext();
 
@@ -77,18 +78,19 @@ export const Global_Context_Provider = ({ children }) => {
       String(email).trim()
     );
 
-  const togglingGlobalLanguage = () => {
+  const togglingGlobalLanguage = async () => {
     setIsLoading(true);
-
-    setTimeout(() => {
+    setTimeout(async () => {
       try {
-        setGlobalLanguage((prev) => (prev === "en" ? "es" : "en"));
+        const nextLanguage = globalLanguage === "en" ? "es" : "en";
+        setGlobalLanguage(nextLanguage);
+        await i18n.changeLanguage(nextLanguage);
       } catch (error) {
-        setError("There was a problem switching languages. Please try again.");
+        console.log("Language toggle error:", error);
       } finally {
         setIsLoading(false);
       }
-    }, 500);
+    }, 300); // Simulate a brief loading state
   };
 
   //********** logic to control Snackbar from global context (for error handling and user feedback) **********/

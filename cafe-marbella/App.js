@@ -4,6 +4,7 @@ import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
+import "./src/infrastructure/translations/i18n";
 
 import { Authentication_Context_Provider } from "./src/infrastructure/services/authentication/authentication.context";
 import { Geolocation_Context_Provider } from "./src/infrastructure/services/geolocation/geolocation.context";

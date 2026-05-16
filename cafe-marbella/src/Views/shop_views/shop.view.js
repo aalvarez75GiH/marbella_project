@@ -62,8 +62,8 @@ export default function Shop_View() {
           action_2={() => navigation.navigate("Menu_View")}
           label={
             coming_from === "whole_beans"
-              ? "Whole beans coffee from"
-              : "Ground beans coffee from"
+              ? "Whole beans coffee"
+              : "Ground beans coffee"
           }
         />
 

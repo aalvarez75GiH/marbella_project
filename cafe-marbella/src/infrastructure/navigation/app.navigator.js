@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Platform } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { useTranslation } from "react-i18next";
 
 import { Shop_Navigator } from "./shop.navigator";
 import { Orders_Navigator } from "./orders.navigator";
@@ -40,6 +41,7 @@ const HIDE_TAB_ROUTES = new Set([
 ]);
 
 const Tabs = () => {
+  const { t } = useTranslation();
   const { cartTotalItems } = useContext(CartContext);
 
   return (
@@ -64,10 +66,11 @@ const Tabs = () => {
       }}
     >
       <Tab.Screen
-        name="Shop"
+        // name="Shop"
+        name="home"
         component={Shop_Navigator}
         options={{
-          title: "Shop",
+          title: t("bottom_tab_bar.home"),
           tabBarIcon: ({ color }) => (
             <ShopIcon width={25} height={25} fill={color} />
           ),
@@ -78,7 +81,8 @@ const Tabs = () => {
         name="Orders"
         component={Orders_Navigator}
         options={{
-          title: "Orders",
+          // title: "Orders",
+          title: t("bottom_tab_bar.orders"),
           tabBarIcon: ({ color }) => (
             <OrdersIcon width={25} height={25} fill={color} />
           ),
@@ -89,7 +93,8 @@ const Tabs = () => {
         name="Cart"
         component={Cart_Navigator}
         options={{
-          title: "Cart",
+          // title: "Cart",
+          title: t("bottom_tab_bar.cart"),
           tabBarIcon: ({ size, color }) => (
             <Cart_Active_With_Items_CTA
               size={size ?? 25}

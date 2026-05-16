@@ -1,0 +1,22 @@
+{
+  "headers": {
+    "main": {
+      "title": "Explora nuestro café",
+      "subtitle": "Molido · Entero · Mercancía"
+    },
+    "grind_type": {
+      "caption.ground": "Molido",
+      "caption.whole": "Entero"
+    }
+  },
+  "bottom_tab_bar": {
+    "home": "Cómpra",
+    "orders": "Órdenes",
+    "cart": "Carrito"
+  },
+  "cart": "Cart",
+  "checkout": "Checkout",
+  "delivery": "Delivery",
+  "pickup": "Pickup",
+  "order_review": "Order review"
+}
