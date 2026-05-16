@@ -27,17 +27,18 @@
     },
     "extra": {
       "eas": {
-        "projectId": "e8e16038-91a4-4262-ba02-52fbabe3210d"
+        "projectId": "6d4a9565-fea5-42d4-a56b-196932e9e400"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
-    "updates": {
-      "url": "https://u.expo.dev/e8e16038-91a4-4262-ba02-52fbabe3210d"
-    },
     "plugins": [
       "@react-native-community/datetimepicker"
-    ]
+    ],
+    "owner": "aalvarez75expo",
+    "updates": {
+      "url": "https://u.expo.dev/6d4a9565-fea5-42d4-a56b-196932e9e400"
+    }
   }
 }
