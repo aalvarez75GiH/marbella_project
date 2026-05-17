@@ -59,8 +59,8 @@ export default function Shop_Products_View() {
         <Main_Header
           action_1={() => null}
           action_2={() => navigation.navigate("Menu_View")}
-          label={t("headers.main.title")}
-          subTitle={t("headers.main.subtitle")}
+          caption={t("headers.main.title")}
+          subCaption={t("headers.main.subtitle")}
           // label="Explore coffee"
         />
         <Spacer position="top" size="large" />

@@ -5,7 +5,7 @@ import { Container } from "../containers/general.containers.js";
 import { theme } from "../../infrastructure/theme/index.js";
 import { Spacer } from "../spacers and globals/optimized.spacer.component.js";
 
-export const Menu_Sub_Title_Title = ({ label = "Menu label" }) => {
+export const Menu_Sub_Title_Title = ({ caption = "Menu label" }) => {
   return (
     <Container
       width="100%"
@@ -16,7 +16,7 @@ export const Menu_Sub_Title_Title = ({ label = "Menu label" }) => {
       align="flex-start"
     >
       <Spacer position="left" size="extraLarge">
-        <Text variant="raleway_bold_20">{label}</Text>
+        <Text variant="raleway_bold_20">{caption}</Text>
       </Spacer>
     </Container>
   );

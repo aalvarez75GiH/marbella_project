@@ -12,8 +12,8 @@ import { theme } from "../../infrastructure/theme/index.js";
 export const Main_Header = ({
   action_1,
   action_2,
-  label = "Explore coffee",
-  subTitle = "Ground · Whole · Green",
+  caption = "Explore coffee",
+  subCaption = "Ground · Whole · Green",
   hide_icon = false,
 }) => {
   return (
@@ -58,9 +58,9 @@ export const Main_Header = ({
         justify="center"
         align="center"
       >
-        <Text variant="dm_sans_bold_20">{label}</Text>
+        <Text variant="dm_sans_bold_20">{caption}</Text>
 
-        {!!subTitle && (
+        {!!subCaption && (
           <Text
             variant="dm_sans_regular_14"
             style={{
@@ -69,7 +69,7 @@ export const Main_Header = ({
               letterSpacing: 0.3,
             }}
           >
-            {subTitle}
+            {subCaption}
           </Text>
         )}
       </Container>

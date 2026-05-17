@@ -1,4 +1,5 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { gettingAllProductsCatalogRequest } from "./global.services";
 import { normalizeProductFromBackend } from "../../local_data/images_mapping/normalize_product_from_backend";
@@ -6,6 +7,7 @@ import { theme } from "../../theme/index";
 import i18n from "../../translations/i18n";
 
 export const GlobalContext = createContext();
+const LANGUAGE_STORAGE_KEY = "@marbella/global_language";
 
 export const Global_Context_Provider = ({ children }) => {
   const [productsCatalog, setProductsCatalog] = useState([]);
@@ -37,6 +39,33 @@ export const Global_Context_Provider = ({ children }) => {
       }
     };
     gettingAllProductsCatalog();
+  }, []);
+
+  useEffect(() => {
+    const hydrateLanguage = async () => {
+      try {
+        const storedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
+
+        const languageToUse =
+          storedLanguage === "en" || storedLanguage === "es"
+            ? storedLanguage
+            : "en";
+
+        setGlobalLanguage(languageToUse);
+        await i18n.changeLanguage(languageToUse);
+
+        if (!storedLanguage) {
+          await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, "en");
+        }
+      } catch (error) {
+        console.log("Hydrate language error:", error);
+
+        setGlobalLanguage("en");
+        await i18n.changeLanguage("en");
+      }
+    };
+
+    hydrateLanguage();
   }, []);
 
   const formatDate = (inputDate) => {
@@ -78,19 +107,22 @@ export const Global_Context_Provider = ({ children }) => {
       String(email).trim()
     );
 
-  const togglingGlobalLanguage = async () => {
+  const toggleGlobalLanguage = async () => {
     setIsLoading(true);
+
     setTimeout(async () => {
       try {
         const nextLanguage = globalLanguage === "en" ? "es" : "en";
+
         setGlobalLanguage(nextLanguage);
         await i18n.changeLanguage(nextLanguage);
+        await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, nextLanguage);
       } catch (error) {
         console.log("Language toggle error:", error);
       } finally {
         setIsLoading(false);
       }
-    }, 300); // Simulate a brief loading state
+    }, 300);
   };
 
   //********** logic to control Snackbar from global context (for error handling and user feedback) **********/
@@ -136,7 +168,7 @@ export const Global_Context_Provider = ({ children }) => {
         isValidEmail,
         setGlobalLanguage,
         globalLanguage,
-        togglingGlobalLanguage,
+        toggleGlobalLanguage,
 
         // setSnackbar,
         snackbar,

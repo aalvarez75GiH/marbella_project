@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
+import { useTranslation } from "react-i18next";
 
 import { navigationRef } from "../../infrastructure/navigation/navigation_ref.js";
 import { Container } from "../../components/containers/general.containers";
@@ -27,6 +28,7 @@ import { GlobalContext } from "../../infrastructure/services/global/global.conte
 export default function Login_Users_View() {
   const navigation = useNavigation();
   const theme = useTheme();
+  const { t } = useTranslation();
   const emailInputRef = useRef(null);
 
   const {
@@ -125,7 +127,8 @@ export default function Login_Users_View() {
             >
               <Spacer position="left" size="extraLarge">
                 <Text variant="raleway_bold_18" textAlign="center">
-                  Let's start logging In...
+                  {t("login_screen.title")}
+                  {/* Let's start logging In... */}
                 </Text>
               </Spacer>
             </Container>

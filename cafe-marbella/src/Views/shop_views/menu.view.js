@@ -3,6 +3,7 @@ import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useTranslation } from "react-i18next";
 
 import { Container } from "../../components/containers/general.containers";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -24,6 +25,7 @@ export default function Menu_View() {
   const theme = useTheme();
   const navigation = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
+  const { t } = useTranslation();
 
   const { user, otherUsersInTheDevice } = useContext(AuthenticationContext);
   const { email, display_name, user_id, customer_qr } = user || {};
@@ -33,7 +35,7 @@ export default function Menu_View() {
   // Check if there are other users in the device in order to use it as a
   //condition to enable or disable the "Switch to another account" option in the menu
 
-  const { globalLanguage, togglingGlobalLanguage, isLoading } =
+  const { globalLanguage, toggleGlobalLanguage, isLoading } =
     useContext(GlobalContext);
   const { myWarehouse } = useContext(WarehouseContext);
   const { warehouse_name } = myWarehouse || {};
@@ -62,7 +64,7 @@ export default function Menu_View() {
           style={{ paddingBottom: tabBarHeight }}
         >
           <Exit_Header_With_Label
-            label=""
+            caption=""
             action={() => navigation.goBack()}
             orientation="right"
           />
@@ -74,7 +76,7 @@ export default function Menu_View() {
             align="flex-start"
           >
             <Spacer position="left" size="extraLarge">
-              <Text variant="raleway_bold_26">Account</Text>
+              <Text variant="raleway_bold_26">{t("menu.title")}</Text>
             </Spacer>
           </Container>
 
@@ -99,13 +101,13 @@ export default function Menu_View() {
             style={{ flex: 1, width: "100%" }}
             contentContainerStyle={{ flexGrow: 1, alignItems: "center" }}
           >
-            <Menu_Sub_Title_Title label="Profile" />
+            <Menu_Sub_Title_Title caption={t("menu.profile_subTitle")} />
             <Menu_Tile
-              caption="Personal info"
+              caption={t("menu.tiles.personal_info")}
               action={() => navigation.navigate("Personal_Information_View")}
             />
             <Menu_Tile
-              caption="Transactions history"
+              caption={t("menu.tiles.transactions_history")}
               // action={() => navigation.navigate("Orders_View")}
               action={() =>
                 navigation.navigate("Orders", {
@@ -114,7 +116,7 @@ export default function Menu_View() {
               }
             />
             <Menu_Tile
-              caption="Your QR code"
+              caption={t("menu.tiles.qr_code")}
               action={() =>
                 navigation.navigate("Customer_QR_View", {
                   customer_token,
@@ -124,36 +126,33 @@ export default function Menu_View() {
               // disabled={true}
             />
 
-            <Menu_Sub_Title_Title label="Credentials" />
+            <Menu_Sub_Title_Title caption={t("menu.credentials_subTitle")} />
             <Menu_Tile
-              caption="Get a new PIN"
+              caption={t("menu.tiles.get_new_pin")}
               action={() => navigation.navigate("Reset_PIN_View")}
             />
             <Menu_Tile
-              caption="Switch to another account"
+              caption={t("menu.tiles.switch_account")}
               action={() => navigation.navigate("Switching_Accounts_View")}
             />
 
-            <Menu_Sub_Title_Title label="Help & Support" />
+            <Menu_Sub_Title_Title caption={t("menu.help_subTitle")} />
             <Switch_Language_Tile
-              caption={
-                globalLanguage === "en"
-                  ? "Cambia a español"
-                  : "Change to english"
-              }
-              action={() => togglingGlobalLanguage()}
+              caption={t("menu.tiles.switch_language")}
+              action={() => toggleGlobalLanguage()}
             />
             <Menu_Tile
-              caption="Help & Support"
+              caption={t("menu.help_subTitle")}
               action={() => null}
               disabled={true}
             />
             <Menu_Tile
-              caption="Sign out"
+              caption={t("menu.tiles.sign_out")}
               action={() => navigation.navigate("Sign_Out_Overlay_View")}
             />
             <Menu_Tile
-              caption={`Connected to warehouse: ${warehouse_name}`}
+              // caption={t("menu.tiles.sign_out")}
+              caption={`${t("menu.tiles.warehouse")} ${warehouse_name}`}
               action={() => null}
             />
             <Menu_Tile caption="" action={() => null} disabled={true} />
@@ -180,7 +179,8 @@ export default function Menu_View() {
             align="flex-start"
           >
             <Spacer position="left" size="extraLarge">
-              <Text variant="raleway_bold_26">Sign in or Sign up </Text>
+              {/* <Text variant="raleway_bold_26">Sign in or Sign up </Text> */}
+              <Text variant="raleway_bold_26">{t("menu.sign_in_status")}</Text>
             </Spacer>
           </Container>
           <Spacer position="top" size="small" />
@@ -206,7 +206,8 @@ export default function Menu_View() {
                 height={60}
                 color={theme.colors.ui.black}
                 border_radius={"40px"}
-                caption="Sign in"
+                // caption="Sign in"
+                caption={t("menu.sign_in_cta")}
                 caption_text_variant="dm_sans_bold_20_white"
                 action={() => {
                   navigation.navigate("AuthModal", {

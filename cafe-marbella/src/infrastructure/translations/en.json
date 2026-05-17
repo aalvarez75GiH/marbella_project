@@ -14,6 +14,27 @@
     "orders": "Orders",
     "cart": "Cart"
   },
+  "menu": {
+    "title": "Account",
+    "profile_subTitle": "Profile",
+    "credentials_subTitle": "Credentials & account",
+    "help_subTitle": "Help & Support",
+    "tiles": {
+      "personal_info": "Personal info",
+      "transactions_history": "Transactions history",
+      "qr_code": "Your QR code",
+      "get_new_pin": "Get a new PIN number",
+      "switch_account": "Switch to another account",
+      "switch_language": "Cambiar a español",
+      "sign_out": "Sign out",
+      "warehouse": "Connected to warehouse:"
+    },
+    "sign_in_status": "You are signed out!",
+    "sign_in_cta": "Sign in"
+  },
+  "login_screen": {
+    "title": "Let's start logging in..."
+  },
   "cart": "Cart",
   "checkout": "Checkout",
   "delivery": "Delivery",

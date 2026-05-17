@@ -9,7 +9,7 @@ import { theme } from "../../infrastructure/theme/index.js";
 
 export const Exit_Header_With_Label = ({
   action,
-  label = "",
+  caption = "",
   orientation = "left", // "left" | "right"
 }) => {
   const bg = theme.colors.bg.elements_bg;
@@ -49,7 +49,7 @@ export const Exit_Header_With_Label = ({
         align="center"
       >
         <Text variant="dm_sans_bold_18" numberOfLines={1}>
-          {label}
+          {caption}
         </Text>
       </Container>
 
