@@ -340,6 +340,7 @@ export const Orders_Context_Provider = ({ children }) => {
           createdAt: new Date().toISOString(),
           customer_token: user?.customer_token ?? "",
         },
+        ship_to: user.ship_to ?? [],
       },
       user_id: user?.user_id ?? "",
       cart_id: cart?.cart_id ?? "",

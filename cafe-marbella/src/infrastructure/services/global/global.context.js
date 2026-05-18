@@ -15,58 +15,129 @@ export const Global_Context_Provider = ({ children }) => {
   const [error, setError] = useState(null);
   const [globalLanguage, setGlobalLanguage] = useState("en"); // default to English
 
+  const ALLOWED_LANGUAGES = ["en", "es"];
+  const DEFAULT_LANGUAGE = "en";
+
+  //********** Hydration logic for products catalog and language preference on app startup **********/
   useEffect(() => {
-    const gettingAllProductsCatalog = async () => {
+    let isMounted = true;
+
+    const loadProductsCatalog = async () => {
       try {
         const allProductsAtCatalog = await gettingAllProductsCatalogRequest();
 
         const normalized = await Promise.all(
-          allProductsAtCatalog.map((p) => normalizeProductFromBackend(p))
+          allProductsAtCatalog.map(normalizeProductFromBackend)
         );
-        const vzlaGroundLightProduct = normalized.find((p) =>
-          p?.size_variants?.some(
-            (v) =>
-              Array.isArray(v?.images_path) &&
-              v.images_path.includes(
-                "Venezuela/ground/light/250/vzla_bag_gb.png"
-              )
-          )
-        );
+
+        if (!isMounted) return;
 
         setProductsCatalog(normalized);
       } catch (err) {
-        setError(err.message);
+        if (!isMounted) return;
+
+        console.log("Load products catalog error:", err);
+        setError(err?.message || "Could not load products catalog.");
       }
     };
-    gettingAllProductsCatalog();
+
+    loadProductsCatalog();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
+  //********** Hydration logic for language preference on app startup **********/
   useEffect(() => {
+    let isMounted = true;
+
     const hydrateLanguage = async () => {
       try {
         const storedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
 
-        const languageToUse =
-          storedLanguage === "en" || storedLanguage === "es"
-            ? storedLanguage
-            : "en";
+        const languageToUse = ALLOWED_LANGUAGES.includes(storedLanguage)
+          ? storedLanguage
+          : DEFAULT_LANGUAGE;
 
-        setGlobalLanguage(languageToUse);
         await i18n.changeLanguage(languageToUse);
 
+        if (!isMounted) return;
+
+        setGlobalLanguage(languageToUse);
+
         if (!storedLanguage) {
-          await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, "en");
+          await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, DEFAULT_LANGUAGE);
         }
       } catch (error) {
         console.log("Hydrate language error:", error);
 
-        setGlobalLanguage("en");
-        await i18n.changeLanguage("en");
+        await i18n.changeLanguage(DEFAULT_LANGUAGE);
+
+        if (isMounted) {
+          setGlobalLanguage(DEFAULT_LANGUAGE);
+        }
       }
     };
 
     hydrateLanguage();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
+  // useEffect(() => {
+  //   const gettingAllProductsCatalog = async () => {
+  //     try {
+  //       const allProductsAtCatalog = await gettingAllProductsCatalogRequest();
+
+  //       const normalized = await Promise.all(
+  //         allProductsAtCatalog.map((p) => normalizeProductFromBackend(p))
+  //       );
+  //       const vzlaGroundLightProduct = normalized.find((p) =>
+  //         p?.size_variants?.some(
+  //           (v) =>
+  //             Array.isArray(v?.images_path) &&
+  //             v.images_path.includes(
+  //               "Venezuela/ground/light/250/vzla_bag_gb.png"
+  //             )
+  //         )
+  //       );
+
+  //       setProductsCatalog(normalized);
+  //     } catch (err) {
+  //       setError(err.message);
+  //     }
+  //   };
+  //   gettingAllProductsCatalog();
+  // }, []);
+
+  // useEffect(() => {
+  //   const hydrateLanguage = async () => {
+  //     try {
+  //       const storedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
+
+  //       const languageToUse =
+  //         storedLanguage === "en" || storedLanguage === "es"
+  //           ? storedLanguage
+  //           : "en";
+
+  //       setGlobalLanguage(languageToUse);
+  //       await i18n.changeLanguage(languageToUse);
+
+  //       if (!storedLanguage) {
+  //         await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, "en");
+  //       }
+  //     } catch (error) {
+  //       console.log("Hydrate language error:", error);
+
+  //       setGlobalLanguage("en");
+  //       await i18n.changeLanguage("en");
+  //     }
+  //   };
+
+  //   hydrateLanguage();
+  // }, []);
 
   const formatDate = (inputDate) => {
     console.log("INPUT DATE TO FORMAT:", inputDate);
