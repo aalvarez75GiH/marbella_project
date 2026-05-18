@@ -66,8 +66,8 @@ const Tabs = () => {
       }}
     >
       <Tab.Screen
-        // name="Shop"
-        name="home"
+        name="Shop"
+        //name="home"
         component={Shop_Navigator}
         options={{
           title: t("bottom_tab_bar.home"),

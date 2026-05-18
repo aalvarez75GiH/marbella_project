@@ -346,12 +346,14 @@ export default function Login_Users_View() {
                       navigation.getParent()?.goBack();
 
                       // 8) navigate into the Cart stack delivery type (so GO_BACK works)
+
                       requestAnimationFrame(() => {
                         navigationRef.current?.navigate("App", {
                           screen: returnTo?.tab ?? "Shop",
                           params: {
-                            // screen: returnTo?.screen ?? "Shop_Products_View",
-                            screen: returnTo?.screen ?? "Home_View",
+                            // screen:
+                            // returnTo?.screen ?? "Shop_Delivery_Type_View",
+                            screen: returnTo?.screen,
                             params: returnTo?.params ?? {},
                           },
                         });

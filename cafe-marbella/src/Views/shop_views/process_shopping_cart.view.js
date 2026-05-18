@@ -74,7 +74,8 @@ export default function Process_Shopping_Cart_View() {
             paddingBottom: tabBarHeight,
           }}
         >
-          <Go_Back_Header action={() => navigation.popToTop()} label="" />
+          {/* <Go_Back_Header action={() => navigation.popToTop()} label="" /> */}
+          <Go_Back_Header action={() => navigation.goBack()} label="" />
           <Spacer position="top" size="small" />
           <Shopping_Cart_Title cartTotalItems={cartTotalItems} />
           <Spacer position="top" size="small" />

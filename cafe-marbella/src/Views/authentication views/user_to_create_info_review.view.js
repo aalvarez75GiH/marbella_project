@@ -441,7 +441,7 @@ export default function User_To_Create_Info_Review_View() {
                     navigationRef.current?.navigate("App", {
                       screen: returnTo?.tab ?? "Shop",
                       params: {
-                        screen: returnTo?.screen ?? "Home_View",
+                        screen: returnTo?.screen,
                         params: returnTo?.params ?? {},
                       },
                     });

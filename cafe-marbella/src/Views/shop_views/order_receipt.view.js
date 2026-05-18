@@ -5,6 +5,7 @@ import { rootNavigate } from "../../infrastructure/navigation/navigation_ref";
 import { ScrollView } from "react-native-gesture-handler";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { Platform } from "react-native";
+import { CommonActions } from "@react-navigation/native";
 
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
@@ -83,6 +84,36 @@ export default function Shop_Order_Receipt_View() {
     "Parent route names:",
     navigation.getParent()?.getState()?.routeNames
   );
+
+  const goAfterReceipt = () => {
+    const targetTab = comingFrom === "Shopping_Cart_View" ? "Cart" : "Shop";
+
+    const targetScreen =
+      comingFrom === "Shopping_Cart_View"
+        ? "Shopping_Cart_View"
+        : "Shop_Products_View";
+
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [
+          {
+            name: "App",
+            state: {
+              routes: [
+                {
+                  name: targetTab,
+                  state: {
+                    routes: [{ name: targetScreen }],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      })
+    );
+  };
 
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
@@ -218,22 +249,30 @@ export default function Shop_Order_Receipt_View() {
               border_radius={"40px"}
               caption="Done"
               caption_text_variant="dm_sans_bold_20_white"
-              action={async () => {
-                setMyOrder(myOrder_schema);
-                setCardVerified(false);
+              action={() => {
+                goAfterReceipt();
 
-                if (comingFrom === "Shopping_Cart_View") {
-                  rootNavigate("App", {
-                    screen: "Cart",
-                    params: { screen: "Shopping_Cart_View" }, // <-- exact Cart navigator screen name
-                  });
-                } else {
-                  rootNavigate("App", {
-                    screen: "Shop",
-                    params: { screen: "Shop_Products_View" },
-                  });
-                }
+                setTimeout(() => {
+                  setMyOrder(myOrder_schema);
+                  setCardVerified(false);
+                }, 100);
               }}
+              // action={async () => {
+              //   setMyOrder(myOrder_schema);
+              //   setCardVerified(false);
+
+              //   if (comingFrom === "Shopping_Cart_View") {
+              //     rootNavigate("App", {
+              //       screen: "Cart",
+              //       params: { screen: "Shopping_Cart_View" }, // <-- exact Cart navigator screen name
+              //     });
+              //   } else {
+              //     rootNavigate("App", {
+              //       screen: "Shop",
+              //       params: { screen: "Shop_Products_View" },
+              //     });
+              //   }
+              // }}
             />
           </Container>
         </>
