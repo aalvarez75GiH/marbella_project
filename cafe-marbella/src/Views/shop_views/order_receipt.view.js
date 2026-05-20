@@ -6,6 +6,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { Platform } from "react-native";
 import { CommonActions } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
@@ -20,6 +21,7 @@ import { Delivery_Information_Order_Tile } from "../../components/tiles/delivery
 import { Splitter_Component } from "../../components/others/grey_splitter.component";
 import { Payment_method_Info_Tile } from "../../components/tiles/payment_method_used_info.tile";
 import { myOrder_schema } from "../../infrastructure/services/orders/orders.local_data";
+import { Go_Back_Header_With_Label_And_Menu } from "../../components/headers/goBack_with_label_and_menu.header";
 
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
@@ -28,6 +30,7 @@ import { AuthenticationContext } from "../../infrastructure/services/authenticat
 
 export default function Shop_Order_Receipt_View() {
   const theme = useTheme();
+  const { t } = useTranslation();
   const tabBarHeight = useBottomTabBarHeight();
   const iOs = Platform.OS === "ios";
   const { myOrder, setMyOrder } = useContext(OrdersContext);
@@ -124,9 +127,13 @@ export default function Shop_Order_Receipt_View() {
         />
       ) : (
         <>
-          <Go_Back_Header
+          {/* <Go_Back_Header
             action={() => navigation.goBack()}
             label="Order receipt"
+          /> */}
+          <Go_Back_Header_With_Label_And_Menu
+            action_1={() => navigation.goBack()}
+            action_2={() => navigation.navigate("Menu_View")}
           />
           <ScrollView
             contentContainerStyle={{
@@ -178,7 +185,7 @@ export default function Shop_Order_Receipt_View() {
               >
                 <Spacer position="left" size="large">
                   <Text variant="dm_sans_bold_20" style={{ marginLeft: 16 }}>
-                    Shipment details
+                    {t("order_receipt_view.shipment_details")}
                   </Text>
                 </Spacer>
               </Container>
@@ -213,8 +220,10 @@ export default function Shop_Order_Receipt_View() {
                 color={theme.colors.bg.elements_bg}
               >
                 <Spacer position="top" size="large" />
-                <Spacer position="left" size="large">
-                  <Text variant="dm_sans_bold_20">Products in the order</Text>
+                <Spacer position="left" size="extraLarge">
+                  <Text variant="dm_sans_bold_20">
+                    {t("order_receipt_view.products")}
+                  </Text>
                 </Spacer>
               </Container>
               <Spacer position="top" size="large" />
@@ -247,7 +256,7 @@ export default function Shop_Order_Receipt_View() {
               height="70px"
               color={theme.colors.brand.primary}
               border_radius={"40px"}
-              caption="Done"
+              caption={t("order_receipt_view.cta")}
               caption_text_variant="dm_sans_bold_20_white"
               action={() => {
                 goAfterReceipt();
@@ -257,22 +266,6 @@ export default function Shop_Order_Receipt_View() {
                   setCardVerified(false);
                 }, 100);
               }}
-              // action={async () => {
-              //   setMyOrder(myOrder_schema);
-              //   setCardVerified(false);
-
-              //   if (comingFrom === "Shopping_Cart_View") {
-              //     rootNavigate("App", {
-              //       screen: "Cart",
-              //       params: { screen: "Shopping_Cart_View" }, // <-- exact Cart navigator screen name
-              //     });
-              //   } else {
-              //     rootNavigate("App", {
-              //       screen: "Shop",
-              //       params: { screen: "Shop_Products_View" },
-              //     });
-              //   }
-              // }}
             />
           </Container>
         </>

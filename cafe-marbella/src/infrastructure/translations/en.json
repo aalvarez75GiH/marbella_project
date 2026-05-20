@@ -128,7 +128,8 @@
       "caption_pickup": "Pickup at",
       "caption_delivery": "Delivery to",
       "between": "Between",
-      "delivery_by": "Delivery by {{carrier_name}} - {{delivery_days}} {{day}}"
+      "delivery_by": "Delivery by {{carrier_name}} - {{delivery_days}} {{day}}",
+      "away": "away"
     },
     "cta": "Continue to payment"
   },
@@ -137,7 +138,7 @@
     "day_other": "days"
   },
   "payment_view": {
-    "title": "Tú información de pago",
+    "title": "Your payment information",
     "data_input_name": "Credit card holder Full name",
     "card_verified_caption": "Card verified successfully!",
     "cta": {
@@ -152,5 +153,14 @@
     "email_sent": "We have sent your receipt by email",
     "view_receipt_cta": "View order receipt",
     "go_home": "Tap to go Shop"
+  },
+  "order_receipt_view": {
+    "shipment_details": "Shipment details",
+    "products": "Products in the order",
+    "cta": "Done",
+    "payment_used": {
+      "title": "Payment method used",
+      "last_4": "Card ending in {{last_four}}"
+    }
   }
 }

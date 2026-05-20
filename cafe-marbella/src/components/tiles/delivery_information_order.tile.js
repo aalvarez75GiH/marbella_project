@@ -137,7 +137,8 @@ export const Delivery_Information_Order_Tile = ({
             <Spacer position="left" size="large">
               {/* <Text variant="dm_sans_regular_14">3.4 miles away</Text> */}
               <Text variant="dm_sans_regular_14">
-                {distance_to_warehouse_mi} away
+                {distance_to_warehouse_mi}{" "}
+                {t("order_review_view.delivery_info_tile.away")}
               </Text>
             </Spacer>
           </Container>

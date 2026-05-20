@@ -1,16 +1,17 @@
 import React, { useContext } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Text } from "../../infrastructure/typography/text.component.js";
 import { Container } from "../containers/general.containers.js";
 import { Spacer } from "../spacers and globals/optimized.spacer.component.js";
 import { theme } from "../../infrastructure/theme/index.js";
-import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
 
 import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
 import DeliveryIcon from "../../../assets/my_icons/deliveryTruckIcon.svg";
 import CreditCardIcon from "../../../assets/my_icons/creaditCardIcon.svg";
 
 export const Payment_method_Info_Tile = ({ last_four = "242" }) => {
+  const { t } = useTranslation();
   return (
     <Container
       width="100%"
@@ -51,11 +52,15 @@ export const Payment_method_Info_Tile = ({ last_four = "242" }) => {
             //color={"lightblue"}
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_bold_16">Payment method used</Text>
+              <Text variant="dm_sans_bold_16">
+                {t("order_receipt_view.payment_used.title")}
+              </Text>
             </Spacer>
             <Spacer position="left" size="large">
               <Text variant="dm_sans_regular_14">
-                Visa ending in {last_four}
+                {t("order_receipt_view.payment_used.last_4", {
+                  last_four: last_four,
+                })}
               </Text>
             </Spacer>
           </Container>

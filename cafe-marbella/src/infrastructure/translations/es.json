@@ -133,7 +133,8 @@
         "day_other": "días"
       },
 
-      "delivery_by": "Entrega por {{carrier_name}} - {{delivery_days}} {{day}}"
+      "delivery_by": "Entrega por {{carrier_name}} - {{delivery_days}} {{day}}",
+      "away": "de distancia"
     },
     "cta": "Realizar el pago"
   },
@@ -149,9 +150,18 @@
   },
   "confirmation_view": {
     "thanks": "Gracias por elegirnos!",
-    "order_placed": "Tu orden ha sido realizada exitosamente.",
+    "order_placed": "Orden realizada exitosamente.",
     "email_sent": "Hemos enviado tu recibo por correo electrónico",
     "view_receipt_cta": "Ver recibo",
     "go_home": "Volver a Shop"
+  },
+  "order_receipt_view": {
+    "shipment_details": "Detalles del envío",
+    "products": "Productos en la orden",
+    "cta": "Listo",
+    "payment_used": {
+      "title": "Método de pago utilizado",
+      "last_4": "Tarjeta terminada en {{last_four}}"
+    }
   }
 }

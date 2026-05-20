@@ -3,6 +3,7 @@ import { useTheme } from "styled-components/native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { rootNavigate } from "../../infrastructure/navigation/navigation_ref";
 import { ScrollView } from "react-native-gesture-handler";
+import { useTranslation } from "react-i18next";
 
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
@@ -25,6 +26,7 @@ import { AuthenticationContext } from "../../infrastructure/services/authenticat
 
 export default function Cart_Order_Receipt_View() {
   const theme = useTheme();
+  const { t } = useTranslation();
   const { myOrder, setMyOrder } = useContext(OrdersContext);
   console.log(
     "myOrder in Shop_Order_Receipt_View:",
@@ -99,9 +101,13 @@ export default function Cart_Order_Receipt_View() {
         />
       ) : (
         <>
-          <Go_Back_Header
+          {/* <Go_Back_Header
             action={() => navigation.goBack()}
             label="Order receipt"
+          /> */}
+          <Go_Back_Header_With_Label_And_Menu
+            action_1={() => navigation.goBack()}
+            action_2={() => navigation.navigate("Menu_View")}
           />
           <ScrollView
             contentContainerStyle={{
@@ -152,7 +158,7 @@ export default function Cart_Order_Receipt_View() {
               >
                 <Spacer position="left" size="large">
                   <Text variant="dm_sans_bold_20" style={{ marginLeft: 16 }}>
-                    Shipment details
+                    {t("order_receipt_view.shipment_details")}
                   </Text>
                 </Spacer>
               </Container>
@@ -188,7 +194,9 @@ export default function Cart_Order_Receipt_View() {
               >
                 <Spacer position="top" size="large" />
                 <Spacer position="left" size="large">
-                  <Text variant="dm_sans_bold_20">Products in the order</Text>
+                  <Text variant="dm_sans_bold_20">
+                    {t("order_receipt_view.products")}
+                  </Text>
                 </Spacer>
               </Container>
               <Spacer position="top" size="large" />

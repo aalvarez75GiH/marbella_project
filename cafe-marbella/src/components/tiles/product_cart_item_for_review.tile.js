@@ -31,7 +31,7 @@ export const Product_Cart_Item_For_Review_Tile = ({ product, image }) => {
   return (
     <>
       <Container
-        width="390px"
+        width="375px"
         height="240px"
         color={theme.colors.ui.secondary}
         direction="row"

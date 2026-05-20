@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useCallback } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Image, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import {
   Container,
@@ -14,6 +15,7 @@ import { Spacer } from "../../components/spacers and globals/optimized.spacer.co
 
 export default function Cart_Order_Confirmation_View({ route }) {
   const theme = useTheme();
+  const { t } = useTranslation();
   const navigation = useNavigation();
   useFocusEffect(
     useCallback(() => {
