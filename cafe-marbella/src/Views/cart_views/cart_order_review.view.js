@@ -1,5 +1,6 @@
 import React, { useContext, useCallback } from "react";
 import { useTheme } from "styled-components/native";
+import { useTranslation } from "react-i18next";
 import {
   useNavigation,
   useRoute,
@@ -21,17 +22,21 @@ import { Order_Info_Tile } from "../../components/tiles/order_info.tile";
 import { Delivery_type_Badge } from "../../components/others/delivery_type.badge";
 import { Delivery_Information_Order_Tile } from "../../components/tiles/delivery_information_order.tile";
 import { Splitter_Component } from "../../components/others/grey_splitter.component";
+import { Go_Back_Header_With_Label_And_Menu } from "../../components/headers/goBack_with_label_and_menu.header";
 
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
+import { GlobalContext } from "../../infrastructure/services/global/global.context";
 
 export default function Cart_Order_Review_View() {
   const theme = useTheme();
+  const { t } = useTranslation();
   const route = useRoute();
   const tabBarHeight = useBottomTabBarHeight();
   const { order } = route.params;
   const { isLoading, setDeliveryOption, setDifferentAddress } =
     useContext(OrdersContext);
+  const { formatCentsToUSD } = useContext(GlobalContext);
   // console.log("MY ORDER AT REVIEW VIEW:", JSON.stringify(order, null, 2));
   const { myWarehouse } = useContext(WarehouseContext);
   const { distance_in_miles } = myWarehouse || {};
@@ -47,6 +52,7 @@ export default function Cart_Order_Review_View() {
   const { carrier_name, delivery_days, carrier_delivery_days } =
     shipping_rate || {};
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
+  const shippingAmountInCents = formatCentsToUSD(shipping) || 0;
 
   const {
     name: warehouse_name,
@@ -111,8 +117,9 @@ export default function Cart_Order_Review_View() {
                 navigation.replace("Cart_Delivery_Type_View");
               }
             }}
-            label="Order review"
+            caption={t("order_review_view.header")}
           />
+
           <ScrollView
             contentContainerStyle={{
               flexGrow: 1,
@@ -156,15 +163,24 @@ export default function Cart_Order_Review_View() {
                 {delivery_type === "pickup" ? (
                   <Delivery_type_Badge
                     caption_text_variant="dm_sans_bold_14"
-                    caption="Free Pickup"
+                    caption={t(
+                      "order_review_view.delivery_badge.pickup.caption"
+                    )}
                     type="pickup"
                   />
                 ) : (
                   <Delivery_type_Badge
                     caption_text_1_variant="dm_sans_bold_16"
                     caption_text_2_variant="dm_sans_bold_14"
-                    caption_1="Delivery"
-                    caption_2="for just $5"
+                    caption_1={t(
+                      "order_review_view.delivery_badge.delivery.caption_1"
+                    )}
+                    caption_2={t(
+                      "order_review_view.delivery_badge.delivery.caption_2",
+                      {
+                        shippingAmountInCents,
+                      }
+                    )}
                     type="delivery"
                   />
                 )}
@@ -226,7 +242,7 @@ export default function Cart_Order_Review_View() {
               height="70%"
               color={theme.colors.ui.business}
               border_radius={"40px"}
-              caption="Continue to payment"
+              caption={t("order_review_view.cta")}
               caption_text_variant="dm_sans_bold_20"
               action={() => navigation.navigate("Cart_Payment_View")}
             />

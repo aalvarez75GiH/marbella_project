@@ -9,7 +9,7 @@ import Cart_Order_Confirmation_View from "../../Views/cart_views/cart_order_conf
 import Cart_Order_Receipt_View from "../../Views/cart_views/cart_order_receipt.view";
 import Cart_Different_Delivery_Address_View from "../../Views/cart_views/cart_different_delivery_address.view";
 import Cart_Long_Distance_Warning_View from "../../Views/cart_views/cart_long_distance_warning.view";
-
+import Menu_View from "../../Views/shop_views/menu.view";
 import { CartContext } from "../services/cart/cart.context";
 
 const CartStack = createNativeStackNavigator();
@@ -63,6 +63,7 @@ export const Cart_Navigator = () => {
         name="Cart_Different_Delivery_Address_View"
         component={Cart_Different_Delivery_Address_View}
       />
+      <CartStack.Screen name="Menu_View" component={Menu_View} />
     </CartStack.Navigator>
   );
 };

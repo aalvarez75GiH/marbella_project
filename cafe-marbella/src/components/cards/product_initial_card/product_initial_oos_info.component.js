@@ -4,12 +4,10 @@ import { Text } from "../../../infrastructure/typography/text.component.js";
 import { Container } from "../../containers/general.containers.js";
 import { theme } from "../../../infrastructure/theme/index.js";
 import { Spacer } from "../../../components/spacers and globals/optimized.spacer.component.js";
-import { Regular_CTA } from "../../ctas/regular.cta.js";
 
 export const Product_Initial_OOS_Info_Component = ({
   product_name,
   product_subtitle,
-  size_variants,
 }) => {
   // console.log("PRODUCT NAME:", product_name);
   return (

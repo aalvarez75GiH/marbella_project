@@ -9,7 +9,7 @@ import {
 } from "../containers/general.containers.js";
 import { theme } from "../../infrastructure/theme/index.js";
 
-export const Go_Back_Header = ({ action, label = "" }) => {
+export const Go_Back_Header = ({ action, caption = "" }) => {
   return (
     <Container
       width="100%"
@@ -36,7 +36,7 @@ export const Go_Back_Header = ({ action, label = "" }) => {
         align="center"
         style={{ paddingRight: "5%" }}
       >
-        <Text variant="dm_sans_bold_18">{label}</Text>
+        <Text variant="dm_sans_bold_18">{caption}</Text>
       </Container>
     </Container>
   );

@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useCallback } from "react";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -53,6 +54,7 @@ export default function Cart_Payment_View() {
   }, []);
 
   const navigation = useNavigation();
+  const { t } = useTranslation();
   console.log("CARD VERIFIED STATE:", cardVerified);
   console.log("MY ORDER IN PAYMENT VIEW:", JSON.stringify(myOrder, null, 2));
 
@@ -60,7 +62,7 @@ export default function Cart_Payment_View() {
     <SafeArea background_color="#FFFFFF">
       {isLoading ? (
         <Global_activity_indicator
-          caption="Wait, we are making the payment..."
+          caption={t("payment_view.activity_indicator")}
           caption_width="65%"
           // color={"red"}
         />
@@ -89,11 +91,12 @@ export default function Cart_Payment_View() {
             align="flex-start"
           >
             <Spacer position="left" size="large">
-              <Text variant="raleway_bold_18">Your payment information</Text>
+              {/* <Text variant="raleway_bold_18">Your payment information</Text> */}
+              <Text variant="raleway_bold_18">{t("payment_view.title")}</Text>
             </Spacer>
           </Container>
           <DataInput
-            label="Credit card holder Full name"
+            label={t("payment_view.data_input_name")}
             onChangeText={(value) => setNameOnCard(value)}
             value={nameOnCard}
             underlineColor={theme.colors.inputs.bottom_lines}
@@ -130,11 +133,11 @@ export default function Cart_Payment_View() {
                   variant="dm_sans_bold_14"
                   color={theme.colors.text.success_text}
                 >
-                  Card verified successfully!
+                  {t("payment_view.card_verified_caption")}
                 </Text>
               </Spacer>
               <Spacer position="left" size="large" />
-              <CheckIcon size={25} color={"green"} />
+              <CheckIcon size={20} color={"green"} />
             </Container>
           )}
           {!cardVerified && cardError && (
@@ -177,7 +180,12 @@ export default function Cart_Payment_View() {
               height="8%"
               color={theme.colors.ui.business}
               border_radius={"40px"}
-              caption={isLoading ? "Processing..." : "Make the payment"}
+              // caption={isLoading ? "Processing..." : "Make the payment"}
+              caption={
+                isLoading
+                  ? t("payment_view.cta.processing")
+                  : t("payment_view.cta.make")
+              }
               caption_text_variant="dm_sans_bold_20"
               disabled={isLoading} // ✅ prevent double taps if your CTA supports it
               action={async () => {

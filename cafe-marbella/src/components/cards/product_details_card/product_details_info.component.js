@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 import { Text } from "../../../infrastructure/typography/text.component.js";
 import {
@@ -18,13 +19,19 @@ export const Product_Details_Info_Component = ({
   selectedVariant,
   product_to_add_to_cart,
 }) => {
+  const { formatCentsToUSD, getTranslatedField } = useContext(GlobalContext);
+  const { price, sizeLabel, sizeLabel_ounces } = selectedVariant || {};
+  const price_formatted = formatCentsToUSD(price);
+
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
+  const productNameText = getTranslatedField(product_name, lang);
+  const productSubtitleText = getTranslatedField(product_subtitle, lang);
+
   const isSoldOut = selectedVariant?.stock === 0;
   const navigation = useNavigation();
   const { addingProductToCart } = useContext(CartContext);
-  const { price, sizeLabel, sizeLabel_ounces } = selectedVariant || {};
 
-  const { formatCentsToUSD } = useContext(GlobalContext);
-  const price_formatted = formatCentsToUSD(price);
   return (
     <Container
       width="100%"
@@ -35,8 +42,8 @@ export const Product_Details_Info_Component = ({
       padding_vertical="16px"
     >
       <Spacer position="left" size="large">
-        <Text variant="raleway_bold_20">{product_name}</Text>
-        <Text variant="raleway_bold_20">{product_subtitle}</Text>
+        <Text variant="raleway_bold_20">{productNameText}</Text>
+        <Text variant="raleway_bold_20">{productSubtitleText}</Text>
       </Spacer>
 
       <Container
@@ -119,7 +126,9 @@ export const Product_Details_Info_Component = ({
                     "dm_sans_bold_16_white"
               }
             >
-              Add to cart
+              {t(
+                "product_details_view.details_card.details_info.add_to_cart_caption"
+              )}
             </Text>
           </Pressable_Container>
         </Container>

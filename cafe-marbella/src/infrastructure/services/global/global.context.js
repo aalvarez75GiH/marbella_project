@@ -86,58 +86,6 @@ export const Global_Context_Provider = ({ children }) => {
       isMounted = false;
     };
   }, []);
-  // useEffect(() => {
-  //   const gettingAllProductsCatalog = async () => {
-  //     try {
-  //       const allProductsAtCatalog = await gettingAllProductsCatalogRequest();
-
-  //       const normalized = await Promise.all(
-  //         allProductsAtCatalog.map((p) => normalizeProductFromBackend(p))
-  //       );
-  //       const vzlaGroundLightProduct = normalized.find((p) =>
-  //         p?.size_variants?.some(
-  //           (v) =>
-  //             Array.isArray(v?.images_path) &&
-  //             v.images_path.includes(
-  //               "Venezuela/ground/light/250/vzla_bag_gb.png"
-  //             )
-  //         )
-  //       );
-
-  //       setProductsCatalog(normalized);
-  //     } catch (err) {
-  //       setError(err.message);
-  //     }
-  //   };
-  //   gettingAllProductsCatalog();
-  // }, []);
-
-  // useEffect(() => {
-  //   const hydrateLanguage = async () => {
-  //     try {
-  //       const storedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
-
-  //       const languageToUse =
-  //         storedLanguage === "en" || storedLanguage === "es"
-  //           ? storedLanguage
-  //           : "en";
-
-  //       setGlobalLanguage(languageToUse);
-  //       await i18n.changeLanguage(languageToUse);
-
-  //       if (!storedLanguage) {
-  //         await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, "en");
-  //       }
-  //     } catch (error) {
-  //       console.log("Hydrate language error:", error);
-
-  //       setGlobalLanguage("en");
-  //       await i18n.changeLanguage("en");
-  //     }
-  //   };
-
-  //   hydrateLanguage();
-  // }, []);
 
   const formatDate = (inputDate) => {
     console.log("INPUT DATE TO FORMAT:", inputDate);
@@ -227,6 +175,18 @@ export const Global_Context_Provider = ({ children }) => {
     }));
   };
 
+  // infrastructure/utils/translations.helpers.js
+
+  const getTranslatedField = (field, language = "en", fallback = "en") => {
+    if (!field) return "";
+
+    if (typeof field === "object") {
+      return field?.[language] || field?.[fallback] || "";
+    }
+
+    return field;
+  };
+
   // console.log("USER LANGUAGE AT GLOBAL CONTEXT:", globalLanguage);
   return (
     <GlobalContext.Provider
@@ -245,6 +205,7 @@ export const Global_Context_Provider = ({ children }) => {
         snackbar,
         showSnackbar,
         hideSnackbar,
+        getTranslatedField,
       }}
     >
       {children}

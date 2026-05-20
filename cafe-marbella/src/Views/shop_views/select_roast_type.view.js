@@ -1,6 +1,7 @@
 import React, { useContext, useState, useCallback } from "react";
 import { ScrollView } from "react-native";
 import { useTheme } from "styled-components/native";
+import { useTranslation } from "react-i18next";
 import {
   useNavigation,
   useFocusEffect,
@@ -24,6 +25,7 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 
 export default function Select_Roast_Type_View() {
   const theme = useTheme();
+  const { t } = useTranslation();
   const tabBarHeight = useBottomTabBarHeight();
   const navigation = useNavigation();
   const route = useRoute();
@@ -87,6 +89,7 @@ export default function Select_Roast_Type_View() {
         style={{ flex: 1 }}
       >
         <Go_Back_Header action={() => navigation.goBack()} label="" />
+
         <Spacer position="top" size="large" />
 
         {isLoading && (
@@ -95,9 +98,10 @@ export default function Select_Roast_Type_View() {
         {!isLoading && (
           <>
             <Regular_UI_Title
-              main_title="Tap an option to select your roast type"
+              // main_title="Tap an option to select your roast type"
+              main_title={t("select_roast_type_view.main_title")}
               // main_title="Select your preferred roast type"
-              secondary_title="Each roast bring out unique flavors and aromas"
+              secondary_title={t("select_roast_type_view.secondary_title")}
             />
 
             <ScrollView
@@ -116,21 +120,26 @@ export default function Select_Roast_Type_View() {
               <Roast_Type_Tile
                 roast_type="light"
                 image_source={require("../../../assets/ilustrations/light_roast_icon.png")}
-                roast_caption="Light Roast"
-                roast_description={
-                  "Light roasted with the best cutting edge machinery"
-                }
+                roast_caption={t(
+                  "select_roast_type_view.roast_type_tiles.captions.light"
+                )}
+                roast_description={t(
+                  "select_roast_type_view.roast_type_tiles.descriptions.light"
+                )}
                 action={() => filterProductsByRoast("light", coming_from)}
                 roastTypeSelected={roastTypeSelected}
               />
               <Spacer position="top" size="large" />
               <Roast_Type_Tile
                 roast_type="medium"
+                roast_caption={t(
+                  "select_roast_type_view.roast_type_tiles.captions.medium"
+                )}
                 image_source={require("../../../assets/ilustrations/medium_roast.png")}
-                roast_caption="Medium Roast"
-                roast_description={
-                  "Medium roasted with the best cutting edge machinery"
-                }
+                // roast_caption="Medium Roast"
+                roast_description={t(
+                  "select_roast_type_view.roast_type_tiles.descriptions.medium"
+                )}
                 action={() => filterProductsByRoast("medium", coming_from)}
                 roastTypeSelected={roastTypeSelected}
               />
@@ -138,10 +147,12 @@ export default function Select_Roast_Type_View() {
               <Roast_Type_Tile
                 roast_type="dark"
                 image_source={require("../../../assets/ilustrations/dark_roast_icon.png")}
-                roast_caption="Dark Roast"
-                roast_description={
-                  "Dark roasted with the best cutting edge machinery"
-                }
+                roast_caption={t(
+                  "select_roast_type_view.roast_type_tiles.captions.dark"
+                )}
+                roast_description={t(
+                  "select_roast_type_view.roast_type_tiles.descriptions.dark"
+                )}
                 action={() => filterProductsByRoast("dark", coming_from)}
                 roastTypeSelected={roastTypeSelected}
               />
@@ -149,7 +160,7 @@ export default function Select_Roast_Type_View() {
               <Spacer position="top" size="medium" />
             </ScrollView>
             <Icon_And_Caption_Footer
-              caption={"Tap a roast to see available coffees"}
+              caption={t("select_roast_type_view.tap_footer")}
               image_source={require("../../../assets/my_icons/select.png")}
             />
           </>

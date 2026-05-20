@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 import { Text } from "../../../infrastructure/typography/text.component.js";
 import { Container } from "../../containers/general.containers.js";
@@ -10,6 +11,13 @@ import { Regular_CTA } from "../../ctas/regular.cta.js";
 export const Product_Details_Description_Component = ({ item = null }) => {
   const { description } = item || {};
   const navigation = useNavigation();
+  const { t, i18n } = useTranslation();
+
+  const descriptionText =
+    typeof item?.description === "object"
+      ? item.description?.[i18n.language] || item.description?.en || ""
+      : item?.description || "";
+
   return (
     <Container
       width="100%"
@@ -28,7 +36,7 @@ export const Product_Details_Description_Component = ({ item = null }) => {
         padding_vertical="5%"
       >
         <Spacer position="left" size="large">
-          <Text variant="raleway_medium_18_white">{description}</Text>
+          <Text variant="raleway_medium_18_white">{descriptionText}</Text>
         </Spacer>
       </Container>
 
@@ -46,7 +54,10 @@ export const Product_Details_Description_Component = ({ item = null }) => {
         <Regular_CTA
           width={"40%"}
           height={"45px"}
-          caption={"Specifications"}
+          // caption={"Specifications"}
+          caption={t(
+            "product_details_view.details_card.description_ctas.specs"
+          )}
           caption_text_variant={"raleway_bold_16_white"}
           color={theme.colors.ui.success}
           border_width={"1px"}
@@ -61,7 +72,10 @@ export const Product_Details_Description_Component = ({ item = null }) => {
         <Regular_CTA
           width={"40%"}
           height={"45px"}
-          caption={"Ingredients"}
+          // caption={"Ingredients"}
+          caption={t(
+            "product_details_view.details_card.description_ctas.ingredients"
+          )}
           caption_text_variant={"raleway_bold_16_white"}
           color={theme.colors.ui.success}
           border_width={"1px"}

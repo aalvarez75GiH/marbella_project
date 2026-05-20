@@ -3,9 +3,11 @@ import { SectionList, View } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useTranslation } from "react-i18next";
 
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header_With_Label_And_Menu } from "../../components/headers/goBack_with_label_and_menu.header";
+import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 import { Product_Initial_Card } from "../../components/cards/product_initial_card/product_intial.card";
@@ -15,6 +17,7 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 
 export default function Shop_View() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const tabBarHeight = useBottomTabBarHeight();
   const route = useRoute();
   const { coming_from } = route.params || {};
@@ -57,13 +60,12 @@ export default function Shop_View() {
         align="center"
         style={{ paddingBottom: 50 }}
       >
-        <Go_Back_Header_With_Label_And_Menu
-          action_1={() => navigation.goBack()}
-          action_2={() => navigation.navigate("Menu_View")}
-          label={
+        <Go_Back_Header
+          action={() => navigation.goBack()}
+          caption={
             coming_from === "whole_beans"
-              ? "Whole beans coffee"
-              : "Ground beans coffee"
+              ? t("shop_view.header.whole")
+              : t("shop_view.header.ground")
           }
         />
 

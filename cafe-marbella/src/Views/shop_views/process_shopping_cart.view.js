@@ -3,6 +3,7 @@ import { FlatList, Platform } from "react-native";
 import { useTheme } from "styled-components/native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useTranslation } from "react-i18next";
 
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
@@ -20,6 +21,7 @@ import { AuthenticationContext } from "../../infrastructure/services/authenticat
 
 export default function Process_Shopping_Cart_View() {
   const theme = useTheme();
+  const { t } = useTranslation();
   const tabBarHeight = useBottomTabBarHeight();
   const iOS = Platform.OS === "ios";
   // *************
@@ -59,7 +61,7 @@ export default function Process_Shopping_Cart_View() {
     <SafeArea background_color={theme.colors.bg.elements_bg}>
       {isLoading ? (
         <Global_activity_indicator
-          caption="Wait, we are updating shopping cart..."
+          caption={t("shopping_cart_view.activity_indicator")}
           caption_width="65%"
         />
       ) : (
@@ -115,7 +117,7 @@ export default function Process_Shopping_Cart_View() {
               height="70px"
               color={theme.colors.ui.business}
               border_radius={"40px"}
-              caption="Proceed to checkout"
+              caption={t("shopping_cart_view.cta")}
               caption_text_variant="dm_sans_bold_20"
               style={{ marginBottom: iOS ? 0 : tabBarHeight }}
               action={() => {

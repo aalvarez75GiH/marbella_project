@@ -1,11 +1,12 @@
 import React from "react";
-
+import { useTranslation } from "react-i18next";
 import { Text } from "../../infrastructure/typography/text.component.js";
 import { Container } from "../containers/general.containers.js";
 import { theme } from "../../infrastructure/theme/index.js";
 import { Spacer } from "../spacers and globals/optimized.spacer.component.js";
 
 export const Shopping_Cart_Title = ({ cartTotalItems }) => {
+  const { t } = useTranslation();
   const label = cartTotalItems === 1 ? "item" : "items";
   return (
     <Container
@@ -26,7 +27,9 @@ export const Shopping_Cart_Title = ({ cartTotalItems }) => {
       >
         <Spacer position="left" size="large">
           <Spacer position="left" size="medium">
-            <Text variant="dm_sans_bold_28">Shopping Cart</Text>
+            <Text variant="dm_sans_bold_28">
+              {t("shopping_cart_view.title")}
+            </Text>
           </Spacer>
         </Spacer>
       </Container>

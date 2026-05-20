@@ -3,6 +3,8 @@ import { useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
+
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -13,15 +15,17 @@ import DeliveryTruckIcon from "../../../assets/my_icons/deliveryTruckIcon.svg";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { Delivery_Address_Option_Tile } from "../../components/tiles/delivery_address_option.tile";
 import { safeGoBack } from "../../infrastructure/navigation/navigation.helpers";
-
+import { Go_Back_Header_With_Label_And_Menu } from "../../components/headers/goBack_with_label_and_menu.header";
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
+import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
 
 export default function Cart_Delivery_Type_View() {
   const theme = useTheme();
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   const { cart: cartRaw, isLoading } = useContext(CartContext);
 
@@ -114,7 +118,6 @@ export default function Cart_Delivery_Type_View() {
           align="center"
         >
           <Go_Back_Header
-            // action={() => navigation.goBack()}
             action={() =>
               safeGoBack(navigation, "Cart_Order_Review_View", {
                 order: myOrder,
@@ -126,10 +129,27 @@ export default function Cart_Delivery_Type_View() {
             width="100%"
             height="15%"
             color={theme.colors.bg.elements_bg}
+            justify="center"
+            align="flex-start"
           >
-            <Text variant="raleway_bold_18">
-              How do you wanna get your order?
-            </Text>
+            <Spacer position="left" size="extraLarge">
+              <Text variant="raleway_bold_20">
+                {t("delivery_type_view.title")}
+              </Text>
+            </Spacer>
+            <Spacer position="top" size="small" />
+            <Spacer position="left" size="extraLarge">
+              <Text
+                variant="raleway_bold_14"
+                style={{
+                  color: "#555555",
+                }}
+              >
+                {t("delivery_type_view.subTitle")}
+              </Text>
+            </Spacer>
+
+            <Spacer position="top" size="large" />
           </Container>
           <Container
             width="100%"
@@ -143,7 +163,7 @@ export default function Cart_Delivery_Type_View() {
             <Delivery_Type_CTA
               width={"40%"}
               height={"85%"}
-              caption="Pick up"
+              caption={t("delivery_type_view.pickup_cta.caption")}
               caption_text_variant="raleway_bold_18_white"
               Icon={StoreIcon}
               type="pickup"
@@ -187,7 +207,7 @@ export default function Cart_Delivery_Type_View() {
             <Delivery_Type_CTA
               width={"40%"}
               height={"85%"}
-              caption="Delivery"
+              caption={t("delivery_type_view.delivery_cta.caption")}
               caption_text_variant="raleway_bold_18_white"
               Icon={DeliveryTruckIcon}
               type="delivery"
@@ -206,10 +226,14 @@ export default function Cart_Delivery_Type_View() {
                 width="100%"
                 height="10%"
                 color={theme.colors.bg.elements_bg}
+                align="flex-start"
+                justify="center"
               >
-                <Text variant="raleway_bold_18">
-                  Select your delivery address
-                </Text>
+                <Spacer position="left" size="extraLarge">
+                  <Text variant="raleway_bold_18">
+                    {t("delivery_type_view.delivery_cta.address_placeholder")}
+                  </Text>
+                </Spacer>
               </Container>
               {/* ********* Delivery address options components ******** */}
               <Delivery_Address_Option_Tile

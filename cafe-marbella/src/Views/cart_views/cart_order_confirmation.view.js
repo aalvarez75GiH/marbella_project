@@ -56,7 +56,7 @@ export default function Cart_Order_Confirmation_View({ route }) {
           //   color={"lightgrey"}
         >
           <Text variant="cormorant_bold_32_italic">
-            Thanks for choosing us!
+            {t("confirmation_view.thanks")}
           </Text>
         </Container>
 
@@ -80,14 +80,14 @@ export default function Cart_Order_Confirmation_View({ route }) {
             variant="raleway_bold_20"
             style={{ color: theme.colors.brand.primary }}
           >
-            Order placed successfully!!
+            {t("confirmation_view.order_placed")}
           </Text>
           <Spacer position="top" size="small" />
           <Text
             variant="raleway_bold_14"
             style={{ color: theme.colors.brand.primary }}
           >
-            We have sent your receipt by email
+            {t("confirmation_view.email_sent")}
           </Text>
         </Container>
         <Container
@@ -116,7 +116,7 @@ export default function Cart_Order_Confirmation_View({ route }) {
                 color: theme.colors.brand.primary,
               }}
             >
-              View order receipt
+              {t("confirmation_view.view_receipt_cta")}
             </Text>
           </Action_Container>
           <Action_Container
@@ -135,7 +135,7 @@ export default function Cart_Order_Confirmation_View({ route }) {
                 color: theme.colors.brand.primary,
               }}
             >
-              Tap top go Home
+              {t("confirmation_view.go_home")}
             </Text>
           </Action_Container>
           {/* <Spacer position="right" size="small" /> */}

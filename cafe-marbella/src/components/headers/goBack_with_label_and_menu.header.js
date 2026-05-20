@@ -13,7 +13,7 @@ import { theme } from "../../infrastructure/theme/index.js";
 export const Go_Back_Header_With_Label_And_Menu = ({
   action_1,
   action_2,
-  label = "",
+  caption = "",
   hide_icon = false,
 }) => {
   return (
@@ -36,14 +36,7 @@ export const Go_Back_Header_With_Label_And_Menu = ({
           <ArrowBackIcon width={30} height={30} fill={"#000000"} />
         </Action_Container>
       )}
-      {/* <Action_Container
-        width="15%"
-        height="100%"
-        color={theme.colors.bg.elements_bg}
-        onPress={action_1}
-      >
-        <ArrowBackIcon width={30} height={30} fill={"#000000"} />
-      </Action_Container> */}
+
       <Container
         width="70%"
         height="100%"
@@ -53,7 +46,7 @@ export const Go_Back_Header_With_Label_And_Menu = ({
         align="center"
         style={{ paddingRight: "5%" }}
       >
-        <Text variant="dm_sans_bold_18">{label}</Text>
+        <Text variant="dm_sans_bold_18">{caption}</Text>
       </Container>
       <Action_Container
         width="15%"

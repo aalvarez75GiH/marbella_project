@@ -2,8 +2,10 @@ import React, { useContext } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
+import { Go_Back_Header_With_Label_And_Menu } from "../../components/headers/goBack_with_label_and_menu.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { Product_Details_Card } from "../../components/cards/product_details_card/product_details.card";
@@ -12,6 +14,7 @@ import { CartContext } from "../../infrastructure/services/cart/cart.context";
 
 export default function Shop_Product_Details_View({ route }) {
   const theme = useTheme();
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const { item } = route.params;
   // console.log("Product Details View - item:", JSON.stringify(item, null, 2));
@@ -23,11 +26,15 @@ export default function Shop_Product_Details_View({ route }) {
     >
       <Go_Back_Header
         action={() => navigation.goBack()}
-        label="Product Details"
+        caption={t("product_details_view.header") || "Product Details"}
       />
+
       {isLoading ? (
         <Global_activity_indicator
-          caption="Wait, we are adding to shopping cart..."
+          caption={
+            t("product_details_view.activity_indicator") ||
+            "Wait, we are adding to shopping cart..."
+          }
           caption_width="65%"
         />
       ) : (

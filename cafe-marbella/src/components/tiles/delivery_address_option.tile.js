@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
+import { useTranslation } from "react-i18next";
 
 import {
   Action_Container,
@@ -18,7 +19,7 @@ export const Delivery_Address_Option_Tile = ({
   action,
 }) => {
   const theme = useTheme();
-  const navigation = useNavigation();
+  const { t } = useTranslation();
   return address_option === "current_address" ? (
     <>
       <Action_Container
@@ -56,7 +57,12 @@ export const Delivery_Address_Option_Tile = ({
             //color={"lightblue"}
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_bold_18">Your current address:</Text>
+              {/* <Text variant="dm_sans_bold_18">Your current address:</Text> */}
+              <Text variant="dm_sans_bold_18">
+                {t(
+                  "delivery_type_view.delivery_cta.delivery_option_tile.caption_1"
+                )}
+              </Text>
             </Spacer>
           </Container>
 
@@ -113,7 +119,9 @@ export const Delivery_Address_Option_Tile = ({
           >
             <Spacer position="left" size="large">
               <Text variant="dm_sans_regular_18">
-                Add a different delivery address
+                {t(
+                  "delivery_type_view.delivery_cta.delivery_option_tile.caption_2"
+                )}
               </Text>
             </Spacer>
           </Container>

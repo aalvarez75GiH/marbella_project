@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { Platform, Linking } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { Text } from "../../infrastructure/typography/text.component.js";
 import {
@@ -8,7 +9,6 @@ import {
 } from "../containers/general.containers.js";
 import { Spacer } from "../spacers and globals/optimized.spacer.component.js";
 import { theme } from "../../infrastructure/theme/index.js";
-import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
 
 import StoreIcon from "../../../assets/my_icons/storeIcon.svg";
 import DeliveryIcon from "../../../assets/my_icons/deliveryTruckIcon.svg";
@@ -27,13 +27,14 @@ export const Delivery_Information_Order_Tile = ({
   carrier_delivery_days,
   delivery_days,
 }) => {
+  const { t } = useTranslation();
   console.log("Delivery_Information_Order_Tile delivery_type:", delivery_type);
   console.log("carrier name:", carrier_name);
   console.log("carrier delivery days:", carrier_delivery_days);
   console.log("delivery days:", delivery_days);
   console.log("latitude inside tile:", warehouse_lat);
   console.log("longitude inside tile:", warehouse_lng);
-  const day_or_days = delivery_days === 1 ? "day" : "days";
+
   const openMapsToWarehouse = (latitude, longitude) => {
     console.log("latitude inside function:", latitude);
     console.log("longitude inside function:", longitude);
@@ -87,7 +88,9 @@ export const Delivery_Information_Order_Tile = ({
             //color={"lightblue"}
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_bold_22">Pickup at</Text>
+              <Text variant="dm_sans_bold_22">
+                {t("order_review_view.delivery_info_tile.caption_pickup")}
+              </Text>
             </Spacer>
             <Spacer position="left" size="large">
               <Text variant="dm_sans_bold_14">{warehouse_name}</Text>
@@ -119,7 +122,8 @@ export const Delivery_Information_Order_Tile = ({
           >
             <Spacer position="left" size="large">
               <Text variant="dm_sans_regular_14">
-                Between {opening_time} - {closing_time}
+                {t("order_review_view.delivery_info_tile.between")}{" "}
+                {opening_time} - {closing_time}
               </Text>
             </Spacer>
           </Container>
@@ -188,7 +192,9 @@ export const Delivery_Information_Order_Tile = ({
             //color={"lightblue"}
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_bold_22">Delivey at</Text>
+              <Text variant="dm_sans_bold_22">
+                {t("order_review_view.delivery_info_tile.caption_delivery")}
+              </Text>
             </Spacer>
           </Container>
 
@@ -213,7 +219,11 @@ export const Delivery_Information_Order_Tile = ({
           >
             <Spacer position="left" size="large">
               <Text variant="dm_sans_bold_14">
-                Delivery by {carrier_name} - {delivery_days} {day_or_days}
+                {t("order_review_view.delivery_info_tile.delivery_by", {
+                  carrier_name,
+                  delivery_days,
+                  day: t("common.day", { count: delivery_days }),
+                })}
               </Text>
             </Spacer>
             <Spacer position="left" size="large">

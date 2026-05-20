@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { useTranslation } from "react-i18next";
 
 import { Text } from "../../infrastructure/typography/text.component.js";
 import { Container } from "../containers/general.containers.js";
@@ -14,6 +15,7 @@ export const Order_Info_Tile = ({
   total,
   quantity,
 }) => {
+  const { t } = useTranslation();
   const { formatCentsToUSD } = useContext(GlobalContext);
   const formatted_currency = formatCentsToUSD;
 
@@ -57,7 +59,9 @@ export const Order_Info_Tile = ({
             align="flex-start"
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_regular_18">Shipping & handling:</Text>
+              <Text variant="dm_sans_regular_18">
+                {t("order_review_view.order_info_tile.handling")}
+              </Text>
             </Spacer>
           </Container>
           <Spacer position="top" size="small" />
@@ -69,7 +73,9 @@ export const Order_Info_Tile = ({
             align="flex-start"
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_regular_18">Estimated tax:</Text>
+              <Text variant="dm_sans_regular_18">
+                {t("order_review_view.order_info_tile.tax")}
+              </Text>
             </Spacer>
           </Container>
           <Spacer position="top" size="small" />
@@ -81,7 +87,9 @@ export const Order_Info_Tile = ({
             align="flex-start"
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_regular_18">Discounts:</Text>
+              <Text variant="dm_sans_regular_18">
+                {t("order_review_view.order_info_tile.discounts")}
+              </Text>
             </Spacer>
           </Container>
           <Spacer position="top" size="small" />
@@ -94,7 +102,9 @@ export const Order_Info_Tile = ({
             align="flex-start"
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_bold_18">Order total:</Text>
+              <Text variant="dm_sans_bold_18">
+                {t("order_review_view.order_info_tile.order_total")}
+              </Text>
             </Spacer>
           </Container>
           <Spacer position="top" size="small" />

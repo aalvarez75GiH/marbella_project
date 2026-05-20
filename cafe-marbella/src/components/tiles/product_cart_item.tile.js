@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Image } from "expo-image";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 import {
   Action_Container,
@@ -16,6 +17,8 @@ import { GlobalContext } from "../../infrastructure/services/global/global.conte
 
 export const Product_Cart_Item_Tile = ({ product, image }) => {
   const theme = useTheme();
+  const { i18n } = useTranslation();
+  const lang = i18n.language;
   const navigation = useNavigation();
   const imageSource = typeof image === "string" ? { uri: image } : image;
   const { increaseCartItemQty, decreaseCartItemQty, removingProductFromCart } =
@@ -24,14 +27,13 @@ export const Product_Cart_Item_Tile = ({ product, image }) => {
   const { size_variants } = product || {};
   const { sizeLabel, sizeLabel_ounces, price, quantity } = size_variants[0];
 
-  const { formatCentsToUSD } = useContext(GlobalContext);
+  const { formatCentsToUSD, getTranslatedField } = useContext(GlobalContext);
   const price_formatted = formatCentsToUSD(price);
 
-  const cartTitle = product.title; // "Cafe Marbella"
-  const cartRoast = product.roast; // "Medium roast"
-  const cartCountry = product.originCountry;
-  const cartDesc =
-    product.grindType === "whole" ? "Whole bean coffee" : "Ground bean coffee";
+  const { title, product_name, product_subtitle } = product || {};
+
+  const productNameTranslated = getTranslatedField(product_name, lang);
+  const productSubtitleTranslated = getTranslatedField(product_subtitle, lang);
 
   const onTrashPress = async (item) => {
     const res = await removingProductFromCart(item);
@@ -95,7 +97,7 @@ export const Product_Cart_Item_Tile = ({ product, image }) => {
           </Container>
           <Container
             width="100%"
-            height="40%"
+            height="45%"
             //color={theme.colors.ui.secondary}
             direction="row"
             color="purple"
@@ -109,10 +111,13 @@ export const Product_Cart_Item_Tile = ({ product, image }) => {
               align="flex-start"
             >
               <Spacer position="left" size="large">
-                <Text variant="raleway_bold_14_white">{cartTitle}</Text>
-                <Text variant="raleway_bold_24_white">{cartCountry}</Text>
-                <Text variant="raleway_bold_14_white">{cartDesc}</Text>
-                <Text variant="raleway_bold_14_white">{cartRoast} roast</Text>
+                <Text variant="raleway_bold_14_white">{title}</Text>
+                <Text variant="raleway_bold_24_white">
+                  {productSubtitleTranslated}
+                </Text>
+                <Text variant="raleway_bold_14_white">
+                  {productNameTranslated}
+                </Text>
                 <Text variant="raleway_bold_14_white">
                   {sizeLabel} - {sizeLabel_ounces}
                 </Text>

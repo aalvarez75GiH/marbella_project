@@ -74,5 +74,45 @@ productsRouter.put("/addSpecs", async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
+productsRouter.put("/translations", async (req, res) => {
+  const product_id = req.query.id;
+
+  const { product_name, product_subtitle, description, ingredients } = req.body;
+
+  if (!product_id) {
+    return res.status(400).json({
+      error: "Missing query param: id",
+    });
+  }
+
+  try {
+    const productById = await productsControllers.getProductById(product_id);
+
+    if (!productById) {
+      return res.status(404).json({
+        error: "Product not found",
+      });
+    }
+
+    const updatedProduct = await productsControllers.updateProductById(
+      product_id,
+      {
+        product_name,
+        product_subtitle,
+        description,
+        ingredients,
+      }
+    );
+
+    return res.status(200).json({
+      message: "Translations updated successfully.",
+      product: updatedProduct,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      error: e.message,
+    });
+  }
+});
 
 module.exports = productsRouter;

@@ -3,7 +3,7 @@ import { FlatList } from "react-native";
 import { useTheme } from "styled-components/native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-
+import { useTranslation } from "react-i18next";
 import {
   Action_Container,
   Container,
@@ -24,6 +24,7 @@ import { OrdersContext } from "../../infrastructure/services/orders/orders.conte
 
 export default function Shopping_Cart_View() {
   const theme = useTheme();
+  const { t } = useTranslation();
   const tabBarHeight = useBottomTabBarHeight();
   const { setMyOrder } = useContext(OrdersContext);
   // *************
@@ -77,7 +78,7 @@ export default function Shopping_Cart_View() {
 
         {isLoading && (
           <Global_activity_indicator
-            caption="Wait, we are updating shopping cart..."
+            caption={t("shopping_cart_view.activity_indicator")}
             caption_width="65%"
             color={theme.colors.bg.elements_bg}
           />
@@ -87,19 +88,17 @@ export default function Shopping_Cart_View() {
 
         {!isLoading && products.length > 0 && (
           <>
-            <Just_Caption_Header caption="My Cart" />
             <Container
-              style={{ flex: 1, paddingBottom: tabBarHeight }} // ✅ this is the key     }} // ✅ THIS fills remaining SafeArea
+              style={{ flex: 1, paddingBottom: 65 }} // ✅ this is the key     }} // ✅ THIS fills remaining SafeArea
               width="100%"
               color={theme.colors.bg.screens_bg}
               justify="center"
               align="center"
             >
-              <Spacer position="top" size="small" />
+              <Spacer position="top" size="large" />
               <Shopping_Cart_Title cartTotalItems={cartTotalItems} />
-              <Spacer position="top" size="small" />
+              <Spacer position="top" size="medium" />
 
-              {/* List should flex, not % height */}
               <FlatList
                 style={{ flex: 1 }}
                 showsHorizontalScrollIndicator={false}
@@ -116,10 +115,10 @@ export default function Shopping_Cart_View() {
               <Spacer position="top" size="medium" />
               <Regular_CTA
                 width="95%"
-                height={"12%"} // ✅ fixed height instead of %
+                height={"65px"} // ✅ fixed height instead of %
                 color={theme.colors.ui.business}
                 border_radius="40px"
-                caption="Proceed to checkout"
+                caption={t("shopping_cart_view.cta")}
                 caption_text_variant="dm_sans_bold_20"
                 // action={() => navigation.navigate("Shop_Delivery_Type_View")}
                 action={async () => {

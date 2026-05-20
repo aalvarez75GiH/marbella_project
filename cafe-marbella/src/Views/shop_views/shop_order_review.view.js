@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { useTheme } from "styled-components/native";
+import { useTranslation } from "react-i18next";
 import {
   useNavigation,
   useRoute,
@@ -23,16 +24,20 @@ import { Splitter_Component } from "../../components/others/grey_splitter.compon
 
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
+import { GlobalContext } from "../../infrastructure/services/global/global.context";
 
 export default function Shop_Order_Review_View() {
   const theme = useTheme();
   const route = useRoute();
+  const { t } = useTranslation();
   const tabBarHeight = useBottomTabBarHeight();
   const { order } = route.params;
   const { isLoading, setDeliveryOption, setDifferentAddress } =
     useContext(OrdersContext);
   console.log("MY ORDER AT REVIEW VIEW:", JSON.stringify(order, null, 2));
   const { myWarehouse } = useContext(WarehouseContext);
+
+  const { formatCentsToUSD } = useContext(GlobalContext);
   const { distance_in_miles } = myWarehouse || {};
   const {
     pricing,
@@ -43,9 +48,12 @@ export default function Shop_Order_Review_View() {
     order_delivery_address,
     shipping_rate,
   } = order || {};
+
   const { carrier_name, delivery_days, carrier_delivery_days } =
     shipping_rate || {};
+
   const { sub_total, shipping, taxes, discount, total } = pricing || {};
+  const shippingAmountInCents = formatCentsToUSD(shipping) || 0;
 
   console.log("SHIPPING AMOUNT AT REVIEW ORDER:, ", shipping);
   const {
@@ -99,7 +107,7 @@ export default function Shop_Order_Review_View() {
                 navigation.replace("Shop_Delivery_Type_View");
               }
             }}
-            label="Order review"
+            caption={t("order_review_view.header")}
           />
 
           <ScrollView
@@ -147,15 +155,24 @@ export default function Shop_Order_Review_View() {
                 {delivery_type === "pickup" ? (
                   <Delivery_type_Badge
                     caption_text_variant="dm_sans_bold_14"
-                    caption="Free Pickup"
+                    caption={t(
+                      "order_review_view.delivery_badge.pickup.caption"
+                    )}
                     type="pickup"
                   />
                 ) : (
                   <Delivery_type_Badge
                     caption_text_1_variant="dm_sans_bold_16"
                     caption_text_2_variant="dm_sans_bold_14"
-                    caption_1="Delivery"
-                    caption_2="for just $5"
+                    caption_1={t(
+                      "order_review_view.delivery_badge.delivery.caption_1"
+                    )}
+                    caption_2={t(
+                      "order_review_view.delivery_badge.delivery.caption_2",
+                      {
+                        shippingAmountInCents,
+                      }
+                    )}
                     type="delivery"
                   />
                 )}
@@ -224,7 +241,8 @@ export default function Shop_Order_Review_View() {
               height="70px"
               color={theme.colors.ui.business}
               border_radius={"40px"}
-              caption="Continue to payment"
+              caption={t("order_review_view.cta")}
+              // caption="Continue to payment"
               caption_text_variant="dm_sans_bold_20"
               action={() => navigation.navigate("Payment_View")}
             />

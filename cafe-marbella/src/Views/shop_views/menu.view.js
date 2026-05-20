@@ -47,13 +47,7 @@ export default function Menu_View() {
       style={{ flex: 1 }}
     >
       {isLoading ? (
-        <Global_activity_indicator
-          caption={
-            globalLanguage === "en"
-              ? "Cambiando a español..."
-              : "Changing to english..."
-          }
-        />
+        <Global_activity_indicator caption={t("menu.activity_indicator")} />
       ) : user_id !== undefined ? (
         <Container
           width="100%"

@@ -5,6 +5,7 @@ import { Platform, KeyboardAvoidingView, ScrollView, View } from "react-native";
 // import { GooglePlacesAutocomplete } from "expo-google-places-autocomplete";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useTranslation } from "react-i18next";
 
 import { Container } from "../../components/containers/general.containers";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -23,6 +24,7 @@ import { WarehouseContext } from "../../infrastructure/services/warehouse/wareho
 
 export default function Cart_Different_Delivery_Address_View() {
   const theme = useTheme();
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
 
@@ -96,7 +98,9 @@ export default function Cart_Different_Delivery_Address_View() {
     >
       {isCheckoutLoading ? (
         <Global_activity_indicator
-          caption="Wait, Working with your new delivery address & delivery fees..."
+          caption={t(
+            "delivery_type_view.different_delivery_view.activity_indicator"
+          )}
           caption_width="65%"
         />
       ) : (
@@ -130,10 +134,14 @@ export default function Cart_Different_Delivery_Address_View() {
             >
               <Spacer position="left" size="large">
                 <Text variant="raleway_bold_20">
-                  Do you want to enter a different delivery address?
+                  {t("delivery_type_view.different_delivery_view.caption_1")}
                 </Text>
+
                 <Spacer position="top" size="medium" />
-                <Text variant="raleway_medium_18">Go ahead!</Text>
+
+                <Text variant="raleway_medium_18">
+                  {t("delivery_type_view.different_delivery_view.caption_2")}
+                </Text>
               </Spacer>
             </Container>
 
@@ -164,7 +172,9 @@ export default function Cart_Different_Delivery_Address_View() {
                 pointerEvents="box-none"
               >
                 <GooglePlacesAutocomplete
-                  placeholder="New delivery address"
+                  placeholder={t(
+                    "delivery_type_view.different_delivery_view.input_placeholder"
+                  )}
                   fetchDetails
                   listViewDisplayed="auto"
                   keyboardShouldPersistTaps="handled"
@@ -266,7 +276,9 @@ export default function Cart_Different_Delivery_Address_View() {
                   height={CTA_HEIGHT}
                   color={theme.colors.brand.primary}
                   border_radius="40px"
-                  caption="Continue"
+                  caption={t(
+                    "delivery_type_view.different_delivery_view.cta_caption"
+                  )}
                   caption_text_variant="dm_sans_bold_20_white"
                   action={async () => {
                     setIsCheckoutLoading(true);

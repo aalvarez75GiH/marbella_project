@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import { Text } from "../../../infrastructure/typography/text.component.js";
 import { Container } from "../../containers/general.containers.js";
@@ -12,6 +13,7 @@ export const Product_Size_Options_Component = ({
   setSelectedVariantId,
   setSelectedImageIndex,
 }) => {
+  const { t } = useTranslation();
   return (
     <Container
       width="100%"
@@ -29,7 +31,10 @@ export const Product_Size_Options_Component = ({
         align="flex-start"
       >
         <Spacer position="left" size="extraLarge">
-          <Text variant="dm_sans_bold_18">Size options</Text>
+          <Text variant="dm_sans_bold_18">
+            {" "}
+            {t("product_details_view.details_card.product_size_option.caption")}
+          </Text>
         </Spacer>
       </Container>
       <Spacer position="top" size="small" />

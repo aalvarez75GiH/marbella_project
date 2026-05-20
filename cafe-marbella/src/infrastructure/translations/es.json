@@ -30,14 +30,128 @@
       "warehouse": "Conectado a warehouse:"
     },
     "sign_in_status": "No has iniciado sesión!",
-    "sign_in_cta": "Iniciar sesión"
+    "sign_in_cta": "Iniciar sesión",
+    "activity_indicator": "Wait, switching to english..."
   },
   "login_screen": {
     "title": "Comencemos inciando sesión..."
   },
-  "cart": "Cart",
-  "checkout": "Checkout",
-  "delivery": "Delivery",
-  "pickup": "Pickup",
-  "order_review": "Order review"
+  "select_roast_type_view": {
+    "main_title": "Presiona una opción para el tostado",
+    "secondary_title": "Cada tostado resalta sabores y aromas únicos",
+    "roast_type_tiles": {
+      "captions": {
+        "light": "Tostado claro",
+        "medium": "Tostado medio",
+        "dark": "Tostado oscuro"
+      },
+      "descriptions": {
+        "light": "El tostado claro resalta los sabores originales del café, con notas frutales y ácidas.",
+        "medium": "El tostado medio ofrece un equilibrio entre los sabores originales y los sabores tostados",
+        "dark": "El tostado oscuro resalta los sabores tostados del café"
+      }
+    },
+    "tap_footer": "Presiona un tostado para ver los cafés disponibles"
+  },
+  "shop_view": {
+    "header": {
+      "ground": "Café de grano molido",
+      "whole": "Café de grano entero"
+    }
+  },
+  "product_details_view": {
+    "header": "Detalles del producto",
+    "activity_indicator": "Espera, agregando al carrito de compras...",
+    "details_card": {
+      "stock_hurry_caption": "Apurate! solo {{stock}} quedan en stock.",
+      "stock_sold_out_caption": "Sorry, Este tamaño esta agotado!",
+      "stock_available_caption": "{{stock}} Dísponible en stock, tienes suerte!!",
+      "details_info": {
+        "add_to_cart_caption": "Agregar"
+      },
+      "product_size_option": {
+        "caption": "Tamaños"
+      },
+      "description_ctas": {
+        "specs": "Especificaciones",
+        "ingredients": "Ingredientes"
+      }
+    }
+  },
+  "shopping_cart_view": {
+    "header": "Mi Carrito",
+    "title": "Carrito de compras",
+    "cta": "Proceder al pago",
+    "activity_indicator": "Espera, actualizando tu carrito..."
+  },
+  "delivery_type_view": {
+    "title": "Selecciona tipo de entrega",
+    "subTitle": "(Para deliveries usualmente enviamos con UPS)",
+    "pickup_cta": {
+      "caption": "Recoger"
+    },
+
+    "delivery_cta": {
+      "caption": "A domicilio",
+      "address_placeholder": "Selecciona tu dirección de entrega",
+      "delivery_option_tile": {
+        "caption_1": "Tu dirección actual:",
+        "caption_2": "Agrega una dirección diferente"
+      }
+    },
+    "different_delivery_view": {
+      "caption_1": "Quiéres el delivery en otra dirección?",
+      "caption_2": "Adelante!",
+      "input_placeholder": "Nueva dirección de entrega",
+      "cta_caption": "Confirmar & Continuar",
+      "activity_indicator": "Espera, confirmando tu dirección & calculando costos..."
+    }
+  },
+  "order_review_view": {
+    "header": "Resumen del pedido",
+    "order_info_tile": {
+      "handling": "Envío & fees",
+      "tax": "Impuestos estimados",
+      "discounts": "Descuentos",
+      "order_total": "Total del pedido"
+    },
+    "delivery_badge": {
+      "delivery": {
+        "caption_1": "Entrega",
+        "caption_2": "por solo {{shippingAmountInCents}}"
+      },
+      "pickup": {
+        "caption": "Recoger gratis"
+      }
+    },
+    "delivery_info_tile": {
+      "caption_pickup": "Recoger en",
+      "caption_delivery": "Entregar a",
+      "between": "Entre",
+      "common": {
+        "day_one": "día",
+        "day_other": "días"
+      },
+
+      "delivery_by": "Entrega por {{carrier_name}} - {{delivery_days}} {{day}}"
+    },
+    "cta": "Realizar el pago"
+  },
+  "payment_view": {
+    "title": "Tú información de pago",
+    "data_input_name": "Nombre del titular de la tarjeta de crédito",
+    "card_verified_caption": "Tarjeta verificada!",
+    "cta": {
+      "processing": "Procesando...",
+      "make": "Hacer el pago"
+    },
+    "activity_indicator": "Espera, procesando tu pago..."
+  },
+  "confirmation_view": {
+    "thanks": "Gracias por elegirnos!",
+    "order_placed": "Tu orden ha sido realizada exitosamente.",
+    "email_sent": "Hemos enviado tu recibo por correo electrónico",
+    "view_receipt_cta": "Ver recibo",
+    "go_home": "Volver a Shop"
+  }
 }

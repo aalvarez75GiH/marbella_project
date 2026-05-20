@@ -30,14 +30,127 @@
       "warehouse": "Connected to warehouse:"
     },
     "sign_in_status": "You are signed out!",
-    "sign_in_cta": "Sign in"
+    "sign_in_cta": "Sign in",
+    "activity_indicator": "Espera, cambiando a español..."
   },
   "login_screen": {
     "title": "Let's start logging in..."
   },
-  "cart": "Cart",
-  "checkout": "Checkout",
-  "delivery": "Delivery",
-  "pickup": "Pickup",
-  "order_review": "Order review"
+  "select_roast_type_view": {
+    "main_title": "Tap an option to select your roast type",
+    "secondary_title": "Each roast bring out unique flavors and aromas",
+    "roast_type_tiles": {
+      "captions": {
+        "light": "Light Roast",
+        "medium": "Medium Roast",
+        "dark": "Dark Roast"
+      },
+      "descriptions": {
+        "light": "The light roast highlights the original flavors of the coffee, with fruity and acidic notes.",
+        "medium": "The medium roast offers a balance between the original flavors and the roasted flavors",
+        "dark": " The dark roast highlights the roasted flavors of the coffee"
+      }
+    },
+    "tap_footer": "Tap a roast to see available coffees"
+  },
+  "shop_view": {
+    "header": {
+      "ground": "Ground beans coffee",
+      "whole": "Whole beans coffee"
+    }
+  },
+  "product_details_view": {
+    "header": "Product details",
+    "activity_indicator": "Wait, we are adding to shopping cart...",
+    "details_card": {
+      "stock_hurry_caption": "Hurry! Only {{stock}} left in stock.",
+      "stock_sold_out_caption": "Sorry, this product size is sold out!",
+      "stock_available_caption": "{{stock}} Available in stock, you are lucky!",
+      "details_info": {
+        "add_to_cart_caption": "Add to cart"
+      },
+      "product_size_option": {
+        "caption": "Size options"
+      },
+      "description_ctas": {
+        "specs": "Specifications",
+        "ingredients": "Ingredients"
+      }
+    }
+  },
+  "shopping_cart_view": {
+    "header": "My Cart",
+    "title": "Shopping Cart",
+    "cta": "Proceed to checkout",
+    "activity_indicator": "Wait, updating your cart..."
+  },
+  "delivery_type_view": {
+    "title": "Select delivery type",
+    "subTitle": "(For deliveries we usually ship with UPS)",
+    "pickup_cta": {
+      "caption": "Pick up"
+    },
+
+    "delivery_cta": {
+      "caption": "Delivery",
+      "address_placeholder": "Select your delivery address",
+      "delivery_option_tile": {
+        "caption_1": "Your current address:",
+        "caption_2": "Add a different address"
+      }
+    },
+    "different_delivery_view": {
+      "caption_1": "Do you want to enter a different delivery address?",
+      "caption_2": "Go ahead!",
+      "input_placeholder": "New delivery address",
+      "cta_caption": "Confirm & continue",
+      "activity_indicator": "Wait, Working with your new delivery address & delivery fees..."
+    }
+  },
+  "order_review_view": {
+    "header": "order review",
+    "order_info_tile": {
+      "handling": "Shipping & handling",
+      "tax": "Estimated tax",
+      "discounts": "Discounts",
+      "order_total": "Order total:"
+    },
+    "delivery_badge": {
+      "delivery": {
+        "caption_1": "Delivery",
+        "caption_2": "por solo {{shippingAmountInCents}}"
+      },
+      "pickup": {
+        "caption": "Free pick up"
+      }
+    },
+    "delivery_info_tile": {
+      "caption_pickup": "Pickup at",
+      "caption_delivery": "Delivery to",
+      "between": "Between",
+      "delivery_by": "Delivery by {{carrier_name}} - {{delivery_days}} {{day}}"
+    },
+    "cta": "Continue to payment"
+  },
+  "common": {
+    "day_one": "day",
+    "day_other": "days"
+  },
+  "payment_view": {
+    "title": "Tú información de pago",
+    "data_input_name": "Credit card holder Full name",
+    "card_verified_caption": "Card verified successfully!",
+    "cta": {
+      "processing": "Processing...",
+      "make": "Place your payment"
+    },
+    "activity_indicator": "Wait, we are processing your payment..."
+  },
+  "confirmation_view": {
+    "thanks": "Thanks for choosing us!",
+    "order_placed": "Order placed successfully!!",
+    "email_sent": "We have sent your receipt by email",
+    "view_receipt_cta": "View order receipt",
+    "go_home": "Tap to go Shop"
+  }
 }
