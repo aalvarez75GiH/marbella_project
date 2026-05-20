@@ -36,6 +36,9 @@
   "login_screen": {
     "title": "Let's start logging in..."
   },
+  "shop_products_view": {
+    "activity_indicator": "Wait, loading our products..."
+  },
   "select_roast_type_view": {
     "main_title": "Tap an option to select your roast type",
     "secondary_title": "Each roast bring out unique flavors and aromas",
@@ -51,7 +54,8 @@
         "dark": " The dark roast highlights the roasted flavors of the coffee"
       }
     },
-    "tap_footer": "Tap a roast to see available coffees"
+    "tap_footer": "Tap a roast to see available coffees",
+    "activity_indicator": "Wait..."
   },
   "shop_view": {
     "header": {
@@ -82,7 +86,19 @@
     "header": "My Cart",
     "title": "Shopping Cart",
     "cta": "Proceed to checkout",
-    "activity_indicator": "Wait, updating your cart..."
+    "activity_indicator": "Wait, updating your cart...",
+    "empty_cart_view": {
+      "user": {
+        "caption_1": "You are not logged in!",
+        "caption_2": "Go to menu and Sign in or Sign up",
+        "caption_3": "then go ahead and start filling your cart!!"
+      },
+      "filling": {
+        "caption_1": "Start filling your cart",
+        "caption_2": "as you add coffee products at Shop section",
+        "caption_3": " your cart will be shown up here..."
+      }
+    }
   },
   "delivery_type_view": {
     "title": "Select delivery type",
@@ -90,6 +106,7 @@
     "pickup_cta": {
       "caption": "Pick up"
     },
+    "activity_indicator": "Wait, we are calculating delivery fees...",
 
     "delivery_cta": {
       "caption": "Delivery",
@@ -161,6 +178,46 @@
     "payment_used": {
       "title": "Payment method used",
       "last_4": "Card ending in {{last_four}}"
+    }
+  },
+  "orders": {
+    "order_view": {
+      "snack_bar": {
+        "action_caption": "View QR",
+        "caption": "Show this QR code at merchant when pick up."
+      }
+    },
+    "rt_delivery_info_tile": {
+      "caption_pickup": "Pickup at",
+      "caption_delivery": "Delivery to",
+      "between": "Between",
+      "delivery_by": "Delivery by {{carrier_name}} - {{delivery_days}} {{day}}",
+      "away": "away"
+    },
+    "orders_tile": {
+      "date": "Order date:",
+      "order_number": "Order number:",
+      "total": "Order total:",
+      "pickup_since": "Pickup since {{short_formatted_date}}",
+      "shipping_eta": "Shipping estimated by {{ short_date}}",
+      "at": "at",
+      "status": {
+        "in_progress": "In Progress",
+        "finished": "Finished",
+        "refunded": "Refunded"
+      }
+    },
+    "orders_empty_view": {
+      "user_logged_out": {
+        "caption_1": "You are not logged in!",
+        "caption_2": "Go to menu and Sign in or Sign up",
+        "caption_3": "then go ahead and place orders!!"
+      },
+      "user_logged_in": {
+        "caption_1": "Start an order, Come on!!",
+        "caption_2": "as you make a purchase order at Shop section",
+        "caption_3": "it'll be shown up here"
+      }
     }
   }
 }

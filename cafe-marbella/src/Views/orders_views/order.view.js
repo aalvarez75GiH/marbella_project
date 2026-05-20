@@ -8,6 +8,7 @@ import {
 } from "@react-navigation/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { Snackbar } from "react-native-paper";
+import { useTranslation } from "react-i18next";
 
 import { getOrderByIdRequest } from "../../infrastructure/services/orders/orders.services";
 import { Container } from "../../components/containers/general.containers";
@@ -27,6 +28,7 @@ export default function Order_View() {
   const navigation = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
   const route = useRoute();
+  const { t } = useTranslation();
   // const { order } = route.params;
   const initialOrder = route?.params?.order ?? null;
   const orderIdFromParams =
@@ -267,7 +269,7 @@ export default function Order_View() {
           onDismiss={() => {}}
           duration={Number.POSITIVE_INFINITY}
           action={{
-            label: "View QR",
+            label: t("orders.order_view.snack_bar.action_caption"),
             labelStyle: { color: "#FFFFFF" },
             onPress: () => {
               setPickupSnackbarVisible(false);
@@ -293,7 +295,7 @@ export default function Order_View() {
           }}
         >
           <Text variant="dm_sans_bold_16_white">
-            Show this QR code at merchant when pick up.
+            {t("orders.order_view.snack_bar.caption")}
           </Text>
         </Snackbar>
       </>

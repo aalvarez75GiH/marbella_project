@@ -66,7 +66,7 @@ export default function Shop_Products_View() {
         <Spacer position="top" size="large" />
         {(!ready || whLoading || isLoading) && (
           <Global_activity_indicator
-            caption="Loading products..."
+            caption={t("shop_products_view.activity_indicator")}
             caption_width="65%"
           />
         )}

@@ -93,7 +93,10 @@ export default function Select_Roast_Type_View() {
         <Spacer position="top" size="large" />
 
         {isLoading && (
-          <Global_activity_indicator caption="Wait..." caption_width="65%" />
+          <Global_activity_indicator
+            caption={t("select_roast_type_view.activity_indicator")}
+            caption_width="65%"
+          />
         )}
         {!isLoading && (
           <>

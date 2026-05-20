@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { Image } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { useTheme } from "styled-components/native";
 import { fonts, fontWeights } from "../../infrastructure/theme/fonts";
@@ -17,6 +18,7 @@ import { AuthenticationContext } from "../../infrastructure/services/authenticat
 
 export default function Empty_My_Orders_View() {
   const theme = useTheme();
+  const { t } = useTranslation();
 
   const { user } = useContext(AuthenticationContext);
   const { user_id } = user || {};
@@ -42,22 +44,28 @@ export default function Empty_My_Orders_View() {
         <Spacer position="top" size="large" />
         {user_id === undefined && (
           <>
-            <Text variant="raleway_bold_20">You are not logged in!</Text>
-            <Text variant="raleway_medium_16">
-              Go to menu and Sign in or Sign up
+            <Text variant="raleway_bold_20">
+              {t("orders.orders_empty_view.user_logged_out.caption_1")}
             </Text>
             <Text variant="raleway_medium_16">
-              then go ahead and place orders!!
+              {t("orders.orders_empty_view.user_logged_out.caption_2")}
+            </Text>
+            <Text variant="raleway_medium_16">
+              {t("orders.orders_empty_view.user_logged_out.caption_3")}
             </Text>
           </>
         )}
         {user_id !== undefined && (
           <>
-            <Text variant="raleway_bold_20">Start an order, Come on!!</Text>
-            <Text variant="raleway_medium_16">
-              as you make a purchase order at Shop section
+            <Text variant="raleway_bold_20">
+              {t("orders.orders_empty_view.user_logged_in.caption_1")}
             </Text>
-            <Text variant="raleway_medium_16">it'll be shown up here</Text>
+            <Text variant="raleway_medium_16">
+              {t("orders.orders_empty_view.user_logged_in.caption_2")}
+            </Text>
+            <Text variant="raleway_medium_16">
+              {t("orders.orders_empty_view.user_logged_in.caption_3")}
+            </Text>
           </>
         )}
       </Container>

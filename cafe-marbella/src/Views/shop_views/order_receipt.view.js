@@ -127,14 +127,14 @@ export default function Shop_Order_Receipt_View() {
         />
       ) : (
         <>
-          {/* <Go_Back_Header
+          <Go_Back_Header
             action={() => navigation.goBack()}
             label="Order receipt"
-          /> */}
-          <Go_Back_Header_With_Label_And_Menu
+          />
+          {/* <Go_Back_Header_With_Label_And_Menu
             action_1={() => navigation.goBack()}
             action_2={() => navigation.navigate("Menu_View")}
-          />
+          /> */}
           <ScrollView
             contentContainerStyle={{
               flexGrow: 1,

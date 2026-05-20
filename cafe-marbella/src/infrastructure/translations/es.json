@@ -36,6 +36,9 @@
   "login_screen": {
     "title": "Comencemos inciando sesión..."
   },
+  "shop_products_view": {
+    "activity_indicator": "Espera, cargando nuestros productos..."
+  },
   "select_roast_type_view": {
     "main_title": "Presiona una opción para el tostado",
     "secondary_title": "Cada tostado resalta sabores y aromas únicos",
@@ -51,7 +54,8 @@
         "dark": "El tostado oscuro resalta los sabores tostados del café"
       }
     },
-    "tap_footer": "Presiona un tostado para ver los cafés disponibles"
+    "tap_footer": "Presiona un tostado para ver los cafés disponibles",
+    "activity_indicator": "Espera..."
   },
   "shop_view": {
     "header": {
@@ -82,7 +86,19 @@
     "header": "Mi Carrito",
     "title": "Carrito de compras",
     "cta": "Proceder al pago",
-    "activity_indicator": "Espera, actualizando tu carrito..."
+    "activity_indicator": "Espera, actualizando tu carrito...",
+    "empty_cart_view": {
+      "user": {
+        "caption_1": "No has iniciado sesión!",
+        "caption_2": "Ve al menú e inicia sesión o regístrate",
+        "caption_3": "luego anda y comienza a llenar tu carrito!!"
+      },
+      "filling": {
+        "caption_1": "Comienza a llenar tu carrito",
+        "caption_2": "Ve a Shop y elige tus productos favoritos,",
+        "caption_3": "¡te encantarán!"
+      }
+    }
   },
   "delivery_type_view": {
     "title": "Selecciona tipo de entrega",
@@ -90,6 +106,7 @@
     "pickup_cta": {
       "caption": "Recoger"
     },
+    "activity_indicator": "Espera, calculando fees de entrega...",
 
     "delivery_cta": {
       "caption": "A domicilio",
@@ -162,6 +179,51 @@
     "payment_used": {
       "title": "Método de pago utilizado",
       "last_4": "Tarjeta terminada en {{last_four}}"
+    }
+  },
+  "orders": {
+    "order_view": {
+      "snack_bar": {
+        "action_caption": "Ver QR",
+        "caption": "Muestra este código QR en tu tienda local para recoger tu orden"
+      }
+    },
+    "rt_delivery_info_tile": {
+      "caption_pickup": "Recoger en",
+      "caption_delivery": "Entregar a",
+      "between": "Entre",
+      "delivery_by": "Entrega por {{carrier_name}} - {{delivery_days}} {{day}}",
+      "away": "de distancia",
+      "common": {
+        "day_one": "día",
+        "day_other": "días"
+      }
+    },
+
+    "orders_tile": {
+      "date": "Fecha de la órden:",
+      "order_number": "Número de orden:",
+      "total": "Total:",
+      "pickup_since": "Recoger a partir de {{short_formatted_date}}",
+      "shipping_eta": "Entrega estimada para {{ short_date}}",
+      "at": "en",
+      "status": {
+        "in_progress": "En progreso",
+        "finished": "Finalizado",
+        "refunded": "Reembolsado"
+      }
+    },
+    "orders_empty_view": {
+      "user_logged_out": {
+        "caption_1": "No has iniciado sesión!",
+        "caption_2": "Ve al menú e inicia sesión o regístrate",
+        "caption_3": "luego anda y comienza a hacer órdenes!!"
+      },
+      "user_logged_in": {
+        "caption_1": "Comienza a hacer órdenes",
+        "caption_2": "Ve a Shop y elige tus cafés favoritos,",
+        "caption_3": "¡te encantarán!"
+      }
     }
   }
 }

@@ -108,7 +108,8 @@ export default function Shop_Delivery_Type_View() {
     <SafeArea background_color={theme.colors.bg.elements_bg}>
       {isCheckoutLoading ? (
         <Global_activity_indicator
-          caption="Wait, we are calculating delivery fees..."
+          // caption="Wait, we are calculating delivery fees..."
+          caption={t("delivery_type_view.activity_indicator")}
           caption_width="65%"
         />
       ) : (

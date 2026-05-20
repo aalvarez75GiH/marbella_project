@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { View, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 import { Text } from "../../infrastructure/typography/text.component.js";
 import {
@@ -28,15 +29,24 @@ export const My_Orders_Tile = ({
   const formatted_currency = formatCentsToUSD;
   const { order_delivery_address, shipping_rate } = item || {};
   const { estimated_delivery_date } = shipping_rate || {};
+  const iOs = Platform.OS === "ios";
+  const { t } = useTranslation();
 
+  const translatedStatus =
+    order_status === "In Progress"
+      ? t("orders.orders_tile.status.in_progress")
+      : order_status === "Finished"
+      ? t("orders.orders_tile.status.finished")
+      : t("orders.orders_tile.status.refunded");
+
+  let short_date = "";
   if (delivery_type === "delivery" && estimated_delivery_date) {
+    short_date = formatDate(estimated_delivery_date).short;
     console.log(
       "ORDER INFO TILE - ESTIMATED DELIVERY DATE FORMATTED:",
-      formatDate(estimated_delivery_date).short
+      short_date
     );
   }
-
-  const iOs = Platform.OS === "ios";
 
   const navigation = useNavigation();
   return delivery_type === "pickup" ? (
@@ -71,9 +81,15 @@ export const My_Orders_Tile = ({
             padding_vertical="4px"
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_bold_14">Order date:</Text>
-              <Text variant="dm_sans_bold_14">Order number:</Text>
-              <Text variant="dm_sans_bold_14">Order total:</Text>
+              <Text variant="dm_sans_bold_14">
+                {t("orders.orders_tile.date")}
+              </Text>
+              <Text variant="dm_sans_bold_14">
+                {t("orders.orders_tile.order_number")}
+              </Text>
+              <Text variant="dm_sans_bold_14">
+                {t("orders.orders_tile.total")}
+              </Text>
             </Spacer>
           </Container>
 
@@ -128,7 +144,7 @@ export const My_Orders_Tile = ({
                   : "dm_sans_bold_14"
               }
             >
-              {order_status}
+              {translatedStatus}
             </Text>
           </Container>
         </Container>
@@ -161,7 +177,9 @@ export const My_Orders_Tile = ({
           >
             <Spacer position="left" size="large">
               <Text variant="dm_sans_bold_14">
-                Pick Up since {short_formatted_date}
+                {t("orders.orders_tile.pickup_since", {
+                  short_formatted_date: short_formatted_date,
+                })}
               </Text>
               <Text variant="dm_sans_regular_14">{warehouse_name}</Text>
               <Text variant="dm_sans_regular_14">{warehouse_address}</Text>
@@ -219,9 +237,15 @@ export const My_Orders_Tile = ({
             padding_vertical="4px"
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_bold_14">Order date:</Text>
-              <Text variant="dm_sans_bold_14">Order number:</Text>
-              <Text variant="dm_sans_bold_14">Order total:</Text>
+              <Text variant="dm_sans_bold_14">
+                {t("orders.orders_tile.date")}
+              </Text>
+              <Text variant="dm_sans_bold_14">
+                {t("orders.orders_tile.order_number")}
+              </Text>
+              <Text variant="dm_sans_bold_14">
+                {t("orders.orders_tile.total")}
+              </Text>
             </Spacer>
           </Container>
 
@@ -314,12 +338,13 @@ export const My_Orders_Tile = ({
           >
             <Spacer position="left" size="large">
               <Text variant="dm_sans_bold_14">
-                Shipping estimated by{" "}
-                {formatDate(estimated_delivery_date).short}
-                {/* Deliver between 20 - 25 Dec, 2025 */}
+                {t("orders.orders_tile.shipping_eta", {
+                  short_date: short_date,
+                })}{" "}
               </Text>
               <Text variant="dm_sans_regular_14">
-                at {order_delivery_address} - more info...
+                {t("orders.orders_tile.at")} {order_delivery_address} - more
+                info...
               </Text>
             </Spacer>
           </Container>

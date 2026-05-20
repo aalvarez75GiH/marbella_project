@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { Image } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { useTheme } from "styled-components/native";
 import { fonts, fontWeights } from "../../infrastructure/theme/fonts";
@@ -19,6 +20,7 @@ export default function Empty_Shopping_Cart_View() {
   const { user } = useContext(AuthenticationContext);
   const { user_id } = user || {};
   const theme = useTheme();
+  const { t } = useTranslation();
   return (
     <SafeArea background_color={theme.colors.bg.elements_bg}>
       <Container
@@ -42,23 +44,27 @@ export default function Empty_Shopping_Cart_View() {
           <Spacer position="top" size="large" />
           {user_id === undefined && (
             <>
-              <Text variant="raleway_bold_20">You are not logged in!</Text>
-              <Text variant="raleway_medium_16">
-                Go to menu and Sign in or Sign up
+              <Text variant="raleway_bold_20">
+                {t("shopping_cart_view.empty_cart_view.user.caption_1")}
               </Text>
               <Text variant="raleway_medium_16">
-                then go ahead and start filling your cart!!
+                {t("shopping_cart_view.empty_cart_view.user.caption_2")}
+              </Text>
+              <Text variant="raleway_medium_16">
+                {t("shopping_cart_view.empty_cart_view.user.caption_3")}
               </Text>
             </>
           )}
           {user_id !== undefined && (
             <>
-              <Text variant="raleway_bold_20">Start filling your cart </Text>
-              <Text variant="raleway_medium_16">
-                as you add coffee products at Shop section
+              <Text variant="raleway_bold_20">
+                {t("shopping_cart_view.empty_cart_view.filling.caption_1")}
               </Text>
               <Text variant="raleway_medium_16">
-                your cart will be shown up here...
+                {t("shopping_cart_view.empty_cart_view.filling.caption_2")}
+              </Text>
+              <Text variant="raleway_medium_16">
+                {t("shopping_cart_view.empty_cart_view.filling.caption_3")}
               </Text>
             </>
           )}

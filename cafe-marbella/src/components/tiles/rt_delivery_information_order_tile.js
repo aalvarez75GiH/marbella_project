@@ -2,6 +2,7 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Platform, Linking } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 import { useFocusEffect } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 import { Text } from "../../infrastructure/typography/text.component.js";
 import {
@@ -33,6 +34,7 @@ export const RT_Delivery_Information_Order_Tile = ({
   carrier_delivery_days,
   delivery_days,
 }) => {
+  const { t } = useTranslation();
   const [realTimeDistanceInformation, setRealTimeDistanceInformation] =
     useState(null);
   //   console.log("Delivery_Information_Order_Tile delivery_type:", delivery_type);
@@ -128,7 +130,9 @@ export const RT_Delivery_Information_Order_Tile = ({
             //color={"lightblue"}
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_bold_22">Pickup at</Text>
+              <Text variant="dm_sans_bold_22">
+                {t("orders.rt_delivery_info_tile.caption_pickup")}
+              </Text>
             </Spacer>
             <Spacer position="left" size="large">
               <Text variant="dm_sans_bold_14">{warehouse_name}</Text>
