@@ -3,22 +3,17 @@ import { Image } from "react-native";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 
-import {
-  Action_Container,
-  Container,
-} from "../../components/containers/general.containers";
+import { Container } from "../../components/containers/general.containers";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
-import RemoveIcon from "../../../assets/my_icons/remove_icon.svg";
 import { Text } from "../../infrastructure/typography/text.component";
 
-import { CartContext } from "../../infrastructure/services/cart/cart.context";
 import { GlobalContext } from "../../infrastructure/services/global/global.context";
 
 export const Product_Cart_Item_For_Review_Tile = ({ product, image }) => {
   const theme = useTheme();
-  const navigation = useNavigation();
-  const { increaseCartItemQty, decreaseCartItemQty, removingProductFromCart } =
-    useContext(CartContext);
+
+  console.log("IMAGE:", image);
+  const imageSource = typeof image === "string" ? { uri: image } : image;
 
   const { size_variants } = product || {};
   const { sizeLabel, sizeLabel_ounces, price, quantity } = size_variants[0];
@@ -26,17 +21,12 @@ export const Product_Cart_Item_For_Review_Tile = ({ product, image }) => {
   const { formatCentsToUSD } = useContext(GlobalContext);
   const price_formatted = formatCentsToUSD(price);
 
+  const { title, product_name, product_subtitle } = product || {};
+
   const cartTitle = product.title; // "Cafe Marbella"
   const cartCountry = product.originCountry;
   const cartDesc =
     product.grindType === "whole" ? "Whole bean coffee" : "Ground bean coffee";
-
-  const onTrashPress = async (item) => {
-    const res = await removingProductFromCart(item);
-    if (res?.ok && res?.becameEmpty) {
-      navigation.goBack(); // ✅ only happens once, on the correct screen
-    }
-  };
 
   return (
     <>
@@ -51,7 +41,7 @@ export const Product_Cart_Item_For_Review_Tile = ({ product, image }) => {
         <Container width="30%" height="100%" color={theme.colors.ui.secondary}>
           <Image
             // source={images[item.image]}
-            source={image}
+            source={imageSource}
             style={{
               width: "65%",
               height: "65%",
