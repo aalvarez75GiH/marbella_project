@@ -3,6 +3,7 @@ import QRCode from "react-native-qrcode-svg";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { doc, onSnapshot } from "firebase/firestore"; // make sure to import your Firestore instance and the onSnapshot function
 import { db } from "../../../fb.js"; // adjust the path to your Firestore instance
+import { useTranslation } from "react-i18next";
 
 import { Container } from "../../components/containers/general.containers";
 import { theme } from "../../infrastructure/theme/index";
@@ -15,6 +16,7 @@ import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 
 export default function Order_Pickup_QR_View() {
   const route = useRoute();
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const { orderId, token, size } = route.params;
   const qrValue = `marbella://pickup/${token}`;
@@ -102,13 +104,15 @@ export default function Order_Pickup_QR_View() {
       >
         <Container width="100%" height="100%" justify="center" align="center">
           <Global_activity_indicator
-            caption="Wait, we are finishing up your order..."
+            caption={t(
+              "qr_code_view.screen_states.finishing.activity_indicator"
+            )}
             caption_width="65%"
-            // color={"red"}
           />
-          {/* <ActivityIndicator size="large" /> */}
           <Spacer position="top" size="large" />
-          <Text variant="dm_sans_bold_18">Updating your order...</Text>
+          <Text variant="dm_sans_bold_18">
+            {t("qr_code_view.screen_states.finishing.text")}
+          </Text>
         </Container>
       </SafeArea>
     );
@@ -121,13 +125,16 @@ export default function Order_Pickup_QR_View() {
       >
         <Container width="100%" height="100%" justify="center" align="center">
           <Global_activity_indicator
-            caption="Wait, we are refunding up your order..."
+            caption={t(
+              "qr_code_view.screen_states.refunding.activity_indicator"
+            )}
             caption_width="65%"
-            // color={"red"}
           />
           {/* <ActivityIndicator size="large" /> */}
           <Spacer position="top" size="large" />
-          <Text variant="dm_sans_bold_18">Updating your order...</Text>
+          <Text variant="dm_sans_bold_18">
+            {t("qr_code_view.screen_states.refunding.text")}
+          </Text>
         </Container>
       </SafeArea>
     );
@@ -146,10 +153,12 @@ export default function Order_Pickup_QR_View() {
           align="center"
           color={theme.colors.bg.elements_bg}
         >
-          <Text variant="dm_sans_bold_20">Thank you for trusting us!</Text>
+          <Text variant="dm_sans_bold_20">
+            {t("qr_code_view.screen_states.finished.text_1")}
+          </Text>
           <Spacer position="top" size="medium" />
           <Text variant="dm_sans_regular_16">
-            Your order has been marked as finished.
+            {t("qr_code_view.screen_states.finished.text_2")}
           </Text>
           <Spacer position="top" size="extraLarge" />
           <Regular_CTA
@@ -159,7 +168,6 @@ export default function Order_Pickup_QR_View() {
             border_radius={"40px"}
             caption={"Continue"}
             caption_text_variant="dm_sans_bold_20_white"
-            // disabled={isLoading} // ✅ prevent double taps if your CTA supports it
             action={() => {
               setScreenState("idle");
               navigation.popToTop();
@@ -230,7 +238,7 @@ export default function Order_Pickup_QR_View() {
         />
         <Spacer position="top" size="large" />
         <Spacer position="top" size="large" />
-        <Text variant="dm_sans_bold_16"> Show this QR code at merchant</Text>
+        <Text variant="dm_sans_bold_16">{t("qr_code_view.caption")}</Text>
       </Container>
     </SafeArea>
   );

@@ -148,7 +148,8 @@
       "delivery_by": "Delivery by {{carrier_name}} - {{delivery_days}} {{day}}",
       "away": "away"
     },
-    "cta": "Continue to payment"
+    "cta": "Continue to payment",
+    "products_in_the_order": "Products in the order"
   },
   "common": {
     "day_one": "day",
@@ -173,7 +174,7 @@
   },
   "order_receipt_view": {
     "shipment_details": "Shipment details",
-    "products": "Products in the order",
+    "products_in_the_order": "Products in the order",
     "cta": "Done",
     "payment_used": {
       "title": "Payment method used",
@@ -185,7 +186,9 @@
       "snack_bar": {
         "action_caption": "View QR",
         "caption": "Show this QR code at merchant when pick up."
-      }
+      },
+      "shipment_details": "Shipment details",
+      "products_in_the_order": "Products in the order"
     },
     "rt_delivery_info_tile": {
       "caption_pickup": "Pickup at",
@@ -217,6 +220,24 @@
         "caption_1": "Start an order, Come on!!",
         "caption_2": "as you make a purchase order at Shop section",
         "caption_3": "it'll be shown up here"
+      }
+    }
+  },
+  "qr_code_view": {
+    "title": "Your QR code",
+    "caption": "Show this QR code at merchant when pick up.",
+    "screen_states": {
+      "finishing": {
+        "activity_indicator": "Wait, we are finishing up your order...",
+        "text": "Updating your order..."
+      },
+      "refunding": {
+        "activity_indicator": "Wait, we are refunding up your order...",
+        "text": "Updating your order..."
+      },
+      "finished": {
+        "text_1": "Thank you for trusting us!",
+        "text_2": "Your order has been marked as finished."
       }
     }
   }

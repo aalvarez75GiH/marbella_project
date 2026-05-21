@@ -201,7 +201,7 @@ export default function Order_View() {
             >
               <Spacer position="left" size="large">
                 <Text variant="dm_sans_bold_20" style={{ marginLeft: 16 }}>
-                  Shipment details
+                  {t("orders.order_view.shipment_details")}
                 </Text>
               </Spacer>
             </Container>
@@ -246,8 +246,10 @@ export default function Order_View() {
               color={theme.colors.bg.elements_bg}
             >
               <Spacer position="top" size="large" />
-              <Spacer position="left" size="large">
-                <Text variant="dm_sans_bold_20">Products in the order</Text>
+              <Spacer position="left" size="extraLarge">
+                <Text variant="dm_sans_bold_20">
+                  {t("orders.order_view.products_in_the_order")}
+                </Text>
               </Spacer>
             </Container>
             <Spacer position="top" size="large" />

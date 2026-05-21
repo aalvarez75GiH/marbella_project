@@ -153,7 +153,8 @@
       "delivery_by": "Entrega por {{carrier_name}} - {{delivery_days}} {{day}}",
       "away": "de distancia"
     },
-    "cta": "Realizar el pago"
+    "cta": "Realizar el pago",
+    "products_in_the_order": "Productos en el pedido"
   },
   "payment_view": {
     "title": "Tú información de pago",
@@ -174,7 +175,7 @@
   },
   "order_receipt_view": {
     "shipment_details": "Detalles del envío",
-    "products": "Productos en la orden",
+    "products_in_the_order": "Productos en la orden",
     "cta": "Listo",
     "payment_used": {
       "title": "Método de pago utilizado",
@@ -186,7 +187,9 @@
       "snack_bar": {
         "action_caption": "Ver QR",
         "caption": "Muestra este código QR en tu tienda local para recoger tu orden"
-      }
+      },
+      "shipment_details": "Detalles del envío",
+      "products_in_the_order": "Productos en la orden"
     },
     "rt_delivery_info_tile": {
       "caption_pickup": "Recoger en",
@@ -223,6 +226,24 @@
         "caption_1": "Comienza a hacer órdenes",
         "caption_2": "Ve a Shop y elige tus cafés favoritos,",
         "caption_3": "¡te encantarán!"
+      }
+    }
+  },
+  "qr_code_view": {
+    "title": "Tu código QR",
+    "caption": "Muestra este código QR al recoger tu orden",
+    "screen_states": {
+      "finishing": {
+        "activity_indicator": "Espera, estamos finalizando tu orden...",
+        "text": "Actualizando tu orden..."
+      },
+      "refunding": {
+        "activity_indicator": "Espera, estamos reembolsando tu orden...",
+        "text": "Actualizando tu orden..."
+      },
+      "finished": {
+        "text_1": "Gracias por confiar en nosotros!",
+        "text_2": "Tu orden ha sido marcada como finalizada."
       }
     }
   }

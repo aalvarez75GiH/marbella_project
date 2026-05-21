@@ -37,14 +37,10 @@ export const RT_Delivery_Information_Order_Tile = ({
   const { t } = useTranslation();
   const [realTimeDistanceInformation, setRealTimeDistanceInformation] =
     useState(null);
-  //   console.log("Delivery_Information_Order_Tile delivery_type:", delivery_type);
-  //   console.log("latitude inside tile:", warehouse_lat);
-  //   console.log("longitude inside tile:", warehouse_lng);
 
   const { gettingRealTimeDistanceToOrderWH, isLoading } =
     useContext(WarehouseContext);
   const { deviceLat, deviceLng } = useContext(GeolocationContext);
-  const day_or_days = delivery_days === 1 ? "day" : "days";
   useFocusEffect(
     useCallback(() => {
       if (!deviceLat || !deviceLng || !warehouse_lat || !warehouse_lng) return;
@@ -164,7 +160,8 @@ export const RT_Delivery_Information_Order_Tile = ({
           >
             <Spacer position="left" size="large">
               <Text variant="dm_sans_regular_14">
-                Between {opening_time} - {closing_time}
+                {t("orders.rt_delivery_info_tile.between")} {opening_time} -{" "}
+                {closing_time}
               </Text>
             </Spacer>
           </Container>
@@ -192,7 +189,7 @@ export const RT_Delivery_Information_Order_Tile = ({
                   {realTimeDistanceInformation?.distance_in_miles ??
                     distance_to_warehouse_mi ??
                     "--"}{" "}
-                  away
+                  {t("orders.rt_delivery_info_tile.away")}
                 </Text>
               )}
             </Spacer>
@@ -241,7 +238,9 @@ export const RT_Delivery_Information_Order_Tile = ({
             //color={"lightblue"}
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_bold_22">Delivey at</Text>
+              <Text variant="dm_sans_bold_22">
+                {t("orders.rt_delivery_info_tile.caption_delivery")}
+              </Text>
             </Spacer>
           </Container>
 
@@ -266,7 +265,11 @@ export const RT_Delivery_Information_Order_Tile = ({
           >
             <Spacer position="left" size="large">
               <Text variant="dm_sans_bold_14">
-                Delivery by {carrier_name} - {delivery_days} {day_or_days}
+                {t("orders.rt_delivery_info_tile.delivery_by", {
+                  carrier_name,
+                  delivery_days,
+                  day: t("common.day", { count: delivery_days }),
+                })}
               </Text>
             </Spacer>
             <Spacer position="left" size="large">

@@ -222,7 +222,7 @@ export default function Shop_Order_Receipt_View() {
                 <Spacer position="top" size="large" />
                 <Spacer position="left" size="extraLarge">
                   <Text variant="dm_sans_bold_20">
-                    {t("order_receipt_view.products")}
+                    {t("order_receipt_view.products_in_the_order")}
                   </Text>
                 </Spacer>
               </Container>

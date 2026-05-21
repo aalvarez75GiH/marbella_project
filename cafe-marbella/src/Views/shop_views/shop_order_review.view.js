@@ -206,8 +206,10 @@ export default function Shop_Order_Review_View() {
                 color={theme.colors.bg.elements_bg}
               >
                 <Spacer position="top" size="large" />
-                <Spacer position="left" size="large">
-                  <Text variant="dm_sans_bold_20">Products in the order</Text>
+                <Spacer position="left" size="extraLarge">
+                  <Text variant="dm_sans_bold_20">
+                    {t("order_review_view.products_in_the_order")}
+                  </Text>
                 </Spacer>
               </Container>
               <Spacer position="top" size="large" />

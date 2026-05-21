@@ -192,7 +192,7 @@ export default function Cart_Order_Receipt_View() {
                 <Spacer position="top" size="large" />
                 <Spacer position="left" size="large">
                   <Text variant="dm_sans_bold_20">
-                    {t("order_receipt_view.products")}
+                    {t("order_receipt_view.products_in_the_order")}
                   </Text>
                 </Spacer>
               </Container>
@@ -225,13 +225,6 @@ export default function Cart_Order_Receipt_View() {
               action={async () => {
                 setMyOrder(myOrder_schema);
                 setCardVerified(false);
-                // const warehouse_by_id = await gettingWarehouseByID(
-                //   warehouse_id
-                // );
-                // console.log(
-                //   "MY WAREHOUSE BEFORE NAVIGATING BACK TO HOME: ",
-                //   JSON.stringify(warehouse_by_id, null, 2)
-                // );
 
                 if (comingFrom === "Shopping_Cart_View") {
                   rootNavigate("App", {
