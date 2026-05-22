@@ -1,6 +1,7 @@
 import React from "react";
 import QRCode from "react-native-qrcode-svg";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 import { Container } from "../../components/containers/general.containers";
 import { theme } from "../../infrastructure/theme/index";
@@ -12,6 +13,7 @@ import { Go_Back_Header } from "../../components/headers/goBack_with_label.heade
 
 export default function Customer_QR_View() {
   const route = useRoute();
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const { customer_token, size } = route.params;
   //   const qrValue = `marbella://pickup/${token}`;
@@ -22,7 +24,10 @@ export default function Customer_QR_View() {
       background_color={theme.colors.bg.elements_bg}
       style={{ flex: 1 }}
     >
-      <Go_Back_Header action={() => navigation.goBack()} label="Your QR code" />
+      <Go_Back_Header
+        action={() => navigation.goBack()}
+        caption={t("menu.qr_code_view.header")}
+      />
 
       <Container
         justify="center"
@@ -39,13 +44,20 @@ export default function Customer_QR_View() {
         />
         <Spacer position="top" size="large" />
         <Spacer position="top" size="large" />
-        <Text variant="dm_sans_bold_16"> Show this QR code at merchant</Text>
         <Text variant="dm_sans_bold_16">
           {" "}
-          so they can get your orders, payments
+          {t("menu.qr_code_view.caption_1")}
         </Text>
-        <Text variant="dm_sans_bold_16">and other info to make your</Text>
-        <Text variant="dm_sans_bold_16">experience nicer!</Text>
+        <Text variant="dm_sans_bold_16">
+          {" "}
+          {t("menu.qr_code_view.caption_2")}
+        </Text>
+        <Text variant="dm_sans_bold_16">
+          {t("menu.qr_code_view.caption_3")}
+        </Text>
+        <Text variant="dm_sans_bold_16">
+          {t("menu.qr_code_view.caption_4")}
+        </Text>
       </Container>
     </SafeArea>
   );

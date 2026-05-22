@@ -59,6 +59,26 @@
         "cta": "Cambiar",
         "activity_indicator": "Espera, cambiando tu cuenta..."
       }
+    },
+    "personal_info_view": {
+      "activity_indicator": "Espera, actualizando tu información personal...",
+      "title": " Información personal",
+      "name_input_placeholder": "Nombre",
+      "last_name_input_placeholder": "Apellido",
+      "email_input_placeholder": "Email",
+      "phone_input_placeholder": "Número de teléfono",
+      "address_input_placeholder": "Introduzca su dirección",
+      "cta": "Actualizar",
+      "snack_bar_updated": "Información actualizada exitosamente!",
+      "snack_bar_auth_error": "Por favor, vuelve a iniciar sesión.",
+      "snack_bar_email_used": "La dirección de email ya está en uso, por favor elige otra."
+    },
+    "qr_code_view": {
+      "header": "Tu código QR",
+      "caption_1": "Muestra este codigo QR",
+      "caption_2": "así ellos pueden ver tus órdenes, pagos",
+      "caption_3": "y otra información importante ",
+      "caption_4": "y brindarte una mejor experiencia"
     }
   },
   "login_screen": {

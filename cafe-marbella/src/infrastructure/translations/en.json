@@ -59,6 +59,26 @@
         "cta": "Switch",
         "activity_indicator": "Wait, we are switching your account..."
       }
+    },
+    "personal_info_view": {
+      "activity_indicator": "Wait, we are updating your info...",
+      "title": "Personal information",
+      "name_input_placeholder": "First Name",
+      "last_name_input_placeholder": "Last Name",
+      "email_input_placeholder": "Email address",
+      "phone_input_placeholder": "Phone number",
+      "address_input_placeholder": "Enter an address",
+      "cta": "Update",
+      "snack_bar_updated": "Your information was updated successfully.",
+      "snack_bar_auth_error": "Please log in again to change your email.",
+      "snack_bar_email_used": "Email already in used. Enter a different one..."
+    },
+    "qr_code_view": {
+      "header": "Your QR code",
+      "caption_1": "Show this QR code at merchant",
+      "caption_2": "so they can get your orders, payments",
+      "caption_3": "and other info to make your",
+      "caption_4": "experience nicer!"
     }
   },
   "login_screen": {

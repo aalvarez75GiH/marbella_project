@@ -13,14 +13,14 @@ import {
   Platform,
   ScrollView,
   Keyboard,
-  TouchableOpacity,
   Alert,
 } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { Snackbar } from "react-native-paper";
+import { useTranslation } from "react-i18next";
 
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header.js";
@@ -33,8 +33,6 @@ import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 import { put_update_userinfo_Request } from "../../infrastructure/services/authentication/authentication.sevices.js";
 import { auth } from "../../../fb.js";
 
-import ClearIcon from "../../../assets/my_icons/delete_clear_icon.svg";
-
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { GeolocationContext } from "../../infrastructure/services/geolocation/geolocation.context.js";
 import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
@@ -42,6 +40,7 @@ import { GlobalContext } from "../../infrastructure/services/global/global.conte
 export default function Personal_Information_View() {
   const navigation = useNavigation();
   const theme = useTheme();
+  const { t } = useTranslation();
 
   const [isLastNameFocused, setIsLastNameFocused] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -112,7 +111,6 @@ export default function Personal_Information_View() {
 
       setUserToDB((prev) => ({
         ...prev,
-        // keep anything already in prev, but preload from user
         first_name: user?.first_name ?? prev?.first_name ?? "",
         last_name: user?.last_name ?? prev?.last_name ?? "",
         email: user?.email ?? prev?.email ?? "",
@@ -143,6 +141,19 @@ export default function Personal_Information_View() {
     "USER TO DB AT PERSONAL INFO VIEW:",
     JSON.stringify(userToDB, null, 2)
   );
+  // ************** UPDATE CTA VISIBILITY ***************
+  const normalize = (v = "") => String(v ?? "").trim();
+
+  const hasChanges = useMemo(() => {
+    return (
+      normalize(userToDB?.first_name) !== normalize(user?.first_name) ||
+      normalize(userToDB?.last_name) !== normalize(user?.last_name) ||
+      normalize(userToDB?.email).toLowerCase() !==
+        normalize(user?.email).toLowerCase() ||
+      normalize(userToDB?.phone_number) !== normalize(user?.phone_number) ||
+      normalize(userToDB?.address) !== normalize(user?.address)
+    );
+  }, [userToDB, user]);
 
   //   ************** PHONE VALIDATION LOGIC ***************
   const onlyDigits = (s = "") => String(s).replace(/\D/g, "");
@@ -156,33 +167,6 @@ export default function Personal_Information_View() {
     return `(${digits.slice(0, 3)})${digits.slice(3, 6)}.${digits.slice(6)}`;
   };
 
-  const phoneDigits = useMemo(
-    () => onlyDigits(userToDB?.phone_number || ""),
-    [userToDB?.phone_number]
-  );
-  const isPhoneComplete = phoneDigits.length === 10;
-  // **************************************************************
-
-  //   ************** GOOGLE AUTO COMPLETE VALIDATION LOGIC ***************
-
-  const placesQuery = {
-    key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
-    language: "en",
-    components: "country:us",
-    types: "geocode",
-    ...(typeof deviceLat === "number" && typeof deviceLng === "number"
-      ? { location: `${deviceLat},${deviceLng}`, radius: 50000 }
-      : {}),
-  };
-
-  const androidPlacesQuery = {
-    key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
-    language: "en",
-    components: "country:us",
-    ...(typeof deviceLat === "number" && typeof deviceLng === "number"
-      ? { location: `${deviceLat},${deviceLng}`, radius: 50000 }
-      : {}),
-  };
   const handleAddressPress = (data, details = null) => {
     const formatted = details?.formatted_address ?? data.description;
 
@@ -223,7 +207,7 @@ export default function Personal_Information_View() {
     >
       {isLoading && (
         <Global_activity_indicator
-          caption="Wait, we are updating your info..."
+          caption={t("menu.personal_info_view.activity_indicator")}
           caption_width="65%"
         />
       )}
@@ -233,15 +217,97 @@ export default function Personal_Information_View() {
           <Container
             width="100%"
             height="10%"
-            color={theme.colors.bg.elements_bg}
-            //color={"yellow"}
+            //color={theme.colors.bg.elements_bg}
+            color={"yellow"}
             align="flex-start"
+            direction="row"
           >
-            <Spacer position="left" size="large">
-              <Text variant="raleway_bold_18" textAlign="center">
-                Personal information
-              </Text>
-            </Spacer>
+            <Container
+              width="50%"
+              height="100%"
+              justify="center"
+              align="center"
+              color={theme.colors.bg.elements_bg}
+              //color={"green"}
+            >
+              <Spacer position="left" size="large">
+                <Text variant="raleway_bold_18" textAlign="center">
+                  {t("menu.personal_info_view.title")}
+                </Text>
+              </Spacer>
+            </Container>
+            <Container
+              width="50%"
+              height="100%"
+              justify="center"
+              align="center"
+              color={theme.colors.bg.elements_bg}
+            >
+              {hasChanges && !snackbar.visible && (
+                <Regular_CTA
+                  width="130px"
+                  height={"45px"}
+                  color={theme.colors.ui.primary}
+                  border_radius={"40px"}
+                  caption={t("menu.personal_info_view.cta")}
+                  caption_text_variant="dm_sans_bold_16_white"
+                  action={async () => {
+                    const res = await handleUpdate(userToDB);
+
+                    if (!res?.ok) {
+                      if (res.error === "requires_recent_login") {
+                        showSnackbar({
+                          message: t(
+                            "menu.personal_info_view.snack_bar_auth_error"
+                          ),
+                          actionLabel: "Log in",
+                          bgColor: "#B00020",
+                          onAction: () => {
+                            hideSnackbar();
+                            navigation.navigate("Shop_Login_Users_View");
+                          },
+                        });
+                        return;
+                      }
+                      if (res.error === "email_already_in_use") {
+                        showSnackbar({
+                          message: t(
+                            "menu.personal_info_view.snack_bar_email_used"
+                          ),
+                          actionLabel: "Log in",
+                          bgColor: "#B00020",
+                          onAction: () => {
+                            hideSnackbar();
+                            navigation.navigate("Shop_Login_Users_View");
+                          },
+                        });
+                        return;
+                      }
+                      return;
+                    }
+
+                    if (res.emailChanged) {
+                      navigation.navigate("Email_Verification_Sent_View", {
+                        pendingEmail: res.pendingEmail,
+                      });
+                      return;
+                    }
+
+                    // setVisible(true);
+                    showSnackbar({
+                      message: t("menu.personal_info_view.snack_bar_updated"),
+                      actionLabel: "OK",
+                      bgColor: theme.colors.ui.primary,
+                      onAction: () => {
+                        hideSnackbar();
+                        navigation.goBack();
+                      },
+                    });
+                    // Alert.alert("Updated", "Your info was updated.");
+                  }}
+                />
+              )}
+            </Container>
           </Container>
 
           <KeyboardAvoidingView
@@ -257,7 +323,7 @@ export default function Personal_Information_View() {
             >
               <Spacer position="top" size="large" />
               <DataInput
-                label="First Name"
+                label={t("menu.personal_info_view.name_input_placeholder")}
                 value={userToDB?.first_name ?? ""}
                 onChangeText={(value) => {
                   setUserToDB((prev) => ({
@@ -276,10 +342,9 @@ export default function Personal_Information_View() {
                 textContentType="givenName"
                 autoComplete="name"
                 returnKeyType="done"
-                blurOnSubmit
               />
               <DataInput
-                label="Last Name"
+                label={t("menu.personal_info_view.last_name_input_placeholder")}
                 value={userToDB?.last_name ?? ""}
                 onChangeText={(value) => {
                   setUserToDB((prev) => ({
@@ -302,7 +367,7 @@ export default function Personal_Information_View() {
                 blurOnSubmit
               />
               <DataInput
-                label="Email"
+                label={t("menu.personal_info_view.email_input_placeholder")}
                 value={userToDB?.email ?? ""}
                 onChangeText={(value) => {
                   setUserToDB((prev) => ({
@@ -322,13 +387,10 @@ export default function Personal_Information_View() {
                 autoComplete="name"
                 returnKeyType="done"
                 onFocus={() => null}
-                //   onFocus={() => setIsEmailFocused(true)}
-                //   onBlur={() => setIsEmailFocused(false)}
                 onBlur={() => null}
-                blurOnSubmit
               />
               <DataInput
-                label="Phone Number"
+                label={t("menu.personal_info_view.phone_input_placeholder")}
                 value={userToDB?.phone_number ?? ""}
                 onChangeText={(value) => {
                   const formatted = formatPhone(value);
@@ -382,7 +444,9 @@ export default function Personal_Information_View() {
                 >
                   <GooglePlacesAutocomplete
                     ref={placesRef}
-                    placeholder="Enter an address"
+                    placeholder={t(
+                      "menu.personal_info_view.address_input_placeholder"
+                    )}
                     fetchDetails
                     listViewDisplayed="auto"
                     keyboardShouldPersistTaps="handled"
@@ -410,92 +474,11 @@ export default function Personal_Information_View() {
                       Keyboard.dismiss();
                       handleAddressPress(data, details);
                     }}
-                    styles={
-                      {
-                        // keep your current styles
-                      }
-                    }
                   />
-                  {/* <GooglePlacesAutocomplete
-                    placeholder="Enter an address"
-                    fetchDetails
-                    listViewDisplayed="auto"
-                    keyboardShouldPersistTaps="handled"
-                    enablePoweredByContainer={false}
-                    minLength={Platform.OS === "ios" ? 1 : 2}
-                    debounce={250}
-                    query={{
-                      key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
-                      language: "en",
-                      components: "country:us",
-                      location: `${deviceLat},${deviceLng}`,
-                      radius: 50000,
-                      types: "geocode",
-                    }}
-                    textInputProps={{
-                      value: userToDB?.address ?? "", // ✅ populate it
-                      onChangeText: (t) => {
-                        // ✅ allow editing
-                        setUserToDB((prev) => ({ ...prev, address: t }));
-                        setSelectedAddress(null); // typing invalidates selection
-                      },
-                    }}
-                    onPress={handleAddressPress}
-                    styles={{
-                      container: {
-                        flex: 0,
-                        width: "100%",
-                        zIndex: 9999,
-                        elevation: 9999,
-                      },
-                      textInputContainer: {
-                        width: "100%",
-                        height: 58,
-                        paddingHorizontal: 0,
-                      },
-                      textInput: {
-                        width: "100%",
-                        height: 58,
-                        fontSize: 16,
-                        lineHeight: 22,
-                        color: theme.colors.text.primary,
-                        backgroundColor: "transparent",
-                        borderBottomWidth: 1,
-                        borderBottomColor: theme.colors.inputs.bottom_lines,
-                        paddingLeft: 5,
-                        paddingRight: 35,
-                        paddingTop: 0,
-                        paddingBottom: 0,
-                        marginLeft: 0,
-                        textAlign: "left",
-                      },
-                      listView: {
-                        marginTop: 8,
-                        maxHeight: 240,
-                        backgroundColor: theme.colors.bg.elements_bg,
-                        zIndex: 999999,
-                        elevation: 999999,
-                      },
-                      row: {
-                        minHeight: 62,
-                        paddingVertical: 14,
-                        paddingHorizontal: 16,
-                        backgroundColor: theme.colors.bg.elements_bg,
-                      },
-                      description: {
-                        fontSize: 16,
-                        color: theme.colors.text.primary,
-                      },
-                      separator: {
-                        height: 1,
-                        backgroundColor: "#D0D0D0",
-                      },
-                    }}
-                  /> */}
                 </View>
               </Container>
 
-              {!snackbar.visible && (
+              {/* {!snackbar.visible && (
                 <Container
                   width="100%"
                   height="30%"
@@ -508,7 +491,7 @@ export default function Personal_Information_View() {
                     height={"65px"}
                     color={theme.colors.ui.primary}
                     border_radius={"40px"}
-                    caption="Update"
+                    caption={t("menu.personal_info_view.cta")}
                     caption_text_variant="dm_sans_bold_20_white"
                     action={async () => {
                       const res = await handleUpdate(userToDB);
@@ -516,8 +499,9 @@ export default function Personal_Information_View() {
                       if (!res?.ok) {
                         if (res.error === "requires_recent_login") {
                           showSnackbar({
-                            message:
-                              "Please log in again to change your email.",
+                            message: t(
+                              "menu.personal_info_view.snack_bar_auth_error"
+                            ),
                             actionLabel: "Log in",
                             bgColor: "#B00020",
                             onAction: () => {
@@ -528,10 +512,19 @@ export default function Personal_Information_View() {
                           return;
                         }
                         if (res.error === "email_already_in_use") {
-                          Alert.alert("This email is already in use.");
+                          showSnackbar({
+                            message: t(
+                              "menu.personal_info_view.snack_bar_email_used"
+                            ),
+                            actionLabel: "Log in",
+                            bgColor: "#B00020",
+                            onAction: () => {
+                              hideSnackbar();
+                              navigation.navigate("Shop_Login_Users_View");
+                            },
+                          });
                           return;
                         }
-                        Alert.alert("Update failed", String(res.error));
                         return;
                       }
 
@@ -544,7 +537,7 @@ export default function Personal_Information_View() {
 
                       // setVisible(true);
                       showSnackbar({
-                        message: "Your information was updated successfully.",
+                        message: t("menu.personal_info_view.snack_bar_updated"),
                         actionLabel: "OK",
                         bgColor: theme.colors.ui.primary,
                         onAction: () => {
@@ -556,7 +549,7 @@ export default function Personal_Information_View() {
                     }}
                   />
                 </Container>
-              )}
+              )} */}
               <Snackbar
                 visible={snackbar.visible}
                 onDismiss={() => {}}
