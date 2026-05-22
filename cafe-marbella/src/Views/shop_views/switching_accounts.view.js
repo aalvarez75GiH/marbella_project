@@ -1,6 +1,7 @@
 import React, { useEffect, useContext, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { KeyboardAvoidingView, Platform, Keyboard } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -27,6 +28,7 @@ export default function Switching_Accounts_View() {
     isLoading,
     user,
   } = useContext(AuthenticationContext);
+  const { t } = useTranslation();
   const { isValidEmail } = useContext(GlobalContext);
   const showOtherUsers = Boolean(isOtherUsers);
   console.log("isOtherUsers:", isOtherUsers);
@@ -76,7 +78,7 @@ export default function Switching_Accounts_View() {
     <SafeArea background_color="#FFFFFF">
       {isLoading && (
         <Global_activity_indicator
-          caption="Wait, we are switching to another account..."
+          caption={t("menu.switch_account_view.activity_indicator")}
           caption_width="65%"
           // color={"red"}
         />
@@ -105,11 +107,13 @@ export default function Switching_Accounts_View() {
               align="flex-start"
             >
               <Spacer position="left" size="large">
-                <Text variant="raleway_bold_18">Switch to another account</Text>
+                <Text variant="raleway_bold_18">
+                  {t("menu.switch_account_view.title")}
+                </Text>
               </Spacer>
             </Container>
             <DataInput
-              label="Enter email address to switch"
+              label={t("menu.switch_account_view.email_input_placeholder")}
               value={emailToSwitch}
               onChangeText={(value) => {
                 setEmailToSwitch(value);
@@ -140,7 +144,7 @@ export default function Switching_Accounts_View() {
                   <Spacer position="top" size="large" />
                   <Spacer position="left" size="large">
                     <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
-                      Please enter a valid email address
+                      {t("menu.switch_account_view.email_error")}
                     </Text>
                   </Spacer>
                 </Container>
@@ -160,7 +164,7 @@ export default function Switching_Accounts_View() {
               >
                 <Spacer position="left" size="extraLarge">
                   <Text variant="dm_sans_bold_18">
-                    Other accounts in this device (tap to switch)
+                    {t("menu.switch_account_view.show_other_users_1_caption")}
                   </Text>
                 </Spacer>
               </Container>
@@ -168,7 +172,9 @@ export default function Switching_Accounts_View() {
 
             {showOtherUsers &&
               (!Array.isArray(otherUsersInTheDevice) && !isLoading ? (
-                <Text variant="dm_sans_medium_16">Loading accounts…</Text>
+                <Text variant="dm_sans_medium_16">
+                  {t("menu.switch_account_view.show_other_users_loading")}
+                </Text>
               ) : (
                 <ScrollView style={{ flex: 1, width: "100%" }}>
                   {!emailToSwitch?.length && (
@@ -191,7 +197,7 @@ export default function Switching_Accounts_View() {
                 height="15%"
                 color={theme.colors.ui.primary}
                 border_radius={"40px"}
-                caption="Switch Account"
+                caption={t("menu.switch_account_view.cta")}
                 caption_text_variant="dm_sans_bold_20_white"
                 action={() => {
                   setEmailTouched(true);

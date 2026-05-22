@@ -31,10 +31,39 @@
     },
     "sign_in_status": "No has iniciado sesión!",
     "sign_in_cta": "Iniciar sesión",
-    "activity_indicator": "Wait, switching to english..."
+    "activity_indicator": "Wait, switching to english...",
+    "sign_out_layout": {
+      "caption": "¿Estas seguro que quieres salir?",
+      "cta": "Si, quiero salir"
+    },
+    "get_a_new_pin_view": {
+      "title": "Introduce tu nuevo PIN...",
+      "data_input_1": "Número PIN (Sólo 6 dígitos)",
+      "data_input_2": "Repite el número PIN",
+      "pin_mismatch_error": "El PIN debe coincidir",
+      "pin_length_error": "El PIN debe tener 6 dígitos",
+      "activity_indicator": "Espera, configurando tu nuevo PIN...",
+      "cta": "Actualizar PIN"
+    },
+    "switch_account_view": {
+      "title": "Cambiar a otra cuenta",
+      "email_input_placeholder": "Introduce el email de la cuenta",
+      "cta": "Cambiar de cuenta",
+      "activity_indicator": "Espera, cambiando tu cuenta...",
+      "show_other_users_1_caption": "Otras cuentas en este dispositivo (presiona para cambiar)",
+      "show_other_users_loading": "Cargando cuentas...",
+      "email_error": "Por favor introduce una dirección de email válida",
+      "pin_switch_view": {
+        "caption": "Introduce el número PIN para cambiar...",
+        "data_input": "Número PIN (Sólo 6 dígitos)",
+        "cta": "Cambiar",
+        "activity_indicator": "Espera, cambiando tu cuenta..."
+      }
+    }
   },
   "login_screen": {
-    "title": "Comencemos inciando sesión..."
+    "title": "Comencemos inciando sesión...",
+    "activity_indicator": "Espera, iniciando sesión..."
   },
   "shop_products_view": {
     "activity_indicator": "Espera, cargando nuestros productos..."
@@ -246,5 +275,22 @@
         "text_2": "Tu orden ha sido marcada como finalizada."
       }
     }
+  },
+  "shop_login_user_view": {
+    "activity_indicator": "Espera, iniciando sesión...",
+    "title": "Inicia sesión con tu nuevo email...",
+    "pin_data_input": "Número PIN (Sólo 6 dígitos)",
+    "forgot_cta": "Olvidé mi PIN",
+    "sign_up_cta": "Registrarse",
+    "login_cta": "Iniciar sesión"
+  },
+  "email_verification_view": {
+    "caption_1": "Verifica tu nuevo email",
+    "caption_2": "Hemos enviado un email de verificación a tu correo electrónico...",
+    "caption_3": "1) Ve a tu correo electrónico, abre el email de verificación y haz clic en el botón de verificación",
+    "caption_4": "2) Regresa aquí y haz clic en Continuar",
+    "caption_5": "Continuar",
+    "cta_1": "Chequeando...",
+    "cta_2": "Continuar"
   }
 }

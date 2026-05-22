@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
+import { useTranslation } from "react-i18next";
 
 import { navigationRef } from "../../infrastructure/navigation/navigation_ref.js";
 import { Container } from "../../components/containers/general.containers";
@@ -24,6 +25,7 @@ import { CartContext } from "../../infrastructure/services/cart/cart.context.js"
 export default function Reset_PIN_View() {
   const navigation = useNavigation();
   const theme = useTheme();
+  const { t } = useTranslation();
 
   const pinInputRef = useRef(null);
   const secondPinRef = useRef(null);
@@ -61,7 +63,11 @@ export default function Reset_PIN_View() {
     const timeout = setTimeout(() => {
       pinInputRef.current?.focus();
     }, 300);
-    return () => clearTimeout(timeout);
+    return () => {
+      set_Reset_Pin_1("");
+      set_Reset_Pin_2("");
+      clearTimeout(timeout);
+    };
   }, []);
 
   // Optional: auto-focus second input once first reaches 6 digits
@@ -72,15 +78,13 @@ export default function Reset_PIN_View() {
   }, [reset_pin_1]);
 
   const validateFirstPinBeforeSecond = () => {
-    // user is attempting to go to PIN2; now we validate PIN1 length
     setShowPin1LengthError(true);
 
     if (reset_pin_1.length < 6) {
-      setError("PIN must be exactly 6 digits before continuing.");
+      setError(null); // ✅ don't show "PIN must match"
       return false;
     }
 
-    // ok
     setError(null);
     return true;
   };
@@ -99,7 +103,7 @@ export default function Reset_PIN_View() {
     >
       {isSubmitting ? (
         <Global_activity_indicator
-          caption="Wait, we are setting up your new PIN..."
+          caption={t("menu.get_a_new_pin_view.activity_indicator")}
           caption_width="65%"
         />
       ) : (
@@ -135,14 +139,14 @@ export default function Reset_PIN_View() {
             >
               <Spacer position="left" size="extraLarge">
                 <Text variant="raleway_bold_18" textAlign="center">
-                  Enter your new PIN...
+                  {t("menu.get_a_new_pin_view.title")}
                 </Text>
               </Spacer>
             </Container>
 
             <Container
               width="100%"
-              height="20%"
+              // height="20%"
               color={theme.colors.bg.elements_bg}
               align="center"
               direction="column"
@@ -150,7 +154,7 @@ export default function Reset_PIN_View() {
               {/* PIN 1 */}
               <DataInput
                 ref={pinInputRef}
-                label="Pin number (only 6 digits)"
+                label={t("menu.get_a_new_pin_view.data_input_1")}
                 value={reset_pin_1}
                 onChangeText={(value) => {
                   const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
@@ -185,9 +189,9 @@ export default function Reset_PIN_View() {
                   align="flex-start"
                 >
                   <Spacer position="top" size="medium" />
-                  <Spacer position="left" size="large">
+                  <Spacer position="left" size="extraLarge">
                     <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
-                      PIN must be 6 digits.
+                      {t("menu.get_a_new_pin_view.pin_length_error")}
                     </Text>
                   </Spacer>
                 </Container>
@@ -196,12 +200,21 @@ export default function Reset_PIN_View() {
               {/* PIN 2 */}
               <DataInput
                 ref={secondPinRef}
-                label="Repeat pin number"
+                label={t("menu.get_a_new_pin_view.data_input_2")}
                 value={reset_pin_2}
                 onChangeText={(value) => {
                   const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
                   set_Reset_Pin_2(digitsOnly);
-                  if (error) setError(null);
+
+                  if (digitsOnly.length === 6 && reset_pin_1.length === 6) {
+                    if (reset_pin_1 !== digitsOnly) {
+                      setError(t("menu.get_a_new_pin_view.pin_mismatch_error"));
+                    } else {
+                      setError(null);
+                    }
+                  } else {
+                    setError(null);
+                  }
                 }}
                 underlineColor={theme.colors.inputs.bottom_lines_disabled}
                 border_color={theme.colors.inputs.bottom_lines_disabled}
@@ -229,7 +242,7 @@ export default function Reset_PIN_View() {
                 align="flex-start"
               >
                 <Spacer position="top" size="medium" />
-                <Spacer position="left" size="large">
+                <Spacer position="left" size="extraLarge">
                   <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
                     {error}
                   </Text>
@@ -237,8 +250,8 @@ export default function Reset_PIN_View() {
               </Container>
             )}
 
-            <Spacer position="top" size="extraLarge" />
-            <Spacer position="top" size="extraLarge" />
+            {/* <Spacer position="top" size="extraLarge" /> */}
+            {/* <Spacer position="top" size="extraLarge" /> */}
 
             {canSubmitLocal && (
               <Container
@@ -256,7 +269,7 @@ export default function Reset_PIN_View() {
                   height={56} // ✅ number, not percent
                   color={theme.colors.ui.primary}
                   border_radius={"40px"}
-                  caption="Update PIN"
+                  caption={t("menu.get_a_new_pin_view.cta")}
                   caption_text_variant="dm_sans_bold_20_white"
                   action={async () => {
                     console.log("✅ Update PIN CTA pressed");

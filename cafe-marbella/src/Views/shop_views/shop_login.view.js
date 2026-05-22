@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
+import { useTranslation } from "react-i18next";
 
 import { navigationRef } from "../../infrastructure/navigation/navigation_ref.js";
 import { Container } from "../../components/containers/general.containers";
@@ -27,6 +28,7 @@ import { GlobalContext } from "../../infrastructure/services/global/global.conte
 
 export default function Shop_Login_Users_View() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const theme = useTheme();
   const emailInputRef = useRef(null);
 
@@ -92,7 +94,7 @@ export default function Shop_Login_Users_View() {
     >
       {isSubmitting ? (
         <Global_activity_indicator
-          caption="Wait, we are logging you in..."
+          caption={t("shop_login_user_view.activity_indicator")}
           caption_width="65%"
           // color={"red"}
         />
@@ -139,7 +141,7 @@ export default function Shop_Login_Users_View() {
             >
               <Spacer position="left" size="extraLarge">
                 <Text variant="raleway_bold_18" textAlign="center">
-                  Login using your new email...
+                  {t("shop_login_user_view.title")}
                 </Text>
               </Spacer>
             </Container>
@@ -193,7 +195,7 @@ export default function Shop_Login_Users_View() {
                 </Container>
               )}
               <DataInput
-                label="Pin number (only 6 digits)"
+                label={t("shop_login_user_view.pin_data_input")}
                 value={pin}
                 onChangeText={(value) => {
                   const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
@@ -250,7 +252,7 @@ export default function Shop_Login_Users_View() {
                   <Underlined_CTA
                     width="50%"
                     height={"40%"}
-                    caption="Forgot my password"
+                    caption={t("shop_login_user_view.forgot_cta")}
                     color="transparent"
                     action={() => null}
                     border_color="#898989"
@@ -258,7 +260,7 @@ export default function Shop_Login_Users_View() {
                   <Underlined_CTA
                     width="50%"
                     height={"40%"}
-                    caption="Sign Up"
+                    caption={t("shop_login_user_view.sign_up_cta")}
                     color="transparent"
                     // action={() => navigation.navigate("Enter_Names_View")}
                     action={() =>
@@ -288,7 +290,7 @@ export default function Shop_Login_Users_View() {
                   height={"65px"}
                   color={theme.colors.ui.primary}
                   border_radius={"40px"}
-                  caption="Log In"
+                  caption={t("shop_login_user_view.login_cta")}
                   caption_text_variant="dm_sans_bold_20_white"
                   action={async () => {
                     if (isSubmitting) return; // prevent double taps

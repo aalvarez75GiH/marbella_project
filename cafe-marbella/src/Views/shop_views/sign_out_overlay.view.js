@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useContext } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 import { Pressable, View, Alert } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { Container } from "../../components/containers/general.containers";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -19,6 +20,7 @@ import { CartContext } from "../../infrastructure/services/cart/cart.context";
 export default function Sign_Out_Overlay_View() {
   const theme = useTheme();
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   const { user, signOut, isLoading } = useContext(AuthenticationContext);
   //   const { first_name, last_name, email, display_name, user_id } = user || {};
@@ -89,13 +91,13 @@ export default function Sign_Out_Overlay_View() {
                 >
                   <Spacer position="left" size="extraLarge">
                     <Text variant="raleway_bold_20">
-                      Are you sure about signing out?
+                      {t("menu.sign_out_layout.caption")}
                     </Text>
                   </Spacer>
                 </Container>
                 <Spacer position="top" size="extraLarge" />
                 <Regular_CTA
-                  caption="Yes, Sign me out"
+                  caption={t("menu.sign_out_layout.cta")}
                   width="90%"
                   height="56px"
                   color={theme.colors.ui.error}

@@ -173,7 +173,6 @@ export default function Menu_View() {
             align="flex-start"
           >
             <Spacer position="left" size="extraLarge">
-              {/* <Text variant="raleway_bold_26">Sign in or Sign up </Text> */}
               <Text variant="raleway_bold_26">{t("menu.sign_in_status")}</Text>
             </Spacer>
           </Container>
@@ -202,7 +201,7 @@ export default function Menu_View() {
                 border_radius={"40px"}
                 // caption="Sign in"
                 caption={t("menu.sign_in_cta")}
-                caption_text_variant="dm_sans_bold_20_white"
+                caption_text_variant="raleway_regular_18_white"
                 action={() => {
                   navigation.navigate("AuthModal", {
                     screen: "Login_View",

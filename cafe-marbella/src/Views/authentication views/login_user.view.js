@@ -79,7 +79,7 @@ export default function Login_Users_View() {
     >
       {isSubmitting ? (
         <Global_activity_indicator
-          caption="Wait, we are logging you in..."
+          caption={t("login_screen.activity_indicator")}
           caption_width="65%"
           // color={"red"}
         />

@@ -3,6 +3,7 @@ import React, { useContext, useMemo, useState } from "react";
 import { Alert, Linking, Platform } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
+import { useTranslation } from "react-i18next";
 
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header.js";
@@ -18,6 +19,7 @@ import { AuthenticationContext } from "../../infrastructure/services/authenticat
 export default function Email_Verification_Sent_View() {
   const navigation = useNavigation();
   const route = useRoute();
+  const { t } = useTranslation();
   const theme = useTheme();
 
   const { pendingEmail } = route?.params ?? {};
@@ -44,20 +46,23 @@ export default function Email_Verification_Sent_View() {
         <Spacer position="top" size="extraLarge" />
 
         <Container width="90%" color="transparent" align="flex-start">
-          <Text variant="raleway_bold_18">Verify your new email</Text>
+          <Text variant="raleway_bold_18">
+            {t("email_verification_view.caption_1")}
+          </Text>
           <Spacer position="top" size="medium" />
 
           <Text variant="dm_sans_regular_14">
-            We sent a verification link to:
+            {t("email_verification_view.caption_2")}
           </Text>
           <Spacer position="top" size="small" />
           <Text variant="dm_sans_bold_16">{emailLabel}</Text>
 
           <Spacer position="top" size="large" />
           <Text variant="dm_sans_regular_14">
-            1) Open your email and tap the verification link{"\n"}
-            2) Come back here and tap{" "}
-            <Text variant="dm_sans_bold_14">Continue</Text>
+            {t("email_verification_view.caption_3")}
+            {"\n"}
+            {t("email_verification_view.caption_4")}
+            <Text variant="dm_sans_bold_14">{""}</Text>
           </Text>
         </Container>
 
@@ -68,7 +73,11 @@ export default function Email_Verification_Sent_View() {
           height={"65px"}
           color={theme.colors.ui.primary}
           border_radius={"40px"}
-          caption={isLoading ? "Checking..." : "Continue"}
+          caption={
+            isLoading
+              ? t("email_verification_view.cta_1")
+              : t("email_verification_view.cta_2")
+          }
           caption_text_variant="dm_sans_bold_20_white"
           action={() => {
             setEmail("");

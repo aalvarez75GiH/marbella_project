@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
+import { useTranslation } from "react-i18next";
 
 import { navigationRef } from "../../infrastructure/navigation/navigation_ref.js";
 import { Container } from "../../components/containers/general.containers";
@@ -24,6 +25,7 @@ import { CartContext } from "../../infrastructure/services/cart/cart.context.js"
 export default function Login_Screen_For_Switching_Accounts_View() {
   const navigation = useNavigation();
   const theme = useTheme();
+  const { t } = useTranslation();
   const pinInputRef = useRef(null);
 
   const route = useRoute();
@@ -153,7 +155,9 @@ export default function Login_Screen_For_Switching_Accounts_View() {
     >
       {isSubmitting ? (
         <Global_activity_indicator
-          caption="Wait, we are logging you in..."
+          caption={t(
+            "menu.switch_account_view.pin_switch_view.activity_indicator"
+          )}
           caption_width="65%"
         />
       ) : (
@@ -187,7 +191,7 @@ export default function Login_Screen_For_Switching_Accounts_View() {
             >
               <Spacer position="left" size="extraLarge">
                 <Text variant="raleway_bold_18" textAlign="center">
-                  Enter PIN number to switch...
+                  {t("menu.switch_account_view.pin_switch_view.caption")}
                 </Text>
               </Spacer>
             </Container>
@@ -200,7 +204,7 @@ export default function Login_Screen_For_Switching_Accounts_View() {
             >
               <DataInput
                 ref={pinInputRef}
-                label="Pin number (only 6 digits)"
+                label={t("menu.switch_account_view.pin_switch_view.data_input")}
                 value={pin}
                 onChangeText={(value) => {
                   const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
@@ -259,7 +263,7 @@ export default function Login_Screen_For_Switching_Accounts_View() {
                   height={"45%"}
                   color={theme.colors.ui.primary}
                   border_radius={"40px"}
-                  caption="Switch"
+                  caption={t("menu.switch_account_view.pin_switch_view.cta")}
                   caption_text_variant="dm_sans_bold_20_white"
                   action={handleSwitch}
                 />

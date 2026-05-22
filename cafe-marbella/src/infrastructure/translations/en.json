@@ -30,11 +30,40 @@
       "warehouse": "Connected to warehouse:"
     },
     "sign_in_status": "You are signed out!",
-    "sign_in_cta": "Sign in",
-    "activity_indicator": "Espera, cambiando a español..."
+    "sign_in_cta": "Sign in / Sign up",
+    "activity_indicator": "Espera, cambiando a español...",
+    "sign_out_layout": {
+      "caption": "Are you sure about signing out?",
+      "cta": "yes, Sign me out"
+    },
+    "get_a_new_pin_view": {
+      "title": "Enter your new PIN number...",
+      "data_input_1": "PIN number (only 6 digits)",
+      "data_input_2": "Repeat PIN number",
+      "pin_length_error": "PIN must be exactly 6 digits",
+      "pin_mismatch_error": "PIN doesn't match with previous one.",
+      "activity_indicator": "Wait, we are setting up your new PIN...",
+      "cta": "Update PIN"
+    },
+    "switch_account_view": {
+      "title": "Switch to another account",
+      "email_input_placeholder": "Enter email address to switch",
+      "cta": "Switch Account",
+      "activity_indicator": "Wait, we are switching your account...",
+      "show_other_users_1_caption": "Other accounts in this device (tap to switch)",
+      "show_other_users_loading": "Loading accounts...",
+      "email_error": "Please enter a valid email address",
+      "pin_switch_view": {
+        "caption": "Enter PIN number to switch...",
+        "data_input": "PIN number (only 6 digits)",
+        "cta": "Switch",
+        "activity_indicator": "Wait, we are switching your account..."
+      }
+    }
   },
   "login_screen": {
-    "title": "Let's start logging in..."
+    "title": "Let's start logging in...",
+    "activity_indicator": "Wait, we are logging you in..."
   },
   "shop_products_view": {
     "activity_indicator": "Wait, loading our products..."
@@ -240,5 +269,22 @@
         "text_2": "Your order has been marked as finished."
       }
     }
+  },
+  "shop_login_user_view": {
+    "activity_indicator": "Wait, we are logging you in...",
+    "title": " Login using your new email...",
+    "pin_data_input": "PIN number (only 6 digits)",
+    "forgot_cta": "Forgot your PIN?",
+    "sign_up_cta": "Sign Up",
+    "login_cta": "Login"
+  },
+  "email_verification_view": {
+    "caption_1": "Verify your new email",
+    "caption_2": "We sent a verification link to:",
+    "caption_3": "1) Open your email and tap the verification link",
+    "caption_4": "2) Come back here and tap",
+    "caption_5": "Continue",
+    "cta_1": "Checking...",
+    "cta_2": "Continue"
   }
 }
