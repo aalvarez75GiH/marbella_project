@@ -8,6 +8,7 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useTranslation } from "react-i18next";
+import { Snackbar } from "react-native-paper";
 
 import { navigationRef } from "../../infrastructure/navigation/navigation_ref.js";
 import { Container } from "../../components/containers/general.containers";
@@ -21,6 +22,7 @@ import { DataInput } from "../../components/inputs/data_text_input.js";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { CartContext } from "../../infrastructure/services/cart/cart.context.js";
+import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
 
 export default function Login_Screen_For_Switching_Accounts_View() {
   const navigation = useNavigation();
@@ -31,6 +33,7 @@ export default function Login_Screen_For_Switching_Accounts_View() {
   const route = useRoute();
   const { emailToSwitch, returnTo } = route.params || {};
 
+  const { snackbar, hideSnackbar, showSnackbar } = useContext(GlobalContext);
   console.log("RETURN TO:", returnTo);
   console.log("EMAIL TO SWITCH:", emailToSwitch);
 
@@ -137,7 +140,16 @@ export default function Login_Screen_For_Switching_Accounts_View() {
       await clearGuestCart();
 
       // 8) go directly to final destination
-      goToFinalDestination();
+      showSnackbar({
+        message: t("menu.switch_account_view.pin_switch_view.snack_bar"),
+        actionLabel: "OK",
+        bgColor: theme.colors.ui.primary,
+        onAction: () => {
+          hideSnackbar();
+          goToFinalDestination();
+        },
+      });
+      // goToFinalDestination();
     } catch (e) {
       console.log("CTA SWITCH LOGIN ERROR:", e?.message ?? e, e);
       setError("Could not switch account. Please try again.");
@@ -161,116 +173,144 @@ export default function Login_Screen_For_Switching_Accounts_View() {
           caption_width="65%"
         />
       ) : (
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-          <Container
-            width="100%"
-            height="100%"
-            color={theme.colors.bg.elements_bg}
-            justify="flex-start"
-            align="center"
+        <>
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
-            <Go_Back_Header label="" action={() => navigation.goBack()} />
             <Container
               width="100%"
-              height="15%"
+              height="100%"
               color={theme.colors.bg.elements_bg}
-            >
-              <Image
-                source={require("../../../assets/brand_images/marbella_cafe_especial_logo_transparent.png")}
-                style={styles.image_1}
-              />
-            </Container>
-            <Container
-              width="100%"
-              height={"25%"}
-              color={theme.colors.bg.elements_bg}
-              align="flex-start"
-            >
-              <Spacer position="left" size="extraLarge">
-                <Text variant="raleway_bold_18" textAlign="center">
-                  {t("menu.switch_account_view.pin_switch_view.caption")}
-                </Text>
-              </Spacer>
-            </Container>
-            <Container
-              width="100%"
-              height="20%"
-              color={theme.colors.bg.elements_bg}
+              justify="flex-start"
               align="center"
-              direction="column"
             >
-              <DataInput
-                ref={pinInputRef}
-                label={t("menu.switch_account_view.pin_switch_view.data_input")}
-                value={pin}
-                onChangeText={(value) => {
-                  const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
-                  setPin(digitsOnly);
-                  setPinToSwitch(digitsOnly);
-                  if (error) {
-                    setError(null);
+              <Go_Back_Header label="" action={() => navigation.goBack()} />
+              <Container
+                width="100%"
+                height="15%"
+                color={theme.colors.bg.elements_bg}
+              >
+                <Image
+                  source={require("../../../assets/brand_images/marbella_cafe_especial_logo_transparent.png")}
+                  style={styles.image_1}
+                />
+              </Container>
+              <Container
+                width="100%"
+                height={"25%"}
+                color={theme.colors.bg.elements_bg}
+                align="flex-start"
+              >
+                <Spacer position="left" size="extraLarge">
+                  <Text variant="raleway_bold_18" textAlign="center">
+                    {t("menu.switch_account_view.pin_switch_view.caption")}
+                  </Text>
+                </Spacer>
+              </Container>
+              <Container
+                width="100%"
+                height="20%"
+                color={theme.colors.bg.elements_bg}
+                align="center"
+                direction="column"
+              >
+                <DataInput
+                  ref={pinInputRef}
+                  label={t(
+                    "menu.switch_account_view.pin_switch_view.data_input"
+                  )}
+                  value={pin}
+                  onChangeText={(value) => {
+                    const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
+                    setPin(digitsOnly);
+                    setPinToSwitch(digitsOnly);
+                    if (error) {
+                      setError(null);
+                    }
+                  }}
+                  underlineColor={theme.colors.inputs.bottom_lines_disabled}
+                  border_color={theme.colors.inputs.bottom_lines_disabled}
+                  border_width={"0.5px"}
+                  activeUnderlineColor={theme.colors.ui.primary}
+                  keyboardType={
+                    Platform.OS === "ios" ? "number-pad" : "numeric"
                   }
-                }}
-                underlineColor={theme.colors.inputs.bottom_lines_disabled}
-                border_color={theme.colors.inputs.bottom_lines_disabled}
-                border_width={"0.5px"}
-                activeUnderlineColor={theme.colors.ui.primary}
-                keyboardType={Platform.OS === "ios" ? "number-pad" : "numeric"}
-                autoCapitalize="none"
-                autoCorrect={false}
-                textContentType="password"
-                autoComplete="off"
-                returnKeyType="done"
-                onFocus={() => setEmailTouched(true)}
-                onBlur={() => setEmailTouched(false)}
-                blurOnSubmit
-                secureTextEntry
-              />
-              {error && (
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  textContentType="password"
+                  autoComplete="off"
+                  returnKeyType="done"
+                  onFocus={() => setEmailTouched(true)}
+                  onBlur={() => setEmailTouched(false)}
+                  blurOnSubmit
+                  secureTextEntry
+                />
+                {error && (
+                  <Container
+                    width="100%"
+                    height="25%"
+                    color={theme.colors.bg.elements_bg}
+                    justify="flex-start"
+                    align="flex-start"
+                  >
+                    <Spacer position="top" size="large" />
+                    <Spacer position="left" size="large">
+                      <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
+                        {error}
+                      </Text>
+                    </Spacer>
+                  </Container>
+                )}
+              </Container>
+              <Spacer position="top" size="extraLarge" />
+
+              <Spacer position="top" size="extraLarge" />
+              {emailToSwitch && pin && isValidPin && (
                 <Container
                   width="100%"
-                  height="25%"
+                  padding_vertical={"2%"}
                   color={theme.colors.bg.elements_bg}
-                  justify="flex-start"
                   align="flex-start"
+                  justify="center"
+                  direction="row"
                 >
-                  <Spacer position="top" size="large" />
-                  <Spacer position="left" size="large">
-                    <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
-                      {error}
-                    </Text>
-                  </Spacer>
+                  <Regular_CTA
+                    width="55%"
+                    height={"45%"}
+                    color={theme.colors.ui.primary}
+                    border_radius={"40px"}
+                    caption={t("menu.switch_account_view.pin_switch_view.cta")}
+                    caption_text_variant="dm_sans_bold_20_white"
+                    action={handleSwitch}
+                  />
                 </Container>
               )}
             </Container>
-            <Spacer position="top" size="extraLarge" />
-
-            <Spacer position="top" size="extraLarge" />
-            {emailToSwitch && pin && isValidPin && (
-              <Container
-                width="100%"
-                padding_vertical={"2%"}
-                color={theme.colors.bg.elements_bg}
-                align="flex-start"
-                justify="center"
-                direction="row"
-              >
-                <Regular_CTA
-                  width="55%"
-                  height={"45%"}
-                  color={theme.colors.ui.primary}
-                  border_radius={"40px"}
-                  caption={t("menu.switch_account_view.pin_switch_view.cta")}
-                  caption_text_variant="dm_sans_bold_20_white"
-                  action={handleSwitch}
-                />
-              </Container>
-            )}
-          </Container>
-        </KeyboardAvoidingView>
+            <Snackbar
+              visible={snackbar.visible}
+              onDismiss={() => {}}
+              duration={Number.POSITIVE_INFINITY}
+              action={{
+                label: snackbar.actionLabel,
+                onPress: () => {
+                  if (snackbar.onAction) {
+                    snackbar.onAction();
+                  } else {
+                    hideSnackbar();
+                  }
+                },
+              }}
+              style={{
+                minHeight: 80,
+                marginBottom: 30,
+                backgroundColor: snackbar.bgColor,
+              }}
+            >
+              {snackbar.message}
+            </Snackbar>
+          </KeyboardAvoidingView>
+        </>
       )}
     </SafeArea>
   );

@@ -57,7 +57,8 @@
         "caption": "Introduce el número PIN para cambiar...",
         "data_input": "Número PIN (Sólo 6 dígitos)",
         "cta": "Cambiar",
-        "activity_indicator": "Espera, cambiando tu cuenta..."
+        "activity_indicator": "Espera, cambiando tu cuenta...",
+        "snack_bar": "Cuenta cambiada exitosamente!"
       }
     },
     "personal_info_view": {

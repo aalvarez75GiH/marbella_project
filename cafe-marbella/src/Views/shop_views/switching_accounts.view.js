@@ -12,6 +12,7 @@ import { Spacer } from "../../components/spacers and globals/optimized.spacer.co
 import { Text } from "../../infrastructure/typography/text.component";
 import { Regular_CTA } from "../../components/ctas/regular.cta";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
+import { Snackbar } from "react-native-paper";
 
 import { ScrollView } from "react-native-gesture-handler";
 import { Switching_Accounts_Tile } from "../../components/tiles/switching_accounts.tile";
@@ -32,6 +33,8 @@ export default function Switching_Accounts_View() {
   const { isValidEmail } = useContext(GlobalContext);
   const showOtherUsers = Boolean(isOtherUsers);
   console.log("isOtherUsers:", isOtherUsers);
+
+  const { snackbar, showSnackbar, hideSnackbar } = useContext(GlobalContext);
 
   console.log("Current authenticated user in Switching Accounts View:", user);
 
@@ -206,16 +209,27 @@ export default function Switching_Accounts_View() {
                   if (!ok) return; // ✅ stops here, no request
                   if (ok) {
                     setEmailToSwitch("");
-                    navigation.navigate(
-                      "Login_Screen_For_Switching_Accounts_View",
-                      {
-                        emailToSwitch: emailToSwitch.trim(),
-                        returnTo: {
-                          tab: "Shop",
-                          screen: "Shop_Products_View",
-                        },
-                      }
-                    );
+                    showSnackbar({
+                      message: t(
+                        "menu.switch_account_view.pin_switch_view.snack_bar"
+                      ),
+                      actionLabel: "Log in",
+                      bgColor: "#B00020",
+                      onAction: () => {
+                        hideSnackbar();
+                        //navigation.navigate("Shop_Login_Users_View");
+                        navigation.navigate(
+                          "Login_Screen_For_Switching_Accounts_View",
+                          {
+                            emailToSwitch: emailToSwitch.trim(),
+                            returnTo: {
+                              tab: "Shop",
+                              screen: "Shop_Products_View",
+                            },
+                          }
+                        );
+                      },
+                    });
                   }
                 }}
               />

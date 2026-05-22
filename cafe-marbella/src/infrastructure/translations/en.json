@@ -57,7 +57,8 @@
         "caption": "Enter PIN number to switch...",
         "data_input": "PIN number (only 6 digits)",
         "cta": "Switch",
-        "activity_indicator": "Wait, we are switching your account..."
+        "activity_indicator": "Wait, we are switching your account...",
+        "snack_bar": "Your account has been switched successfully!"
       }
     },
     "personal_info_view": {
@@ -79,7 +80,8 @@
       "caption_2": "so they can get your orders, payments",
       "caption_3": "and other info to make your",
       "caption_4": "experience nicer!"
-    }
+    },
+    "reset_pin_view": {}
   },
   "login_screen": {
     "title": "Let's start logging in...",
