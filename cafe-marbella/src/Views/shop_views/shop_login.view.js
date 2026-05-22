@@ -155,7 +155,7 @@ export default function Shop_Login_Users_View() {
             >
               <DataInput
                 ref={emailInputRef}
-                label="Email "
+                label={t("login_screen.data_input_email")}
                 value={email}
                 onChangeText={(value) => {
                   setEmail(value);
@@ -195,7 +195,7 @@ export default function Shop_Login_Users_View() {
                 </Container>
               )}
               <DataInput
-                label={t("shop_login_user_view.pin_data_input")}
+                label={t("login_screen.data_input_pin")}
                 value={pin}
                 onChangeText={(value) => {
                   const digitsOnly = value.replace(/\D/g, "").slice(0, 6);

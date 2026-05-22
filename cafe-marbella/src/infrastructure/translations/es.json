@@ -84,7 +84,9 @@
   },
   "login_screen": {
     "title": "Comencemos inciando sesión...",
-    "activity_indicator": "Espera, iniciando sesión..."
+    "activity_indicator": "Espera, iniciando sesión...",
+    "data_input_email": "Email",
+    "data_input_pin": "Número PIN (Sólo 6 dígitos)"
   },
   "shop_products_view": {
     "activity_indicator": "Espera, cargando nuestros productos..."

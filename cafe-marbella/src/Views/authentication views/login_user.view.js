@@ -41,7 +41,7 @@ export default function Login_Users_View() {
     clearGuestCart,
   } = useContext(CartContext);
   const { prepareOrderFromCart } = useContext(OrdersContext);
-  const { isValidEmail } = useContext(GlobalContext);
+  const { isValidEmail, globalLanguage } = useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
@@ -142,7 +142,7 @@ export default function Login_Users_View() {
             >
               <DataInput
                 ref={emailInputRef}
-                label="Email "
+                label={t("login_screen.data_input_email")}
                 value={email}
                 onChangeText={(value) => {
                   setEmail(value);
@@ -182,7 +182,7 @@ export default function Login_Users_View() {
                 </Container>
               )}
               <DataInput
-                label="Pin number (only 6 digits)"
+                label={t("login_screen.data_input_pin")}
                 value={pin}
                 onChangeText={(value) => {
                   const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
@@ -235,11 +235,10 @@ export default function Login_Users_View() {
                   align="center"
                   direction="row"
                 >
-                  <Spacer position="left" size="extraLarge" />
                   <Underlined_CTA
                     width="50%"
                     height={"40%"}
-                    caption="Forgot my password"
+                    caption={t("shop_login_user_view.forgot_cta")}
                     color="transparent"
                     action={() => null}
                     border_color="#898989"
@@ -247,7 +246,7 @@ export default function Login_Users_View() {
                   <Underlined_CTA
                     width="50%"
                     height={"40%"}
-                    caption="Sign Up"
+                    caption={t("shop_login_user_view.sign_up_cta")}
                     color="transparent"
                     // action={() => navigation.navigate("Enter_Names_View")}
                     action={() =>

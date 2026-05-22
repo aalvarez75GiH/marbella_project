@@ -85,7 +85,9 @@
   },
   "login_screen": {
     "title": "Let's start logging in...",
-    "activity_indicator": "Wait, we are logging you in..."
+    "activity_indicator": "Wait, we are logging you in...",
+    "data_input_email": "Email",
+    "data_input_pin": "PIN number (only 6 digits)"
   },
   "shop_products_view": {
     "activity_indicator": "Wait, loading our products..."
