@@ -58,7 +58,8 @@
         "data_input": "PIN number (only 6 digits)",
         "cta": "Switch",
         "activity_indicator": "Wait, we are switching your account...",
-        "snack_bar": "Your account has been switched successfully!"
+        "snack_bar": "Your account has been switched successfully!",
+        "snack_bar_error": "PIN is incorrect, please try again..."
       }
     },
     "personal_info_view": {

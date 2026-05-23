@@ -1,10 +1,11 @@
 import React, { useContext, useState, useRef, useEffect, useMemo } from "react";
 import {
   StyleSheet,
-  Image,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
 } from "react-native";
+import { Image } from "expo-image";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useTranslation } from "react-i18next";
@@ -29,6 +30,7 @@ export default function Login_Screen_For_Switching_Accounts_View() {
   const theme = useTheme();
   const { t } = useTranslation();
   const pinInputRef = useRef(null);
+  const shouldRefocusPinRef = useRef(false);
 
   const route = useRoute();
   const { emailToSwitch, returnTo } = route.params || {};
@@ -40,7 +42,8 @@ export default function Login_Screen_For_Switching_Accounts_View() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [emailTouched, setEmailTouched] = useState(false);
-  const [pinToSwitch, setPinToSwitch] = useState("");
+  const [switched, setSwitched] = useState(false);
+  // const [pinToSwitch, setPinToSwitch] = useState("");
 
   const { setPin, pin, loginUser } = useContext(AuthenticationContext);
 
@@ -105,54 +108,67 @@ export default function Login_Screen_For_Switching_Accounts_View() {
       const result = await loginUser(pin, emailToSwitch);
 
       if (!result?.ok || !result?.user) {
-        setError(result?.error || "Login failed");
+        showErrorSnackbar(
+          t("menu.switch_account_view.pin_switch_view.snack_bar_error")
+        );
+
+        requestAnimationFrame(() => {
+          pinInputRef.current?.focus();
+        });
+
         return;
       }
+      if (result?.ok || result?.user) {
+        const nextUser = { ...result.user, authenticated: true };
+        const userId = nextUser.user_id;
 
-      const nextUser = { ...result.user, authenticated: true };
-      const userId = nextUser.user_id;
+        // 2) capture current local cart before switching
+        const guestCart = cart;
 
-      // 2) capture current local cart before switching
-      const guestCart = cart;
+        // 3) fetch target user's db cart without overwriting local state yet
+        let dbCart = null;
+        try {
+          dbCart = await gettingCartByUserID(userId, { setState: false });
+        } catch (e) {
+          console.log(
+            "CTA: no db cart or fetch failed, continuing with local cart",
+            e?.message ?? e
+          );
+          dbCart = null;
+        }
 
-      // 3) fetch target user's db cart without overwriting local state yet
-      let dbCart = null;
-      try {
-        dbCart = await gettingCartByUserID(userId, { setState: false });
-      } catch (e) {
-        console.log(
-          "CTA: no db cart or fetch failed, continuing with local cart",
-          e?.message ?? e
-        );
-        dbCart = null;
+        // 4) merge carts
+        const mergedCart = mergeCartGuestOverridesDb(dbCart, guestCart, userId);
+
+        // 5) update local cart immediately
+        setCart(mergedCart);
+
+        // 6) persist merged cart
+        await upsertCart(mergedCart);
+
+        // 7) clear guest cart after successful upsert
+        await clearGuestCart();
+
+        // 8) go directly to final destination
+        showSnackbar({
+          message: t("menu.switch_account_view.pin_switch_view.snack_bar"),
+          actionLabel: "OK",
+          bgColor: theme.colors.ui.primary,
+          onAction: () => {
+            hideSnackbar();
+            goToFinalDestination();
+          },
+        });
+        setSwitched(true);
       }
-
-      // 4) merge carts
-      const mergedCart = mergeCartGuestOverridesDb(dbCart, guestCart, userId);
-
-      // 5) update local cart immediately
-      setCart(mergedCart);
-
-      // 6) persist merged cart
-      await upsertCart(mergedCart);
-
-      // 7) clear guest cart after successful upsert
-      await clearGuestCart();
-
-      // 8) go directly to final destination
-      showSnackbar({
-        message: t("menu.switch_account_view.pin_switch_view.snack_bar"),
-        actionLabel: "OK",
-        bgColor: theme.colors.ui.primary,
-        onAction: () => {
-          hideSnackbar();
-          goToFinalDestination();
-        },
-      });
-      // goToFinalDestination();
     } catch (e) {
       console.log("CTA SWITCH LOGIN ERROR:", e?.message ?? e, e);
-      setError("Could not switch account. Please try again.");
+
+      shouldRefocusPinRef.current = true;
+
+      showErrorSnackbar(
+        t("menu.switch_account_view.pin_switch_view.snack_bar_error")
+      );
     } finally {
       setIsSubmitting(false);
       lockCartInit(false);
@@ -160,19 +176,37 @@ export default function Login_Screen_For_Switching_Accounts_View() {
     }
   };
 
+  const showErrorSnackbar = (message) => {
+    showSnackbar({
+      message,
+      actionLabel: "OK",
+      bgColor: theme.colors.ui.error,
+      onAction: () => {
+        hideSnackbar();
+
+        // keep keyboard open
+        requestAnimationFrame(() => {
+          pinInputRef.current?.focus();
+        });
+      },
+    });
+  };
+
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
       style={{ flex: 1 }}
     >
-      {isSubmitting ? (
+      {isSubmitting && (
         <Global_activity_indicator
           caption={t(
             "menu.switch_account_view.pin_switch_view.activity_indicator"
           )}
           caption_width="65%"
         />
-      ) : (
+      )}
+
+      {!isSubmitting && !switched && (
         <>
           <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -224,7 +258,7 @@ export default function Login_Screen_For_Switching_Accounts_View() {
                   onChangeText={(value) => {
                     const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
                     setPin(digitsOnly);
-                    setPinToSwitch(digitsOnly);
+                    // setPinToSwitch(digitsOnly);
                     if (error) {
                       setError(null);
                     }
@@ -243,8 +277,11 @@ export default function Login_Screen_For_Switching_Accounts_View() {
                   returnKeyType="done"
                   onFocus={() => setEmailTouched(true)}
                   onBlur={() => setEmailTouched(false)}
-                  blurOnSubmit
+                  blurOnSubmit={false}
                   secureTextEntry
+                  onSubmitEditing={() => {
+                    pinInputRef.current?.focus();
+                  }}
                 />
                 {error && (
                   <Container
@@ -287,30 +324,65 @@ export default function Login_Screen_For_Switching_Accounts_View() {
                 </Container>
               )}
             </Container>
-            <Snackbar
-              visible={snackbar.visible}
-              onDismiss={() => {}}
-              duration={Number.POSITIVE_INFINITY}
-              action={{
-                label: snackbar.actionLabel,
-                onPress: () => {
-                  if (snackbar.onAction) {
-                    snackbar.onAction();
-                  } else {
-                    hideSnackbar();
-                  }
-                },
-              }}
-              style={{
-                minHeight: 80,
-                marginBottom: 30,
-                backgroundColor: snackbar.bgColor,
-              }}
-            >
-              {snackbar.message}
-            </Snackbar>
           </KeyboardAvoidingView>
         </>
+      )}
+      {!isSubmitting && switched && (
+        <Container
+          width="100%"
+          height="100%"
+          color={theme.colors.bg.elements_bg}
+          justify="center"
+          align="center"
+        >
+          <Container
+            width="60%"
+            height="30%"
+            color={theme.colors.bg.elements_bg}
+            align="center"
+            justify="center"
+          >
+            <Image
+              source={require("../../../assets/my_icons/switch_icon.png")}
+              style={{
+                width: "80%",
+                height: "80%",
+              }}
+              contentFit="cover" // replaces resizeMode
+              transition={300} // smooth fade-in
+            />
+            <Spacer position="top" size="large" />
+            <Text variant="dm_sans_bold_24">Switched</Text>
+          </Container>
+          <Snackbar
+            visible={snackbar.visible}
+            onDismiss={() => {}}
+            duration={Number.POSITIVE_INFINITY}
+            action={{
+              label: snackbar.actionLabel,
+              onPress: () => {
+                if (snackbar.onAction) {
+                  setSwitched(false);
+                  snackbar.onAction();
+                } else {
+                  hideSnackbar();
+                }
+              },
+            }}
+            wrapperStyle={{
+              bottom: Platform.OS === "ios" ? 20 : 50,
+              zIndex: 9999,
+              elevation: 9999,
+            }}
+            style={{
+              minHeight: 80,
+              marginBottom: 30,
+              backgroundColor: snackbar.bgColor,
+            }}
+          >
+            {snackbar.message}
+          </Snackbar>
+        </Container>
       )}
     </SafeArea>
   );

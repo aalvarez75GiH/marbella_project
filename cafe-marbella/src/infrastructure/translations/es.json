@@ -58,7 +58,9 @@
         "data_input": "Número PIN (Sólo 6 dígitos)",
         "cta": "Cambiar",
         "activity_indicator": "Espera, cambiando tu cuenta...",
-        "snack_bar": "Cuenta cambiada exitosamente!"
+        "snack_bar": "Cuenta cambiada exitosamente!",
+        "snack_bar_error": "PIN incorrectp, intenta de nuevo",
+        "invalid_pin": "PIN incorrecto, intenta de nuevo"
       }
     },
     "personal_info_view": {

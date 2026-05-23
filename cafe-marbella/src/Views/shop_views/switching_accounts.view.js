@@ -110,7 +110,7 @@ export default function Switching_Accounts_View() {
               align="flex-start"
             >
               <Spacer position="left" size="large">
-                <Spacer position="left" size="medium">
+                <Spacer position="left" size="small">
                   <Text variant="raleway_bold_18">
                     {t("menu.switch_account_view.title")}
                   </Text>

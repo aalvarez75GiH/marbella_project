@@ -8,7 +8,6 @@ import {
   useRoute,
 } from "@react-navigation/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { Image } from "expo-image";
 
 import { Container } from "../../components/containers/general.containers";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -33,7 +32,6 @@ export default function Select_Roast_Type_View() {
 
   const {
     isLoading: whLoading,
-    productsChosenForShop,
     setProductsChosenForShop,
     shopProductsGround,
     shopProductsWhole,
