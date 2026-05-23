@@ -60,7 +60,8 @@
         "activity_indicator": "Espera, cambiando tu cuenta...",
         "snack_bar": "Cuenta cambiada exitosamente!",
         "snack_bar_error": "PIN incorrectp, intenta de nuevo",
-        "invalid_pin": "PIN incorrecto, intenta de nuevo"
+        "invalid_pin": "PIN incorrecto, intenta de nuevo",
+        "switched": "Cambiado!"
       }
     },
     "personal_info_view": {
@@ -88,7 +89,9 @@
     "title": "Comencemos inciando sesión...",
     "activity_indicator": "Espera, iniciando sesión...",
     "data_input_email": "Email",
-    "data_input_pin": "Número PIN (Sólo 6 dígitos)"
+    "data_input_pin": "Número PIN (Sólo 6 dígitos)",
+    "email_login_error": "introduzca un email válido",
+    "pin_login_error": "PIN o email no coinciden con su cuenta, intenta de nuevo"
   },
   "shop_products_view": {
     "activity_indicator": "Espera, cargando nuestros productos..."

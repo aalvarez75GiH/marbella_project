@@ -352,38 +352,40 @@ export default function Login_Screen_For_Switching_Accounts_View() {
               transition={300} // smooth fade-in
             />
             <Spacer position="top" size="large" />
-            <Text variant="dm_sans_bold_24">Switched</Text>
+            <Text variant="dm_sans_bold_24">
+              {t("menu.switch_account_view.pin_switch_view.switched")}
+            </Text>
           </Container>
-          <Snackbar
-            visible={snackbar.visible}
-            onDismiss={() => {}}
-            duration={Number.POSITIVE_INFINITY}
-            action={{
-              label: snackbar.actionLabel,
-              onPress: () => {
-                if (snackbar.onAction) {
-                  setSwitched(false);
-                  snackbar.onAction();
-                } else {
-                  hideSnackbar();
-                }
-              },
-            }}
-            wrapperStyle={{
-              bottom: Platform.OS === "ios" ? 20 : 50,
-              zIndex: 9999,
-              elevation: 9999,
-            }}
-            style={{
-              minHeight: 80,
-              marginBottom: 30,
-              backgroundColor: snackbar.bgColor,
-            }}
-          >
-            {snackbar.message}
-          </Snackbar>
         </Container>
       )}
+      <Snackbar
+        visible={snackbar.visible}
+        onDismiss={() => {}}
+        duration={Number.POSITIVE_INFINITY}
+        action={{
+          label: snackbar.actionLabel,
+          onPress: () => {
+            if (snackbar.onAction) {
+              setSwitched(false);
+              snackbar.onAction();
+            } else {
+              hideSnackbar();
+            }
+          },
+        }}
+        wrapperStyle={{
+          bottom: switched ? 20 : Platform.OS === "ios" ? 290 : 290,
+          zIndex: 9999,
+          elevation: 9999,
+        }}
+        style={{
+          minHeight: 80,
+          marginBottom: 30,
+          backgroundColor: snackbar.bgColor,
+        }}
+      >
+        {snackbar.message}
+      </Snackbar>
     </SafeArea>
   );
 }

@@ -8,6 +8,7 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useTranslation } from "react-i18next";
+import { Snackbar } from "react-native-paper";
 
 import { navigationRef } from "../../infrastructure/navigation/navigation_ref.js";
 import { Container } from "../../components/containers/general.containers";
@@ -30,6 +31,7 @@ export default function Login_Users_View() {
   const theme = useTheme();
   const { t } = useTranslation();
   const emailInputRef = useRef(null);
+  const pinInputRef = useRef(null);
 
   const {
     cart,
@@ -41,7 +43,8 @@ export default function Login_Users_View() {
     clearGuestCart,
   } = useContext(CartContext);
   const { prepareOrderFromCart } = useContext(OrdersContext);
-  const { isValidEmail, globalLanguage } = useContext(GlobalContext);
+  const { isValidEmail, snackbar, hideSnackbar, showSnackbar } =
+    useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
@@ -71,6 +74,22 @@ export default function Login_Users_View() {
   console.log("RETURN TO:", returnTo);
   console.log("EMAIL:", email);
   console.log("PIN:", pin);
+
+  const showErrorSnackbar = (message) => {
+    showSnackbar({
+      message,
+      actionLabel: "OK",
+      bgColor: theme.colors.ui.error,
+      onAction: () => {
+        hideSnackbar();
+
+        // keep keyboard open
+        // requestAnimationFrame(() => {
+        //   pinInputRef.current?.focus();
+        // });
+      },
+    });
+  };
   //   console.log("COMING TO LOGIN VIEW FROM:", comingFrom);
   return (
     <SafeArea
@@ -84,291 +103,327 @@ export default function Login_Users_View() {
           // color={"red"}
         />
       ) : (
-        // your normal UI
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-          <Container
-            width="100%"
-            height="100%"
-            color={theme.colors.bg.elements_bg}
-            //color={"red"}
-            justify="flex-start"
-            align="center"
+        <>
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
-            <Go_Back_Header
-              label=""
-              action={() => {
-                setEmail("");
-                setEmailError(null);
-                setPin("");
-                navigation.goBack();
-              }}
-            />
-
             <Container
               width="100%"
-              height="15%"
+              height="100%"
               color={theme.colors.bg.elements_bg}
-            >
-              <Image
-                source={require("../../../assets/brand_images/marbella_cafe_especial_logo_transparent.png")}
-                style={styles.image_1}
-              />
-            </Container>
-            <Container
-              width="100%"
-              //   height="20%"
-              height={emailError || error ? "25%" : "20%"} // shrink if there's an error to make room
-              color={theme.colors.bg.elements_bg}
-              //   color={"yellow"}
-              align="flex-start"
-            >
-              <Spacer position="left" size="extraLarge">
-                <Text variant="raleway_bold_18" textAlign="center">
-                  {t("login_screen.title")}
-                  {/* Let's start logging In... */}
-                </Text>
-              </Spacer>
-            </Container>
-            <Container
-              width="100%"
-              height="20%"
-              color={theme.colors.bg.elements_bg}
-              //   color={"yellow"}
+              //color={"red"}
+              justify="flex-start"
               align="center"
-              direction="column"
             >
-              <DataInput
-                ref={emailInputRef}
-                label={t("login_screen.data_input_email")}
-                value={email}
-                onChangeText={(value) => {
-                  setEmail(value);
-                  if (emailError) {
-                    setEmailError(null); // 👈 clear error while typing
-                  }
+              <Go_Back_Header
+                label=""
+                action={() => {
+                  setEmail("");
+                  setEmailError(null);
+                  setPin("");
+                  navigation.goBack();
                 }}
-                border_color={theme.colors.inputs.bottom_lines_disabled}
-                underlineColor={theme.colors.inputs.bottom_lines_disabled}
-                border_width={"0.5px"}
-                activeUnderlineColor={theme.colors.ui.primary}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                textContentType="emailAddress"
-                autoComplete="email"
-                returnKeyType="done"
               />
-              {!email && emailTouched && (
-                <Spacer position="top" size="extraLarge" />
-              )}
-              {emailError && (
-                <Container
-                  width="100%"
-                  //   height="25%"
-                  height={emailError || error ? "30%" : "20%"} // shrink if there's an error to make room
-                  color={theme.colors.bg.elements_bg}
-                  justify="flex-start"
-                  align="flex-start"
-                >
-                  <Spacer position="top" size="large" />
-                  <Spacer position="left" size="large">
-                    <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
-                      {emailError}
-                    </Text>
-                  </Spacer>
-                </Container>
-              )}
-              <DataInput
-                label={t("login_screen.data_input_pin")}
-                value={pin}
-                onChangeText={(value) => {
-                  const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
-                  setPin(digitsOnly);
-                  if (error) {
-                    setError(null); // 👈 clear error while typing
-                  }
-                }}
-                underlineColor={theme.colors.inputs.bottom_lines_disabled}
-                border_color={theme.colors.inputs.bottom_lines_disabled}
-                border_width={"0.5px"}
-                activeUnderlineColor={theme.colors.ui.primary}
-                keyboardType={Platform.OS === "ios" ? "number-pad" : "numeric"}
-                autoCapitalize="none"
-                autoCorrect={false}
-                textContentType="Password"
-                autoComplete="email"
-                returnKeyType="done"
-                onFocus={() => setEmailTouched(true)}
-                onBlur={() => setEmailTouched(false)}
-                secureTextEntry
-                blurOnSubmit
-              />
-              {error && (
-                <Container
-                  width="100%"
-                  height="25%"
-                  color={theme.colors.bg.elements_bg}
-                  justify="flex-start"
-                  align="flex-start"
-                >
-                  <Spacer position="top" size="large" />
-                  <Spacer position="left" size="large">
-                    <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
-                      {error}
-                    </Text>
-                  </Spacer>
-                </Container>
-              )}
-            </Container>
-            <Spacer position="top" size="extraLarge" />
-            {!email && !pin && (
-              <>
-                <Spacer position="top" size="extraLarge" />
-                <Container
-                  width="100%"
-                  height="10%"
-                  color={theme.colors.bg.elements_bg}
-                  //   color={"yellow"}
-                  align="center"
-                  direction="row"
-                >
-                  <Underlined_CTA
-                    width="50%"
-                    height={"40%"}
-                    caption={t("shop_login_user_view.forgot_cta")}
-                    color="transparent"
-                    action={() => null}
-                    border_color="#898989"
-                  />
-                  <Underlined_CTA
-                    width="50%"
-                    height={"40%"}
-                    caption={t("shop_login_user_view.sign_up_cta")}
-                    color="transparent"
-                    // action={() => navigation.navigate("Enter_Names_View")}
-                    action={() =>
-                      navigation.navigate("AuthModal", {
-                        screen: "Enter_Names_View",
-                        params: { returnTo }, // forward it
-                      })
-                    }
-                    border_color="#898989"
-                  />
-                </Container>
-              </>
-            )}
-            <Spacer position="top" size="extraLarge" />
-            {email && pin && isValidPin && (
+
               <Container
                 width="100%"
-                padding_vertical={emailError || error ? "0%" : "2%"} // shrink if there's an error to make room
+                height="15%"
                 color={theme.colors.bg.elements_bg}
-                //color={"red"}
-                align="flex-start"
-                justify="center"
-                direction="row"
               >
-                <Regular_CTA
-                  width="200px"
-                  height={"65px"}
-                  color={theme.colors.ui.primary}
-                  border_radius={"40px"}
-                  caption="Log In"
-                  caption_text_variant="dm_sans_bold_20_white"
-                  action={async () => {
-                    if (isSubmitting) return; // prevent double taps
-
-                    if (!isValidEmail(email)) {
-                      setEmailError("Please enter a valid email address.");
-                      return;
+                <Image
+                  source={require("../../../assets/brand_images/marbella_cafe_especial_logo_transparent.png")}
+                  style={styles.image_1}
+                />
+              </Container>
+              <Container
+                width="100%"
+                //   height="20%"
+                height={emailError || error ? "25%" : "20%"} // shrink if there's an error to make room
+                color={theme.colors.bg.elements_bg}
+                //   color={"yellow"}
+                align="flex-start"
+              >
+                <Spacer position="left" size="extraLarge">
+                  <Text variant="raleway_bold_18" textAlign="center">
+                    {t("login_screen.title")}
+                    {/* Let's start logging In... */}
+                  </Text>
+                </Spacer>
+              </Container>
+              <Container
+                width="100%"
+                height="20%"
+                color={theme.colors.bg.elements_bg}
+                //   color={"yellow"}
+                align="center"
+                direction="column"
+              >
+                <DataInput
+                  ref={emailInputRef}
+                  label={t("login_screen.data_input_email")}
+                  value={email}
+                  onChangeText={(value) => {
+                    setEmail(value);
+                    if (emailError) {
+                      setEmailError(null); // 👈 clear error while typing
                     }
+                  }}
+                  border_color={theme.colors.inputs.bottom_lines_disabled}
+                  underlineColor={theme.colors.inputs.bottom_lines_disabled}
+                  border_width={"0.5px"}
+                  activeUnderlineColor={theme.colors.ui.primary}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  textContentType="emailAddress"
+                  autoComplete="email"
+                  returnKeyType="done"
+                />
+                {!email && emailTouched && (
+                  <Spacer position="top" size="extraLarge" />
+                )}
+                {emailError && (
+                  <Container
+                    width="100%"
+                    //   height="25%"
+                    height={emailError || error ? "30%" : "20%"} // shrink if there's an error to make room
+                    color={theme.colors.bg.elements_bg}
+                    justify="flex-start"
+                    align="flex-start"
+                  >
+                    <Spacer position="top" size="large" />
+                    <Spacer position="left" size="large">
+                      <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
+                        {emailError}
+                      </Text>
+                    </Spacer>
+                  </Container>
+                )}
+                <DataInput
+                  ref={pinInputRef}
+                  label={t("login_screen.data_input_pin")}
+                  value={pin}
+                  onChangeText={(value) => {
+                    const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
+                    setPin(digitsOnly);
+                    if (error) {
+                      setError(null); // 👈 clear error while typing
+                    }
+                  }}
+                  underlineColor={theme.colors.inputs.bottom_lines_disabled}
+                  border_color={theme.colors.inputs.bottom_lines_disabled}
+                  border_width={"0.5px"}
+                  activeUnderlineColor={theme.colors.ui.primary}
+                  keyboardType={
+                    Platform.OS === "ios" ? "number-pad" : "numeric"
+                  }
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  textContentType="Password"
+                  autoComplete="email"
+                  returnKeyType="done"
+                  onFocus={() => setEmailTouched(true)}
+                  onBlur={() => setEmailTouched(false)}
+                  secureTextEntry
+                  blurOnSubmit
+                />
+              </Container>
+              <Spacer position="top" size="extraLarge" />
+              {!email && !pin && (
+                <>
+                  <Spacer position="top" size="extraLarge" />
+                  <Container
+                    width="100%"
+                    height="10%"
+                    color={theme.colors.bg.elements_bg}
+                    //   color={"yellow"}
+                    align="center"
+                    direction="row"
+                  >
+                    <Underlined_CTA
+                      width="50%"
+                      height={"40%"}
+                      caption={t("shop_login_user_view.forgot_cta")}
+                      color="transparent"
+                      action={() => null}
+                      border_color="#898989"
+                    />
+                    <Underlined_CTA
+                      width="50%"
+                      height={"40%"}
+                      caption={t("shop_login_user_view.sign_up_cta")}
+                      color="transparent"
+                      // action={() => navigation.navigate("Enter_Names_View")}
+                      action={() =>
+                        navigation.navigate("AuthModal", {
+                          screen: "Enter_Names_View",
+                          params: { returnTo }, // forward it
+                        })
+                      }
+                      border_color="#898989"
+                    />
+                  </Container>
+                </>
+              )}
+              <Spacer position="top" size="extraLarge" />
+              {email && pin && isValidPin && (
+                <Container
+                  width="100%"
+                  padding_vertical={emailError || error ? "0%" : "2%"} // shrink if there's an error to make room
+                  color={theme.colors.bg.elements_bg}
+                  //color={"red"}
+                  align="flex-start"
+                  justify="center"
+                  direction="row"
+                >
+                  <Regular_CTA
+                    width="200px"
+                    height={"65px"}
+                    color={theme.colors.ui.primary}
+                    border_radius={"40px"}
+                    caption="Log In"
+                    caption_text_variant="dm_sans_bold_20_white"
+                    action={async () => {
+                      if (isSubmitting) return; // prevent double taps
 
-                    setIsSubmitting(true);
-                    lockCartInit(true);
-                    try {
-                      console.log("CTA: start login");
+                      if (!isValidEmail(email)) {
+                        showErrorSnackbar(t("login_screen.email_login_error"));
 
-                      // 0) login
-                      const result = await loginUser(pin, email);
+                        setTimeout(() => {
+                          emailInputRef.current?.focus();
+                        }, 100);
 
-                      if (!result?.ok) {
-                        setError(result?.error || "Login failed");
                         return;
                       }
 
-                      const nextUser = { ...result.user, authenticated: true };
-                      const userId = nextUser.user_id;
-
-                      // 1) capture the cart you want to keep (guest cart from CartContext)
-                      // IMPORTANT: use the cart that has qty=2 right now
-                      const guestCart = cart;
-
-                      // 2) fetch DB cart
-                      let dbCart = null;
+                      setIsSubmitting(true);
+                      lockCartInit(true);
                       try {
-                        dbCart = await gettingCartByUserID(userId, {
-                          setState: false,
+                        console.log("CTA: start login");
+
+                        // 0) login
+                        const result = await loginUser(pin, email);
+
+                        if (!result?.ok) {
+                          showErrorSnackbar(
+                            // result?.error || t("login_screen.pin_login_error")
+                            t("login_screen.pin_login_error")
+                          );
+
+                          setTimeout(() => {
+                            pinInputRef.current?.focus();
+                          }, 100);
+
+                          return;
+                        }
+                        // if (!result?.ok) {
+                        //   setError(result?.error || "Login failed");
+                        //   return;
+                        // }
+
+                        const nextUser = {
+                          ...result.user,
+                          authenticated: true,
+                        };
+                        const userId = nextUser.user_id;
+
+                        // 1) capture the cart you want to keep (guest cart from CartContext)
+                        // IMPORTANT: use the cart that has qty=2 right now
+                        const guestCart = cart;
+
+                        // 2) fetch DB cart
+                        let dbCart = null;
+                        try {
+                          dbCart = await gettingCartByUserID(userId, {
+                            setState: false,
+                          });
+                        } catch (e) {
+                          console.log(
+                            "CTA: no db cart or fetch failed, continuing with guest cart",
+                            e?.message ?? e
+                          );
+                        }
+
+                        // 3) merge: guest overrides db
+                        // If you already have mergeCartGuestOverridesDb, use it.
+                        const mergedCart = mergeCartGuestOverridesDb(
+                          dbCart,
+                          guestCart,
+                          userId
+                        );
+
+                        // 4) set local cart FIRST (so back shows qty=2)
+                        setCart(mergedCart);
+                        // setCartTotalItems(getTotalCartQuantity(mergedCart));
+
+                        // 5) persist merged cart to DB so your "fetch user cart" effect won't overwrite to qty=1
+                        // (This is the key fix for your problem.)
+                        await upsertCart(mergedCart);
+
+                        // ✅ 5b) clear guest cart ONLY after successful upsert
+                        await clearGuestCart();
+
+                        // 6) build order from the same cart
+                        prepareOrderFromCart(mergedCart, nextUser);
+
+                        // 7) close auth modal (so Cart is underneath)
+                        navigation.getParent()?.goBack();
+
+                        // 8) navigate into the Cart stack delivery type (so GO_BACK works)
+
+                        requestAnimationFrame(() => {
+                          navigationRef.current?.navigate("App", {
+                            screen: returnTo?.tab ?? "Shop",
+                            params: {
+                              // screen:
+                              // returnTo?.screen ?? "Shop_Delivery_Type_View",
+                              screen: returnTo?.screen,
+                              params: returnTo?.params ?? {},
+                            },
+                          });
                         });
                       } catch (e) {
-                        console.log(
-                          "CTA: no db cart or fetch failed, continuing with guest cart",
-                          e?.message ?? e
-                        );
+                        console.log("CTA ERROR:", e?.message ?? e, e);
+                      } finally {
+                        lockCartInit(false);
+                        setIsSubmitting(false);
                       }
-
-                      // 3) merge: guest overrides db
-                      // If you already have mergeCartGuestOverridesDb, use it.
-                      const mergedCart = mergeCartGuestOverridesDb(
-                        dbCart,
-                        guestCart,
-                        userId
-                      );
-
-                      // 4) set local cart FIRST (so back shows qty=2)
-                      setCart(mergedCart);
-                      // setCartTotalItems(getTotalCartQuantity(mergedCart));
-
-                      // 5) persist merged cart to DB so your "fetch user cart" effect won't overwrite to qty=1
-                      // (This is the key fix for your problem.)
-                      await upsertCart(mergedCart);
-
-                      // ✅ 5b) clear guest cart ONLY after successful upsert
-                      await clearGuestCart();
-
-                      // 6) build order from the same cart
-                      prepareOrderFromCart(mergedCart, nextUser);
-
-                      // 7) close auth modal (so Cart is underneath)
-                      navigation.getParent()?.goBack();
-
-                      // 8) navigate into the Cart stack delivery type (so GO_BACK works)
-
-                      requestAnimationFrame(() => {
-                        navigationRef.current?.navigate("App", {
-                          screen: returnTo?.tab ?? "Shop",
-                          params: {
-                            // screen:
-                            // returnTo?.screen ?? "Shop_Delivery_Type_View",
-                            screen: returnTo?.screen,
-                            params: returnTo?.params ?? {},
-                          },
-                        });
-                      });
-                    } catch (e) {
-                      console.log("CTA ERROR:", e?.message ?? e, e);
-                    } finally {
-                      lockCartInit(false);
-                      setIsSubmitting(false);
-                    }
-                  }}
-                />
-              </Container>
-            )}
-          </Container>
-        </KeyboardAvoidingView>
+                    }}
+                  />
+                </Container>
+              )}
+            </Container>
+            <Snackbar
+              visible={snackbar.visible}
+              onDismiss={() => {}}
+              duration={Number.POSITIVE_INFINITY}
+              action={{
+                label: snackbar.actionLabel,
+                onPress: () => {
+                  if (snackbar.onAction) {
+                    snackbar.onAction();
+                  } else {
+                    hideSnackbar();
+                  }
+                },
+              }}
+              wrapperStyle={{
+                bottom: Platform.OS === "ios" ? 240 : 50,
+                zIndex: 9999,
+                elevation: 9999,
+              }}
+              style={{
+                minHeight: 80,
+                marginBottom: 30,
+                backgroundColor: snackbar.bgColor,
+              }}
+            >
+              {snackbar.message}
+            </Snackbar>
+          </KeyboardAvoidingView>
+        </>
+        // your normal UI
       )}
     </SafeArea>
   );
