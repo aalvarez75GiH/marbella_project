@@ -320,5 +320,39 @@
     "caption_5": "Continuar",
     "cta_1": "Chequeando...",
     "cta_2": "Continuar"
+  },
+  "authentication_views": {
+    "enter_names_view": {
+      "title": "Introduzca su nombre",
+      "data_input_first_name": "Nombre",
+      "data_input_last_name": "Apellido",
+      "cta": "Continuar"
+    },
+    "enter_email_view": {
+      "title": "Introduzca su email",
+      "data_input_email": "Correo electrónico",
+      "cta": "Continuar"
+    },
+    "enter_address_view": {
+      "title": "Introduzca su dirección",
+      "data_input_address": "Dirección",
+      "cta": "Continuar"
+    },
+    "enter_phone_view": {
+      "title": "Introdúzca su número de teléfono",
+      "data_input_phone": "Número de teléfono",
+      "cta": "Continuar"
+    },
+    "info_review": {
+      "first_name": "Nómbre:",
+      "last_name": "Apellido:",
+      "email": "Email:",
+      "address": "Dirección:",
+      "phone": "Teléfono:",
+      "cta": "Registrar"
+    },
+    "showNameWarningSnackbar": {
+      "message": "Por favor, introduce tu nombre para continuar"
+    }
   }
 }

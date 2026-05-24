@@ -2,6 +2,7 @@ import React, { useContext, useState, useMemo, useRef, useEffect } from "react";
 import { View, KeyboardAvoidingView, Platform } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
+import { useTranslation } from "react-i18next";
 
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header.js";
@@ -18,6 +19,7 @@ export default function Enter_Phone_Number_View() {
   const navigation = useNavigation();
   const theme = useTheme();
   const route = useRoute();
+  const { t } = useTranslation();
   const { comingFrom, returnTo } = route?.params ?? {};
 
   const { setUserToDB, userToDB } = useContext(AuthenticationContext);
@@ -112,14 +114,16 @@ export default function Enter_Phone_Number_View() {
             >
               <Spacer position="left" size="extraLarge">
                 <Text variant="raleway_bold_18" textAlign="center">
-                  Enter your phone number
+                  {t("authentication_views.enter_phone_view.title")}
                 </Text>
               </Spacer>
             </Container>
             <Spacer position="top" size="large" />
             <DataInput
               ref={phoneNumberDataInputRef}
-              label="Phone Number"
+              label={t(
+                "authentication_views.enter_phone_view.data_input_phone"
+              )}
               value={userToDB?.phone_number || ""}
               onChangeText={(value) => {
                 const formatted = formatPhone(value);
@@ -194,7 +198,7 @@ export default function Enter_Phone_Number_View() {
                 height={"65px"}
                 color={theme.colors.ui.primary}
                 border_radius={"40px"}
-                caption="Next"
+                caption={t("authentication_views.enter_phone_view.cta")}
                 caption_text_variant="dm_sans_bold_20_white"
                 action={() => {
                   if (!isValidPhone(userToDB?.phone_number)) {

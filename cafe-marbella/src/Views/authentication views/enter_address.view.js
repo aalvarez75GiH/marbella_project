@@ -3,6 +3,7 @@ import { useTheme } from "styled-components/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Platform, KeyboardAvoidingView, ScrollView, View } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import { useTranslation } from "react-i18next";
 
 import { Container } from "../../components/containers/general.containers";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -17,6 +18,7 @@ export default function Enter_Address_View() {
   const theme = useTheme();
   const navigation = useNavigation();
   const route = useRoute();
+  const { t } = useTranslation();
   const { returnTo } = route?.params ?? {};
 
   const [scrollEnabled, setScrollEnabled] = useState(true);
@@ -91,7 +93,9 @@ export default function Enter_Address_View() {
               style={{ paddingVertical: 12 }}
             >
               <Spacer position="left" size="large">
-                <Text variant="raleway_bold_20">Enter your address</Text>
+                <Text variant="raleway_bold_20">
+                  {t("authentication_views.enter_address_view.title")}
+                </Text>
               </Spacer>
             </Container>
 
@@ -126,7 +130,9 @@ export default function Enter_Address_View() {
                     }
                     onNotFound={() => console.log("PLACES NOT FOUND")}
                     onTimeout={() => console.log("PLACES TIMEOUT")}
-                    placeholder="Shipping address"
+                    placeholder={t(
+                      "authentication_views.enter_address_view.data_input_address"
+                    )}
                     query={placesQuery}
                     fetchDetails
                     onPress={(data, details = null) => {
@@ -327,7 +333,7 @@ export default function Enter_Address_View() {
                 height={CTA_HEIGHT}
                 color={theme.colors.brand.primary}
                 border_radius={"40px"}
-                caption="Continue"
+                caption={t("authentication_views.enter_address_view.cta")}
                 caption_text_variant="dm_sans_bold_20_white"
                 action={async () =>
                   //   navigation.navigate("Enter_Phone_Number_View")

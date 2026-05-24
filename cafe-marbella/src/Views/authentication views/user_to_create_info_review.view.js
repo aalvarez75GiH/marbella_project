@@ -1,8 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { rootNavigate } from "../../infrastructure/navigation/navigation_ref.js";
+import { useTranslation } from "react-i18next";
 
 import { Container } from "../../components/containers/general.containers.js";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header.js";
@@ -20,6 +19,7 @@ import { OrdersContext } from "../../infrastructure/services/orders/orders.conte
 export default function User_To_Create_Info_Review_View() {
   const navigation = useNavigation();
   const theme = useTheme();
+  const { t } = useTranslation();
   const route = useRoute();
   const { returnTo } = route?.params ?? {};
   // const [isLoading, setIsLoading] = useState(false);
@@ -127,7 +127,7 @@ export default function User_To_Create_Info_Review_View() {
             >
               <Spacer position="left" size="medium">
                 <Text variant="raleway_bold_16" textAlign="center">
-                  First name:
+                  {t("authentication_views.info_review.first_name")}
                 </Text>
               </Spacer>
             </Container>
@@ -167,7 +167,7 @@ export default function User_To_Create_Info_Review_View() {
             >
               <Spacer position="left" size="medium">
                 <Text variant="raleway_bold_16" textAlign="center">
-                  Last name:
+                  {t("authentication_views.info_review.last_name")}
                 </Text>
               </Spacer>
             </Container>
@@ -207,7 +207,7 @@ export default function User_To_Create_Info_Review_View() {
             >
               <Spacer position="left" size="medium">
                 <Text variant="raleway_bold_16" textAlign="center">
-                  Email:
+                  {t("authentication_views.info_review.email")}
                 </Text>
               </Spacer>
             </Container>
@@ -247,7 +247,7 @@ export default function User_To_Create_Info_Review_View() {
             >
               <Spacer position="left" size="medium">
                 <Text variant="raleway_bold_16" textAlign="center">
-                  Address:
+                  {t("authentication_views.info_review.address")}
                 </Text>
               </Spacer>
             </Container>
@@ -294,7 +294,7 @@ export default function User_To_Create_Info_Review_View() {
             >
               <Spacer position="left" size="medium">
                 <Text variant="raleway_bold_16" textAlign="center">
-                  Phone #:
+                  {t("authentication_views.info_review.phone")}
                 </Text>
               </Spacer>
             </Container>
@@ -370,7 +370,7 @@ export default function User_To_Create_Info_Review_View() {
               height={"40%"}
               color={theme.colors.ui.primary}
               border_radius={"40px"}
-              caption="Finish registration"
+              caption={t("authentication_views.info_review.cta")}
               caption_text_variant="dm_sans_bold_20_white"
               action={async () => {
                 if (isSubmitting) return; // prevent double taps

@@ -29,6 +29,7 @@ export const generateUUID = () => Crypto.randomUUID();
 
 export const Cart_Context_Provider = ({ children }) => {
   const { GUEST_CART_KEY } = STORAGE_KEYS;
+  const wait = (ms = 700) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const createEmptyGuestCart = useCallback(
     () => ({
@@ -470,38 +471,43 @@ export const Cart_Context_Provider = ({ children }) => {
       if (removingRef.current) return { ok: false, becameEmpty: false };
       removingRef.current = true;
 
-      const { productId, variantId } = extractingIDs(item);
-
-      const prevProducts = cart?.products ?? [];
-      const updatedProducts = prevProducts.filter((p) => {
-        const v = p?.size_variants?.[0];
-        return !(p?.id === productId && v?.id === variantId);
-      });
-
-      const sub_total = calculateSubtotal(updatedProducts);
-      const taxes = Number(cart?.taxes ?? 0);
-
-      const optimisticCart = {
-        ...cart,
-        products: updatedProducts,
-        sub_total,
-        taxes,
-        total: sub_total + taxes,
-        updated_at: new Date().toISOString(),
-      };
-
-      const optimisticEmpty = updatedProducts.length === 0;
-
       setIsLoading(true);
-      setCart(optimisticCart);
 
       try {
+        const { productId, variantId } = extractingIDs(item);
+
+        const prevProducts = cart?.products ?? [];
+        const updatedProducts = prevProducts.filter((p) => {
+          const v = p?.size_variants?.[0];
+          return !(p?.id === productId && v?.id === variantId);
+        });
+
+        const sub_total = calculateSubtotal(updatedProducts);
+        const taxes = Number(cart?.taxes ?? 0);
+
+        const optimisticCart = {
+          ...cart,
+          products: updatedProducts,
+          sub_total,
+          taxes,
+          total: sub_total + taxes,
+          updated_at: new Date().toISOString(),
+        };
+
+        const optimisticEmpty = updatedProducts.length === 0;
+
+        // ✅ Force visible UX delay
+        await wait(700);
+
+        setCart(optimisticCart);
+
         // Guest
         if (!user_id) {
           await AsyncStorage.setItem(
             GUEST_CART_KEY,
             JSON.stringify(optimisticCart)
           );
+
           return { ok: true, becameEmpty: optimisticEmpty };
         }
 
@@ -511,8 +517,10 @@ export const Cart_Context_Provider = ({ children }) => {
           productId,
           variantId
         );
+
         if (myCart) {
           setCart(myCart);
+
           return {
             ok: true,
             becameEmpty: (myCart?.products?.length ?? 0) === 0,
@@ -530,6 +538,72 @@ export const Cart_Context_Provider = ({ children }) => {
     },
     [cart, user_id, extractingIDs, calculateSubtotal, GUEST_CART_KEY]
   );
+
+  // const removingProductFromCart = useCallback(
+  //   async (item) => {
+  //     if (removingRef.current) return { ok: false, becameEmpty: false };
+  //     removingRef.current = true;
+
+  //     const { productId, variantId } = extractingIDs(item);
+
+  //     const prevProducts = cart?.products ?? [];
+  //     const updatedProducts = prevProducts.filter((p) => {
+  //       const v = p?.size_variants?.[0];
+  //       return !(p?.id === productId && v?.id === variantId);
+  //     });
+
+  //     const sub_total = calculateSubtotal(updatedProducts);
+  //     const taxes = Number(cart?.taxes ?? 0);
+
+  //     const optimisticCart = {
+  //       ...cart,
+  //       products: updatedProducts,
+  //       sub_total,
+  //       taxes,
+  //       total: sub_total + taxes,
+  //       updated_at: new Date().toISOString(),
+  //     };
+
+  //     const optimisticEmpty = updatedProducts.length === 0;
+
+  //     setIsLoading(true);
+  //     setCart(optimisticCart);
+
+  //     try {
+  //       // Guest
+  //       if (!user_id) {
+  //         await AsyncStorage.setItem(
+  //           GUEST_CART_KEY,
+  //           JSON.stringify(optimisticCart)
+  //         );
+  //         return { ok: true, becameEmpty: optimisticEmpty };
+  //       }
+
+  //       // User
+  //       const myCart = await removingCartItemRequest(
+  //         user_id,
+  //         productId,
+  //         variantId
+  //       );
+  //       if (myCart) {
+  //         setCart(myCart);
+  //         return {
+  //           ok: true,
+  //           becameEmpty: (myCart?.products?.length ?? 0) === 0,
+  //         };
+  //       }
+
+  //       return { ok: true, becameEmpty: optimisticEmpty };
+  //     } catch (e) {
+  //       console.error("Error removing cart item:", e);
+  //       return { ok: false, becameEmpty: false };
+  //     } finally {
+  //       setIsLoading(false);
+  //       removingRef.current = false;
+  //     }
+  //   },
+  //   [cart, user_id, extractingIDs, calculateSubtotal, GUEST_CART_KEY]
+  // );
 
   const resettingCart = useCallback(
     async (uid) => {

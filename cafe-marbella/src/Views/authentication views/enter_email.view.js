@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState, useRef } from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
+import { useTranslation } from "react-i18next";
 
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header.js";
@@ -16,6 +17,7 @@ import { GlobalContext } from "../../infrastructure/services/global/global.conte
 
 export default function Enter_Email_View() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   const { setUserToDB, userToDB } = useContext(AuthenticationContext);
   const { isValidEmail } = useContext(GlobalContext);
@@ -82,7 +84,7 @@ export default function Enter_Email_View() {
           >
             <Spacer position="left" size="extraLarge">
               <Text variant="raleway_bold_18" textAlign="center">
-                Enter your email
+                {t("authentication_views.enter_email_view.title")}
               </Text>
             </Spacer>
           </Container>
@@ -96,7 +98,9 @@ export default function Enter_Email_View() {
           >
             <DataInput
               ref={emailDataInputRef}
-              label="Email"
+              label={t(
+                "authentication_views.enter_email_view.data_input_email"
+              )}
               value={userToDB.email}
               onChangeText={(value) => {
                 setUserToDB({
@@ -161,7 +165,7 @@ export default function Enter_Email_View() {
                   height={"65px"}
                   color={theme.colors.ui.primary}
                   border_radius={"40px"}
-                  caption="Next"
+                  caption={t("authentication_views.enter_email_view.cta")}
                   caption_text_variant="dm_sans_bold_20_white"
                   action={() => {
                     setIsEmailFocused(false);

@@ -314,5 +314,39 @@
     "caption_5": "Continue",
     "cta_1": "Checking...",
     "cta_2": "Continue"
+  },
+  "authentication_views": {
+    "enter_names_view": {
+      "title": "Let's start with your name",
+      "data_input_first_name": "First name",
+      "data_input_last_name": "Last name",
+      "cta": "Next"
+    },
+    "enter_email_view": {
+      "title": "Enter your email",
+      "data_input_email": "Email",
+      "cta": "Next"
+    },
+    "enter_address_view": {
+      "title": "Enter your address",
+      "data_input_address": "Address",
+      "cta": "Next"
+    },
+    "enter_phone_view": {
+      "title": "Enter your phone number",
+      "data_input_phone": "Phone number",
+      "cta": "Next"
+    },
+    "info_review": {
+      "first_name": "First name:",
+      "last_name": "Last name:",
+      "email": "Email:",
+      "address": "Address:",
+      "phone": "Phone",
+      "cta": "Finish registration"
+    },
+    "showNameWarningSnackbar": {
+      "message": "Please enter your first name to continue"
+    }
   }
 }

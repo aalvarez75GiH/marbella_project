@@ -1,9 +1,11 @@
 import React, { useEffect, useState, createContext, useContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Localization from "expo-localization";
 
 import { gettingAllProductsCatalogRequest } from "./global.services";
 import { normalizeProductFromBackend } from "../../local_data/images_mapping/normalize_product_from_backend";
 import { theme } from "../../theme/index";
+import { useTranslation } from "react-i18next";
 import i18n from "../../translations/i18n";
 
 export const GlobalContext = createContext();
@@ -15,8 +17,18 @@ export const Global_Context_Provider = ({ children }) => {
   const [error, setError] = useState(null);
   const [globalLanguage, setGlobalLanguage] = useState("en"); // default to English
 
+  const { t } = useTranslation();
   const ALLOWED_LANGUAGES = ["en", "es"];
   const DEFAULT_LANGUAGE = "en";
+
+  const getDeviceLanguage = () => {
+    const locales = Localization.getLocales();
+    const languageCode = locales?.[0]?.languageCode;
+    console.log("DEVICE LANGUAGE DETECTED:", languageCode);
+
+    if (languageCode === "es") return "es";
+    return "en";
+  };
 
   //********** Hydration logic for products catalog and language preference on app startup **********/
   useEffect(() => {
@@ -48,17 +60,19 @@ export const Global_Context_Provider = ({ children }) => {
     };
   }, []);
 
-  //********** Hydration logic for language preference on app startup **********/
   useEffect(() => {
     let isMounted = true;
 
     const hydrateLanguage = async () => {
       try {
         const storedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
+        console.log("STORED LANGUAGE FOR MARBELLA APP:", storedLanguage);
+
+        const deviceLanguage = getDeviceLanguage();
 
         const languageToUse = ALLOWED_LANGUAGES.includes(storedLanguage)
           ? storedLanguage
-          : DEFAULT_LANGUAGE;
+          : deviceLanguage;
 
         await i18n.changeLanguage(languageToUse);
 
@@ -67,15 +81,17 @@ export const Global_Context_Provider = ({ children }) => {
         setGlobalLanguage(languageToUse);
 
         if (!storedLanguage) {
-          await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, DEFAULT_LANGUAGE);
+          await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, languageToUse);
         }
       } catch (error) {
         console.log("Hydrate language error:", error);
 
-        await i18n.changeLanguage(DEFAULT_LANGUAGE);
+        const fallbackLanguage = getDeviceLanguage();
+
+        await i18n.changeLanguage(fallbackLanguage);
 
         if (isMounted) {
-          setGlobalLanguage(DEFAULT_LANGUAGE);
+          setGlobalLanguage(fallbackLanguage);
         }
       }
     };
@@ -86,6 +102,68 @@ export const Global_Context_Provider = ({ children }) => {
       isMounted = false;
     };
   }, []);
+
+  // //********** Hydration logic for language preference on app startup **********/
+  // useEffect(() => {
+  //   let isMounted = true;
+
+  //   const hydrateLanguage = async () => {
+  //     try {
+  //       const storedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
+
+  //       const languageToUse = ALLOWED_LANGUAGES.includes(storedLanguage)
+  //         ? storedLanguage
+  //         : DEFAULT_LANGUAGE;
+
+  //       await i18n.changeLanguage(languageToUse);
+
+  //       if (!isMounted) return;
+
+  //       setGlobalLanguage(languageToUse);
+
+  //       if (!storedLanguage) {
+  //         await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, DEFAULT_LANGUAGE);
+  //       }
+  //     } catch (error) {
+  //       console.log("Hydrate language error:", error);
+
+  //       await i18n.changeLanguage(DEFAULT_LANGUAGE);
+
+  //       if (isMounted) {
+  //         setGlobalLanguage(DEFAULT_LANGUAGE);
+  //       }
+  //     }
+  //   };
+
+  //   hydrateLanguage();
+
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   const loadLanguage = async () => {
+  //     try {
+  //       const savedLanguage = await AsyncStorage.getItem(
+  //         "@marbella/global_language"
+  //       );
+
+  //       const languageToUse = savedLanguage || getDeviceLanguage();
+  //       console.log("LOADED LANGUAGE:", languageToUse);
+  //       console.log(getDeviceLanguage());
+  //       setGlobalLanguage(languageToUse);
+  //       i18n.changeLanguage(languageToUse);
+  //     } catch (e) {
+  //       const fallbackLanguage = getDeviceLanguage();
+
+  //       setGlobalLanguage(fallbackLanguage);
+  //       i18n.changeLanguage(fallbackLanguage);
+  //     }
+  //   };
+
+  //   loadLanguage();
+  // }, []);
 
   const formatDate = (inputDate) => {
     console.log("INPUT DATE TO FORMAT:", inputDate);
@@ -187,6 +265,23 @@ export const Global_Context_Provider = ({ children }) => {
     return field;
   };
 
+  // ******** SNACKS BARS  ********
+
+  const showNameWarningSnackbar = (firstNameDataInputRef) => {
+    showSnackbar({
+      message: t("authentication_views.showNameWarningSnackbar.message"),
+      actionLabel: "OK",
+      bgColor: theme.colors.ui.error,
+      onAction: () => {
+        hideSnackbar();
+
+        setTimeout(() => {
+          firstNameDataInputRef.current?.focus();
+        }, 150);
+      },
+    });
+  };
+
   // console.log("USER LANGUAGE AT GLOBAL CONTEXT:", globalLanguage);
   return (
     <GlobalContext.Provider
@@ -206,6 +301,8 @@ export const Global_Context_Provider = ({ children }) => {
         showSnackbar,
         hideSnackbar,
         getTranslatedField,
+
+        showNameWarningSnackbar,
       }}
     >
       {children}

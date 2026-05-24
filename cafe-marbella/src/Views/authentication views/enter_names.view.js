@@ -11,6 +11,8 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
+import { useTranslation } from "react-i18next";
+import { Snackbar } from "react-native-paper";
 
 import { Container } from "../../components/containers/general.containers";
 import { Just_Caption_Header } from "../../components/headers/just_caption.header.js";
@@ -25,21 +27,25 @@ import { Underlined_CTA } from "../../components/ctas/underlined.cta.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
+import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
 
 export default function Enter_Names_View() {
   const navigation = useNavigation();
+  const theme = useTheme();
+  const { t } = useTranslation();
 
   const { setUserToDB, userToDB } = useContext(AuthenticationContext);
-  const theme = useTheme();
-
-  const [isLastNameFocused, setIsLastNameFocused] = useState(false);
-
-  const [error, setError] = useState(null);
+  const { snackbar, hideSnackbar, showSnackbar, showNameWarningSnackbar } =
+    useContext(GlobalContext);
 
   const route = useRoute();
   const { returnTo } = route?.params ?? {};
 
   const firstNameDataInputRef = useRef(null);
+  const lastNameDataInputRef = useRef(null);
+  const firstNameIsValid = userToDB?.first_name?.trim().length > 0;
+  const lastNameIsValid = userToDB?.last_name?.trim().length > 0;
+  const canContinue = firstNameIsValid && lastNameIsValid;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -78,7 +84,7 @@ export default function Enter_Names_View() {
           >
             <Spacer position="left" size="extraLarge">
               <Text variant="raleway_bold_18" textAlign="center">
-                Enter your names
+                {t("authentication_views.enter_names_view.title")}
               </Text>
             </Spacer>
           </Container>
@@ -92,7 +98,9 @@ export default function Enter_Names_View() {
           >
             <DataInput
               ref={firstNameDataInputRef}
-              label="First Name"
+              label={t(
+                "authentication_views.enter_names_view.data_input_first_name"
+              )}
               value={userToDB.first_name}
               onChangeText={(value) => {
                 setUserToDB({
@@ -110,11 +118,19 @@ export default function Enter_Names_View() {
               autoCorrect={false}
               textContentType="givenName"
               autoComplete="name"
-              returnKeyType="done"
-              blurOnSubmit
+              returnKeyType="next"
+              blurOnSubmit={false}
+              onSubmitEditing={() => {
+                if (firstNameIsValid) {
+                  lastNameDataInputRef.current?.focus();
+                }
+              }}
             />
             <DataInput
-              label="Last Name"
+              ref={lastNameDataInputRef}
+              label={t(
+                "authentication_views.enter_names_view.data_input_last_name"
+              )}
               value={userToDB.last_name}
               onChangeText={(value) => {
                 setUserToDB({
@@ -132,8 +148,17 @@ export default function Enter_Names_View() {
               textContentType="familyName"
               autoComplete="name"
               returnKeyType="done"
-              onFocus={() => setIsLastNameFocused(true)}
-              onBlur={() => setIsLastNameFocused(false)}
+              onFocus={() => {
+                if (!firstNameIsValid) {
+                  showNameWarningSnackbar(firstNameDataInputRef);
+
+                  setTimeout(() => {
+                    firstNameDataInputRef.current?.focus();
+                  }, 150);
+
+                  return;
+                }
+              }}
               blurOnSubmit
             />
             <Spacer position="top" size="extraLarge" />
@@ -141,21 +166,18 @@ export default function Enter_Names_View() {
           <Spacer position="top" size="extraLarge" />
           <Container
             width="100%"
-            // height="55%"
             color={theme.colors.bg.elements_bg}
             //   color={"yellow"}
             align="center"
             direction="row"
           >
-            {isLastNameFocused && (
+            {canContinue && (
               <Regular_CTA
                 width="200px"
                 height={"65px"}
-                // width="55%"
-                // height={60}
                 color={theme.colors.ui.primary}
                 border_radius={"40px"}
-                caption="Next"
+                caption={t("authentication_views.enter_names_view.cta")}
                 caption_text_variant="dm_sans_bold_20_white"
                 // action={async () => navigation.navigate("Enter_Email_View")}
                 action={async () =>
@@ -169,6 +191,32 @@ export default function Enter_Names_View() {
           </Container>
         </Container>
       </KeyboardAvoidingView>
+      <Snackbar
+        visible={snackbar.visible}
+        onDismiss={() => {}}
+        duration={Number.POSITIVE_INFINITY}
+        action={{
+          label: snackbar.actionLabel,
+          onPress: () => {
+            if (snackbar.onAction) {
+              snackbar.onAction();
+            } else {
+              hideSnackbar();
+            }
+          },
+        }}
+        wrapperStyle={{
+          bottom: Platform.OS === "ios" ? 310 : 290,
+          zIndex: 9999,
+          elevation: 9999,
+        }}
+        style={{
+          minHeight: 80,
+          backgroundColor: snackbar.bgColor,
+        }}
+      >
+        {snackbar.message}
+      </Snackbar>
     </SafeArea>
   );
 }
