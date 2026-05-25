@@ -20,6 +20,7 @@ import { Text } from "../../infrastructure/typography/text.component";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 import { DataInput } from "../../components/inputs/data_text_input.js";
+import { Snack_Bar_Component } from "../../components/others/snack_bar.component.js";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { CartContext } from "../../infrastructure/services/cart/cart.context.js";
@@ -35,7 +36,8 @@ export default function Login_Screen_For_Switching_Accounts_View() {
   const route = useRoute();
   const { emailToSwitch, returnTo } = route.params || {};
 
-  const { snackbar, hideSnackbar, showSnackbar } = useContext(GlobalContext);
+  const { snackbar, hideSnackbar, showSuccessSnackbar, showErrorSnackbar } =
+    useContext(GlobalContext);
   console.log("RETURN TO:", returnTo);
   console.log("EMAIL TO SWITCH:", emailToSwitch);
 
@@ -109,7 +111,15 @@ export default function Login_Screen_For_Switching_Accounts_View() {
 
       if (!result?.ok || !result?.user) {
         showErrorSnackbar(
-          t("menu.switch_account_view.pin_switch_view.snack_bar_error")
+          t("menu.switch_account_view.pin_switch_view.snack_bar_error"),
+          () => {
+            hideSnackbar();
+
+            // keep keyboard open
+            requestAnimationFrame(() => {
+              pinInputRef.current?.focus();
+            });
+          }
         );
 
         requestAnimationFrame(() => {
@@ -150,15 +160,14 @@ export default function Login_Screen_For_Switching_Accounts_View() {
         await clearGuestCart();
 
         // 8) go directly to final destination
-        showSnackbar({
-          message: t("menu.switch_account_view.pin_switch_view.snack_bar"),
-          actionLabel: "OK",
-          bgColor: theme.colors.ui.primary,
-          onAction: () => {
+        showSuccessSnackbar(
+          t("menu.switch_account_view.pin_switch_view.snack_bar"),
+          () => {
             hideSnackbar();
             goToFinalDestination();
-          },
-        });
+          }
+        );
+
         setSwitched(true);
       }
     } catch (e) {
@@ -167,29 +176,21 @@ export default function Login_Screen_For_Switching_Accounts_View() {
       shouldRefocusPinRef.current = true;
 
       showErrorSnackbar(
-        t("menu.switch_account_view.pin_switch_view.snack_bar_error")
+        t("menu.switch_account_view.pin_switch_view.snack_bar_error"),
+        () => {
+          hideSnackbar();
+
+          // keep keyboard open
+          requestAnimationFrame(() => {
+            pinInputRef.current?.focus();
+          });
+        }
       );
     } finally {
       setIsSubmitting(false);
       lockCartInit(false);
       setPin("");
     }
-  };
-
-  const showErrorSnackbar = (message) => {
-    showSnackbar({
-      message,
-      actionLabel: "OK",
-      bgColor: theme.colors.ui.error,
-      onAction: () => {
-        hideSnackbar();
-
-        // keep keyboard open
-        requestAnimationFrame(() => {
-          pinInputRef.current?.focus();
-        });
-      },
-    });
   };
 
   return (
@@ -274,7 +275,7 @@ export default function Login_Screen_For_Switching_Accounts_View() {
                   autoCorrect={false}
                   textContentType="password"
                   autoComplete="off"
-                  returnKeyType="done"
+                  // returnKeyType="done"
                   onFocus={() => setEmailTouched(true)}
                   onBlur={() => setEmailTouched(false)}
                   blurOnSubmit={false}
@@ -358,34 +359,11 @@ export default function Login_Screen_For_Switching_Accounts_View() {
           </Container>
         </Container>
       )}
-      <Snackbar
-        visible={snackbar.visible}
-        onDismiss={() => {}}
-        duration={Number.POSITIVE_INFINITY}
-        action={{
-          label: snackbar.actionLabel,
-          onPress: () => {
-            if (snackbar.onAction) {
-              setSwitched(false);
-              snackbar.onAction();
-            } else {
-              hideSnackbar();
-            }
-          },
-        }}
-        wrapperStyle={{
-          bottom: switched ? 20 : Platform.OS === "ios" ? 290 : 290,
-          zIndex: 9999,
-          elevation: 9999,
-        }}
-        style={{
-          minHeight: 80,
-          marginBottom: 30,
-          backgroundColor: snackbar.bgColor,
-        }}
-      >
-        {snackbar.message}
-      </Snackbar>
+      <Snack_Bar_Component
+        snackbar={snackbar}
+        bottom_ios={switched ? 60 : 290}
+        bottom_android={switched ? 20 : 290}
+      />
     </SafeArea>
   );
 }

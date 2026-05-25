@@ -266,8 +266,8 @@ export default function Payment_View() {
       )}
       <Snack_Bar_Component
         snackbar={snackbar}
-        bottom_ios={290}
-        bottom_android={290}
+        bottom_ios={280}
+        bottom_android={280}
       />
     </SafeArea>
   );
