@@ -32,6 +32,7 @@ import { DataInput } from "../../components/inputs/data_text_input.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 import { put_update_userinfo_Request } from "../../infrastructure/services/authentication/authentication.sevices.js";
 import { auth } from "../../../fb.js";
+import { Snack_Bar_Component } from "../../components/others/snack_bar.component.js";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { GeolocationContext } from "../../infrastructure/services/geolocation/geolocation.context.js";
@@ -68,7 +69,13 @@ export default function Personal_Information_View() {
     deviceLng,
   });
 
-  const { snackbar, showSnackbar, hideSnackbar } = useContext(GlobalContext);
+  const {
+    snackbar,
+    showSnackbar,
+    hideSnackbar,
+    showSuccessSnackbar,
+    showErrorSnackbar,
+  } = useContext(GlobalContext);
 
   useFocusEffect(
     useCallback(() => {
@@ -256,31 +263,23 @@ export default function Personal_Information_View() {
 
                     if (!res?.ok) {
                       if (res.error === "requires_recent_login") {
-                        showSnackbar({
-                          message: t(
-                            "menu.personal_info_view.snack_bar_auth_error"
-                          ),
-                          actionLabel: "Log in",
-                          bgColor: "#B00020",
-                          onAction: () => {
+                        showErrorSnackbar(
+                          t("menu.personal_info_view.snack_bar_auth_error"),
+                          () => {
                             hideSnackbar();
                             navigation.navigate("Shop_Login_Users_View");
-                          },
-                        });
+                          }
+                        );
                         return;
                       }
                       if (res.error === "email_already_in_use") {
-                        showSnackbar({
-                          message: t(
-                            "menu.personal_info_view.snack_bar_email_used"
-                          ),
-                          actionLabel: "Log in",
-                          bgColor: "#B00020",
-                          onAction: () => {
+                        showErrorSnackbar(
+                          t("menu.personal_info_view.snack_bar_email_used"),
+                          () => {
                             hideSnackbar();
                             navigation.navigate("Shop_Login_Users_View");
-                          },
-                        });
+                          }
+                        );
                         return;
                       }
                       return;
@@ -294,16 +293,13 @@ export default function Personal_Information_View() {
                     }
 
                     // setVisible(true);
-                    showSnackbar({
-                      message: t("menu.personal_info_view.snack_bar_updated"),
-                      actionLabel: "OK",
-                      bgColor: theme.colors.ui.primary,
-                      onAction: () => {
+                    showSuccessSnackbar(
+                      t("menu.personal_info_view.snack_bar_updated"),
+                      () => {
                         hideSnackbar();
                         navigation.goBack();
-                      },
-                    });
-                    // Alert.alert("Updated", "Your info was updated.");
+                      }
+                    );
                   }}
                 />
               )}
@@ -478,28 +474,11 @@ export default function Personal_Information_View() {
                 </View>
               </Container>
 
-              <Snackbar
-                visible={snackbar.visible}
-                onDismiss={() => {}}
-                duration={Number.POSITIVE_INFINITY}
-                action={{
-                  label: snackbar.actionLabel,
-                  onPress: () => {
-                    if (snackbar.onAction) {
-                      snackbar.onAction();
-                    } else {
-                      hideSnackbar();
-                    }
-                  },
-                }}
-                style={{
-                  minHeight: 80,
-                  marginBottom: 30,
-                  backgroundColor: snackbar.bgColor,
-                }}
-              >
-                {snackbar.message}
-              </Snackbar>
+              <Snack_Bar_Component
+                snackbar={snackbar}
+                bottom_ios={30}
+                bottom_android={30}
+              />
             </ScrollView>
           </KeyboardAvoidingView>
         </>

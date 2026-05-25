@@ -103,68 +103,6 @@ export const Global_Context_Provider = ({ children }) => {
     };
   }, []);
 
-  // //********** Hydration logic for language preference on app startup **********/
-  // useEffect(() => {
-  //   let isMounted = true;
-
-  //   const hydrateLanguage = async () => {
-  //     try {
-  //       const storedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
-
-  //       const languageToUse = ALLOWED_LANGUAGES.includes(storedLanguage)
-  //         ? storedLanguage
-  //         : DEFAULT_LANGUAGE;
-
-  //       await i18n.changeLanguage(languageToUse);
-
-  //       if (!isMounted) return;
-
-  //       setGlobalLanguage(languageToUse);
-
-  //       if (!storedLanguage) {
-  //         await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, DEFAULT_LANGUAGE);
-  //       }
-  //     } catch (error) {
-  //       console.log("Hydrate language error:", error);
-
-  //       await i18n.changeLanguage(DEFAULT_LANGUAGE);
-
-  //       if (isMounted) {
-  //         setGlobalLanguage(DEFAULT_LANGUAGE);
-  //       }
-  //     }
-  //   };
-
-  //   hydrateLanguage();
-
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   const loadLanguage = async () => {
-  //     try {
-  //       const savedLanguage = await AsyncStorage.getItem(
-  //         "@marbella/global_language"
-  //       );
-
-  //       const languageToUse = savedLanguage || getDeviceLanguage();
-  //       console.log("LOADED LANGUAGE:", languageToUse);
-  //       console.log(getDeviceLanguage());
-  //       setGlobalLanguage(languageToUse);
-  //       i18n.changeLanguage(languageToUse);
-  //     } catch (e) {
-  //       const fallbackLanguage = getDeviceLanguage();
-
-  //       setGlobalLanguage(fallbackLanguage);
-  //       i18n.changeLanguage(fallbackLanguage);
-  //     }
-  //   };
-
-  //   loadLanguage();
-  // }, []);
-
   const formatDate = (inputDate) => {
     console.log("INPUT DATE TO FORMAT:", inputDate);
     const date = new Date(inputDate);
@@ -265,7 +203,25 @@ export const Global_Context_Provider = ({ children }) => {
     return field;
   };
 
-  // ******** SNACKS BARS  ********
+  // ******** SNACKS BARS SHOW FUNCTIONS  ********
+
+  const showErrorSnackbar = (message, onAction = hideSnackbar) => {
+    showSnackbar({
+      message,
+      actionLabel: "OK",
+      bgColor: theme.colors.ui.error,
+      onAction,
+    });
+  };
+
+  const showSuccessSnackbar = (message, onAction = hideSnackbar) => {
+    showSnackbar({
+      message,
+      actionLabel: "OK",
+      bgColor: theme.colors.ui.primary,
+      onAction,
+    });
+  };
 
   const showNameWarningSnackbar = (firstNameDataInputRef) => {
     showSnackbar({
@@ -303,6 +259,8 @@ export const Global_Context_Provider = ({ children }) => {
         getTranslatedField,
 
         showNameWarningSnackbar,
+        showErrorSnackbar,
+        showSuccessSnackbar,
       }}
     >
       {children}

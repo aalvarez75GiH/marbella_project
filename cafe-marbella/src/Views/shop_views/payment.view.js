@@ -13,10 +13,12 @@ import { CreditCardInputComponent } from "../../components/payments/credit-card-
 import { Regular_CTA } from "../../components/ctas/regular.cta";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { safeGoBack } from "../../infrastructure/navigation/navigation.helpers";
+import { Snack_Bar_Component } from "../../components/others/snack_bar.component";
 
 import { PaymentsContext } from "../../infrastructure/services/payments/payments.context";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context";
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
+import { GlobalContext } from "../../infrastructure/services/global/global.context";
 
 import { CheckIcon } from "../../../assets/modified_icons/success_icon";
 
@@ -44,6 +46,8 @@ export default function Payment_View() {
   const navigation = useNavigation();
   const { t } = useTranslation();
 
+  const { snackbar, showErrorSnackbar } = useContext(GlobalContext);
+
   useEffect(() => {
     setMyOrder((prev) => ({
       ...prev,
@@ -56,6 +60,14 @@ export default function Payment_View() {
       },
     }));
   }, []);
+
+  useEffect(() => {
+    if (!cardVerified && cardError) {
+      showErrorSnackbar(cardError);
+
+      setCardError(null); // prevents reopening
+    }
+  }, [cardError, cardVerified]);
 
   console.log("CARD VERIFIED STATE:", cardVerified);
   console.log(
@@ -146,32 +158,7 @@ export default function Payment_View() {
               <CheckIcon size={20} color={"green"} />
             </Container>
           )}
-          {!cardVerified && cardError && (
-            <Container
-              width="100%"
-              align="center"
-              direction="row"
-              justify="flex-start"
-              color={theme.colors.bg.elements_bg}
-            >
-              <Container
-                width="100%"
-                // color="green"
-                color={theme.colors.bg.elements_bg}
-                justify="flex-start"
-                align="flex-start"
-              >
-                <Spacer position="left" size="large">
-                  <Text
-                    variant="dm_sans_bold_14_error"
-                    color={theme.colors.text.success_text}
-                  >
-                    {cardError}
-                  </Text>
-                </Spacer>
-              </Container>
-            </Container>
-          )}
+
           <Container
             width="100%"
             height="10%"
@@ -232,16 +219,14 @@ export default function Payment_View() {
 
                   // ✅ Failure handling
                   const err = response?.error;
+
                   const message =
-                    err?.message || "Payment failed. Please try again.";
+                    err?.message || t("payment_view.errors.generic");
 
-                  // Optional: if you want to hide "Card verified" after a decline:
                   setCardVerified(false);
+                  setCardError(null);
 
-                  // Handle specific payment-intent statuses (future-proof)
                   if (err?.payment_intent_status === "requires_action") {
-                    // If you implement 3DS later, you can route to an auth screen here.
-                    // navigation.navigate("PaymentAuth", { clientSecret: err.client_secret })
                     console.log(
                       "Payment requires additional authentication:",
                       err
@@ -249,22 +234,14 @@ export default function Payment_View() {
                   } else if (
                     err?.payment_intent_status === "requires_payment_method"
                   ) {
-                    // Card declined — user should try another card
                     console.log(
                       "Payment requires a different payment method:",
                       err
                     );
                   }
 
-                  setCardError(message);
-                  // ✅ Show the user something actionable (choose ONE approach)
-                  // 1) Navigate to an error screen:
-                  // navigation.navigate("PaymentError", { error: message, code: err?.code, decline_code: err?.decline_code });
+                  showErrorSnackbar(message);
 
-                  // 2) Or show a toast/snackbar:
-                  // showToast(message);
-
-                  // For now, at least log it:
                   console.log("Payment failed:", {
                     status: response?.status,
                     message,
@@ -272,15 +249,26 @@ export default function Payment_View() {
                     decline_code: err?.decline_code,
                     payment_intent_status: err?.payment_intent_status,
                   });
+
+                  return;
                 } catch (unexpected) {
                   console.log("Unexpected CTA error:", unexpected);
-                  // showToast("Something went wrong. Please try again.");
+
+                  setCardVerified(false);
+                  setCardError(null);
+
+                  showErrorSnackbar(t("payment_view.errors.generic"));
                 }
               }}
             />
           )}
         </Container>
       )}
+      <Snack_Bar_Component
+        snackbar={snackbar}
+        bottom_ios={290}
+        bottom_android={290}
+      />
     </SafeArea>
   );
 }

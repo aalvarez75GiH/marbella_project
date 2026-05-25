@@ -20,6 +20,7 @@ import { Global_activity_indicator } from "../../components/activity indicators/
 import { Underlined_CTA } from "../../components/ctas/underlined.cta.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 import { DataInput } from "../../components/inputs/data_text_input.js";
+import { Snack_Bar_Component } from "../../components/others/snack_bar.component.js";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { CartContext } from "../../infrastructure/services/cart/cart.context.js";
@@ -43,7 +44,7 @@ export default function Login_Users_View() {
     clearGuestCart,
   } = useContext(CartContext);
   const { prepareOrderFromCart } = useContext(OrdersContext);
-  const { isValidEmail, snackbar, hideSnackbar, showSnackbar } =
+  const { isValidEmail, snackbar, showErrorSnackbar } =
     useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -75,22 +76,6 @@ export default function Login_Users_View() {
   console.log("EMAIL:", email);
   console.log("PIN:", pin);
 
-  const showErrorSnackbar = (message) => {
-    showSnackbar({
-      message,
-      actionLabel: "OK",
-      bgColor: theme.colors.ui.error,
-      onAction: () => {
-        hideSnackbar();
-
-        // keep keyboard open
-        // requestAnimationFrame(() => {
-        //   pinInputRef.current?.focus();
-        // });
-      },
-    });
-  };
-  //   console.log("COMING TO LOGIN VIEW FROM:", comingFrom);
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -138,16 +123,13 @@ export default function Login_Users_View() {
               </Container>
               <Container
                 width="100%"
-                //   height="20%"
                 height={emailError || error ? "25%" : "20%"} // shrink if there's an error to make room
                 color={theme.colors.bg.elements_bg}
-                //   color={"yellow"}
                 align="flex-start"
               >
                 <Spacer position="left" size="extraLarge">
                   <Text variant="raleway_bold_18" textAlign="center">
                     {t("login_screen.title")}
-                    {/* Let's start logging In... */}
                   </Text>
                 </Spacer>
               </Container>
@@ -222,7 +204,7 @@ export default function Login_Users_View() {
                   autoCorrect={false}
                   textContentType="Password"
                   autoComplete="email"
-                  returnKeyType="done"
+                  // returnKeyType="done"
                   onFocus={() => setEmailTouched(true)}
                   onBlur={() => setEmailTouched(false)}
                   secureTextEntry
@@ -306,10 +288,7 @@ export default function Login_Users_View() {
                         const result = await loginUser(pin, email);
 
                         if (!result?.ok) {
-                          showErrorSnackbar(
-                            // result?.error || t("login_screen.pin_login_error")
-                            t("login_screen.pin_login_error")
-                          );
+                          showErrorSnackbar(t("login_screen.pin_login_error"));
 
                           setTimeout(() => {
                             pinInputRef.current?.focus();
@@ -317,10 +296,6 @@ export default function Login_Users_View() {
 
                           return;
                         }
-                        // if (!result?.ok) {
-                        //   setError(result?.error || "Login failed");
-                        //   return;
-                        // }
 
                         const nextUser = {
                           ...result.user,
@@ -394,33 +369,11 @@ export default function Login_Users_View() {
                 </Container>
               )}
             </Container>
-            <Snackbar
-              visible={snackbar.visible}
-              onDismiss={() => {}}
-              duration={Number.POSITIVE_INFINITY}
-              action={{
-                label: snackbar.actionLabel,
-                onPress: () => {
-                  if (snackbar.onAction) {
-                    snackbar.onAction();
-                  } else {
-                    hideSnackbar();
-                  }
-                },
-              }}
-              wrapperStyle={{
-                bottom: Platform.OS === "ios" ? 240 : 50,
-                zIndex: 9999,
-                elevation: 9999,
-              }}
-              style={{
-                minHeight: 80,
-                marginBottom: 30,
-                backgroundColor: snackbar.bgColor,
-              }}
-            >
-              {snackbar.message}
-            </Snackbar>
+            <Snack_Bar_Component
+              snackbar={snackbar}
+              bottom_ios={240}
+              bottom_android={290}
+            />
           </KeyboardAvoidingView>
         </>
         // your normal UI
