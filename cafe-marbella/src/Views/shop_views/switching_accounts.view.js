@@ -206,33 +206,24 @@ export default function Switching_Accounts_View() {
                 caption_text_variant="dm_sans_bold_20_white"
                 action={() => {
                   setEmailTouched(true);
-                  const ok = isValidEmail(emailToSwitch);
 
-                  if (!ok) return; // ✅ stops here, no request
-                  if (ok) {
-                    setEmailToSwitch("");
-                    showSnackbar({
-                      message: t(
-                        "menu.switch_account_view.pin_switch_view.snack_bar"
-                      ),
-                      actionLabel: "Log in",
-                      bgColor: "#B00020",
-                      onAction: () => {
-                        hideSnackbar();
-                        //navigation.navigate("Shop_Login_Users_View");
-                        navigation.navigate(
-                          "Login_Screen_For_Switching_Accounts_View",
-                          {
-                            emailToSwitch: emailToSwitch.trim(),
-                            returnTo: {
-                              tab: "Shop",
-                              screen: "Shop_Products_View",
-                            },
-                          }
-                        );
+                  const cleanEmail = emailToSwitch.trim();
+                  const ok = isValidEmail(cleanEmail);
+
+                  if (!ok) return;
+
+                  navigation.navigate(
+                    "Login_Screen_For_Switching_Accounts_View",
+                    {
+                      emailToSwitch: cleanEmail,
+                      returnTo: {
+                        tab: "Shop",
+                        screen: "Shop_Products_View",
                       },
-                    });
-                  }
+                    }
+                  );
+
+                  setEmailToSwitch("");
                 }}
               />
             )}
