@@ -98,6 +98,7 @@ export default function Enter_Email_View() {
           >
             <DataInput
               ref={emailDataInputRef}
+              fontFamily="DMSans-Bold"
               label={t(
                 "authentication_views.enter_email_view.data_input_email"
               )}

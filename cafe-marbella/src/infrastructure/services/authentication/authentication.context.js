@@ -5,23 +5,17 @@ import React, {
   useMemo,
   useRef,
 } from "react";
-import {
-  signInWithCustomToken,
-  updateEmail,
-  verifyBeforeUpdateEmail,
-} from "firebase/auth";
+import { signInWithCustomToken, verifyBeforeUpdateEmail } from "firebase/auth";
 import * as Notifications from "expo-notifications";
 import { navigationRef } from "../../../infrastructure/navigation/navigation_ref";
+import i18n from "../../translations/i18n";
 
 import {
   registerForPushNotificationsAsync,
   saveExpoPushTokenToUser,
 } from "../../services/notifications/push.notifications";
 
-import {
-  user_authenticated,
-  usersInTheDevice,
-} from "../../local_data/authentication";
+import { user_authenticated } from "../../local_data/authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   signInWithEmailAndPassword,
@@ -76,11 +70,6 @@ export const Authentication_Context_Provider = ({ children }) => {
   const [profileWarning, setProfileWarning] = useState(null); // optional banner msg
 
   const { CURRENT_USER_KEY, USERS_ON_DEVICE_KEY } = STORAGE_KEYS;
-  //**************** */ Local user persistency logic
-  // *********************************************************
-  // useEffect(() => {
-  //   console.log("auth.context auth app name on context:", auth?.app?.name);
-  // }, []);
 
   useEffect(() => {
     // console.log("AUTH PROVIDER MOUNTED");
@@ -352,12 +341,6 @@ export const Authentication_Context_Provider = ({ children }) => {
         navigationRef.current?.navigate("Shop", {
           screen: "Shop_Products_View",
         });
-        // navigationRef.current?.navigate("Orders", {
-        //   screen: "Order_View",
-        //   params: {
-        //     orderId,
-        //   },
-        // });
       }
     );
 
@@ -434,57 +417,6 @@ export const Authentication_Context_Provider = ({ children }) => {
     setUser(user_authenticated);
   };
 
-  const gettingUserByEmailToAuthenticated = async (email) => {
-    const MIN_LOADING_TIME = 800; // ms (tweak: 600–1200 feels good)
-    // console.log("EMAIL TO SWITCH:", email);
-
-    const startTime = Date.now();
-    setIsLoading(true);
-
-    try {
-      const userToSwitch = await gettingUserByEmailRequest(email);
-
-      const normalized = {
-        authenticated: true,
-        role: userToSwitch?.role ?? "user",
-        ...userToSwitch,
-      };
-
-      setUser(normalized);
-      setEmailToSwitch("");
-
-      return { ok: true, user: normalized };
-    } catch (e) {
-      // ✅ IMPORTANT: handle 404 cleanly
-      const status = e?.response?.status;
-      const msgFromApi =
-        e?.response?.data?.status === "NotFound"
-          ? "User not found."
-          : e?.response?.data?.msg;
-
-      if (status === 404) {
-        return {
-          ok: false,
-          code: "NOT_FOUND",
-          message: msgFromApi || "User not found.",
-        };
-      }
-
-      return {
-        ok: false,
-        code: "REQUEST_FAILED",
-        message: msgFromApi || String(e),
-      };
-    } finally {
-      const elapsed = Date.now() - startTime;
-      const remaining = Math.max(MIN_LOADING_TIME - elapsed, 0);
-
-      setTimeout(() => {
-        setIsLoading(false);
-      }, remaining);
-    }
-  };
-
   // ********************* REGISTER USER LOGIC *************************
   //We generate a random 6-digit PIN
   const generatePin = () => {
@@ -549,63 +481,113 @@ export const Authentication_Context_Provider = ({ children }) => {
   // ********************* LOG IN USER LOGIC *************************
 
   const signingInWithEmailAndPasswordFunction = async (email, pin) => {
-    // console.log("EMAIL AT SIGNIN FUNCTION:", email);
-    // console.log("PIN AT SIGNIN FUNCTION:", pin);
-
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       const userCredential = await signInWithEmailAndPassword(auth, email, pin);
-      // console.log("USER LOGGED IN:", userCredential.user);
 
       if (userCredential.user) {
-        // ✅ FINALIZE HERE (before DB fetch)
         try {
-          const finalize = await finalizePendingEmailChange(
-            userCredential.user
-          );
-          // console.log("finalize after login:", finalize);
+          await finalizePendingEmailChange(userCredential.user);
         } catch (e) {
           console.log("finalize failed:", e?.message ?? e);
         }
 
         const raw = await gettingUserByUIDRequest(userCredential.user.uid);
         const userByUID = Array.isArray(raw) ? raw[0] : raw;
-        if (!userByUID) throw new Error("User not found in DB");
+
+        if (!userByUID) {
+          return {
+            ok: false,
+            code: "user_not_found_in_db",
+            msg: i18n.t("login_screen.user_not_found_error"),
+          };
+        }
 
         await registerLocalUser(userByUID);
         setUser(userByUID);
+
         return { ok: true, user: userByUID };
       }
+
+      return {
+        ok: false,
+        code: "firebase_no_user",
+        msg: "Login failed. Please try again.",
+      };
     } catch (error) {
-      setError(/* ... */);
+      console.log("SIGN IN ERROR:", error);
+
+      if (
+        error?.code === "auth/invalid-credential" ||
+        error?.code === "auth/wrong-password"
+      ) {
+        return {
+          ok: false,
+          code: error.code,
+          msg: i18n.t("login_screen.pin_login_error"),
+        };
+      }
+
+      if (error?.code === "auth/user-not-found") {
+        return {
+          ok: false,
+          code: error.code,
+          msg: i18n.t("login_screen.user_not_found_error"),
+        };
+      }
+
+      return {
+        ok: false,
+        code: error?.code,
+        msg: i18n.t("login_screen.login_error"),
+      };
     }
   };
 
   const loginUser = async (pin, email) => {
     setIsLoading(true);
-    // console.log("PIN BEFORE LOGIN:", pin);
-    // console.log("EMAIL BEFORE LOGIN:", email);
 
     try {
       const PIN_LENGTH = 6;
-      if (pin.length === PIN_LENGTH) {
-        // console.log("PIN BEFORE LOGIN:", pin);
-        const res = await signingInWithEmailAndPasswordFunction(email, pin);
-        if (res?.ok && res?.user) {
-          // console.log("RES DATA ON LOGIN USER:", res.user);
-          return res;
-        }
+
+      if (pin.length !== PIN_LENGTH) {
         return {
           ok: false,
-          error: res?.msg || "Invalid email or password",
+          code: "invalid_pin_length",
+          error: i18n.t("login_screen.invalid_pin_length"),
         };
       }
-    } catch (error) {
-      // console.log("LOGIN USER ERROR:", error);
+
+      const cleanEmail = email.trim().toLowerCase();
+
+      // 1. Check if profile exists in your DB by email
+      const userByEmail = await gettingUserByEmailRequest(cleanEmail);
+      if (userByEmail?.code === "user_not_found") {
+        return {
+          ok: false,
+          code: "user_not_found",
+          error: i18n.t("login_screen.user_not_found_error"),
+        };
+      }
+
+      // 2. If DB user exists, now try Firebase login
+      const res = await signingInWithEmailAndPasswordFunction(cleanEmail, pin);
+
+      if (res?.ok && res?.user) {
+        return res;
+      }
+
       return {
         ok: false,
-        error: error?.message || "Login failed",
+        code: res?.code,
+        error: i18n.t("login_screen.pin_login_error"),
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        code: error?.code,
+        error: error?.message || i18n.t("login_screen.login_error"),
       };
     } finally {
       setIsLoading(false);
@@ -947,7 +929,6 @@ export const Authentication_Context_Provider = ({ children }) => {
       otherUsersInTheDevice,
       emailToSwitch,
       setEmailToSwitch,
-      gettingUserByEmailToAuthenticated,
       isAuthenticated,
       loginDevUser,
       setUserToDB,

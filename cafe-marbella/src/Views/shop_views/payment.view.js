@@ -119,6 +119,7 @@ export default function Payment_View() {
             value={nameOnCard}
             underlineColor={theme.colors.inputs.bottom_lines}
             activeUnderlineColor={"#3A2F01"}
+            fontFamily="DMSans-Bold"
           />
           <Spacer position="top" size="medium" />
           <CreditCardInputComponent

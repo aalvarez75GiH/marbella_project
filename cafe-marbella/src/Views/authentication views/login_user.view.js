@@ -143,6 +143,7 @@ export default function Login_Users_View() {
               >
                 <DataInput
                   ref={emailInputRef}
+                  fontFamily="DMSans-Bold"
                   label={t("login_screen.data_input_email")}
                   value={email}
                   onChangeText={(value) => {
@@ -184,6 +185,7 @@ export default function Login_Users_View() {
                 )}
                 <DataInput
                   ref={pinInputRef}
+                  fontFamily="DMSans-Bold"
                   label={t("login_screen.data_input_pin")}
                   value={pin}
                   onChangeText={(value) => {
@@ -286,9 +288,13 @@ export default function Login_Users_View() {
 
                         // 0) login
                         const result = await loginUser(pin, email);
+                        console.log(
+                          "CTA: login result",
+                          JSON.stringify(result, null, 2)
+                        );
 
                         if (!result?.ok) {
-                          showErrorSnackbar(t("login_screen.pin_login_error"));
+                          showErrorSnackbar(result?.error);
 
                           setTimeout(() => {
                             pinInputRef.current?.focus();
@@ -296,7 +302,6 @@ export default function Login_Users_View() {
 
                           return;
                         }
-
                         const nextUser = {
                           ...result.user,
                           authenticated: true,

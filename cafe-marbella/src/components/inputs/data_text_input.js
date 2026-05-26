@@ -1,6 +1,11 @@
 import styled from "styled-components/native";
 import { TextInput } from "react-native-paper";
-export const DataInput = styled(TextInput)`
+
+export const DataInput = styled(TextInput).attrs((props) => ({
+  contentStyle: {
+    fontFamily: props.fontFamily || "Raleway-Bold",
+  },
+}))`
   width: 95%;
   height: 80px;
   border-bottom-width: ${(props) => props.border_width || "1px"};

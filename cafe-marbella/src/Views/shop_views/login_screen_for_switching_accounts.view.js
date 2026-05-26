@@ -252,6 +252,7 @@ export default function Login_Screen_For_Switching_Accounts_View() {
               >
                 <DataInput
                   ref={pinInputRef}
+                  fontFamily="DMSans-Bold"
                   label={t(
                     "menu.switch_account_view.pin_switch_view.data_input"
                   )}

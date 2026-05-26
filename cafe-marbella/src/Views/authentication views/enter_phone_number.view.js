@@ -121,6 +121,7 @@ export default function Enter_Phone_Number_View() {
             <Spacer position="top" size="large" />
             <DataInput
               ref={phoneNumberDataInputRef}
+              fontFamily="DMSans-Bold"
               label={t(
                 "authentication_views.enter_phone_view.data_input_phone"
               )}

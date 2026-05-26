@@ -108,6 +108,7 @@ export default function Cart_Payment_View() {
           </Container>
           <DataInput
             label={t("payment_view.data_input_name")}
+            fontFamily="DMSans-Bold"
             onChangeText={(value) => setNameOnCard(value)}
             value={nameOnCard}
             underlineColor={theme.colors.inputs.bottom_lines}
@@ -151,32 +152,7 @@ export default function Cart_Payment_View() {
               <CheckIcon size={20} color={"green"} />
             </Container>
           )}
-          {/* {!cardVerified && cardError && (
-            <Container
-              width="100%"
-              align="center"
-              direction="row"
-              justify="flex-start"
-              color={theme.colors.bg.elements_bg}
-            >
-              <Container
-                width="100%"
-                // color="green"
-                color={theme.colors.bg.elements_bg}
-                justify="flex-start"
-                align="flex-start"
-              >
-                <Spacer position="left" size="large">
-                  <Text
-                    variant="dm_sans_bold_14_error"
-                    color={theme.colors.text.success_text}
-                  >
-                    {cardError}
-                  </Text>
-                </Spacer>
-              </Container>
-            </Container>
-          )} */}
+
           <Container
             width="100%"
             height="10%"

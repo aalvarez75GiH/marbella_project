@@ -321,6 +321,7 @@ export default function Personal_Information_View() {
               <DataInput
                 label={t("menu.personal_info_view.name_input_placeholder")}
                 value={userToDB?.first_name ?? ""}
+                fontFamily="DMSans-Bold"
                 onChangeText={(value) => {
                   setUserToDB((prev) => ({
                     ...prev,
@@ -341,6 +342,7 @@ export default function Personal_Information_View() {
               />
               <DataInput
                 label={t("menu.personal_info_view.last_name_input_placeholder")}
+                fontFamily="DMSans-Bold"
                 value={userToDB?.last_name ?? ""}
                 onChangeText={(value) => {
                   setUserToDB((prev) => ({
@@ -364,6 +366,7 @@ export default function Personal_Information_View() {
               />
               <DataInput
                 label={t("menu.personal_info_view.email_input_placeholder")}
+                fontFamily="DMSans-Bold"
                 value={userToDB?.email ?? ""}
                 onChangeText={(value) => {
                   setUserToDB((prev) => ({
@@ -387,6 +390,7 @@ export default function Personal_Information_View() {
               />
               <DataInput
                 label={t("menu.personal_info_view.phone_input_placeholder")}
+                fontFamily="DMSans-Bold"
                 value={userToDB?.phone_number ?? ""}
                 onChangeText={(value) => {
                   const formatted = formatPhone(value);
@@ -460,6 +464,7 @@ export default function Personal_Information_View() {
                     textInputProps={{
                       value: userToDB?.address ?? "",
                       onFocus: scrollToAddress,
+                      fontFamily: "DMSans-Bold",
                       onChangeText: (t) => {
                         scrollToAddress();
                         setUserToDB((prev) => ({ ...prev, address: t }));

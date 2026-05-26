@@ -140,7 +140,12 @@ export const CreditCardInputComponent = ({
   return (
     <Spacer position="left" size="medium">
       <Container width="100%" height="auto" color={theme.colors.bg.elements_bg}>
-        <LiteCreditCardInput onChange={onChange} />
+        <LiteCreditCardInput
+          onChange={onChange}
+          inputStyle={{
+            fontFamily: "DMSans-Bold",
+          }}
+        />
       </Container>
     </Spacer>
   );

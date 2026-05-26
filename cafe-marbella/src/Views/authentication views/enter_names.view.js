@@ -87,6 +87,7 @@ export default function Enter_Names_View() {
           >
             <DataInput
               ref={firstNameDataInputRef}
+              fontFamily="DMSans-Bold"
               label={t(
                 "authentication_views.enter_names_view.data_input_first_name"
               )}
@@ -117,6 +118,7 @@ export default function Enter_Names_View() {
             />
             <DataInput
               ref={lastNameDataInputRef}
+              fontFamily="DMSans-Bold"
               label={t(
                 "authentication_views.enter_names_view.data_input_last_name"
               )}
@@ -180,33 +182,11 @@ export default function Enter_Names_View() {
           </Container>
         </Container>
       </KeyboardAvoidingView>
-      <Snack_Bar_Component snackbar={snackbar} />
-      {/* <Snackbar
-        visible={snackbar.visible}
-        onDismiss={() => {}}
-        duration={Number.POSITIVE_INFINITY}
-        action={{
-          label: snackbar.actionLabel,
-          onPress: () => {
-            if (snackbar.onAction) {
-              snackbar.onAction();
-            } else {
-              hideSnackbar();
-            }
-          },
-        }}
-        wrapperStyle={{
-          bottom: Platform.OS === "ios" ? 310 : 290,
-          zIndex: 9999,
-          elevation: 9999,
-        }}
-        style={{
-          minHeight: 80,
-          backgroundColor: snackbar.bgColor,
-        }}
-      >
-        {snackbar.message}
-      </Snackbar> */}
+      <Snack_Bar_Component
+        snackbar={snackbar}
+        bottom_ios={310}
+        bottom_android={310}
+      />
     </SafeArea>
   );
 }

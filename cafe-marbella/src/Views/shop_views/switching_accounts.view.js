@@ -120,6 +120,7 @@ export default function Switching_Accounts_View() {
             <DataInput
               label={t("menu.switch_account_view.email_input_placeholder")}
               value={emailToSwitch}
+              fontFamily="DMSans-Bold"
               onChangeText={(value) => {
                 setEmailToSwitch(value);
                 if (emailTouched) setEmailTouched(false);

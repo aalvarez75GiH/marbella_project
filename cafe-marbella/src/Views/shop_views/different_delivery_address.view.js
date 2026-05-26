@@ -192,6 +192,7 @@ export default function Different_Delivery_Address_View() {
                     types: "geocode",
                   }}
                   textInputProps={{
+                    fontFamily: "DMSans-Bold",
                     multiline: false,
                     numberOfLines: 1,
                     scrollEnabled: true,

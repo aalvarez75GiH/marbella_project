@@ -179,6 +179,7 @@ export default function Enter_Address_View() {
                       }
                     }}
                     textInputProps={{
+                      fontFamily: "DMSans-Bold",
                       onChangeText: () => {
                         // user is typing again -> invalidate selection until they tap a suggestion
                         setSelectedAddress(null);
@@ -235,6 +236,7 @@ export default function Enter_Address_View() {
                         textInputProps={{
                           onFocus: () => setScrollEnabled(false),
                           onBlur: () => setScrollEnabled(true),
+                          fontFamily: "DMSans-Bold",
                           onChangeText: (t) => {
                             console.log("typing:", t);
                             setSelectedAddress(null);
@@ -323,7 +325,7 @@ export default function Enter_Address_View() {
             justify="center"
             align="center"
             style={{
-              paddingBottom: 16,
+              paddingBottom: 50,
               paddingTop: 8,
             }}
           >

@@ -154,6 +154,7 @@ export default function Reset_PIN_View() {
               {/* PIN 1 */}
               <DataInput
                 ref={pinInputRef}
+                fontFamily="DMSans-Bold"
                 label={t("menu.get_a_new_pin_view.data_input_1")}
                 value={reset_pin_1}
                 onChangeText={(value) => {
@@ -173,10 +174,11 @@ export default function Reset_PIN_View() {
                 keyboardType={Platform.OS === "ios" ? "number-pad" : "numeric"}
                 autoCapitalize="none"
                 autoCorrect={false}
-                textContentType="password"
+                textContentType="Password"
                 autoComplete="off"
                 returnKeyType="done"
                 blurOnSubmit
+                secureTextEntry
               />
 
               {/* ✅ show ONLY after user tries PIN2 */}
@@ -200,6 +202,7 @@ export default function Reset_PIN_View() {
               {/* PIN 2 */}
               <DataInput
                 ref={secondPinRef}
+                fontFamily="DMSans-Bold"
                 label={t("menu.get_a_new_pin_view.data_input_2")}
                 value={reset_pin_2}
                 onChangeText={(value) => {
@@ -223,7 +226,7 @@ export default function Reset_PIN_View() {
                 keyboardType={Platform.OS === "ios" ? "number-pad" : "numeric"}
                 autoCapitalize="none"
                 autoCorrect={false}
-                textContentType="password"
+                textContentType="Password"
                 autoComplete="off"
                 returnKeyType="done"
                 onFocus={() => {
@@ -233,6 +236,7 @@ export default function Reset_PIN_View() {
                   }
                 }}
                 blurOnSubmit
+                secureTextEntry
               />
             </Container>
             {error && (

@@ -91,7 +91,8 @@
     "data_input_email": "Email",
     "data_input_pin": "Número PIN (Sólo 6 dígitos)",
     "email_login_error": "introduzca un email válido",
-    "pin_login_error": "PIN o email no coinciden con su cuenta, intenta de nuevo"
+    "pin_login_error": "Número PIN incorrecto, intenta de nuevo",
+    "user_not_found_error": "No se encontró un usuario con este email. Regístrate o chequea el email"
   },
   "shop_products_view": {
     "activity_indicator": "Espera, cargando nuestros productos..."

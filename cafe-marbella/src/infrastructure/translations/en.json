@@ -91,7 +91,8 @@
     "data_input_email": "Email",
     "data_input_pin": "PIN number (only 6 digits)",
     "email_login_error": "Please enter a valid email address.",
-    "pin_login_error": "Any of the creadentials doesn't match, please try again."
+    "pin_login_error": "PIN number is incorrect, please try again.",
+    "user_not_found_error": "We could not find your account profile. Please register or check your email address"
   },
   "shop_products_view": {
     "activity_indicator": "Wait, loading our products..."
