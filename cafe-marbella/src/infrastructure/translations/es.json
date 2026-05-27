@@ -40,10 +40,11 @@
       "title": "Introduce tu nuevo PIN...",
       "data_input_1": "Número PIN (Sólo 6 dígitos)",
       "data_input_2": "Repite el número PIN",
-      "pin_mismatch_error": "El PIN debe coincidir",
+      "pin_mismatch_error": "Los PIN no coinciden, intenta de nuevo",
       "pin_length_error": "El PIN debe tener 6 dígitos",
       "activity_indicator": "Espera, configurando tu nuevo PIN...",
-      "cta": "Actualizar PIN"
+      "cta": "Actualizar PIN",
+      "pin_first_required_error": "Introduzca el 1er número PIN"
     },
     "switch_account_view": {
       "title": "Cambiar a otra cuenta",

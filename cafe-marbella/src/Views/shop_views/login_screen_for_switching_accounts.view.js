@@ -9,7 +9,6 @@ import { Image } from "expo-image";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useTranslation } from "react-i18next";
-import { Snackbar } from "react-native-paper";
 
 import { navigationRef } from "../../infrastructure/navigation/navigation_ref.js";
 import { Container } from "../../components/containers/general.containers";
@@ -30,6 +29,7 @@ export default function Login_Screen_For_Switching_Accounts_View() {
   const navigation = useNavigation();
   const theme = useTheme();
   const { t } = useTranslation();
+
   const pinInputRef = useRef(null);
   const shouldRefocusPinRef = useRef(false);
 
@@ -38,14 +38,9 @@ export default function Login_Screen_For_Switching_Accounts_View() {
 
   const { snackbar, hideSnackbar, showSuccessSnackbar, showErrorSnackbar } =
     useContext(GlobalContext);
-  console.log("RETURN TO:", returnTo);
-  console.log("EMAIL TO SWITCH:", emailToSwitch);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState(null);
-  const [emailTouched, setEmailTouched] = useState(false);
   const [switched, setSwitched] = useState(false);
-  // const [pinToSwitch, setPinToSwitch] = useState("");
 
   const { setPin, pin, loginUser } = useContext(AuthenticationContext);
 
@@ -60,7 +55,6 @@ export default function Login_Screen_For_Switching_Accounts_View() {
   } = useContext(CartContext);
 
   const canSubmit = useMemo(() => /^\d{6}$/.test(pin), [pin]);
-  const isValidPin = /^\d{6}$/.test(pin);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -69,6 +63,37 @@ export default function Login_Screen_For_Switching_Accounts_View() {
 
     return () => clearTimeout(timeout);
   }, []);
+
+  useEffect(() => {
+    if (!isSubmitting && shouldRefocusPinRef.current) {
+      shouldRefocusPinRef.current = false;
+
+      const showSub = Keyboard.addListener(
+        Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow",
+        () => {
+          setTimeout(() => {
+            showErrorSnackbar(
+              t("menu.switch_account_view.pin_switch_view.snack_bar_error"),
+              () => {
+                setPin("");
+                hideSnackbar();
+              }
+            );
+          }, 120);
+
+          showSub.remove();
+        }
+      );
+
+      requestAnimationFrame(() => {
+        pinInputRef.current?.focus();
+      });
+
+      return () => {
+        showSub.remove();
+      };
+    }
+  }, [isSubmitting]);
 
   const goToFinalDestination = () => {
     const targetTab = returnTo?.tab ?? "Shop";
@@ -94,13 +119,8 @@ export default function Login_Screen_For_Switching_Accounts_View() {
   const handleSwitch = async () => {
     if (isSubmitting) return;
 
-    if (!canSubmit) {
-      setError("Please enter a valid 6-digit PIN.");
-      return;
-    }
-
     setIsSubmitting(true);
-    setError(null);
+    // setError(null);
     lockCartInit(true);
 
     try {
@@ -110,22 +130,7 @@ export default function Login_Screen_For_Switching_Accounts_View() {
       const result = await loginUser(pin, emailToSwitch);
 
       if (!result?.ok || !result?.user) {
-        showErrorSnackbar(
-          t("menu.switch_account_view.pin_switch_view.snack_bar_error"),
-          () => {
-            hideSnackbar();
-
-            // keep keyboard open
-            requestAnimationFrame(() => {
-              pinInputRef.current?.focus();
-            });
-          }
-        );
-
-        requestAnimationFrame(() => {
-          pinInputRef.current?.focus();
-        });
-
+        shouldRefocusPinRef.current = true;
         return;
       }
       if (result?.ok || result?.user) {
@@ -180,16 +185,13 @@ export default function Login_Screen_For_Switching_Accounts_View() {
         () => {
           hideSnackbar();
 
-          // keep keyboard open
-          requestAnimationFrame(() => {
+          setTimeout(() => {
             pinInputRef.current?.focus();
-          });
+          }, 150);
         }
       );
     } finally {
       setIsSubmitting(false);
-      lockCartInit(false);
-      setPin("");
     }
   };
 
@@ -258,12 +260,9 @@ export default function Login_Screen_For_Switching_Accounts_View() {
                   )}
                   value={pin}
                   onChangeText={(value) => {
+                    hideSnackbar();
                     const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
                     setPin(digitsOnly);
-                    // setPinToSwitch(digitsOnly);
-                    if (error) {
-                      setError(null);
-                    }
                   }}
                   underlineColor={theme.colors.inputs.bottom_lines_disabled}
                   border_color={theme.colors.inputs.bottom_lines_disabled}
@@ -276,51 +275,37 @@ export default function Login_Screen_For_Switching_Accounts_View() {
                   autoCorrect={false}
                   textContentType="password"
                   autoComplete="off"
-                  // returnKeyType="done"
-                  onFocus={() => setEmailTouched(true)}
-                  onBlur={() => setEmailTouched(false)}
+                  // onFocus={() => null}
                   blurOnSubmit={false}
                   secureTextEntry
                   onSubmitEditing={() => {
                     pinInputRef.current?.focus();
                   }}
                 />
-                {error && (
-                  <Container
-                    width="100%"
-                    height="25%"
-                    color={theme.colors.bg.elements_bg}
-                    justify="flex-start"
-                    align="flex-start"
-                  >
-                    <Spacer position="top" size="large" />
-                    <Spacer position="left" size="large">
-                      <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
-                        {error}
-                      </Text>
-                    </Spacer>
-                  </Container>
-                )}
               </Container>
               <Spacer position="top" size="extraLarge" />
 
-              <Spacer position="top" size="extraLarge" />
-              {emailToSwitch && pin && isValidPin && (
+              {emailToSwitch && pin && canSubmit && (
                 <Container
                   width="100%"
                   padding_vertical={"2%"}
                   color={theme.colors.bg.elements_bg}
                   align="flex-start"
-                  justify="center"
+                  justify="flex-start"
                   direction="row"
                 >
+                  <Container
+                    width="5%"
+                    height="100%"
+                    color={theme.colors.bg.elements_bg}
+                  />
                   <Regular_CTA
-                    width="55%"
+                    width="35%"
                     height={"45%"}
                     color={theme.colors.ui.primary}
                     border_radius={"40px"}
                     caption={t("menu.switch_account_view.pin_switch_view.cta")}
-                    caption_text_variant="dm_sans_bold_20_white"
+                    caption_text_variant="dm_sans_bold_18_white"
                     action={handleSwitch}
                   />
                 </Container>

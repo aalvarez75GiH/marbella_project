@@ -93,6 +93,7 @@ export default function Enter_Names_View() {
               )}
               value={userToDB.first_name}
               onChangeText={(value) => {
+                hideSnackbar();
                 setUserToDB({
                   ...userToDB,
                   first_name: value,

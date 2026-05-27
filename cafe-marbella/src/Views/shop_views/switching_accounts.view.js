@@ -39,7 +39,7 @@ export default function Switching_Accounts_View() {
   console.log("Current authenticated user in Switching Accounts View:", user);
 
   const navigation = useNavigation();
-  const [emailTouched, setEmailTouched] = useState(false);
+  const [isEmailFocused, setIsEmailFocused] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -123,7 +123,7 @@ export default function Switching_Accounts_View() {
               fontFamily="DMSans-Bold"
               onChangeText={(value) => {
                 setEmailToSwitch(value);
-                if (emailTouched) setEmailTouched(false);
+                if (isEmailFocused) setIsEmailFocused(false);
                 if (error) setError(null);
               }}
               underlineColor={theme.colors.inputs.bottom_lines}
@@ -136,25 +136,6 @@ export default function Switching_Accounts_View() {
               returnKeyType="done"
               blurOnSubmit
             />
-
-            {emailTouched &&
-              emailToSwitch.trim().length > 0 &&
-              !isValidEmail(emailToSwitch) && (
-                <Container
-                  width="100%"
-                  height="10%"
-                  color={theme.colors.bg.elements_bg}
-                  justify="flex-start"
-                  align="flex-start"
-                >
-                  <Spacer position="top" size="large" />
-                  <Spacer position="left" size="large">
-                    <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
-                      {t("menu.switch_account_view.email_error")}
-                    </Text>
-                  </Spacer>
-                </Container>
-              )}
 
             <Spacer position="top" size="medium" />
             <Spacer position="top" size="medium" />
@@ -197,37 +178,52 @@ export default function Switching_Accounts_View() {
                 </ScrollView>
               ))}
 
-            {emailToSwitch?.trim().length > 0 && (
-              <Regular_CTA
-                width="95%"
-                height="15%"
-                color={theme.colors.ui.primary}
-                border_radius={"40px"}
-                caption={t("menu.switch_account_view.cta")}
-                caption_text_variant="dm_sans_bold_20_white"
-                action={() => {
-                  setEmailTouched(true);
+            {emailToSwitch?.trim().length > 0 &&
+              isValidEmail(emailToSwitch) && (
+                <Container
+                  width="100%"
+                  height="12%"
+                  align="flex-start"
+                  direction="row"
+                  justify="flex-start"
+                  color={theme.colors.bg.elements_bg}
+                >
+                  <Container
+                    width="5%"
+                    height="100%"
+                    color={theme.colors.bg.elements_bg}
+                  />
+                  <Regular_CTA
+                    width="55%"
+                    height="100%"
+                    color={theme.colors.ui.primary}
+                    border_radius={"40px"}
+                    caption={t("menu.switch_account_view.cta")}
+                    caption_text_variant="dm_sans_bold_18_white"
+                    action={() => {
+                      setIsEmailFocused(true);
 
-                  const cleanEmail = emailToSwitch.trim();
-                  const ok = isValidEmail(cleanEmail);
+                      const cleanEmail = emailToSwitch.trim();
+                      const ok = isValidEmail(cleanEmail);
 
-                  if (!ok) return;
+                      if (!ok) return;
 
-                  navigation.navigate(
-                    "Login_Screen_For_Switching_Accounts_View",
-                    {
-                      emailToSwitch: cleanEmail,
-                      returnTo: {
-                        tab: "Shop",
-                        screen: "Shop_Products_View",
-                      },
-                    }
-                  );
+                      navigation.navigate(
+                        "Login_Screen_For_Switching_Accounts_View",
+                        {
+                          emailToSwitch: cleanEmail,
+                          returnTo: {
+                            tab: "Shop",
+                            screen: "Shop_Products_View",
+                          },
+                        }
+                      );
 
-                  setEmailToSwitch("");
-                }}
-              />
-            )}
+                      setEmailToSwitch("");
+                    }}
+                  />
+                </Container>
+              )}
           </Container>
         </KeyboardAvoidingView>
       )}

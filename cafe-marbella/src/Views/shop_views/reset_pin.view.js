@@ -18,17 +18,34 @@ import { Text } from "../../infrastructure/typography/text.component";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 import { DataInput } from "../../components/inputs/data_text_input.js";
+import { Snack_Bar_Component } from "../../components/others/snack_bar.component.js";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { CartContext } from "../../infrastructure/services/cart/cart.context.js";
+import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
 
 export default function Reset_PIN_View() {
   const navigation = useNavigation();
   const theme = useTheme();
   const { t } = useTranslation();
 
+  const shouldFocusFirstPinRef = useRef(false);
+  const shouldFocusSecondPinRef = useRef(false);
+
   const pinInputRef = useRef(null);
   const secondPinRef = useRef(null);
+
+  const focusFirstPin = () => {
+    setTimeout(() => {
+      pinInputRef.current?.focus();
+    }, 150);
+  };
+
+  const focusSecondPin = () => {
+    setTimeout(() => {
+      secondPinRef.current?.focus();
+    }, 150);
+  };
 
   const route = useRoute();
   const { returnTo } = route.params || {};
@@ -52,11 +69,8 @@ export default function Reset_PIN_View() {
     reset_pin_1 === reset_pin_2;
 
   const { lockCartInit } = useContext(CartContext);
-
-  const [error, setError] = useState(null);
-
-  // ✅ show "PIN must be 6 digits" ONLY after user tries to focus PIN2
-  const [showPin1LengthError, setShowPin1LengthError] = useState(false);
+  const { snackbar, showErrorSnackbar, hideSnackbar } =
+    useContext(GlobalContext);
 
   // Auto-focus first PIN input
   useEffect(() => {
@@ -77,17 +91,48 @@ export default function Reset_PIN_View() {
     }
   }, [reset_pin_1]);
 
-  const validateFirstPinBeforeSecond = () => {
-    setShowPin1LengthError(true);
+  // const validateFirstPinBeforeSecond = () => {
+  //   setShowPin1LengthError(true);
 
-    if (reset_pin_1.length < 6) {
-      setError(null); // ✅ don't show "PIN must match"
+  //   if (reset_pin_1.length < 6) {
+  //     setError(null); // ✅ don't show "PIN must match"
+  //     return false;
+  //   }
+
+  //   setError(null);
+  //   return true;
+  // };
+  const validateFirstPinBeforeSecond = () => {
+    const firstPin = reset_pin_1.trim();
+
+    if (!firstPin) {
+      showErrorSnackbar(
+        t("menu.get_a_new_pin_view.pin_first_required_error"),
+        () => {
+          hideSnackbar();
+          set_Reset_Pin_1("");
+          focusFirstPin();
+        }
+      );
+
+      focusFirstPin();
       return false;
     }
 
-    setError(null);
+    if (firstPin.length < 6) {
+      showErrorSnackbar(t("menu.get_a_new_pin_view.pin_length_error"), () => {
+        hideSnackbar();
+        set_Reset_Pin_1("");
+        focusFirstPin();
+      });
+
+      focusFirstPin();
+      return false;
+    }
+
     return true;
   };
+
   console.log("pins:", {
     reset_pin_1,
     reset_pin_2,
@@ -152,7 +197,7 @@ export default function Reset_PIN_View() {
               direction="column"
             >
               {/* PIN 1 */}
-              <DataInput
+              {/* <DataInput
                 ref={pinInputRef}
                 fontFamily="DMSans-Bold"
                 label={t("menu.get_a_new_pin_view.data_input_1")}
@@ -179,28 +224,82 @@ export default function Reset_PIN_View() {
                 returnKeyType="done"
                 blurOnSubmit
                 secureTextEntry
-              />
+              /> */}
+              <DataInput
+                ref={pinInputRef}
+                fontFamily="DMSans-Bold"
+                label={t("menu.get_a_new_pin_view.data_input_1")}
+                value={reset_pin_1}
+                onChangeText={(value) => {
+                  hideSnackbar();
 
-              {/* ✅ show ONLY after user tries PIN2 */}
-              {showPin1LengthError && reset_pin_1.length < 6 && (
-                <Container
-                  width="100%"
-                  height="30%"
-                  color={theme.colors.bg.elements_bg}
-                  justify="flex-start"
-                  align="flex-start"
-                >
-                  <Spacer position="top" size="medium" />
-                  <Spacer position="left" size="extraLarge">
-                    <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
-                      {t("menu.get_a_new_pin_view.pin_length_error")}
-                    </Text>
-                  </Spacer>
-                </Container>
-              )}
+                  const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
+                  set_Reset_Pin_1(digitsOnly);
+                }}
+                underlineColor={theme.colors.inputs.bottom_lines_disabled}
+                border_color={theme.colors.inputs.bottom_lines_disabled}
+                border_width={"0.5px"}
+                activeUnderlineColor={theme.colors.ui.primary}
+                keyboardType={Platform.OS === "ios" ? "number-pad" : "numeric"}
+                autoCapitalize="none"
+                autoCorrect={false}
+                textContentType="Password"
+                autoComplete="off"
+                // returnKeyType="done"
+                blurOnSubmit
+                secureTextEntry
+              />
 
               {/* PIN 2 */}
               <DataInput
+                ref={secondPinRef}
+                fontFamily="DMSans-Bold"
+                label={t("menu.get_a_new_pin_view.data_input_2")}
+                value={reset_pin_2}
+                onChangeText={(value) => {
+                  hideSnackbar();
+
+                  const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
+                  set_Reset_Pin_2(digitsOnly);
+
+                  if (
+                    digitsOnly.length === 6 &&
+                    reset_pin_1.length === 6 &&
+                    reset_pin_1 !== digitsOnly
+                  ) {
+                    showErrorSnackbar(
+                      t("menu.get_a_new_pin_view.pin_mismatch_error"),
+                      () => {
+                        hideSnackbar();
+                        set_Reset_Pin_2("");
+                        focusSecondPin();
+                      }
+                    );
+                  }
+                }}
+                underlineColor={theme.colors.inputs.bottom_lines_disabled}
+                border_color={theme.colors.inputs.bottom_lines_disabled}
+                border_width={"0.5px"}
+                activeUnderlineColor={theme.colors.ui.primary}
+                keyboardType={Platform.OS === "ios" ? "number-pad" : "numeric"}
+                autoCapitalize="none"
+                autoCorrect={false}
+                textContentType="Password"
+                autoComplete="off"
+                // returnKeyType="done"
+                secureTextEntry
+                blurOnSubmit={false}
+                onFocus={() => {
+                  const ok = validateFirstPinBeforeSecond();
+
+                  if (!ok) {
+                    setTimeout(() => {
+                      pinInputRef.current?.focus();
+                    }, 100);
+                  }
+                }}
+              />
+              {/* <DataInput
                 ref={secondPinRef}
                 fontFamily="DMSans-Bold"
                 label={t("menu.get_a_new_pin_view.data_input_2")}
@@ -237,26 +336,10 @@ export default function Reset_PIN_View() {
                 }}
                 blurOnSubmit
                 secureTextEntry
-              />
+              /> */}
             </Container>
-            {error && (
-              <Container
-                width="100%"
-                color={theme.colors.bg.elements_bg}
-                align="flex-start"
-              >
-                <Spacer position="top" size="medium" />
-                <Spacer position="left" size="extraLarge">
-                  <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
-                    {error}
-                  </Text>
-                </Spacer>
-              </Container>
-            )}
 
-            {/* <Spacer position="top" size="extraLarge" /> */}
-            {/* <Spacer position="top" size="extraLarge" /> */}
-
+            <Spacer position="top" size="large" />
             {canSubmitLocal && (
               <Container
                 width="100%"
@@ -264,17 +347,22 @@ export default function Reset_PIN_View() {
                 style={{ paddingVertical: 16 }} // ✅ number, not percent
                 color={theme.colors.bg.elements_bg}
                 align="flex-start"
-                justify="center"
+                justify="flex-start"
                 direction="row"
               >
+                <Container
+                  width="5%"
+                  height="100%"
+                  color={theme.colors.bg.elements_bg}
+                />
                 <Regular_CTA
-                  width="55%"
+                  width="40%"
                   // height={"45%"}
                   height={56} // ✅ number, not percent
                   color={theme.colors.ui.primary}
                   border_radius={"40px"}
                   caption={t("menu.get_a_new_pin_view.cta")}
-                  caption_text_variant="dm_sans_bold_20_white"
+                  caption_text_variant="dm_sans_bold_16_white"
                   action={async () => {
                     console.log("✅ Update PIN CTA pressed");
 
@@ -303,8 +391,6 @@ export default function Reset_PIN_View() {
 
                       set_Reset_Pin_1("");
                       set_Reset_Pin_2("");
-                      setShowPin1LengthError(false);
-                      setError(null);
 
                       if (result?.mustReLogin) {
                         Alert.alert(
@@ -343,6 +429,11 @@ export default function Reset_PIN_View() {
           </Container>
         </KeyboardAvoidingView>
       )}
+      <Snack_Bar_Component
+        snackbar={snackbar}
+        bottom_ios={290}
+        bottom_android={290}
+      />
     </SafeArea>
   );
 }

@@ -43,7 +43,8 @@
       "pin_length_error": "PIN must be exactly 6 digits",
       "pin_mismatch_error": "PIN doesn't match with previous one.",
       "activity_indicator": "Wait, we are setting up your new PIN...",
-      "cta": "Update PIN"
+      "cta": "Update PIN",
+      "pin_first_required_error": "Please enter your new PIN number"
     },
     "switch_account_view": {
       "title": "Switch to another account",

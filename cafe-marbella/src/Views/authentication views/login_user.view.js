@@ -44,7 +44,7 @@ export default function Login_Users_View() {
     clearGuestCart,
   } = useContext(CartContext);
   const { prepareOrderFromCart } = useContext(OrdersContext);
-  const { isValidEmail, snackbar, showErrorSnackbar } =
+  const { isValidEmail, snackbar, showErrorSnackbar, hideSnackbar } =
     useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -189,6 +189,7 @@ export default function Login_Users_View() {
                   label={t("login_screen.data_input_pin")}
                   value={pin}
                   onChangeText={(value) => {
+                    hideSnackbar();
                     const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
                     setPin(digitsOnly);
                     if (error) {
@@ -294,7 +295,10 @@ export default function Login_Users_View() {
                         );
 
                         if (!result?.ok) {
-                          showErrorSnackbar(result?.error);
+                          showErrorSnackbar(result?.error, () => {
+                            setPin("");
+                            hideSnackbar();
+                          });
 
                           setTimeout(() => {
                             pinInputRef.current?.focus();
