@@ -155,23 +155,29 @@ export default function Enter_Names_View() {
             />
             <Spacer position="top" size="extraLarge" />
           </Container>
-          <Spacer position="top" size="extraLarge" />
+          <Spacer position="top" size="medium" />
           <Container
             width="100%"
             color={theme.colors.bg.elements_bg}
             //   color={"yellow"}
             align="center"
+            justify="flex-start"
             direction="row"
           >
+            <Container
+              width="5%"
+              height="100%"
+              color={theme.colors.bg.elements_bg}
+            />
             {canContinue && (
               <Regular_CTA
-                width="200px"
-                height={"65px"}
+                width="35%"
+                height={"60px"}
                 color={theme.colors.ui.primary}
                 border_radius={"40px"}
                 caption={t("authentication_views.enter_names_view.cta")}
+                // caption={"Continuar"}
                 caption_text_variant="dm_sans_bold_20_white"
-                // action={async () => navigation.navigate("Enter_Email_View")}
                 action={async () =>
                   navigation.navigate("AuthModal", {
                     screen: "Enter_Email_View",

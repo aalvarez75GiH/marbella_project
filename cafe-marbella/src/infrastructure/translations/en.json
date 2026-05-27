@@ -350,6 +350,7 @@
       "cta": "Next"
     },
     "info_review": {
+      "title": "Review your information",
       "first_name": "First name:",
       "last_name": "Last name:",
       "email": "Email:",

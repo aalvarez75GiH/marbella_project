@@ -146,7 +146,6 @@ export default function Enter_Email_View() {
               </Container>
             )}
           </Container>
-          <Spacer position="top" size="extraLarge" />
 
           <Container
             width="100%"
@@ -154,16 +153,23 @@ export default function Enter_Email_View() {
             color={theme.colors.bg.elements_bg}
             //   color={"yellow"}
             align="center"
+            justify="flex-start"
             direction="row"
           >
+            <Container
+              width="5%"
+              height="100%"
+              color={theme.colors.bg.elements_bg}
+              // color={"red"}
+            />
             {isEmailFocused &&
               isValidEmail(userToDB.email) &&
               userToDB.email !== "" && (
                 <Regular_CTA
                   // width="55%"
                   // height={60}
-                  width="200px"
-                  height={"65px"}
+                  width="35%"
+                  height={"60px"}
                   color={theme.colors.ui.primary}
                   border_radius={"40px"}
                   caption={t("authentication_views.enter_email_view.cta")}

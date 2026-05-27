@@ -75,6 +75,7 @@ export default function Payment_View() {
   );
 
   const hasNameOnCard = String(nameOnCard ?? "").trim().length > 0;
+  const shouldShowNameError = cardVerified && !hasNameOnCard;
   const canPay = hasNameOnCard && cardVerified && !isLoading;
 
   return (
@@ -121,8 +122,13 @@ export default function Payment_View() {
               setNameOnCard(value);
             }}
             value={nameOnCard}
-            underlineColor={theme.colors.inputs.bottom_lines}
-            activeUnderlineColor={"#3A2F01"}
+            border_color={
+              shouldShowNameError ? theme.colors.text.error : "#3A2F01"
+            }
+            border_width={shouldShowNameError ? "2px" : "1px"}
+            activeUnderlineColor={
+              shouldShowNameError ? theme.colors.text.error : "#3A2F01"
+            }
             fontFamily="DMSans-Bold"
           />
           <Spacer position="top" size="medium" />

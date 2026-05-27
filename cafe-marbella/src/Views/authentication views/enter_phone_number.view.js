@@ -94,10 +94,6 @@ export default function Enter_Phone_Number_View() {
           align="center"
         >
           <Go_Back_Header label="" action={() => navigation.goBack()} />
-
-          {/* Title */}
-
-          {/* Input */}
           <Container
             width="100%"
             height="30%"
@@ -155,48 +151,28 @@ export default function Enter_Phone_Number_View() {
               onBlur={() => setIsPhoneFocused(false)}
               blurOnSubmit
             />
-
-            <Spacer position="top" size="extraLarge" />
           </Container>
 
-          {/* Error (only when user is NOT typing) */}
-          {phoneError &&
-            !isPhoneFocused &&
-            !isValidPhone(userToDB?.phone_number) && (
-              <Container
-                width="100%"
-                height="10%"
-                color={"blue"}
-                //   color={theme.colors.bg.elements_bg}
-                justify="flex-start"
-                align="flex-start"
-              >
-                <Spacer position="top" size="large" />
-                <Spacer position="left" size="large">
-                  <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
-                    Please enter a valid phone number
-                  </Text>
-                </Spacer>
-              </Container>
-            )}
-
-          {/* CTA pinned bottom-ish using flex (Option A pattern) */}
           <Container
             width="100%"
-            padding_vertical="25px"
-            // style={{ flex: 1, paddingBottom: 16 }}
+            //color={"red"}
             color={theme.colors.bg.elements_bg}
-            // color={"red"}
             align="center"
-            justify="center"
+            justify="flex-start"
             direction="row"
           >
+            <Container
+              //color={"red"}
+              width="5%"
+              height="100%"
+              color={theme.colors.bg.elements_bg}
+            />
             {showCTA && (
               <Regular_CTA
                 //width="55%"
                 //height={Platform.OS === "ios" ? "35%" : "45%"}
-                width="200px"
-                height={"65px"}
+                width="35%"
+                height={"60px"}
                 color={theme.colors.ui.primary}
                 border_radius={"40px"}
                 caption={t("authentication_views.enter_phone_view.cta")}

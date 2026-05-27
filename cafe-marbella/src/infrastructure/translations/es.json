@@ -355,6 +355,7 @@
       "cta": "Continuar"
     },
     "info_review": {
+      "title": "Resúmen de tu información",
       "first_name": "Nómbre:",
       "last_name": "Apellido:",
       "email": "Email:",

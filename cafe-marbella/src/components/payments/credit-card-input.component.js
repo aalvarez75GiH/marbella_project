@@ -145,6 +145,36 @@ export const CreditCardInputComponent = ({
           inputStyle={{
             fontFamily: "DMSans-Bold",
           }}
+          // validColor={theme.colors.text.primary}
+          // invalidColor={
+          //   !canPay ? theme.colors.text.error : theme.colors.text.primary
+          // }
+          // additionalInputsProps={{
+          //   number: {
+          //     underlineColorAndroid: canPay
+          //       ? theme.colors.inputs.bottom_lines
+          //       : theme.colors.ui.error,
+          //     selectionColor: canPay
+          //       ? theme.colors.text.primary
+          //       : theme.colors.ui.error,
+          //   },
+          //   expiry: {
+          //     underlineColorAndroid: canPay
+          //       ? theme.colors.inputs.bottom_lines
+          //       : theme.colors.ui.error,
+          //     selectionColor: canPay
+          //       ? theme.colors.text.primary
+          //       : theme.colors.ui.error,
+          //   },
+          //   cvc: {
+          //     underlineColorAndroid: canPay
+          //       ? theme.colors.inputs.bottom_lines
+          //       : theme.colors.ui.error,
+          //     selectionColor: canPay
+          //       ? theme.colors.text.primary
+          //       : theme.colors.ui.error,
+          //   },
+          // }}
         />
       </Container>
     </Spacer>

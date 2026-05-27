@@ -322,7 +322,6 @@ export default function Enter_Address_View() {
           <Container
             width="100%"
             color={theme.colors.bg.elements_bg}
-            justify="center"
             align="center"
             style={{
               paddingBottom: 50,
@@ -332,7 +331,8 @@ export default function Enter_Address_View() {
             {selectedAddress ? (
               <Regular_CTA
                 width="95%"
-                height={CTA_HEIGHT}
+                height={"60px"}
+                // height={CTA_HEIGHT}
                 color={theme.colors.brand.primary}
                 border_radius={"40px"}
                 caption={t("authentication_views.enter_address_view.cta")}

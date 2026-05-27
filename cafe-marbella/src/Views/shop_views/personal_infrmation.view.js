@@ -529,10 +529,16 @@ export default function Personal_Information_View() {
                       value: userToDB?.address ?? "",
                       onFocus: scrollToAddress,
                       fontFamily: "DMSans-Bold",
-                      onChangeText: (t) => {
+                      onChangeText: (text) => {
                         hideSnackbar();
                         scrollToAddress();
-                        setUserToDB((prev) => ({ ...prev, address: t }));
+
+                        setUserToDB((prev) => ({
+                          ...prev,
+                          address: text,
+                          ship_to: prev?.ship_to ?? user?.ship_to ?? null,
+                        }));
+
                         setSelectedAddress(null);
                       },
                     }}

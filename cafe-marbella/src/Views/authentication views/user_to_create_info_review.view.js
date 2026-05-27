@@ -95,9 +95,20 @@ export default function User_To_Create_Info_Review_View() {
           label="Your information review"
           action={() => navigation.goBack()}
         />
-
         <Spacer position="top" size="extraLarge" />
-
+        <Container
+          width="100%"
+          height="10%"
+          color={theme.colors.bg.elements_bg}
+          //   color={"yellow"}
+          align="flex-start"
+        >
+          <Spacer position="left" size="extraLarge">
+            <Text variant="raleway_bold_18" textAlign="center">
+              {t("authentication_views.info_review.title")}
+            </Text>
+          </Spacer>
+        </Container>
         <Container
           width="95%"
           height="60%"
