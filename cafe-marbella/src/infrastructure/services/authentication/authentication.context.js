@@ -48,6 +48,7 @@ const userToDBInitialState = {
   updatedAt: "",
   display_name: "",
   phone_number: "",
+  ship_to: {},
 };
 export const Authentication_Context_Provider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -505,6 +506,7 @@ export const Authentication_Context_Provider = ({ children }) => {
         }
 
         await registerLocalUser(userByUID);
+        console.log("LOGIN SUCCESS, USER:", JSON.stringify(userByUID, null, 2));
         setUser(userByUID);
 
         return { ok: true, user: userByUID };

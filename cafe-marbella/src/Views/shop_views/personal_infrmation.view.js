@@ -69,6 +69,11 @@ export default function Personal_Information_View() {
     buildShipToFromGooglePlace,
   } = useContext(AuthenticationContext);
 
+  console.log(
+    "userToDB at Personal Info View:",
+    JSON.stringify(userToDB, null, 2)
+  );
+
   const { deviceLat, deviceLng } = useContext(GeolocationContext);
   console.log("Device location at Personal Info View:", {
     deviceLat,
@@ -128,6 +133,7 @@ export default function Personal_Information_View() {
           user?.display_name ?? user?.first_name ?? prev?.display_name ?? "",
         createdAt:
           user?.createdAt ?? prev?.createdAt ?? new Date().toISOString(),
+        ship_to: user?.ship_to ?? prev?.ship_to ?? null,
       }));
     }, [setUserToDB, user])
   );
@@ -315,7 +321,15 @@ export default function Personal_Information_View() {
                   caption_text_variant="dm_sans_bold_16_white"
                   action={async () => {
                     if (!validatePersonalInfo()) return;
-                    const res = await handleUpdate(userToDB);
+                    const payload = {
+                      ...userToDB,
+                    };
+
+                    // very important
+                    if (!payload.ship_to) {
+                      delete payload.ship_to;
+                    }
+                    const res = await handleUpdate(payload);
 
                     if (!res?.ok) {
                       if (res.error === "requires_recent_login") {
