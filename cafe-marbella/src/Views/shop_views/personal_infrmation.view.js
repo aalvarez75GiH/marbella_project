@@ -46,12 +46,18 @@ export default function Personal_Information_View() {
   const [isLastNameFocused, setIsLastNameFocused] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [phoneError, setPhoneError] = useState(null);
+  const [isInfoUpdated, setIsInfoUpdated] = useState(false);
 
   const didInitRef = useRef(false);
   const didSetAddressTextRef = useRef(false);
   const scrollRef = useRef(null);
   const addressYRef = useRef(0);
   const placesRef = useRef(null);
+
+  const firstNameRef = useRef(null);
+  const lastNameRef = useRef(null);
+  const emailRef = useRef(null);
+  const phoneRef = useRef(null);
 
   const {
     setUserToDB,
@@ -69,13 +75,8 @@ export default function Personal_Information_View() {
     deviceLng,
   });
 
-  const {
-    snackbar,
-    showSnackbar,
-    hideSnackbar,
-    showSuccessSnackbar,
-    showErrorSnackbar,
-  } = useContext(GlobalContext);
+  const { snackbar, hideSnackbar, showSuccessSnackbar, showErrorSnackbar } =
+    useContext(GlobalContext);
 
   useFocusEffect(
     useCallback(() => {
@@ -143,11 +144,6 @@ export default function Personal_Information_View() {
     didSetAddressTextRef.current = true; // ✅ IMPORTANT
   }, [userToDB?.address]);
 
-  console.log("USER AT PERSONAL INFO VIEW:", JSON.stringify(user, null, 2));
-  console.log(
-    "USER TO DB AT PERSONAL INFO VIEW:",
-    JSON.stringify(userToDB, null, 2)
-  );
   // ************** UPDATE CTA VISIBILITY ***************
   const normalize = (v = "") => String(v ?? "").trim();
 
@@ -207,6 +203,65 @@ export default function Personal_Information_View() {
       });
     }, 250);
   };
+
+  const isEmpty = (value) => !String(value ?? "").trim();
+
+  const validatePersonalInfo = () => {
+    if (isEmpty(userToDB?.first_name)) {
+      showErrorSnackbar(
+        t("menu.personal_info_view.first_name_required"),
+        () => {
+          hideSnackbar();
+          firstNameRef.current?.focus();
+        }
+      );
+
+      firstNameRef.current?.focus();
+      return false;
+    }
+
+    if (isEmpty(userToDB?.last_name)) {
+      showErrorSnackbar(t("menu.personal_info_view.last_name_required"), () => {
+        hideSnackbar();
+        lastNameRef.current?.focus();
+      });
+
+      lastNameRef.current?.focus();
+      return false;
+    }
+
+    if (isEmpty(userToDB?.email)) {
+      showErrorSnackbar(t("menu.personal_info_view.email_required"), () => {
+        hideSnackbar();
+        emailRef.current?.focus();
+      });
+
+      emailRef.current?.focus();
+      return false;
+    }
+
+    if (isEmpty(userToDB?.phone_number)) {
+      showErrorSnackbar(t("menu.personal_info_view.phone_required"), () => {
+        hideSnackbar();
+        phoneRef.current?.focus();
+      });
+
+      phoneRef.current?.focus();
+      return false;
+    }
+
+    if (isEmpty(userToDB?.address)) {
+      showErrorSnackbar(t("menu.personal_info_view.address_required"), () => {
+        hideSnackbar();
+        scrollToAddress();
+      });
+
+      scrollToAddress();
+      return false;
+    }
+
+    return true;
+  };
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -259,6 +314,7 @@ export default function Personal_Information_View() {
                   caption={t("menu.personal_info_view.cta")}
                   caption_text_variant="dm_sans_bold_16_white"
                   action={async () => {
+                    if (!validatePersonalInfo()) return;
                     const res = await handleUpdate(userToDB);
 
                     if (!res?.ok) {
@@ -293,6 +349,7 @@ export default function Personal_Information_View() {
                     }
 
                     // setVisible(true);
+                    setIsInfoUpdated(true);
                     showSuccessSnackbar(
                       t("menu.personal_info_view.snack_bar_updated"),
                       () => {
@@ -319,10 +376,12 @@ export default function Personal_Information_View() {
             >
               <Spacer position="top" size="large" />
               <DataInput
+                ref={firstNameRef}
                 label={t("menu.personal_info_view.name_input_placeholder")}
                 value={userToDB?.first_name ?? ""}
                 fontFamily="DMSans-Bold"
                 onChangeText={(value) => {
+                  hideSnackbar();
                   setUserToDB((prev) => ({
                     ...prev,
                     first_name: value,
@@ -338,13 +397,14 @@ export default function Personal_Information_View() {
                 autoCorrect={false}
                 textContentType="givenName"
                 autoComplete="name"
-                returnKeyType="done"
               />
               <DataInput
+                ref={lastNameRef}
                 label={t("menu.personal_info_view.last_name_input_placeholder")}
                 fontFamily="DMSans-Bold"
                 value={userToDB?.last_name ?? ""}
                 onChangeText={(value) => {
+                  hideSnackbar();
                   setUserToDB((prev) => ({
                     ...prev,
                     last_name: value,
@@ -365,10 +425,12 @@ export default function Personal_Information_View() {
                 blurOnSubmit
               />
               <DataInput
+                ref={emailRef}
                 label={t("menu.personal_info_view.email_input_placeholder")}
                 fontFamily="DMSans-Bold"
                 value={userToDB?.email ?? ""}
                 onChangeText={(value) => {
+                  hideSnackbar();
                   setUserToDB((prev) => ({
                     ...prev,
                     email: value,
@@ -389,10 +451,12 @@ export default function Personal_Information_View() {
                 onBlur={() => null}
               />
               <DataInput
+                ref={phoneRef}
                 label={t("menu.personal_info_view.phone_input_placeholder")}
                 fontFamily="DMSans-Bold"
                 value={userToDB?.phone_number ?? ""}
                 onChangeText={(value) => {
+                  hideSnackbar();
                   const formatted = formatPhone(value);
                   setUserToDB((prev) => ({
                     ...prev,
@@ -466,6 +530,7 @@ export default function Personal_Information_View() {
                       onFocus: scrollToAddress,
                       fontFamily: "DMSans-Bold",
                       onChangeText: (t) => {
+                        hideSnackbar();
                         scrollToAddress();
                         setUserToDB((prev) => ({ ...prev, address: t }));
                         setSelectedAddress(null);
@@ -478,16 +543,15 @@ export default function Personal_Information_View() {
                   />
                 </View>
               </Container>
-
-              <Snack_Bar_Component
-                snackbar={snackbar}
-                bottom_ios={30}
-                bottom_android={30}
-              />
             </ScrollView>
           </KeyboardAvoidingView>
         </>
       )}
+      <Snack_Bar_Component
+        snackbar={snackbar}
+        bottom_ios={isInfoUpdated ? 40 : 310}
+        bottom_android={isInfoUpdated ? 40 : 310}
+      />
     </SafeArea>
   );
 }

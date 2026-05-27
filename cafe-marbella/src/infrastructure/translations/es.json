@@ -76,7 +76,12 @@
       "cta": "Actualizar",
       "snack_bar_updated": "Información actualizada exitosamente!",
       "snack_bar_auth_error": "Por favor, vuelve a iniciar sesión.",
-      "snack_bar_email_used": "La dirección de email ya está en uso, por favor elige otra."
+      "snack_bar_email_used": "La dirección de email ya está en uso, por favor elige otra.",
+      "first_name_required": "Por favor, introduce tu nombre.",
+      "last_name_required": "Por favor, introduce tu apellido.",
+      "email_required": "Por favor, introduce tu email.",
+      "phone_required": "Por favor, introduce tu número de teléfono.",
+      "address_required": "Por favor, introduce tu dirección."
     },
     "qr_code_view": {
       "header": "Tu código QR",

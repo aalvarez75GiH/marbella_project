@@ -75,7 +75,13 @@
       "cta": "Update",
       "snack_bar_updated": "Your information was updated successfully.",
       "snack_bar_auth_error": "Please log in again to change your email.",
-      "snack_bar_email_used": "Email already in used. Enter a different one..."
+      "snack_bar_email_used": "Email already in used. Enter a different one...",
+
+      "first_name_required": "Please enter your first name.",
+      "last_name_required": "Please enter your last name.",
+      "email_required": "Please enter your email.",
+      "phone_required": "Please enter your phone number.",
+      "address_required": "Please enter your address."
     },
     "qr_code_view": {
       "header": "Your QR code",
