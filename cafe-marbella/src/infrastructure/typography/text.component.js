@@ -85,6 +85,11 @@ font-size: ${theme.fontSizes.text_20};
 font-family: ${theme.fonts.dmSansBold};
 color: ${theme.colors.text.black};
 `;
+const dm_sans_bold_20_grey = (theme) => `
+font-size: ${theme.fontSizes.text_20};
+font-family: ${theme.fonts.dmSansBold};
+color: ${theme.colors.text.placeHolders};
+`;
 const dm_sans_regular_20 = (theme) => `
 font-size: ${theme.fontSizes.text_20};
 font-family: ${theme.fonts.dmSansRegular};
@@ -335,6 +340,7 @@ const variants = {
   dm_sans_bold_22,
   dm_sans_bold_22_white,
   dm_sans_bold_20,
+  dm_sans_bold_20_grey,
   dm_sans_bold_20_underlined,
   dm_sans_regular_20,
   dm_sans_bold_20_white,

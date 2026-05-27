@@ -228,6 +228,10 @@
       "processing": "Processing...",
       "make": "Place your payment"
     },
+    "errors": {
+      "name_required": "Please enter the card holder full name",
+      "card_required": "Please enter your card information to continue"
+    },
     "activity_indicator": "Wait, we are processing your payment..."
   },
   "confirmation_view": {

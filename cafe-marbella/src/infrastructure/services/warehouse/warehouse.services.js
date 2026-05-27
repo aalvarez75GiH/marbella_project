@@ -83,6 +83,9 @@ export const gettingRateRequestToShipStation = async (
   weight = 6,
   dimensions = null
 ) => {
+  console.log("SHIP TO:", ship_to);
+  console.log("SHIP FROM:", ship_from);
+
   const { warehouseEndPoint } = environment;
   try {
     const body = {

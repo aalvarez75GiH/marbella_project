@@ -228,6 +228,10 @@
       "processing": "Procesando...",
       "make": "Hacer el pago"
     },
+    "errors": {
+      "name_required": "Por favor, introduce el nombre del titular de la tarjeta de crédito",
+      "card_required": "Por favor, introduce los detalles de tu tarjeta de crédito"
+    },
     "activity_indicator": "Espera, procesando tu pago..."
   },
   "confirmation_view": {
