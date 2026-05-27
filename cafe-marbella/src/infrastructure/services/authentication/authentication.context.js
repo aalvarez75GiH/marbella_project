@@ -615,28 +615,6 @@ export const Authentication_Context_Provider = ({ children }) => {
       //3 ) Reset the states at context
       resetAuthContext();
       lastHydratedUidRef.current = null;
-
-      // 4) Reset navigation to the normal guest experience: App Tabs -> Shop -> Home_View
-      rootReset({
-        index: 0,
-        routes: [
-          {
-            name: "App",
-            state: {
-              index: 0,
-              routes: [
-                {
-                  name: "Shop",
-                  state: {
-                    index: 0,
-                    routes: [{ name: "Shop_Products_View" }],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      });
     } catch (e) {
       console.log("SIGN OUT ERROR:", e);
     } finally {

@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { KeyboardAvoidingView, Platform, Keyboard } from "react-native";
+import { Keyboard } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
@@ -88,144 +88,137 @@ export default function Switching_Accounts_View() {
       )}
 
       {!isLoading && !error && (
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0} // tweak if needed
+        <Container
+          width="100%"
+          height="100%"
+          color={theme.colors.bg.elements_bg}
+          justify="flex-start"
+          align="center"
         >
+          <Go_Back_Header label="" action={() => navigation.goBack()} />
+          <Spacer position="top" size="large" />
           <Container
             width="100%"
-            height="100%"
+            height="10%"
             color={theme.colors.bg.elements_bg}
-            justify="flex-start"
-            align="center"
+            justify="center"
+            align="flex-start"
           >
-            <Go_Back_Header label="" action={() => navigation.goBack()} />
-            <Spacer position="top" size="large" />
+            <Spacer position="left" size="large">
+              <Spacer position="left" size="small">
+                <Text variant="raleway_bold_18">
+                  {t("menu.switch_account_view.title")}
+                </Text>
+              </Spacer>
+            </Spacer>
+          </Container>
+          <DataInput
+            label={t("menu.switch_account_view.email_input_placeholder")}
+            value={emailToSwitch}
+            fontFamily="DMSans-Bold"
+            onChangeText={(value) => {
+              setEmailToSwitch(value);
+              if (isEmailFocused) setIsEmailFocused(false);
+              if (error) setError(null);
+            }}
+            underlineColor={theme.colors.inputs.bottom_lines}
+            activeUnderlineColor="#3A2F01"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            textContentType="emailAddress"
+            autoComplete="email"
+            returnKeyType="done"
+            blurOnSubmit
+          />
+
+          <Spacer position="top" size="medium" />
+          <Spacer position="top" size="medium" />
+          <Spacer position="top" size="medium" />
+          <Spacer position="top" size="medium" />
+
+          {emailToSwitch?.trim().length > 0 && isValidEmail(emailToSwitch) && (
+            <Container
+              width="100%"
+              height="12%"
+              align="flex-start"
+              direction="row"
+              justify="flex-start"
+              color={theme.colors.bg.elements_bg}
+            >
+              <Container
+                width="5%"
+                height="100%"
+                color={theme.colors.bg.elements_bg}
+              />
+              <Regular_CTA
+                width="35%"
+                height="55px"
+                color={theme.colors.ui.primary}
+                border_radius={"40px"}
+                caption={t("menu.switch_account_view.cta")}
+                caption_text_variant="dm_sans_bold_18_white"
+                action={() => {
+                  setIsEmailFocused(true);
+
+                  const cleanEmail = emailToSwitch.trim();
+                  const ok = isValidEmail(cleanEmail);
+
+                  if (!ok) return;
+
+                  navigation.navigate(
+                    "Login_Screen_For_Switching_Accounts_View",
+                    {
+                      emailToSwitch: cleanEmail,
+                      returnTo: {
+                        tab: "Shop",
+                        screen: "Shop_Products_View",
+                      },
+                    }
+                  );
+
+                  setEmailToSwitch("");
+                }}
+              />
+            </Container>
+          )}
+
+          {showOtherUsers && emailToSwitch?.trim().length === 0 && (
             <Container
               width="100%"
               height="10%"
               color={theme.colors.bg.elements_bg}
-              justify="center"
               align="flex-start"
             >
-              <Spacer position="left" size="large">
-                <Spacer position="left" size="small">
-                  <Text variant="raleway_bold_18">
-                    {t("menu.switch_account_view.title")}
-                  </Text>
-                </Spacer>
+              <Spacer position="left" size="extraLarge">
+                <Text variant="dm_sans_bold_18">
+                  {t("menu.switch_account_view.show_other_users_1_caption")}
+                </Text>
               </Spacer>
             </Container>
-            <DataInput
-              label={t("menu.switch_account_view.email_input_placeholder")}
-              value={emailToSwitch}
-              fontFamily="DMSans-Bold"
-              onChangeText={(value) => {
-                setEmailToSwitch(value);
-                if (isEmailFocused) setIsEmailFocused(false);
-                if (error) setError(null);
-              }}
-              underlineColor={theme.colors.inputs.bottom_lines}
-              activeUnderlineColor="#3A2F01"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              textContentType="emailAddress"
-              autoComplete="email"
-              returnKeyType="done"
-              blurOnSubmit
-            />
+          )}
 
-            <Spacer position="top" size="medium" />
-            <Spacer position="top" size="medium" />
-            <Spacer position="top" size="medium" />
-            <Spacer position="top" size="medium" />
-
-            {showOtherUsers && emailToSwitch?.trim().length === 0 && (
-              <Container
-                width="100%"
-                height="10%"
-                color={theme.colors.bg.elements_bg}
-                align="flex-start"
-              >
-                <Spacer position="left" size="extraLarge">
-                  <Text variant="dm_sans_bold_18">
-                    {t("menu.switch_account_view.show_other_users_1_caption")}
-                  </Text>
-                </Spacer>
-              </Container>
-            )}
-
-            {showOtherUsers &&
-              (!Array.isArray(otherUsersInTheDevice) && !isLoading ? (
-                <Text variant="dm_sans_medium_16">
-                  {t("menu.switch_account_view.show_other_users_loading")}
-                </Text>
-              ) : (
-                <ScrollView style={{ flex: 1, width: "100%" }}>
-                  {!emailToSwitch?.length && (
-                    <Container
-                      width="100%"
-                      padding_vertical={"5%"}
-                      justify="flex-start"
-                      color={theme.colors.bg.screens_bg}
-                      align="center"
-                    >
-                      {renderingUsersAccounts()}
-                    </Container>
-                  )}
-                </ScrollView>
-              ))}
-
-            {emailToSwitch?.trim().length > 0 &&
-              isValidEmail(emailToSwitch) && (
-                <Container
-                  width="100%"
-                  height="12%"
-                  align="flex-start"
-                  direction="row"
-                  justify="flex-start"
-                  color={theme.colors.bg.elements_bg}
-                >
+          {showOtherUsers &&
+            (!Array.isArray(otherUsersInTheDevice) && !isLoading ? (
+              <Text variant="dm_sans_medium_16">
+                {t("menu.switch_account_view.show_other_users_loading")}
+              </Text>
+            ) : (
+              <ScrollView style={{ flex: 1, width: "100%" }}>
+                {!emailToSwitch?.length && (
                   <Container
-                    width="5%"
-                    height="100%"
-                    color={theme.colors.bg.elements_bg}
-                  />
-                  <Regular_CTA
-                    width="55%"
-                    height="100%"
-                    color={theme.colors.ui.primary}
-                    border_radius={"40px"}
-                    caption={t("menu.switch_account_view.cta")}
-                    caption_text_variant="dm_sans_bold_18_white"
-                    action={() => {
-                      setIsEmailFocused(true);
-
-                      const cleanEmail = emailToSwitch.trim();
-                      const ok = isValidEmail(cleanEmail);
-
-                      if (!ok) return;
-
-                      navigation.navigate(
-                        "Login_Screen_For_Switching_Accounts_View",
-                        {
-                          emailToSwitch: cleanEmail,
-                          returnTo: {
-                            tab: "Shop",
-                            screen: "Shop_Products_View",
-                          },
-                        }
-                      );
-
-                      setEmailToSwitch("");
-                    }}
-                  />
-                </Container>
-              )}
-          </Container>
-        </KeyboardAvoidingView>
+                    width="100%"
+                    padding_vertical={"5%"}
+                    justify="flex-start"
+                    color={theme.colors.bg.screens_bg}
+                    align="center"
+                  >
+                    {renderingUsersAccounts()}
+                  </Container>
+                )}
+              </ScrollView>
+            ))}
+        </Container>
       )}
     </SafeArea>
   );

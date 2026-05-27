@@ -251,7 +251,7 @@ export default function Login_Users_View() {
                   </Container>
                 </>
               )}
-              <Spacer position="top" size="extraLarge" />
+              <Spacer position="top" size="large" />
               {email && pin && isValidPin && (
                 <Container
                   width="100%"
@@ -259,12 +259,17 @@ export default function Login_Users_View() {
                   color={theme.colors.bg.elements_bg}
                   //color={"red"}
                   align="flex-start"
-                  justify="center"
+                  justify="flex-start"
                   direction="row"
                 >
+                  <Container
+                    width="5%"
+                    height="100%"
+                    color={theme.colors.bg.elements_bg}
+                  />
                   <Regular_CTA
-                    width="200px"
-                    height={"65px"}
+                    width="150px"
+                    height={"55px"}
                     color={theme.colors.ui.primary}
                     border_radius={"40px"}
                     caption="Log In"

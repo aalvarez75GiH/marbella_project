@@ -34,7 +34,7 @@
     "activity_indicator": "Espera, cambiando a español...",
     "sign_out_layout": {
       "caption": "Are you sure about signing out?",
-      "cta": "yes, Sign me out"
+      "cta": "Yes, Sign me out"
     },
     "get_a_new_pin_view": {
       "title": "Enter your new PIN number...",
@@ -49,13 +49,13 @@
     "switch_account_view": {
       "title": "Switch to another account",
       "email_input_placeholder": "Enter email address to switch",
-      "cta": "Switch Account",
+      "cta": "Next",
       "activity_indicator": "Wait, we are switching your account...",
       "show_other_users_1_caption": "Other accounts in this device (tap to switch)",
       "show_other_users_loading": "Loading accounts...",
       "email_error": "Please enter a valid email address",
       "pin_switch_view": {
-        "caption": "Enter PIN number to switch...",
+        "caption": "Enter PIN number of the account",
         "data_input": "PIN number (only 6 digits)",
         "cta": "Switch",
         "activity_indicator": "Wait, we are switching your account...",

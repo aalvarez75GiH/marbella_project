@@ -49,7 +49,7 @@
     "switch_account_view": {
       "title": "Cambiar a otra cuenta",
       "email_input_placeholder": "Introduce el email de la cuenta",
-      "cta": "Cambiar de cuenta",
+      "cta": "Siguiente",
       "activity_indicator": "Espera, cambiando tu cuenta...",
       "show_other_users_1_caption": "Otras cuentas en este dispositivo (presiona para cambiar)",
       "show_other_users_loading": "Cargando cuentas...",

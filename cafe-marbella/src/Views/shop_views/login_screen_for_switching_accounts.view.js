@@ -1,10 +1,5 @@
 import React, { useContext, useState, useRef, useEffect, useMemo } from "react";
-import {
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  Keyboard,
-} from "react-native";
+import { Platform, Keyboard } from "react-native";
 import { Image } from "expo-image";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
@@ -58,11 +53,21 @@ export default function Login_Screen_For_Switching_Accounts_View() {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      pinInputRef.current?.focus();
-    }, 300);
+      requestAnimationFrame(() => {
+        pinInputRef.current?.focus();
+      });
+    }, 80);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      setPin("");
+      hideSnackbar();
+      clearTimeout(timeout);
+    };
   }, []);
+
+  console.log("Login for switching accounts, email:", emailToSwitch);
+  console.log("PIN value:", pin);
+  console.log("Can submit?", canSubmit);
 
   useEffect(() => {
     if (!isSubmitting && shouldRefocusPinRef.current) {
@@ -129,10 +134,19 @@ export default function Login_Screen_For_Switching_Accounts_View() {
       // 1) login target user
       const result = await loginUser(pin, emailToSwitch);
 
-      if (!result?.ok || !result?.user) {
-        shouldRefocusPinRef.current = true;
+      if (!result?.ok) {
+        showErrorSnackbar(result?.error, () => {
+          setPin("");
+          hideSnackbar();
+        });
+
+        setTimeout(() => {
+          pinInputRef.current?.focus();
+        }, 100);
+
         return;
       }
+
       if (result?.ok || result?.user) {
         const nextUser = { ...result.user, authenticated: true };
         const userId = nextUser.user_id;
@@ -211,107 +225,78 @@ export default function Login_Screen_For_Switching_Accounts_View() {
 
       {!isSubmitting && !switched && (
         <>
-          <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+          <Container
+            width="100%"
+            height="100%"
+            color={theme.colors.bg.elements_bg}
+            justify="flex-start"
+            align="center"
           >
+            <Go_Back_Header label="" action={() => navigation.goBack()} />
+
             <Container
               width="100%"
-              height="100%"
+              height={"10%"}
               color={theme.colors.bg.elements_bg}
-              justify="flex-start"
-              align="center"
+              align="flex-start"
             >
-              <Go_Back_Header label="" action={() => navigation.goBack()} />
-              <Container
-                width="100%"
-                height="15%"
-                color={theme.colors.bg.elements_bg}
-              >
-                <Image
-                  source={require("../../../assets/brand_images/marbella_cafe_especial_logo_transparent.png")}
-                  style={styles.image_1}
-                />
-              </Container>
-              <Container
-                width="100%"
-                height={"25%"}
-                color={theme.colors.bg.elements_bg}
-                align="flex-start"
-              >
-                <Spacer position="left" size="extraLarge">
+              <Spacer position="left" size="large">
+                <Spacer position="left" size="small">
                   <Text variant="raleway_bold_18" textAlign="center">
                     {t("menu.switch_account_view.pin_switch_view.caption")}
                   </Text>
                 </Spacer>
-              </Container>
+              </Spacer>
+            </Container>
+
+            <DataInput
+              ref={pinInputRef}
+              label={t("menu.switch_account_view.pin_switch_view.caption")}
+              value={pin}
+              fontFamily="DMSans-Bold"
+              onChangeText={(value) => {
+                hideSnackbar();
+                const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
+                setPin(digitsOnly);
+              }}
+              activeUnderlineColor="#3A2F01"
+              underlineColor="transparent"
+              keyboardType={Platform.OS === "ios" ? "number-pad" : "numeric"}
+              autoCapitalize="none"
+              autoCorrect={false}
+              textContentType="none"
+              autoComplete="off"
+              // returnKeyType="done"
+              blurOnSubmit
+              secureTextEntry
+            />
+            <Spacer position="top" size="extraLarge" />
+            {emailToSwitch && pin && canSubmit && (
               <Container
                 width="100%"
-                height="20%"
+                padding_vertical={"2%"}
                 color={theme.colors.bg.elements_bg}
-                align="center"
-                direction="column"
+                align="flex-start"
+                justify="flex-start"
+                direction="row"
               >
-                <DataInput
-                  ref={pinInputRef}
-                  fontFamily="DMSans-Bold"
-                  label={t(
-                    "menu.switch_account_view.pin_switch_view.data_input"
-                  )}
-                  value={pin}
-                  onChangeText={(value) => {
-                    hideSnackbar();
-                    const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
-                    setPin(digitsOnly);
-                  }}
-                  underlineColor={theme.colors.inputs.bottom_lines_disabled}
-                  border_color={theme.colors.inputs.bottom_lines_disabled}
-                  border_width={"0.5px"}
-                  activeUnderlineColor={theme.colors.ui.primary}
-                  keyboardType={
-                    Platform.OS === "ios" ? "number-pad" : "numeric"
-                  }
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  textContentType="password"
-                  autoComplete="off"
-                  // onFocus={() => null}
-                  blurOnSubmit={false}
-                  secureTextEntry
-                  onSubmitEditing={() => {
-                    pinInputRef.current?.focus();
-                  }}
+                <Container
+                  width="5%"
+                  height="100%"
+                  color={theme.colors.bg.elements_bg}
+                />
+                <Regular_CTA
+                  width="35%"
+                  height={"35%"}
+                  color={theme.colors.ui.primary}
+                  border_radius={"40px"}
+                  caption={t("menu.switch_account_view.pin_switch_view.cta")}
+                  caption_text_variant="dm_sans_bold_18_white"
+                  action={handleSwitch}
                 />
               </Container>
-              <Spacer position="top" size="extraLarge" />
-
-              {emailToSwitch && pin && canSubmit && (
-                <Container
-                  width="100%"
-                  padding_vertical={"2%"}
-                  color={theme.colors.bg.elements_bg}
-                  align="flex-start"
-                  justify="flex-start"
-                  direction="row"
-                >
-                  <Container
-                    width="5%"
-                    height="100%"
-                    color={theme.colors.bg.elements_bg}
-                  />
-                  <Regular_CTA
-                    width="35%"
-                    height={"45%"}
-                    color={theme.colors.ui.primary}
-                    border_radius={"40px"}
-                    caption={t("menu.switch_account_view.pin_switch_view.cta")}
-                    caption_text_variant="dm_sans_bold_18_white"
-                    action={handleSwitch}
-                  />
-                </Container>
-              )}
-            </Container>
-          </KeyboardAvoidingView>
+            )}
+          </Container>
         </>
       )}
       {!isSubmitting && switched && (
@@ -348,21 +333,8 @@ export default function Login_Screen_For_Switching_Accounts_View() {
       <Snack_Bar_Component
         snackbar={snackbar}
         bottom_ios={switched ? 60 : 290}
-        bottom_android={switched ? 20 : 290}
+        bottom_android={switched ? 80 : 290}
       />
     </SafeArea>
   );
 }
-
-const styles = StyleSheet.create({
-  image_1: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "contain",
-  },
-  image_2: {
-    width: "90%",
-    height: "90%",
-    resizeMode: "contain",
-  },
-});

@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useContext } from "react";
+import React, { useLayoutEffect, useContext, useState } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 import { Pressable, View, Alert } from "react-native";
@@ -23,12 +23,11 @@ export default function Sign_Out_Overlay_View() {
   const { t } = useTranslation();
 
   const { user, signOut, isLoading } = useContext(AuthenticationContext);
-  //   const { first_name, last_name, email, display_name, user_id } = user || {};
-  console.log("Overlay_View user:", user);
   // Hiding tab bar for this screen
   const { setDeliveryOption } = useContext(OrdersContext);
-
   const { setNameOnCard } = useContext(PaymentsContext);
+
+  const [localLoading, setLocalLoading] = useState(false);
 
   const { saveCartAsGuest, cart, lockCartInit } = useContext(CartContext);
   useLayoutEffect(() => {
@@ -41,6 +40,21 @@ export default function Sign_Out_Overlay_View() {
         tabBarStyle: undefined,
       });
   }, [navigation]);
+
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const runWithMinimumDelay = async (task, minDelay = 600) => {
+    const start = Date.now();
+
+    await task();
+
+    const elapsed = Date.now() - start;
+    const remaining = minDelay - elapsed;
+
+    if (remaining > 0) {
+      await wait(remaining);
+    }
+  };
 
   return (
     <SafeArea background_color={"transparent"} style={{ flex: 1 }}>
@@ -61,8 +75,8 @@ export default function Sign_Out_Overlay_View() {
         >
           {/* Prevent closing when tapping inside the sheet */}
           <Pressable style={{ flex: 1 }} onPress={() => {}}>
-            {isLoading && <Global_activity_indicator />}
-            {!isLoading && (
+            {localLoading && <Global_activity_indicator />}
+            {!localLoading && (
               <Container
                 width="100%"
                 height="100%"
@@ -96,57 +110,58 @@ export default function Sign_Out_Overlay_View() {
                   </Spacer>
                 </Container>
                 <Spacer position="top" size="extraLarge" />
-                <Regular_CTA
-                  caption={t("menu.sign_out_layout.cta")}
-                  width="90%"
-                  height="56px"
-                  color={theme.colors.ui.error}
-                  caption_text_variant="raleway_bold_16_white"
-                  action={() => {
-                    console.log("CTA: Sign out pressed ✅");
+                <Container
+                  width="100%"
+                  height="15%"
+                  color={theme.colors.bg.elements_bg}
+                  //color={"green"}
+                  justify="flex-start"
+                  align="flex-start"
+                  direction="row"
+                >
+                  <Container
+                    width="5%"
+                    height="100%"
+                    color={theme.colors.bg.elements_bg}
+                  />
+                  <Regular_CTA
+                    caption={t("menu.sign_out_layout.cta")}
+                    width="40%"
+                    height="100%"
+                    color={theme.colors.ui.error}
+                    border_radius={"30px"}
+                    caption_text_variant="raleway_bold_16_white"
+                    action={() => {
+                      if (localLoading) return;
 
-                    (async () => {
-                      console.log("CTA: lockCartInit?", typeof lockCartInit);
-                      console.log(
-                        "CTA: saveCartAsGuest?",
-                        typeof saveCartAsGuest
-                      );
-                      console.log("CTA: signOut?", typeof signOut);
+                      (async () => {
+                        setLocalLoading(true);
+                        lockCartInit?.(true);
 
-                      lockCartInit?.(true);
+                        try {
+                          await runWithMinimumDelay(async () => {
+                            await setDeliveryOption(null);
+                            setNameOnCard("");
 
-                      try {
-                        console.log("CTA: step 1 setDeliveryOption");
-                        await setDeliveryOption(null);
+                            await saveCartAsGuest?.(cart);
 
-                        console.log("CTA: step 2 setNameOnCard");
-                        setNameOnCard("");
+                            await signOut?.();
+                          }, 700);
 
-                        console.log("CTA: step 3 saveCartAsGuest");
-                        const saved = await saveCartAsGuest?.(cart);
-                        console.log("CTA: saved guest cart?", !!saved);
-
-                        console.log("CTA: step 4 signOut");
-                        await signOut?.();
-
-                        console.log("CTA: signOut finished ✅");
-                      } catch (e) {
-                        console.log(
-                          "CTA: signOut flow ERROR ❌",
-                          e?.message ?? e,
-                          e
-                        );
-                        Alert.alert(
-                          "Sign out error",
-                          e?.message ?? "Unknown error"
-                        );
-                      } finally {
-                        lockCartInit?.(false);
-                        console.log("CTA: finally unlock ✅");
-                      }
-                    })();
-                  }}
-                />
+                          navigation.goBack();
+                        } catch (e) {
+                          Alert.alert(
+                            "Sign out error",
+                            e?.message ?? "Unknown error"
+                          );
+                        } finally {
+                          lockCartInit?.(false);
+                          setLocalLoading(false);
+                        }
+                      })();
+                    }}
+                  />
+                </Container>
 
                 <Container />
               </Container>

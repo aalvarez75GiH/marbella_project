@@ -27,7 +27,7 @@ export default function Menu_View() {
   const tabBarHeight = useBottomTabBarHeight();
   const { t } = useTranslation();
 
-  const { user, otherUsersInTheDevice } = useContext(AuthenticationContext);
+  const { user } = useContext(AuthenticationContext);
   const { email, display_name, user_id, customer_qr } = user || {};
   const { customer_token } = customer_qr || {};
   // console.log("Menu_View user:", user);
@@ -35,8 +35,7 @@ export default function Menu_View() {
   // Check if there are other users in the device in order to use it as a
   //condition to enable or disable the "Switch to another account" option in the menu
 
-  const { globalLanguage, toggleGlobalLanguage, isLoading } =
-    useContext(GlobalContext);
+  const { toggleGlobalLanguage, isLoading } = useContext(GlobalContext);
   const { myWarehouse } = useContext(WarehouseContext);
   const { warehouse_name } = myWarehouse || {};
 
