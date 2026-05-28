@@ -110,10 +110,33 @@ export const put_new_pin_Request = async (payload, idToken) => {
 export const put_update_userinfo_Request = async (userToDB, idToken) => {
   const endpoint = `${environment.usersEndPoint}/update_user_info`;
 
-  const res = await axios.put(endpoint, userToDB, {
-    headers: { Authorization: `Bearer ${idToken}` },
-    timeout: 15000,
-  });
+  try {
+    console.log(
+      "USER TO DB BEFORE UPDATE INFO REQUEST:",
+      JSON.stringify(userToDB, null, 2)
+    );
 
-  return res.data; // { ok: true, message: ... }
+    const res = await axios.put(endpoint, userToDB, {
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+        "Content-Type": "application/json",
+      },
+      timeout: 15000,
+    });
+
+    console.log("UPDATE INFO RESPONSE:", JSON.stringify(res.data, null, 2));
+
+    return res.data;
+  } catch (e) {
+    console.log("UPDATE INFO ERROR:", {
+      status: e?.response?.status,
+      data: e?.response?.data,
+      message: e?.message,
+    });
+
+    return {
+      ok: false,
+      error: e?.response?.data?.error ?? e?.message ?? "UPDATE_FAILED",
+    };
+  }
 };

@@ -34,8 +34,6 @@ export default function Email_Verification_Sent_View() {
       background_color={theme.colors.bg.elements_bg}
       style={{ flex: 1 }}
     >
-      <Go_Back_Header label="" action={() => navigation.goBack()} />
-
       <Container
         width="100%"
         height="100%"

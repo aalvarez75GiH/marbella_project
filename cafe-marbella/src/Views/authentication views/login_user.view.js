@@ -157,32 +157,18 @@ export default function Login_Users_View() {
                   border_width={"0.5px"}
                   activeUnderlineColor={theme.colors.ui.primary}
                   keyboardType="email-address"
-                  autoCapitalize="none"
                   autoCorrect={false}
-                  textContentType="emailAddress"
-                  autoComplete="email"
                   returnKeyType="done"
+                  autoComplete="off"
+                  textContentType="none"
+                  autoCapitalize="none"
+                  importantForAutofill="no"
+                  spellCheck={false}
                 />
                 {!email && emailTouched && (
                   <Spacer position="top" size="extraLarge" />
                 )}
-                {emailError && (
-                  <Container
-                    width="100%"
-                    //   height="25%"
-                    height={emailError || error ? "30%" : "20%"} // shrink if there's an error to make room
-                    color={theme.colors.bg.elements_bg}
-                    justify="flex-start"
-                    align="flex-start"
-                  >
-                    <Spacer position="top" size="large" />
-                    <Spacer position="left" size="large">
-                      <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
-                        {emailError}
-                      </Text>
-                    </Spacer>
-                  </Container>
-                )}
+
                 <DataInput
                   ref={pinInputRef}
                   fontFamily="DMSans-Bold"
@@ -311,6 +297,11 @@ export default function Login_Users_View() {
 
                           return;
                         }
+                        //0.1) sanity check
+                        setPin("");
+                        setEmail("");
+                        setEmailError(null);
+
                         const nextUser = {
                           ...result.user,
                           authenticated: true,

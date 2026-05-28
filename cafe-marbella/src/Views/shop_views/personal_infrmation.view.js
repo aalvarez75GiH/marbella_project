@@ -6,7 +6,7 @@ import React, {
   useCallback,
   useRef,
 } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   View,
   KeyboardAvoidingView,
@@ -30,8 +30,8 @@ import { Text } from "../../infrastructure/typography/text.component";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { DataInput } from "../../components/inputs/data_text_input.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
-import { put_update_userinfo_Request } from "../../infrastructure/services/authentication/authentication.sevices.js";
-import { auth } from "../../../fb.js";
+// import { put_update_userinfo_Request } from "../../infrastructure/services/authentication/authentication.sevices.js";
+// import { auth } from "../../../fb.js";
 import { Snack_Bar_Component } from "../../components/others/snack_bar.component.js";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
@@ -67,6 +67,7 @@ export default function Personal_Information_View() {
     setUser,
     isLoading,
     buildShipToFromGooglePlace,
+    finalizePendingEmailChange,
   } = useContext(AuthenticationContext);
 
   console.log(
@@ -80,42 +81,13 @@ export default function Personal_Information_View() {
     deviceLng,
   });
 
-  const { snackbar, hideSnackbar, showSuccessSnackbar, showErrorSnackbar } =
-    useContext(GlobalContext);
-
-  useFocusEffect(
-    useCallback(() => {
-      const syncAfterEmailVerify = async () => {
-        const currentUser = auth.currentUser;
-        if (!currentUser) return;
-
-        // If no pending email, don't do anything
-        const pendingEmail = await AsyncStorage.getItem("pending_email");
-        if (!pendingEmail) return;
-
-        // Pull latest user data from Firebase
-        await currentUser.reload();
-        const firebaseEmail = (currentUser.email ?? "").toLowerCase();
-
-        // If email isn't updated yet, user probably hasn't clicked the link
-        if (firebaseEmail !== pendingEmail.toLowerCase()) return;
-
-        // Email is now updated in Firebase -> sync DB
-        const idToken = await currentUser.getIdToken(true);
-
-        // IMPORTANT: don't send email; backend should set email from admin.getUser(uid)
-        const res = await put_update_userinfo_Request({ ...userToDB }, idToken);
-
-        if (res.ok) {
-          setUser(res.data);
-          await AsyncStorage.removeItem("pending_email"); // ✅ clear pending state
-          Alert.alert("Success", "Your email was updated.");
-        }
-      };
-
-      syncAfterEmailVerify();
-    }, [userToDB, setUser])
-  );
+  const {
+    snackbar,
+    hideSnackbar,
+    showSuccessSnackbar,
+    showErrorSnackbar,
+    isValidEmail,
+  } = useContext(GlobalContext);
 
   useFocusEffect(
     useCallback(() => {
@@ -321,9 +293,30 @@ export default function Personal_Information_View() {
                   caption_text_variant="dm_sans_bold_16_white"
                   action={async () => {
                     if (!validatePersonalInfo()) return;
+
+                    if (!isValidEmail(userToDB?.email)) {
+                      showErrorSnackbar(
+                        t("login_screen.email_login_error"),
+                        () => {
+                          hideSnackbar();
+                          emailRef.current?.focus();
+                        }
+                      );
+
+                      setTimeout(() => {
+                        emailRef.current?.focus();
+                      }, 100);
+
+                      return;
+                    }
+
                     const payload = {
                       ...userToDB,
                     };
+                    console.log(
+                      "Payload for update at action:",
+                      JSON.stringify(payload, null, 2)
+                    );
 
                     // very important
                     if (!payload.ship_to) {
@@ -407,10 +400,12 @@ export default function Personal_Information_View() {
                 border_width={"0.3px"}
                 activeUnderlineColor={theme.colors.ui.primary}
                 keyboardType="default"
-                autoCapitalize="words"
                 autoCorrect={false}
-                textContentType="givenName"
-                autoComplete="name"
+                autoComplete="off"
+                textContentType="none"
+                autoCapitalize="none"
+                importantForAutofill="no"
+                spellCheck={false}
               />
               <DataInput
                 ref={lastNameRef}
@@ -429,14 +424,13 @@ export default function Personal_Information_View() {
                 border_width={"0.3px"}
                 activeUnderlineColor={theme.colors.ui.primary}
                 keyboardType="default"
-                autoCapitalize="words"
-                autoCorrect={false}
-                textContentType="familyName"
-                autoComplete="name"
-                returnKeyType="done"
                 onFocus={() => setIsLastNameFocused(true)}
                 onBlur={() => setIsLastNameFocused(false)}
                 blurOnSubmit
+                autoCorrect={false}
+                autoComplete="off"
+                textContentType="none"
+                autoCapitalize="none"
               />
               <DataInput
                 ref={emailRef}
@@ -490,7 +484,6 @@ export default function Personal_Information_View() {
                 autoCorrect={false}
                 textContentType="telephoneNumber"
                 autoComplete="tel"
-                returnKeyType="done"
                 onFocus={() => null}
                 onBlur={() => null}
                 blurOnSubmit
@@ -569,7 +562,7 @@ export default function Personal_Information_View() {
       )}
       <Snack_Bar_Component
         snackbar={snackbar}
-        bottom_ios={isInfoUpdated ? 40 : 310}
+        bottom_ios={isInfoUpdated ? 40 : 200}
         bottom_android={isInfoUpdated ? 40 : 310}
       />
     </SafeArea>

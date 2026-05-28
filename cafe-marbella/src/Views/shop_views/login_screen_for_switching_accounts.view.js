@@ -251,7 +251,7 @@ export default function Login_Screen_For_Switching_Accounts_View() {
 
             <DataInput
               ref={pinInputRef}
-              label={t("menu.switch_account_view.pin_switch_view.caption")}
+              label={t("menu.switch_account_view.pin_switch_view.data_input")}
               value={pin}
               fontFamily="DMSans-Bold"
               onChangeText={(value) => {

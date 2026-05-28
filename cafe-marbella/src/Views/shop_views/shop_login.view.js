@@ -20,6 +20,7 @@ import { Underlined_CTA } from "../../components/ctas/underlined.cta.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 import { DataInput } from "../../components/inputs/data_text_input.js";
 import { auth } from "../../../fb.js";
+import { Snack_Bar_Component } from "../../components/others/snack_bar.component.js";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { CartContext } from "../../infrastructure/services/cart/cart.context.js";
@@ -30,6 +31,7 @@ export default function Shop_Login_Users_View() {
   const navigation = useNavigation();
   const { t } = useTranslation();
   const theme = useTheme();
+  const pinInputRef = useRef(null);
   const emailInputRef = useRef(null);
 
   const {
@@ -42,7 +44,8 @@ export default function Shop_Login_Users_View() {
     clearGuestCart,
   } = useContext(CartContext);
   const { prepareOrderFromCart } = useContext(OrdersContext);
-  const { isValidEmail } = useContext(GlobalContext);
+  const { isValidEmail, snackbar, showErrorSnackbar, hideSnackbar } =
+    useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
@@ -57,7 +60,7 @@ export default function Shop_Login_Users_View() {
     emailError,
     setEmailError,
     isValidPin,
-    finalizePendingEmailChange,
+    //finalizePendingEmailChange,
   } = useContext(AuthenticationContext);
 
   useEffect(() => {
@@ -177,24 +180,9 @@ export default function Shop_Login_Users_View() {
               {!email && emailTouched && (
                 <Spacer position="top" size="extraLarge" />
               )}
-              {emailError && (
-                <Container
-                  width="100%"
-                  //   height="25%"
-                  height={emailError || error ? "30%" : "20%"} // shrink if there's an error to make room
-                  color={theme.colors.bg.elements_bg}
-                  justify="flex-start"
-                  align="flex-start"
-                >
-                  <Spacer position="top" size="large" />
-                  <Spacer position="left" size="large">
-                    <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
-                      {emailError}
-                    </Text>
-                  </Spacer>
-                </Container>
-              )}
+
               <DataInput
+                ref={pinInputRef}
                 label={t("login_screen.data_input_pin")}
                 value={pin}
                 onChangeText={(value) => {
@@ -219,22 +207,6 @@ export default function Shop_Login_Users_View() {
                 secureTextEntry
                 blurOnSubmit
               />
-              {error && (
-                <Container
-                  width="100%"
-                  height="30%"
-                  color={theme.colors.bg.elements_bg}
-                  justify="flex-start"
-                  align="flex-start"
-                >
-                  <Spacer position="top" size="large" />
-                  <Spacer position="left" size="large">
-                    <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
-                      {error}
-                    </Text>
-                  </Spacer>
-                </Container>
-              )}
             </Container>
             <Spacer position="top" size="extraLarge" />
             {!email && !pin && (
@@ -282,12 +254,17 @@ export default function Shop_Login_Users_View() {
                 color={theme.colors.bg.elements_bg}
                 //color={"red"}
                 align="flex-start"
-                justify="center"
+                justify="flex-start"
                 direction="row"
               >
+                <Container
+                  width="5%"
+                  height="100%"
+                  color={theme.colors.bg.elements_bg}
+                />
                 <Regular_CTA
-                  width="200px"
-                  height={"65px"}
+                  width="150px"
+                  height={"55px"}
                   color={theme.colors.ui.primary}
                   border_radius={"40px"}
                   caption={t("shop_login_user_view.login_cta")}
@@ -296,7 +273,12 @@ export default function Shop_Login_Users_View() {
                     if (isSubmitting) return; // prevent double taps
 
                     if (!isValidEmail(email)) {
-                      setEmailError("Please enter a valid email address.");
+                      showErrorSnackbar(t("login_screen.email_login_error"));
+
+                      setTimeout(() => {
+                        emailInputRef.current?.focus();
+                      }, 100);
+
                       return;
                     }
 
@@ -309,29 +291,28 @@ export default function Shop_Login_Users_View() {
                       const result = await loginUser(pin, email);
 
                       if (!result?.ok) {
-                        setError(result?.error || "Login failed");
+                        showErrorSnackbar(result?.error, () => {
+                          setPin("");
+                          hideSnackbar();
+                        });
+
+                        setTimeout(() => {
+                          pinInputRef.current?.focus();
+                        }, 100);
+
                         return;
                       }
-                      // ***************************************
-                      try {
-                        await waitForFirebaseUser(); // ✅ ensures auth.currentUser exists
-                        const pendingRes = await finalizePendingEmailChange();
 
-                        if (pendingRes?.ok && pendingRes?.updated) {
-                          console.log("✅ finalized pending email change");
-                        } else if (pendingRes?.ok && pendingRes?.skipped) {
-                          console.log("No pending email change");
-                        } else {
-                          console.log("Finalize result:", pendingRes);
-                        }
-                      } catch (e) {
-                        console.log(
-                          "Finalize pending email change error:",
-                          e?.message ?? e
-                        );
-                      }
-                      // ***************************************
-                      const nextUser = { ...result.user, authenticated: true };
+                      //0.1) sanity check
+                      setPin("");
+                      setEmail("");
+                      setEmailError(null);
+
+                      const nextUser = {
+                        ...result.user,
+                        authenticated: true,
+                      };
+
                       const userId = nextUser.user_id;
 
                       // 1) capture the cart you want to keep (guest cart from CartContext)
@@ -396,6 +377,11 @@ export default function Shop_Login_Users_View() {
               </Container>
             )}
           </Container>
+          <Snack_Bar_Component
+            snackbar={snackbar}
+            bottom_ios={230}
+            bottom_android={290}
+          />
         </KeyboardAvoidingView>
       )}
     </SafeArea>
