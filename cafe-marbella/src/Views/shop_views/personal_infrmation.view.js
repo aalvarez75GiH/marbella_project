@@ -200,6 +200,7 @@ export default function Personal_Information_View() {
 
     if (isEmpty(userToDB?.last_name)) {
       showErrorSnackbar(t("menu.personal_info_view.last_name_required"), () => {
+        setIsInfoUpdated(false);
         hideSnackbar();
         lastNameRef.current?.focus();
       });
@@ -210,6 +211,7 @@ export default function Personal_Information_View() {
 
     if (isEmpty(userToDB?.email)) {
       showErrorSnackbar(t("menu.personal_info_view.email_required"), () => {
+        setIsInfoUpdated(false);
         hideSnackbar();
         emailRef.current?.focus();
       });
@@ -220,6 +222,7 @@ export default function Personal_Information_View() {
 
     if (isEmpty(userToDB?.phone_number)) {
       showErrorSnackbar(t("menu.personal_info_view.phone_required"), () => {
+        setIsInfoUpdated(false);
         hideSnackbar();
         phoneRef.current?.focus();
       });
@@ -230,6 +233,7 @@ export default function Personal_Information_View() {
 
     if (isEmpty(userToDB?.address)) {
       showErrorSnackbar(t("menu.personal_info_view.address_required"), () => {
+        setIsInfoUpdated(false);
         hideSnackbar();
         scrollToAddress();
       });
@@ -431,6 +435,8 @@ export default function Personal_Information_View() {
                 autoComplete="off"
                 textContentType="none"
                 autoCapitalize="none"
+                importantForAutofill="no"
+                spellCheck={false}
               />
               <DataInput
                 ref={emailRef}
@@ -562,8 +568,8 @@ export default function Personal_Information_View() {
       )}
       <Snack_Bar_Component
         snackbar={snackbar}
-        bottom_ios={isInfoUpdated ? 40 : 200}
-        bottom_android={isInfoUpdated ? 40 : 310}
+        bottom_ios={isInfoUpdated ? 60 : 270}
+        bottom_android={isInfoUpdated ? 60 : 310}
       />
     </SafeArea>
   );
