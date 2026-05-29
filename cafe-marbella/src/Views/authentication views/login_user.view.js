@@ -5,6 +5,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { TextInput } from "react-native-paper";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useTranslation } from "react-i18next";
@@ -164,6 +165,24 @@ export default function Login_Users_View() {
                   autoCapitalize="none"
                   importantForAutofill="no"
                   spellCheck={false}
+                  right={
+                    email ? (
+                      <TextInput.Icon
+                        icon="close-circle"
+                        style={{ marginTop: 30 }}
+                        size={18}
+                        color={"#BEC5C5"}
+                        onPress={() => {
+                          setEmail("");
+                          hideSnackbar();
+
+                          setTimeout(() => {
+                            emailInputRef.current?.focus();
+                          }, 50);
+                        }}
+                      />
+                    ) : null
+                  }
                 />
                 {!email && emailTouched && (
                   <Spacer position="top" size="extraLarge" />

@@ -78,6 +78,7 @@ usersRouter.post("/", verifyFirebaseToken, async (req, res) => {
   console.log("CART_PAYLOAD:", JSON.stringify(req.body.cart_payload, null, 2));
 
   const uidFromToken = req.auth.uid;
+
   const user_id = uuidv4();
   const cart_payload = req.body.cart_payload; // expecting { products: [...] }
 
@@ -176,8 +177,16 @@ usersRouter.post("/", verifyFirebaseToken, async (req, res) => {
       taxes: 0,
       total: sub_total,
     });
-    // 5) Send email to user created
-    await sendingEmailToUserRegistered(newUser[0]);
+    //5) Send email to user created
+    try {
+      await sendingEmailToUserRegistered(newUser[0]);
+    } catch (error) {
+      return res.status(400).json({
+        status: "Failed",
+        code: "EMAIL_DELIVERY_FAILED",
+        msg: "We could not send email to this address.",
+      });
+    }
 
     return res.status(201).json({ user: newUser, cart: newCart });
   } catch (error) {

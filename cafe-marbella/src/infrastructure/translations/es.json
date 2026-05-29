@@ -361,7 +361,9 @@
       "email": "Email:",
       "address": "Dirección:",
       "phone": "Teléfono:",
-      "cta": "Registrar"
+      "cta": "Registrar",
+      "cta_instead": "Inicia sesión",
+      "user_exists_error": "Ya existe un usuario con este email, inicia sesión o regístrate con otro"
     },
     "showNameWarningSnackbar": {
       "message": "Por favor, introduce tu nombre para continuar"

@@ -356,7 +356,9 @@
       "email": "Email:",
       "address": "Address:",
       "phone": "Phone",
-      "cta": "Finish registration"
+      "cta": "Finish registration",
+      "cta_instead": "Login instead",
+      "user_exists_error": "You already have a account, please log in instead."
     },
     "showNameWarningSnackbar": {
       "message": "Please enter your first name to continue"

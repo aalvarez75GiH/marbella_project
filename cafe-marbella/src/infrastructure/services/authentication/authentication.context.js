@@ -21,6 +21,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  sendEmailVerification,
 } from "firebase/auth";
 
 import {
@@ -427,7 +428,9 @@ export const Authentication_Context_Provider = ({ children }) => {
   const registerUser = async (userToDB, cartPayload) => {
     setIsLoading(true);
     const pinGenerated = generatePin();
-    const email = userToDB.email;
+    const email = String(userToDB.email || "")
+      .trim()
+      .toLowerCase();
 
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -435,7 +438,10 @@ export const Authentication_Context_Provider = ({ children }) => {
         email,
         pinGenerated
       );
-      const idToken = await userCredential.user.getIdToken();
+
+      await sendEmailVerification(userCredential.user);
+
+      const idToken = await userCredential.user.getIdToken(true);
       // console.log("USER ID TOKEN:", idToken);
 
       // console.log("PIN GENERATED BEFORE ENCRYPTION:", pinGenerated);
@@ -444,6 +450,7 @@ export const Authentication_Context_Provider = ({ children }) => {
 
       const payload = {
         ...userToDB,
+        email, // ensure email is trimmed and lowercased
         encrypted_pin: encrypted_pin, // ideally remove later
       };
 
@@ -454,7 +461,7 @@ export const Authentication_Context_Provider = ({ children }) => {
       const res = await post_user_Request(payload, cartPayload, idToken);
 
       if (res?.user?.[0] && res?.cart?.[0]) {
-        await registerLocalUser(res.user[0]); // ✅ persist & set user state
+        // await registerLocalUser(res.user[0]); // ✅ persist & set user state
         return { ok: true, user: res.user[0], cart: res.cart[0] };
       }
 
@@ -463,14 +470,37 @@ export const Authentication_Context_Provider = ({ children }) => {
         error: "Invalid server response",
       };
     } catch (error) {
-      console.log("REGISTER USER ERROR (raw):", {
-        code: error?.code,
+      const backendCode = error?.response?.data?.code;
+
+      console.log("REGISTER USER ERROR:", {
+        firebaseCode: error?.code,
+        backendCode,
+        backendMsg: error?.response?.data?.msg,
         message: error?.message,
-        name: error?.name,
       });
 
+      if (backendCode === "EMAIL_DELIVERY_FAILED") {
+        try {
+          if (auth.currentUser) {
+            await auth.currentUser.delete();
+          }
+        } catch (deleteError) {
+          console.log("ERROR DELETING FIREBASE USER:", deleteError?.message);
+        }
+
+        return {
+          ok: false,
+          code: "EMAIL_DELIVERY_FAILED",
+          error: "This email address is not valid or was not found...",
+        };
+      }
+
       if (error?.code === "auth/email-already-in-use") {
-        return { ok: false, error: "Email already in use" };
+        return {
+          ok: false,
+          code: error.code,
+          error: "email_already_in_use",
+        };
       }
 
       return { ok: false, error: error?.message || "Registration failed" };
@@ -967,6 +997,7 @@ export const Authentication_Context_Provider = ({ children }) => {
       profileWarning,
       profileReady,
       buildShipToFromGooglePlace,
+      userToDBInitialState,
     }),
     [
       isLoading,
@@ -996,6 +1027,7 @@ export const Authentication_Context_Provider = ({ children }) => {
       profileReady,
       profileWarning,
       buildShipToFromGooglePlace,
+      userToDBInitialState,
     ]
   );
 

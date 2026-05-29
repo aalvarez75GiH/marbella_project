@@ -191,9 +191,12 @@ const sendingEmailToUserRegistered = async (newUser) => {
   console.log("User email for registered user notification:", email);
 
   const to = (email || "").trim().toLowerCase();
+  // if (!isValidEmail(to)) {
+  //   console.error("Invalid recipient email:", email);
+  //   return null;
+  // }
   if (!isValidEmail(to)) {
-    console.error("Invalid recipient email:", email);
-    return null;
+    throw new Error("INVALID_EMAIL_FORMAT");
   }
 
   // Optional: quick sanity check; throws on bad auth/connection

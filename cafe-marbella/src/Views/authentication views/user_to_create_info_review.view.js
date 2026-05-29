@@ -11,10 +11,12 @@ import { Text } from "../../infrastructure/typography/text.component.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component.js";
 import { navigationRef } from "../../infrastructure/navigation/navigation_ref.js";
+import { Snack_Bar_Component } from "../../components/others/snack_bar.component.js";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { CartContext } from "../../infrastructure/services/cart/cart.context.js";
 import { OrdersContext } from "../../infrastructure/services/orders/orders.context.js";
+import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
 
 export default function User_To_Create_Info_Review_View() {
   const navigation = useNavigation();
@@ -24,16 +26,24 @@ export default function User_To_Create_Info_Review_View() {
   const { returnTo } = route?.params ?? {};
   // const [isLoading, setIsLoading] = useState(false);
 
-  const { userToDB, registerUser, registerLocalUser } = useContext(
-    AuthenticationContext
-  );
+  const {
+    userToDB,
+    registerUser,
+    registerLocalUser,
+    setUserToDB,
+    userToDBInitialState,
+  } = useContext(AuthenticationContext);
   const { first_name, last_name, email, address, phone_number } =
     userToDB || {};
 
   const { prepareOrderFromCart } = useContext(OrdersContext);
 
+  const { snackbar, showErrorSnackbar, hideSnackbar } =
+    useContext(GlobalContext);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [userExists, setUserExists] = useState(false);
 
   console.log("USER TO DB AT REVIEW VIEW:", JSON.stringify(userToDB, null, 2));
 
@@ -91,10 +101,13 @@ export default function User_To_Create_Info_Review_View() {
         justify="flex-start"
         align="center"
       >
-        <Go_Back_Header
-          label="Your information review"
-          action={() => navigation.goBack()}
-        />
+        {!userExists && (
+          <Go_Back_Header
+            label="Your information review"
+            action={() => navigation.goBack()}
+          />
+        )}
+
         <Spacer position="top" size="extraLarge" />
         <Container
           width="100%"
@@ -325,22 +338,6 @@ export default function User_To_Create_Info_Review_View() {
               </Spacer>
             </Container>
           </Container>
-          {error && (
-            <Container
-              width="100%"
-              height="25%"
-              color={theme.colors.bg.elements_bg}
-              justify="flex-start"
-              align="flex-start"
-            >
-              <Spacer position="top" size="large" />
-              <Spacer position="left" size="large">
-                <Text variant="dm_sans_bold_14" style={{ color: "red" }}>
-                  {error}
-                </Text>
-              </Spacer>
-            </Container>
-          )}
         </Container>
 
         {/* CTA pinned bottom-ish using flex (Option A pattern) */}
@@ -353,16 +350,17 @@ export default function User_To_Create_Info_Review_View() {
           justify="center"
           direction="row"
         >
-          {error === "You already have a account, please log in instead." && (
+          {userExists && (
             <Regular_CTA
               width="75%"
               height={"40%"}
               color={theme.colors.ui.primary}
               border_radius={"40px"}
-              caption="Login instead"
+              caption={t("authentication_views.info_review.cta_instead")}
               caption_text_variant="dm_sans_bold_20_white"
               // action={() => null}
               action={() => {
+                setUserToDB(userToDBInitialState);
                 navigation.reset({
                   index: 0,
                   routes: [
@@ -375,7 +373,7 @@ export default function User_To_Create_Info_Review_View() {
               }}
             />
           )}
-          {!error && (
+          {!userExists && (
             <Regular_CTA
               width="75%"
               height={"40%"}
@@ -397,13 +395,37 @@ export default function User_To_Create_Info_Review_View() {
                   // 2) register
                   const result = await registerUser(userToDB, cartPayload);
 
-                  if (!result?.ok) {
-                    setError(
-                      result?.error === "Email already in use"
-                        ? "You already have an account, please log in instead."
-                        : result?.error || "Could not register"
+                  // if (result.error === "email_already_in_use") {
+                  //   setUserExists(true);
+                  //   showErrorSnackbar(
+                  //     t("authentication_views.info_review.user_exists_error"),
+                  //     () => {
+                  //       // setUserExists(
+                  //       //   "You already have a account, please log in instead."
+                  //       // );
+                  //       hideSnackbar();
+                  //     }
+                  //   );
+                  //   return;
+                  // }
+                  if (!result.ok) {
+                    if (result.code === "auth/email-already-in-use") {
+                      setUserExists(true);
+                      showErrorSnackbar(
+                        t("authentication_views.info_review.user_exists_error")
+                      );
+                      return;
+                    }
+
+                    if (result.code === "EMAIL_DELIVERY_FAILED") {
+                      showErrorSnackbar(result.error);
+                      return;
+                    }
+
+                    showErrorSnackbar(
+                      result.error || "Registration failed. Please try again."
                     );
-                    return; // ✅ critical
+                    return;
                   }
 
                   const nextUser = { ...result.user, authenticated: true };
@@ -459,7 +481,7 @@ export default function User_To_Create_Info_Review_View() {
                   });
                 } catch (e) {
                   console.log("CTA REGISTER ERROR:", e?.message ?? e, e);
-                  setError("Registration failed. Please try again.");
+                  setUserExists("Registration failed. Please try again.");
                 } finally {
                   setIsSubmitting(false);
                   lockCartInit(false);
@@ -467,6 +489,11 @@ export default function User_To_Create_Info_Review_View() {
               }}
             />
           )}
+          <Snack_Bar_Component
+            snackbar={snackbar}
+            bottom_ios={10}
+            bottom_android={10}
+          />
         </Container>
       </Container>
     </SafeArea>

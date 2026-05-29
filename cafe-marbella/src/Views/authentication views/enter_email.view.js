@@ -3,6 +3,7 @@ import { KeyboardAvoidingView, Platform } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useTranslation } from "react-i18next";
+import { TextInput } from "react-native-paper";
 
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header.js";
@@ -127,6 +128,26 @@ export default function Enter_Email_View() {
               onFocus={() => setIsEmailFocused(true)}
               onBlur={() => setIsEmailFocused(false)}
               blurOnSubmit
+              right={
+                userToDB.email ? (
+                  <TextInput.Icon
+                    icon="close-circle"
+                    style={{ marginTop: 30 }}
+                    size={18}
+                    color={"#BEC5C5"}
+                    onPress={() => {
+                      setUserToDB({
+                        ...userToDB,
+                        email: "",
+                      });
+
+                      setTimeout(() => {
+                        emailDataInputRef.current?.focus();
+                      }, 50);
+                    }}
+                  />
+                ) : null
+              }
             />
             {/* <Spacer position="top" size="extraLarge" /> */}
             {emailError && !isEmailFocused && !isValidEmail(userToDB.email) && (
