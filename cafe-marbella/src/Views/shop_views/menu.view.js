@@ -5,7 +5,10 @@ import { ScrollView } from "react-native-gesture-handler";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useTranslation } from "react-i18next";
 
-import { Container } from "../../components/containers/general.containers";
+import {
+  Action_Container,
+  Container,
+} from "../../components/containers/general.containers";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { NewSafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
@@ -35,7 +38,8 @@ export default function Menu_View() {
   // Check if there are other users in the device in order to use it as a
   //condition to enable or disable the "Switch to another account" option in the menu
 
-  const { toggleGlobalLanguage, isLoading } = useContext(GlobalContext);
+  const { toggleGlobalLanguage, globalLanguage, isLoading } =
+    useContext(GlobalContext);
   const { myWarehouse } = useContext(WarehouseContext);
   const { warehouse_name } = myWarehouse || {};
 
@@ -155,67 +159,123 @@ export default function Menu_View() {
         <Container
           width="100%"
           height="100%"
-          color={theme.colors.bg.screens_bg}
+          color={theme.colors.bg.elements_bg}
+          //color={"blue"}
           justify="flex-start"
           align="center"
+          // style={{ paddingBottom: tabBarHeight }}
         >
           <Exit_Header_With_Label
-            label=""
+            label="eppppa"
             action={() => navigation.goBack()}
             orientation="right"
           />
-          <Container
-            width="100%"
-            height="10%"
-            color={theme.colors.bg.elements_bg}
-            justify="center"
-            align="flex-start"
-          >
-            <Spacer position="left" size="extraLarge">
-              <Text variant="raleway_bold_26">{t("menu.sign_in_status")}</Text>
-            </Spacer>
-          </Container>
-          <Spacer position="top" size="small" />
-          <Container />
-          <Container
-            width="100%"
-            height="80%"
-            color={theme.colors.bg.elements_bg}
-            justify="flex-start"
-            align="flex-start"
-          >
-            <Spacer position="top" size="extraLarge" />
-            <Container
-              width="100%"
-              height="10%"
-              color={theme.colors.bg.elements_bg}
-              justify="center"
-              align="flex-start"
-              padding_horizontal="5%"
-            >
-              <Regular_CTA
-                width={"55%"}
-                height={60}
-                color={theme.colors.ui.black}
-                border_radius={"40px"}
-                // caption="Sign in"
-                caption={t("menu.sign_in_cta")}
-                caption_text_variant="raleway_regular_18_white"
-                action={() => {
-                  navigation.navigate("AuthModal", {
-                    screen: "Login_View",
-                    params: {
-                      returnTo: {
-                        tab: "Shop",
-                        screen: "Shop_Products_View",
-                        params: {},
-                      },
-                    },
-                  });
-                }}
-              />
-            </Container>
-          </Container>
+          {isLoading ? (
+            <Global_activity_indicator caption={t("menu.activity_indicator")} />
+          ) : (
+            <>
+              <Container
+                width="100%"
+                height="10%"
+                color={theme.colors.bg.elements_bg}
+                //color={"lightblue"}
+                justify="center"
+                align="flex-start"
+              >
+                <Spacer position="left" size="extraLarge">
+                  <Text variant="raleway_bold_26">{t("menu.welcome")}</Text>
+                </Spacer>
+              </Container>
+
+              <Spacer position="top" size="large" />
+
+              <Container
+                width="100%"
+                height="72%"
+                // flex={1}
+                color={theme.colors.bg.elements_bg}
+                //color={"lightgreen"}
+                justify="space-between"
+                align="center"
+                direction="column"
+              >
+                <Container
+                  width="100%"
+                  height={"20%"}
+                  color={theme.colors.bg.elements_bg}
+                  justify="center"
+                  align="flex-start"
+                  padding_horizontal="5%"
+                >
+                  <Regular_CTA
+                    width={"55%"}
+                    height={60}
+                    color={theme.colors.ui.black}
+                    border_radius={"40px"}
+                    caption={t("menu.sign_in_cta")}
+                    caption_text_variant="raleway_regular_18_white"
+                    action={() => {
+                      navigation.navigate("AuthModal", {
+                        screen: "Login_View",
+                        params: {
+                          returnTo: {
+                            tab: "Shop",
+                            screen: "Shop_Products_View",
+                            params: {},
+                          },
+                        },
+                      });
+                    }}
+                  />
+                </Container>
+
+                <Container
+                  width="100%"
+                  height="15%"
+                  // color="lightblue"
+                  style={{ marginBottom: 16 }}
+                >
+                  <Container
+                    width="100%"
+                    height="50%"
+                    color={theme.colors.bg.elements_bg}
+                    direction="column"
+                  >
+                    <Action_Container
+                      width="100%"
+                      height="100%"
+                      // color="orange"
+                      color={theme.colors.bg.elements_bg}
+                      direction="column"
+                      onPress={toggleGlobalLanguage}
+                      justify="center"
+                      align="flex-start"
+                    >
+                      <Spacer position="left" size="extraLarge">
+                        <Text
+                          variant="raleway_bold_14"
+                          color={theme.colors.text.secondary}
+                          style={{
+                            textDecorationLine: "underline",
+                          }}
+                        >
+                          {globalLanguage === "en"
+                            ? "ES - Español"
+                            : "EN - English"}
+                        </Text>
+                      </Spacer>
+                    </Action_Container>
+                  </Container>
+
+                  <Container
+                    width="100%"
+                    height="50%"
+                    color={theme.colors.bg.elements_bg}
+                  />
+                </Container>
+              </Container>
+            </>
+          )}
         </Container>
       )}
     </NewSafeArea>

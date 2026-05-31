@@ -29,6 +29,7 @@
       "sign_out": "Sign out",
       "warehouse": "Connected to warehouse:"
     },
+    "welcome": "Welcome",
     "sign_in_status": "You are signed out!",
     "sign_in_cta": "Sign in / Sign up",
     "activity_indicator": "Espera, cambiando a español...",
@@ -338,7 +339,8 @@
       "title": "Enter your email",
       "data_input_email": "Email",
       "cta": "Next",
-      "snack_bar_email_error": "We couldn't validate your email address. Please try again with a different one or check for typos."
+      "snack_bar_email_error": "We couldn't validate your email address. Please try again with a different one or check for typos.",
+      "activity_indicator": "Wait, we are validating your email address..."
     },
     "enter_address_view": {
       "title": "Enter your address",

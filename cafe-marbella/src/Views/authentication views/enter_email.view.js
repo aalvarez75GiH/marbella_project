@@ -67,7 +67,9 @@ export default function Enter_Email_View() {
       >
         {isLoading ? (
           <Global_activity_indicator
-            caption="Wait, we are validating your emaill address.."
+            caption={t(
+              "authentication_views.enter_email_view.activity_indicator"
+            )}
             caption_width="65%"
           />
         ) : (

@@ -29,6 +29,7 @@
       "sign_out": "Cerrar sesión",
       "warehouse": "Conectado a warehouse:"
     },
+    "welcome": "Bienvenido ",
     "sign_in_status": "No has iniciado sesión!",
     "sign_in_cta": "Iniciar sesión",
     "activity_indicator": "Wait, switching to english...",
@@ -343,7 +344,8 @@
       "title": "Introduzca su email",
       "data_input_email": "Correo electrónico",
       "cta": "Continuar",
-      "snack_bar_email_error": "No pudimos validar esta cuenta de correo. Chequea si no tienes un error"
+      "snack_bar_email_error": "No pudimos validar esta cuenta de correo. Chequea si no tienes un error",
+      "activity_indicator": "Espera, validando tu email..."
     },
     "enter_address_view": {
       "title": "Introduzca su dirección",
