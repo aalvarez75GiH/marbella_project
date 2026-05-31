@@ -120,6 +120,7 @@ export default function Enter_Email_View() {
                 )}
                 value={email}
                 onChangeText={(value) => {
+                  hideSnackbar();
                   setEmail(value);
                   if (emailError) {
                     setEmailError(null); // 👈 clear error while typing
@@ -147,6 +148,7 @@ export default function Enter_Email_View() {
                       size={18}
                       color={"#BEC5C5"}
                       onPress={() => {
+                        hideSnackbar();
                         setEmail("");
                         setTimeout(() => {
                           emailDataInputRef.current?.focus();
@@ -198,7 +200,9 @@ export default function Enter_Email_View() {
                       !isEmailDeliverable?.email_sent
                     ) {
                       showErrorSnackbar(
-                        "We couldn't validate your email address. Please try again with a different one or check for typos."
+                        t(
+                          "authentication_views.enter_email_view.snack_bar_email_error"
+                        )
                       );
                       return;
                     }

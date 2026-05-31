@@ -337,7 +337,8 @@
     "enter_email_view": {
       "title": "Enter your email",
       "data_input_email": "Email",
-      "cta": "Next"
+      "cta": "Next",
+      "snack_bar_email_error": "We couldn't validate your email address. Please try again with a different one or check for typos."
     },
     "enter_address_view": {
       "title": "Enter your address",
@@ -365,7 +366,8 @@
     },
     "code_verification_view": {
       "title_1": "Go to you email: ",
-      "title_2": "and tell us what code you received to verify your email"
+      "title_2": "and tell us what code you received to verify your email",
+      "snack_bar_error": "Incorrect verification code. Request a new code."
     }
   }
 }

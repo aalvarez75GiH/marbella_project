@@ -256,6 +256,7 @@ export const Global_Context_Provider = ({ children }) => {
         snackbar,
         showSnackbar,
         hideSnackbar,
+
         getTranslatedField,
 
         showNameWarningSnackbar,

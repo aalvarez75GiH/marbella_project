@@ -342,7 +342,8 @@
     "enter_email_view": {
       "title": "Introduzca su email",
       "data_input_email": "Correo electrónico",
-      "cta": "Continuar"
+      "cta": "Continuar",
+      "snack_bar_email_error": "No pudimos validar esta cuenta de correo. Chequea si no tienes un error"
     },
     "enter_address_view": {
       "title": "Introduzca su dirección",
@@ -370,7 +371,8 @@
     },
     "code_verification_view": {
       "title_1": "Ve a tu correo:",
-      "title_2": "y dinos que codigo de verificación te enviamos"
+      "title_2": "y dinos que codigo de verificación te enviamos",
+      "snack_bar_error": "Código incorrecto, intenta de nuevo"
     }
   }
 }

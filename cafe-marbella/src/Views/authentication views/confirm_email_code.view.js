@@ -26,7 +26,7 @@ export default function Confirm_Email_Code_View() {
   const { email_deliverable_code, email, returnTo } = route?.params ?? {};
 
   const { setUserToDB, userToDB } = useContext(AuthenticationContext);
-  const { showErrorSnackbar, snackbar, hideSnackBar } =
+  const { showErrorSnackbar, snackbar, hideSnackbar } =
     useContext(GlobalContext);
 
   console.log(
@@ -42,6 +42,9 @@ export default function Confirm_Email_Code_View() {
     JSON.stringify(email_deliverable_code, null, 2)
   );
   const [isEmailFocused, setIsEmailFocused] = useState(true);
+  const [selectedCode, setSelectedCode] = useState(null);
+  const [isLocked, setIsLocked] = useState(false);
+
   const generatingRandomCodes = (realCode) => {
     const codes = new Set();
 
@@ -136,6 +139,11 @@ export default function Confirm_Email_Code_View() {
                 align="center"
                 justify="center"
                 onPress={() => {
+                  if (isLocked) return;
+
+                  setSelectedCode(item);
+                  setIsLocked(true);
+
                   if (item === String(email_deliverable_code)) {
                     setUserToDB({
                       ...userToDB,
@@ -146,19 +154,19 @@ export default function Confirm_Email_Code_View() {
                       screen: "Enter_Address_View",
                       params: { returnTo },
                     });
-                  } else {
-                    showErrorSnackbar("Incorrect verification code");
+
+                    return;
                   }
-                }}
-                style={{
-                  shadowColor: "#000",
-                  shadowOpacity: 0.08,
-                  shadowRadius: 10,
-                  shadowOffset: {
-                    width: 0,
-                    height: 4,
-                  },
-                  elevation: 3,
+
+                  showErrorSnackbar(
+                    t(
+                      "authentication_views.code_verification_view.snack_bar_error"
+                    ),
+                    () => {
+                      hideSnackbar();
+                      navigation.goBack();
+                    }
+                  );
                 }}
               >
                 <Text
