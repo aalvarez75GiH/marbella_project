@@ -6,6 +6,10 @@ const {
   registeredUserCreatedEmail,
 } = require("../emails_templates/register_user_email");
 
+const {
+  verificationCodeEmail,
+} = require("../emails_templates/verification_code_email");
+
 const { resetPinCreatedEmail } = require("../emails_templates/pin_reset.email");
 const usersControllers = require("./users.controllers");
 const path = require("path");
@@ -27,8 +31,8 @@ const transporter = nodemailer.createTransport({
     // pass: process.env.GMAIL_APP_PASSWORD, // 16-char app password
     pass: "ubfiljheujsrwhsy", // 16-char app password
   },
-  logger: true, // optional: helpful during debugging
-  debug: true, // optional
+  logger: false, // optional: helpful during debugging
+  debug: false, // optional
 });
 
 const normalizePem = (pemMaybe) => {
@@ -271,10 +275,91 @@ const sendingEmailToUserRegistered = async (newUser) => {
     throw error;
   }
 };
+const sendingEmailCodeToValidateEmailOwnership = async (
+  email,
+  email_deliverable_code
+) => {
+  // console.log("encrypted_pin at sendingEmailToUser:", encrypted_pin);
+
+  console.log("User email validated:", email);
+
+  const to = (email || "").trim().toLowerCase();
+
+  // Optional: quick sanity check; throws on bad auth/connection
+  await transporter.verify();
+
+  const preheader =
+    "We have sent a 3 digits code to verify that this email address is yours. Come back to app and confirm it";
+
+  const html = verificationCodeEmail({
+    preheader,
+    email_deliverable_code,
+  });
+
+  const mailOptions = {
+    // from: process.env.GMAIL_EMAIL, // must match the authenticated account
+    from: "alvarez.arnoldo@gmail.com", // must match the authenticated account
+    to,
+    // subject: "Your Marbella Cafe order has been received",
+    subject: `Confirm email ownership for your new Marbella Cafe account`,
+    // text: `This is your pin number set:\n\n${newPin}\n\nIf you didn't set your PIN number, ignore this email.`,
+
+    attachments: [
+      {
+        filename: "Register_user_thanks.png",
+        path: asset("Register_user_thanks.png"),
+        cid: "marbella-register-user",
+      },
+      {
+        filename: "marbella_team.jpeg",
+        path: asset("marbella_team.jpeg"),
+        cid: "marbella-hero",
+      },
+    ],
+    html,
+
+    // (Optional) Make the SMTP envelope explicit; usually not needed, but can help:
+    envelope: {
+      from: process.env.GMAIL_EMAIL,
+      to: to,
+    },
+    headers: { "X-Entity-Ref-ID": `marbella-${Date.now()}` },
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+
+    console.log("EMAIL SEND RESULT INSIDE HELPER:", {
+      accepted: info.accepted,
+      rejected: info.rejected,
+      response: info.response,
+      messageId: info.messageId,
+    });
+
+    return {
+      ok: true,
+      message: "Email sent successfully...",
+      info,
+    };
+  } catch (error) {
+    console.error("Error sending email:", {
+      message: error?.message,
+      code: error?.code,
+      response: error?.response,
+      responseCode: error?.responseCode,
+    });
+    throw error;
+  }
+};
 
 function generateCustomerQRToken() {
   return `cst_${crypto.randomBytes(8).toString("hex")}`;
 }
+
+const generateVerificationCode = () => {
+  return String(Math.floor(Math.random() * 1000)).padStart(3, "0");
+};
+
 module.exports = {
   normalizePem,
   publicFpFromPem,
@@ -282,4 +367,6 @@ module.exports = {
   sendingEmailToUserPINIsChanged,
   sendingEmailToUserRegistered,
   generateCustomerQRToken,
+  generateVerificationCode,
+  sendingEmailCodeToValidateEmailOwnership,
 };

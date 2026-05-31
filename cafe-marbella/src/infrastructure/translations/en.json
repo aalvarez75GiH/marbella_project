@@ -362,6 +362,10 @@
     },
     "showNameWarningSnackbar": {
       "message": "Please enter your first name to continue"
+    },
+    "code_verification_view": {
+      "title_1": "Go to you email: ",
+      "title_2": "and tell us what code you received to verify your email"
     }
   }
 }

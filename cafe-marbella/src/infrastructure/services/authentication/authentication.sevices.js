@@ -140,3 +140,44 @@ export const put_update_userinfo_Request = async (userToDB, idToken) => {
     };
   }
 };
+
+export const post_email_deliverability_Request = async (email) => {
+  const { usersEndPoint } = environment;
+  const endpoint = `${usersEndPoint}/validate-email`;
+
+  try {
+    const payload = {
+      email: String(email || "")
+        .trim()
+        .toLowerCase(),
+    };
+
+    console.log("EMAIL BEFORE REQUEST:", JSON.stringify(payload, null, 2));
+
+    const res = await axios.post(endpoint, payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      timeout: 15000,
+    });
+
+    console.log(
+      "EMAIL VALIDATION RESPONSE:",
+      JSON.stringify(res.data, null, 2)
+    );
+
+    return res.data;
+  } catch (e) {
+    console.log("EMAIL VALIDATION ERROR:", {
+      status: e?.response?.status,
+      data: e?.response?.data,
+      message: e?.message,
+    });
+
+    return {
+      ok: false,
+      code: e?.response?.data?.code,
+      error: e?.response?.data?.msg || e?.message || "EMAIL_VALIDATION_FAILED",
+    };
+  }
+};

@@ -4,7 +4,6 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useTranslation } from "react-i18next";
-import { Snackbar } from "react-native-paper";
 
 import { Container } from "../../components/containers/general.containers";
 import { Go_Back_Header } from "../../components/headers/goBack_with_label.header.js";
@@ -24,7 +23,7 @@ export default function Enter_Names_View() {
   const { t } = useTranslation();
 
   const { setUserToDB, userToDB } = useContext(AuthenticationContext);
-  const { snackbar, hideSnackbar, showSnackbar, showNameWarningSnackbar } =
+  const { snackbar, hideSnackbar, showNameWarningSnackbar } =
     useContext(GlobalContext);
 
   const route = useRoute();

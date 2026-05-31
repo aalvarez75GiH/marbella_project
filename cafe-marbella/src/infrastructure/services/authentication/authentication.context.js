@@ -30,6 +30,7 @@ import {
   post_user_Request,
   gettingUserByUIDRequest,
   put_update_userinfo_Request,
+  post_email_deliverability_Request,
 } from "./authentication.sevices";
 import {
   STORAGE_KEYS,
@@ -955,6 +956,60 @@ export const Authentication_Context_Provider = ({ children }) => {
       address_residential_indicator: "yes",
     };
   };
+
+  // const validatingEmailDeliverability = async (email) => {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await post_email_deliverability_Request(email);
+  //     if (response?.ok) {
+  //       return {
+  //         ok: true,
+  //         email_deliverable_code: response.email_deliverable_code,
+  //         deliverable: response.deliverable,
+  //       };
+  //     }
+  //     return { ok: false, deliverable: false };
+  //   } catch (e) {
+  //     console.log("Email deliverability check error:", e?.message ?? e);
+  //     return { ok: false, deliverable: false };
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  const validatingEmailDeliverability = async (email) => {
+    setIsLoading(true);
+
+    try {
+      const response = await post_email_deliverability_Request(email);
+
+      if (response?.ok) {
+        return {
+          ok: true,
+          email_checked: response.email_checked,
+          email_sent: response.email_sent,
+          email_deliverable_code: response.email_deliverable_code,
+        };
+      }
+
+      return {
+        ok: false,
+        email_checked: false,
+        email_sent: false,
+      };
+    } catch (e) {
+      console.log("Email deliverability check error:", e?.message ?? e);
+
+      return {
+        ok: false,
+        email_checked: false,
+        email_sent: false,
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const value = useMemo(
     () => ({
       isLoading,
@@ -998,6 +1053,7 @@ export const Authentication_Context_Provider = ({ children }) => {
       profileReady,
       buildShipToFromGooglePlace,
       userToDBInitialState,
+      validatingEmailDeliverability,
     }),
     [
       isLoading,
@@ -1028,6 +1084,7 @@ export const Authentication_Context_Provider = ({ children }) => {
       profileWarning,
       buildShipToFromGooglePlace,
       userToDBInitialState,
+      validatingEmailDeliverability,
     ]
   );
 

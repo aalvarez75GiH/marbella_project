@@ -367,6 +367,10 @@
     },
     "showNameWarningSnackbar": {
       "message": "Por favor, introduce tu nombre para continuar"
+    },
+    "code_verification_view": {
+      "title_1": "Ve a tu correo:",
+      "title_2": "y dinos que codigo de verificación te enviamos"
     }
   }
 }

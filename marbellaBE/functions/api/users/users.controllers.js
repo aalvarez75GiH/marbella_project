@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 const firebase_controller = require("../../fb");
+const axios = require("axios");
 
 const getUserByUID = async (uid) => {
   console.log("UID:", uid);
@@ -157,9 +158,61 @@ const updateUser = async (data, uid) => {
   }
 };
 
+const validateEmail = async (email) => {
+  const response = await axios.get(
+    "https://emailreputation.abstractapi.com/v1/",
+    {
+      params: {
+        api_key: process.env.ABSTRACT_EMAIL_REPUTATION_KEY,
+        email,
+      },
+      timeout: 10000,
+    }
+  );
+
+  // console.log("ABSTRACT RESPONSE:", JSON.stringify(response.data, null, 2));
+  const data = response.data;
+  console.log("ABSTRACT SUMMARY:", {
+    email: data?.email_address,
+    status: data?.email_deliverability?.status,
+    statusDetail: data?.email_deliverability?.status_detail,
+    smtp: data?.email_deliverability?.is_smtp_valid,
+    mx: data?.email_deliverability?.is_mx_valid,
+    risk: data?.email_risk?.address_risk_status,
+  });
+
+  const status = data?.email_deliverability?.status;
+  const statusDetail = data?.email_deliverability?.status_detail;
+  const isFormatValid = data?.email_deliverability?.is_format_valid;
+  const isSmtpValid = data?.email_deliverability?.is_smtp_valid;
+  const isMxValid = data?.email_deliverability?.is_mx_valid;
+  const isDisposable = data?.email_quality?.is_disposable;
+  const addressRisk = data?.email_risk?.address_risk_status;
+
+  console.log("EMAIL CHECK RESULT:", {
+    status,
+    statusDetail,
+    isFormatValid,
+    isSmtpValid,
+    isMxValid,
+    isDisposable,
+    addressRisk,
+  });
+
+  return (
+    status === "deliverable" &&
+    isFormatValid === true &&
+    isMxValid === true &&
+    isSmtpValid === true &&
+    isDisposable === false &&
+    addressRisk !== "high"
+  );
+};
+
 module.exports = {
   getUserByUID,
   getUserByEmail,
   createUser,
   updateUser,
+  validateEmail,
 };

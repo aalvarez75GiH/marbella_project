@@ -15,6 +15,8 @@ const {
   sendingEmailToUserPINIsChanged,
   sendingEmailToUserRegistered,
   generateCustomerQRToken,
+  generateVerificationCode,
+  sendingEmailCodeToValidateEmailOwnership,
 } = require("./users.handlers");
 
 usersRouter.get("/userByUID", async (req, res) => {
@@ -225,6 +227,80 @@ usersRouter.post("/credentials", (req, res) => {
   }
 });
 
+usersRouter.post("/validate-email", async (req, res) => {
+  console.log("VALIDATE EMAIL BODY:", req.body);
+
+  const email = String(req.body.email || "")
+    .trim()
+    .toLowerCase();
+
+  console.log("EMAIL TO VALIDATE:", email);
+
+  if (!email) {
+    return res.status(400).json({
+      ok: false,
+      code: "EMAIL_REQUIRED",
+      msg: "Email is required.",
+    });
+  }
+
+  try {
+    console.log("CALLING ABSTRACT API...");
+    const isValid = await usersControllers.validateEmail(email);
+
+    if (!isValid) {
+      return res.status(400).json({
+        ok: false,
+        deliverable: false,
+        code: "EMAIL_DELIVERY_FAILED",
+        msg: "We could not send email to this address.",
+      });
+    }
+
+    const email_deliverable_code = generateVerificationCode();
+
+    try {
+      const emailSendResult = await sendingEmailCodeToValidateEmailOwnership(
+        email,
+        email_deliverable_code
+      );
+      console.log("EMAIL SEND RESULT AT ROUTE:", {
+        accepted: emailSendResult?.info?.accepted,
+        rejected: emailSendResult?.info?.rejected,
+        response: emailSendResult?.info?.response,
+        messageId: emailSendResult?.info?.messageId,
+      });
+    } catch (error) {
+      return res.status(400).json({
+        status: "Failed",
+        code: "EMAIL_DELIVERY_FAILED",
+        msg: "We could not send email to this address.",
+      });
+    }
+
+    return res.status(200).json({
+      ok: true,
+      email_checked: true,
+      email_sent: true,
+      email_deliverable_code,
+    });
+  } catch (error) {
+    console.log("ABSTRACT EMAIL VALIDATION ERROR:", {
+      status: error?.response?.status,
+      data: error?.response?.data,
+      message: error?.message,
+      code: error?.code,
+    });
+
+    return res.status(500).json({
+      ok: false,
+      code: "EMAIL_VALIDATION_FAILED",
+      msg: "Could not validate email.",
+      details: error?.response?.data || error?.message,
+    });
+  }
+});
+
 // PUT /users/pin
 usersRouter.put("/new_pin_on_demand", verifyFirebaseToken, async (req, res) => {
   try {
@@ -270,8 +346,6 @@ usersRouter.put("/new_pin_on_demand", verifyFirebaseToken, async (req, res) => {
       customToken: customToken, // send new token so client can re-auth with new PIN immediately
       emailSent: emailSent, // optional: indicate if email notification was sent successfully
     });
-
-    // return res.status(200).json({ ok: true });
   } catch (err) {
     console.error("PUT /users/pin error:", err);
 
