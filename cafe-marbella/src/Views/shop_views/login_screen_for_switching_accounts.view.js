@@ -4,6 +4,7 @@ import { Image } from "expo-image";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useTranslation } from "react-i18next";
+import { TextInput } from "react-native-paper";
 
 import { navigationRef } from "../../infrastructure/navigation/navigation_ref.js";
 import { Container } from "../../components/containers/general.containers";
@@ -36,6 +37,7 @@ export default function Login_Screen_For_Switching_Accounts_View() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [switched, setSwitched] = useState(false);
+  const [showPin, setShowPin] = useState(false);
 
   const { setPin, pin, loginUser } = useContext(AuthenticationContext);
 
@@ -259,6 +261,19 @@ export default function Login_Screen_For_Switching_Accounts_View() {
                 const digitsOnly = value.replace(/\D/g, "").slice(0, 6);
                 setPin(digitsOnly);
               }}
+              right={
+                pin ? (
+                  <TextInput.Icon
+                    icon={showPin ? "eye-off-outline" : "eye-outline"}
+                    style={{ marginTop: 30 }}
+                    size={20}
+                    color={"#A9B2B2"}
+                    onPress={() => {
+                      setShowPin((prev) => !prev);
+                    }}
+                  />
+                ) : null
+              }
               activeUnderlineColor="#3A2F01"
               underlineColor="transparent"
               keyboardType={Platform.OS === "ios" ? "number-pad" : "numeric"}
@@ -268,7 +283,7 @@ export default function Login_Screen_For_Switching_Accounts_View() {
               autoComplete="off"
               // returnKeyType="done"
               blurOnSubmit
-              secureTextEntry
+              secureTextEntry={!showPin}
             />
             <Spacer position="top" size="extraLarge" />
             {emailToSwitch && pin && canSubmit && (

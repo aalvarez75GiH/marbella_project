@@ -9,7 +9,6 @@ import { TextInput } from "react-native-paper";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useTranslation } from "react-i18next";
-import { Snackbar } from "react-native-paper";
 
 import { navigationRef } from "../../infrastructure/navigation/navigation_ref.js";
 import { Container } from "../../components/containers/general.containers";
@@ -22,6 +21,7 @@ import { Underlined_CTA } from "../../components/ctas/underlined.cta.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 import { DataInput } from "../../components/inputs/data_text_input.js";
 import { Snack_Bar_Component } from "../../components/others/snack_bar.component.js";
+import { EmailDataInput } from "../../components/inputs/email_data_input.js";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { CartContext } from "../../infrastructure/services/cart/cart.context.js";
@@ -49,19 +49,13 @@ export default function Login_Users_View() {
     useContext(GlobalContext);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [emailTouched, setEmailTouched] = useState(false);
+  const [isEmailFocused, setIsEmailFocused] = useState(false);
   const [error, setError] = useState(null);
+  const [showPin, setShowPin] = useState(false);
 
-  const {
-    email,
-    setEmail,
-    setPin,
-    pin,
-    loginUser,
-    emailError,
-    setEmailError,
-    isValidPin,
-  } = useContext(AuthenticationContext);
+  const { email, setEmail, setPin, pin, loginUser, isValidPin } = useContext(
+    AuthenticationContext
+  );
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -106,7 +100,6 @@ export default function Login_Users_View() {
                 label=""
                 action={() => {
                   setEmail("");
-                  setEmailError(null);
                   setPin("");
                   navigation.goBack();
                 }}
@@ -124,7 +117,7 @@ export default function Login_Users_View() {
               </Container>
               <Container
                 width="100%"
-                height={emailError || error ? "25%" : "20%"} // shrink if there's an error to make room
+                height={error ? "25%" : "20%"} // shrink if there's an error to make room
                 color={theme.colors.bg.elements_bg}
                 align="flex-start"
               >
@@ -142,49 +135,24 @@ export default function Login_Users_View() {
                 align="center"
                 direction="column"
               >
-                <DataInput
+                <EmailDataInput
                   ref={emailInputRef}
-                  fontFamily="DMSans-Bold"
                   label={t("login_screen.data_input_email")}
                   value={email}
                   onChangeText={(value) => {
+                    hideSnackbar();
                     setEmail(value);
-                    if (emailError) {
-                      setEmailError(null); // 👈 clear error while typing
-                    }
                   }}
-                  border_color={theme.colors.inputs.bottom_lines_disabled}
-                  underlineColor={theme.colors.inputs.bottom_lines_disabled}
-                  border_width={"0.5px"}
-                  activeUnderlineColor={theme.colors.ui.primary}
-                  keyboardType="email-address"
-                  autoCorrect={false}
-                  returnKeyType="done"
-                  autoComplete="off"
-                  textContentType="none"
-                  autoCapitalize="none"
-                  importantForAutofill="no"
-                  spellCheck={false}
-                  right={
-                    email ? (
-                      <TextInput.Icon
-                        icon="close-circle"
-                        style={{ marginTop: 30 }}
-                        size={18}
-                        color={"#BEC5C5"}
-                        onPress={() => {
-                          setEmail("");
-                          hideSnackbar();
-
-                          setTimeout(() => {
-                            emailInputRef.current?.focus();
-                          }, 50);
-                        }}
-                      />
-                    ) : null
-                  }
+                  textInputOnPress={() => {
+                    setEmail("");
+                    hideSnackbar();
+                    setTimeout(() => {
+                      emailInputRef.current?.focus();
+                    }, 50);
+                  }}
                 />
-                {!email && emailTouched && (
+
+                {!email && isEmailFocused && (
                   <Spacer position="top" size="extraLarge" />
                 )}
 
@@ -201,6 +169,19 @@ export default function Login_Users_View() {
                       setError(null); // 👈 clear error while typing
                     }
                   }}
+                  right={
+                    pin ? (
+                      <TextInput.Icon
+                        icon={showPin ? "eye-off-outline" : "eye-outline"}
+                        style={{ marginTop: 30 }}
+                        size={20}
+                        color={"#A9B2B2"}
+                        onPress={() => {
+                          setShowPin((prev) => !prev);
+                        }}
+                      />
+                    ) : null
+                  }
                   underlineColor={theme.colors.inputs.bottom_lines_disabled}
                   border_color={theme.colors.inputs.bottom_lines_disabled}
                   border_width={"0.5px"}
@@ -213,9 +194,9 @@ export default function Login_Users_View() {
                   textContentType="Password"
                   autoComplete="email"
                   // returnKeyType="done"
-                  onFocus={() => setEmailTouched(true)}
-                  onBlur={() => setEmailTouched(false)}
-                  secureTextEntry
+                  onFocus={() => setIsEmailFocused(true)}
+                  onBlur={() => setIsEmailFocused(false)}
+                  secureTextEntry={!showPin}
                   blurOnSubmit
                 />
               </Container>
@@ -260,7 +241,7 @@ export default function Login_Users_View() {
               {email && pin && isValidPin && (
                 <Container
                   width="100%"
-                  padding_vertical={emailError || error ? "0%" : "2%"} // shrink if there's an error to make room
+                  padding_vertical={error ? "0%" : "2%"} // shrink if there's an error to make room
                   color={theme.colors.bg.elements_bg}
                   //color={"red"}
                   align="flex-start"
@@ -319,7 +300,6 @@ export default function Login_Users_View() {
                         //0.1) sanity check
                         setPin("");
                         setEmail("");
-                        setEmailError(null);
 
                         const nextUser = {
                           ...result.user,

@@ -14,6 +14,7 @@ import { DataInput } from "../../components/inputs/data_text_input.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 import { Snack_Bar_Component } from "../../components/others/snack_bar.component.js";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component.js";
+import { EmailDataInput } from "../../components/inputs/email_data_input.js";
 
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
@@ -29,9 +30,9 @@ export default function Enter_Email_View() {
 
   const theme = useTheme();
 
-  const [isEmailFocused, setIsEmailFocused] = useState(false);
-  const [emailError, setEmailError] = useState(null);
   const [email, setEmail] = useState("");
+  const [emailIsFocused, setEmailIsFocused] = useState(false);
+  const [focusEmailAfterError, setFocusEmailAfterError] = useState(false);
 
   const route = useRoute();
   const { comingFrom, returnTo } = route?.params ?? {};
@@ -45,6 +46,17 @@ export default function Enter_Email_View() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (!isLoading && focusEmailAfterError) {
+      const timer = setTimeout(() => {
+        emailDataInputRef.current?.focus();
+        setFocusEmailAfterError(false);
+      }, 150);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, focusEmailAfterError]);
 
   console.log(
     "USER TO DB IN ENTER EMAIL VIEW:",
@@ -88,7 +100,7 @@ export default function Enter_Email_View() {
                   ...userToDB,
                   email: "",
                 });
-                setIsEmailFocused(true);
+                // setIsEmailFocused(true);
                 navigation.goBack();
               }}
             />
@@ -114,51 +126,23 @@ export default function Enter_Email_View() {
               align="center"
               direction="column"
             >
-              <DataInput
+              <EmailDataInput
                 ref={emailDataInputRef}
-                fontFamily="DMSans-Bold"
+                value={email}
                 label={t(
                   "authentication_views.enter_email_view.data_input_email"
                 )}
-                value={email}
                 onChangeText={(value) => {
                   hideSnackbar();
                   setEmail(value);
-                  if (emailError) {
-                    setEmailError(null); // 👈 clear error while typing
-                    setIsEmailFocused(true);
-                  }
                 }}
-                border_color={theme.colors.inputs.bottom_lines_disabled}
-                underlineColor={theme.colors.inputs.bottom_lines_disabled}
-                border_width={"0.3px"}
-                activeUnderlineColor={theme.colors.ui.primary}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                textContentType="emailAddress"
-                autoComplete="name"
-                returnKeyType="done"
-                onFocus={() => setIsEmailFocused(true)}
-                onBlur={() => setIsEmailFocused(false)}
-                blurOnSubmit
-                right={
-                  email ? (
-                    <TextInput.Icon
-                      icon="close-circle"
-                      style={{ marginTop: 30 }}
-                      size={18}
-                      color={"#BEC5C5"}
-                      onPress={() => {
-                        hideSnackbar();
-                        setEmail("");
-                        setTimeout(() => {
-                          emailDataInputRef.current?.focus();
-                        }, 50);
-                      }}
-                    />
-                  ) : null
-                }
+                textInputOnPress={() => {
+                  hideSnackbar();
+                  setEmail("");
+                  setTimeout(() => {
+                    emailDataInputRef.current?.focus();
+                  }, 50);
+                }}
               />
             </Container>
 
@@ -177,7 +161,7 @@ export default function Enter_Email_View() {
                 color={theme.colors.bg.elements_bg}
                 // color={"red"}
               />
-              {isEmailFocused && isValidEmail(email) && email !== "" && (
+              {isValidEmail(email) && email !== "" && (
                 <Regular_CTA
                   // width="55%"
                   // height={60}
@@ -201,14 +185,17 @@ export default function Enter_Email_View() {
                       !isEmailDeliverable?.email_checked ||
                       !isEmailDeliverable?.email_sent
                     ) {
+                      setEmail("");
+                      setFocusEmailAfterError(true);
+
                       showErrorSnackbar(
                         t(
                           "authentication_views.enter_email_view.snack_bar_email_error"
                         )
                       );
+
                       return;
                     }
-
                     const { email_deliverable_code } = isEmailDeliverable;
 
                     navigation.navigate("AuthModal", {

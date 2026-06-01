@@ -24,6 +24,36 @@ import { AuthenticationContext } from "../../infrastructure/services/authenticat
 import { GlobalContext } from "../../infrastructure/services/global/global.context";
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
 
+const MenuScreenWrapper = ({
+  children,
+  exitCaption = "",
+  theme,
+  navigation,
+}) => {
+  const tabBarHeight = useBottomTabBarHeight();
+
+  return (
+    <Container
+      width="100%"
+      height="100%"
+      color={theme.colors.bg.elements_bg}
+      justify="flex-start"
+      align="center"
+      style={{
+        paddingBottom: tabBarHeight,
+      }}
+    >
+      <Exit_Header_With_Label
+        caption={exitCaption}
+        action={() => navigation.goBack()}
+        orientation="right"
+      />
+
+      {children}
+    </Container>
+  );
+};
+
 export default function Menu_View() {
   const theme = useTheme();
   const navigation = useNavigation();
@@ -49,22 +79,8 @@ export default function Menu_View() {
       edges={["top", "left", "right"]}
       style={{ flex: 1 }}
     >
-      {isLoading ? (
-        <Global_activity_indicator caption={t("menu.activity_indicator")} />
-      ) : user_id !== undefined ? (
-        <Container
-          width="100%"
-          height="100%"
-          color={theme.colors.bg.elements_bg}
-          justify="flex-start"
-          align="center"
-          style={{ paddingBottom: tabBarHeight }}
-        >
-          <Exit_Header_With_Label
-            caption=""
-            action={() => navigation.goBack()}
-            orientation="right"
-          />
+      {user_id !== undefined ? (
+        <MenuScreenWrapper exitCaption="" navigation={navigation} theme={theme}>
           <Container
             width="100%"
             height="10%"
@@ -76,7 +92,6 @@ export default function Menu_View() {
               <Text variant="raleway_bold_26">{t("menu.title")}</Text>
             </Spacer>
           </Container>
-
           <Spacer position="top" size="small" />
           <Container
             width="100%"
@@ -154,128 +169,128 @@ export default function Menu_View() {
             />
             <Menu_Tile caption="" action={() => null} disabled={true} />
           </ScrollView>
-        </Container>
+        </MenuScreenWrapper>
       ) : (
+        <MenuScreenWrapper exitCaption="" navigation={navigation} theme={theme}>
+          <>
+            <Container
+              width="100%"
+              height="10%"
+              color={theme.colors.bg.elements_bg}
+              //color={"lightblue"}
+              justify="center"
+              align="flex-start"
+            >
+              <Spacer position="left" size="extraLarge">
+                <Text variant="raleway_bold_26">{t("menu.welcome")}</Text>
+              </Spacer>
+            </Container>
+
+            <Container
+              width="100%"
+              height="75%"
+              // flex={1}
+              color={theme.colors.bg.elements_bg}
+              //color={"lightgreen"}
+              justify="space-between"
+              align="center"
+              direction="column"
+            >
+              <Container
+                width="100%"
+                height={"20%"}
+                color={theme.colors.bg.elements_bg}
+                justify="center"
+                align="flex-start"
+                padding_horizontal="5%"
+              >
+                <Regular_CTA
+                  width={"55%"}
+                  height={60}
+                  color={theme.colors.ui.black}
+                  border_radius={"40px"}
+                  caption={t("menu.sign_in_cta")}
+                  caption_text_variant="raleway_regular_18_white"
+                  action={() => {
+                    navigation.navigate("AuthModal", {
+                      screen: "Login_View",
+                      params: {
+                        returnTo: {
+                          tab: "Shop",
+                          screen: "Shop_Products_View",
+                          params: {},
+                        },
+                      },
+                    });
+                  }}
+                />
+              </Container>
+
+              <Container
+                width="100%"
+                height="15%"
+                // color="lightblue"
+                style={{ marginBottom: 16 }}
+              >
+                <Container
+                  width="100%"
+                  height="50%"
+                  color={theme.colors.bg.elements_bg}
+                  direction="column"
+                >
+                  <Action_Container
+                    width="100%"
+                    height="100%"
+                    //color="orange"
+                    color={theme.colors.bg.elements_bg}
+                    direction="column"
+                    onPress={toggleGlobalLanguage}
+                    justify="center"
+                    align="flex-start"
+                  >
+                    <Spacer position="left" size="extraLarge">
+                      <Text
+                        variant="raleway_bold_14"
+                        color={theme.colors.text.secondary}
+                        style={{
+                          textDecorationLine: "underline",
+                        }}
+                      >
+                        {globalLanguage === "en"
+                          ? "ES - Español"
+                          : "EN - English"}
+                      </Text>
+                    </Spacer>
+                  </Action_Container>
+                </Container>
+
+                <Container
+                  width="100%"
+                  height="50%"
+                  color={theme.colors.bg.elements_bg}
+                />
+              </Container>
+            </Container>
+          </>
+        </MenuScreenWrapper>
+      )}
+      {isLoading && (
         <Container
           width="100%"
           height="100%"
-          color={theme.colors.bg.elements_bg}
-          //color={"blue"}
-          justify="flex-start"
+          color="rgba(255,255,255,0.6)"
+          justify="center"
           align="center"
-          // style={{ paddingBottom: tabBarHeight }}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 999,
+          }}
         >
-          <Exit_Header_With_Label
-            label="eppppa"
-            action={() => navigation.goBack()}
-            orientation="right"
-          />
-          {isLoading ? (
-            <Global_activity_indicator caption={t("menu.activity_indicator")} />
-          ) : (
-            <>
-              <Container
-                width="100%"
-                height="10%"
-                color={theme.colors.bg.elements_bg}
-                //color={"lightblue"}
-                justify="center"
-                align="flex-start"
-              >
-                <Spacer position="left" size="extraLarge">
-                  <Text variant="raleway_bold_26">{t("menu.welcome")}</Text>
-                </Spacer>
-              </Container>
-
-              <Spacer position="top" size="large" />
-
-              <Container
-                width="100%"
-                height="72%"
-                // flex={1}
-                color={theme.colors.bg.elements_bg}
-                //color={"lightgreen"}
-                justify="space-between"
-                align="center"
-                direction="column"
-              >
-                <Container
-                  width="100%"
-                  height={"20%"}
-                  color={theme.colors.bg.elements_bg}
-                  justify="center"
-                  align="flex-start"
-                  padding_horizontal="5%"
-                >
-                  <Regular_CTA
-                    width={"55%"}
-                    height={60}
-                    color={theme.colors.ui.black}
-                    border_radius={"40px"}
-                    caption={t("menu.sign_in_cta")}
-                    caption_text_variant="raleway_regular_18_white"
-                    action={() => {
-                      navigation.navigate("AuthModal", {
-                        screen: "Login_View",
-                        params: {
-                          returnTo: {
-                            tab: "Shop",
-                            screen: "Shop_Products_View",
-                            params: {},
-                          },
-                        },
-                      });
-                    }}
-                  />
-                </Container>
-
-                <Container
-                  width="100%"
-                  height="15%"
-                  // color="lightblue"
-                  style={{ marginBottom: 16 }}
-                >
-                  <Container
-                    width="100%"
-                    height="50%"
-                    color={theme.colors.bg.elements_bg}
-                    direction="column"
-                  >
-                    <Action_Container
-                      width="100%"
-                      height="100%"
-                      // color="orange"
-                      color={theme.colors.bg.elements_bg}
-                      direction="column"
-                      onPress={toggleGlobalLanguage}
-                      justify="center"
-                      align="flex-start"
-                    >
-                      <Spacer position="left" size="extraLarge">
-                        <Text
-                          variant="raleway_bold_14"
-                          color={theme.colors.text.secondary}
-                          style={{
-                            textDecorationLine: "underline",
-                          }}
-                        >
-                          {globalLanguage === "en"
-                            ? "ES - Español"
-                            : "EN - English"}
-                        </Text>
-                      </Spacer>
-                    </Action_Container>
-                  </Container>
-
-                  <Container
-                    width="100%"
-                    height="50%"
-                    color={theme.colors.bg.elements_bg}
-                  />
-                </Container>
-              </Container>
-            </>
-          )}
+          <Global_activity_indicator caption={""} />
         </Container>
       )}
     </NewSafeArea>

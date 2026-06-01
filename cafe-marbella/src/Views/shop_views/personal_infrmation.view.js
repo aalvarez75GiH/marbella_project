@@ -29,6 +29,7 @@ import { Spacer } from "../../components/spacers and globals/optimized.spacer.co
 import { Text } from "../../infrastructure/typography/text.component";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { DataInput } from "../../components/inputs/data_text_input.js";
+import { EmailDataInput } from "../../components/inputs/email_data_input.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 // import { put_update_userinfo_Request } from "../../infrastructure/services/authentication/authentication.sevices.js";
 // import { auth } from "../../../fb.js";
@@ -438,10 +439,9 @@ export default function Personal_Information_View() {
                 importantForAutofill="no"
                 spellCheck={false}
               />
-              <DataInput
+              <EmailDataInput
                 ref={emailRef}
                 label={t("menu.personal_info_view.email_input_placeholder")}
-                fontFamily="DMSans-Bold"
                 value={userToDB?.email ?? ""}
                 onChangeText={(value) => {
                   hideSnackbar();
@@ -450,20 +450,18 @@ export default function Personal_Information_View() {
                     email: value,
                   }));
                 }}
-                // underlineColor={theme.colors.inputs.bottom_lines_disabled}
-                border_color={theme.colors.inputs.bottom_lines_disabled}
-                underlineColor={theme.colors.inputs.bottom_lines_disabled}
-                border_width={"0.3px"}
-                activeUnderlineColor={theme.colors.ui.primary}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                textContentType="emailAddress"
-                autoComplete="name"
-                returnKeyType="done"
-                onFocus={() => null}
-                onBlur={() => null}
+                textInputOnPress={() => {
+                  hideSnackbar();
+                  setUserToDB((prev) => ({
+                    ...prev,
+                    email: "",
+                  }));
+                  setTimeout(() => {
+                    emailRef.current?.focus();
+                  }, 50);
+                }}
               />
+
               <DataInput
                 ref={phoneRef}
                 label={t("menu.personal_info_view.phone_input_placeholder")}

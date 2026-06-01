@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect, useContext, useState, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Keyboard } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -12,7 +12,7 @@ import { Spacer } from "../../components/spacers and globals/optimized.spacer.co
 import { Text } from "../../infrastructure/typography/text.component";
 import { Regular_CTA } from "../../components/ctas/regular.cta";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
-import { Snackbar } from "react-native-paper";
+import { EmailDataInput } from "../../components/inputs/email_data_input";
 
 import { ScrollView } from "react-native-gesture-handler";
 import { Switching_Accounts_Tile } from "../../components/tiles/switching_accounts.tile";
@@ -30,6 +30,7 @@ export default function Switching_Accounts_View() {
     user,
   } = useContext(AuthenticationContext);
   const { t } = useTranslation();
+  const emailInputRef = useRef(null);
   const { isValidEmail } = useContext(GlobalContext);
   const showOtherUsers = Boolean(isOtherUsers);
   console.log("isOtherUsers:", isOtherUsers);
@@ -112,24 +113,22 @@ export default function Switching_Accounts_View() {
               </Spacer>
             </Spacer>
           </Container>
-          <DataInput
+          <EmailDataInput
+            ref={emailInputRef}
             label={t("menu.switch_account_view.email_input_placeholder")}
             value={emailToSwitch}
-            fontFamily="DMSans-Bold"
             onChangeText={(value) => {
               setEmailToSwitch(value);
               if (isEmailFocused) setIsEmailFocused(false);
               if (error) setError(null);
             }}
-            underlineColor={theme.colors.inputs.bottom_lines}
-            activeUnderlineColor="#3A2F01"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-            textContentType="emailAddress"
-            autoComplete="email"
-            returnKeyType="done"
-            blurOnSubmit
+            textInputOnPress={() => {
+              setEmailToSwitch("");
+              hideSnackbar();
+              setTimeout(() => {
+                emailInputRef.current?.focus();
+              }, 50);
+            }}
           />
 
           <Spacer position="top" size="medium" />

@@ -29,9 +29,6 @@ export default function Reset_PIN_View() {
   const theme = useTheme();
   const { t } = useTranslation();
 
-  const shouldFocusFirstPinRef = useRef(false);
-  const shouldFocusSecondPinRef = useRef(false);
-
   const pinInputRef = useRef(null);
   const secondPinRef = useRef(null);
 
