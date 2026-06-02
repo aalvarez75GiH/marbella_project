@@ -217,7 +217,11 @@ export default function Login_Users_View() {
                       height={"40%"}
                       caption={t("shop_login_user_view.forgot_cta")}
                       color="transparent"
-                      action={() => null}
+                      action={() => {
+                        navigation.navigate("Forgot_PIN_View", {
+                          returnTo,
+                        });
+                      }}
                       border_color="#898989"
                     />
                     <Underlined_CTA

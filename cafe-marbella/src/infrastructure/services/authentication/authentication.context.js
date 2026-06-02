@@ -31,6 +31,7 @@ import {
   gettingUserByUIDRequest,
   put_update_userinfo_Request,
   post_email_deliverability_Request,
+  post_forgot_pin_Request,
 } from "./authentication.sevices";
 import {
   STORAGE_KEYS,
@@ -688,6 +689,7 @@ export const Authentication_Context_Provider = ({ children }) => {
     }
   };
 
+  // helper to generate a PIN number on Demand of the customer
   const generatePinNumberOnDemand = async (newPIN) => {
     console.log("PIN: fbUser", {
       uid: firebaseUser?.uid,
@@ -743,6 +745,7 @@ export const Authentication_Context_Provider = ({ children }) => {
     }
   };
 
+  // helper to reset the auth context states (used after logout to clear any residual data)
   const resetAuthContext = () => {
     setUser(null);
     setIsLoading(false);
@@ -776,6 +779,8 @@ export const Authentication_Context_Provider = ({ children }) => {
     });
   };
 
+  // ********************* UPDATE USER LOGIC *************************
+  // helper to update user info, with special handling if email is being changed (requires Firebase email update + re-verification)
   const handleUpdate = async (userToDB) => {
     setIsLoading(true);
     try {
@@ -957,26 +962,8 @@ export const Authentication_Context_Provider = ({ children }) => {
     };
   };
 
-  // const validatingEmailDeliverability = async (email) => {
-  //   setIsLoading(true);
-  //   try {
-  //     const response = await post_email_deliverability_Request(email);
-  //     if (response?.ok) {
-  //       return {
-  //         ok: true,
-  //         email_deliverable_code: response.email_deliverable_code,
-  //         deliverable: response.deliverable,
-  //       };
-  //     }
-  //     return { ok: false, deliverable: false };
-  //   } catch (e) {
-  //     console.log("Email deliverability check error:", e?.message ?? e);
-  //     return { ok: false, deliverable: false };
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
+  // Helper to validate email deliverability before attempting to register or change email, to catch issues early and provide better feedback.
+  // validation is done via a backend API that checks the email format and domain, and optionally does an SMTP check without sending an actual email. This can help prevent registration or email change attempts with invalid emails that would cause confusion or support requests.
   const validatingEmailDeliverability = async (email) => {
     setIsLoading(true);
 
@@ -1004,6 +991,34 @@ export const Authentication_Context_Provider = ({ children }) => {
         ok: false,
         email_checked: false,
         email_sent: false,
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const checkEmailAndGetCustomerPIN = async (email) => {
+    console.log("Checking email and getting customer PIN AT CONTEXT:", email);
+    setIsLoading(true);
+
+    try {
+      const res = await post_forgot_pin_Request(email);
+
+      if (res?.ok) {
+        return res;
+      }
+
+      return {
+        ok: false,
+        code: res?.code,
+        error: res?.error || "User not found",
+      };
+    } catch (e) {
+      console.log("Check email error:", e?.message ?? e);
+
+      return {
+        ok: false,
+        error: e?.message || "Unknown error",
       };
     } finally {
       setIsLoading(false);
@@ -1054,6 +1069,7 @@ export const Authentication_Context_Provider = ({ children }) => {
       buildShipToFromGooglePlace,
       userToDBInitialState,
       validatingEmailDeliverability,
+      checkEmailAndGetCustomerPIN,
     }),
     [
       isLoading,
@@ -1085,6 +1101,7 @@ export const Authentication_Context_Provider = ({ children }) => {
       buildShipToFromGooglePlace,
       userToDBInitialState,
       validatingEmailDeliverability,
+      checkEmailAndGetCustomerPIN,
     ]
   );
 

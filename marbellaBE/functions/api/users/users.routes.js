@@ -301,6 +301,71 @@ usersRouter.post("/validate-email", async (req, res) => {
   }
 });
 
+// POST /users/forgot-pin
+usersRouter.post("/forgot-pin", async (req, res) => {
+  try {
+    const email = String(req.body?.email || "")
+      .trim()
+      .toLowerCase();
+
+    if (!email) {
+      return res.status(400).json({
+        ok: false,
+        code: "EMAIL_REQUIRED",
+        msg: "Email is required.",
+      });
+    }
+
+    const user = await usersControllers.getUserByEmail(email);
+
+    if (!user) {
+      return res.status(404).json({
+        ok: false,
+        code: "USER_NOT_FOUND",
+        msg: "No account found with this email.",
+      });
+    }
+
+    if (!user.encrypted_pin) {
+      return res.status(400).json({
+        ok: false,
+        code: "PIN_NOT_FOUND",
+        msg: "This account does not have a PIN registered.",
+      });
+    }
+
+    const forgot_pin_code = generateVerificationCode();
+
+    try {
+      await sendingEmailCodeToValidateEmailOwnership(email, forgot_pin_code);
+    } catch (error) {
+      return res.status(400).json({
+        ok: false,
+        code: "EMAIL_DELIVERY_FAILED",
+        msg: "We could not send the verification code.",
+      });
+    }
+
+    return res.status(200).json({
+      ok: true,
+      email_exists: true,
+      email_sent: true,
+      forgot_pin_code,
+      encrypted_pin: user.encrypted_pin,
+      user_id: user.user_id,
+      uid: user.uid,
+    });
+  } catch (error) {
+    console.log("FORGOT PIN ERROR:", error);
+
+    return res.status(500).json({
+      ok: false,
+      code: "FORGOT_PIN_FAILED",
+      msg: "Could not process forgot PIN request.",
+    });
+  }
+});
+
 // PUT /users/pin
 usersRouter.put("/new_pin_on_demand", verifyFirebaseToken, async (req, res) => {
   try {

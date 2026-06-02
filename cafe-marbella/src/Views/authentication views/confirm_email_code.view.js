@@ -1,10 +1,8 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useTranslation } from "react-i18next";
-import { TextInput } from "react-native-paper";
-import { Snackbar } from "react-native-paper";
 
 import { Pressable_Container } from "../../components/containers/general.containers.js";
 import { Container } from "../../components/containers/general.containers";
@@ -23,7 +21,20 @@ export default function Confirm_Email_Code_View() {
   const theme = useTheme();
   const { t } = useTranslation();
   const route = useRoute();
-  const { email_deliverable_code, email, returnTo } = route?.params ?? {};
+
+  const {
+    email_deliverable_code,
+    forgot_pin_code,
+    encrypted_pin,
+    uid,
+    user_id,
+    email,
+    returnTo,
+    flow = "registration",
+  } = route?.params ?? {};
+
+  const realCode =
+    flow === "forgot_pin" ? forgot_pin_code : email_deliverable_code;
 
   const { setUserToDB, userToDB } = useContext(AuthenticationContext);
   const { showErrorSnackbar, snackbar, hideSnackbar } =
@@ -37,10 +48,12 @@ export default function Confirm_Email_Code_View() {
     "EMAIL AT CODE VERIFICATION VIEW:",
     JSON.stringify(email, null, 2)
   );
+
   console.log(
-    "CODE AT CODE VERIFICATION VIEW:",
-    JSON.stringify(email_deliverable_code, null, 2)
+    "REAL CODE AT CODE VERIFICATION VIEW:",
+    JSON.stringify(realCode, null, 2)
   );
+
   const [isEmailFocused, setIsEmailFocused] = useState(true);
   const [selectedCode, setSelectedCode] = useState(null);
   const [isLocked, setIsLocked] = useState(false);
@@ -64,10 +77,10 @@ export default function Confirm_Email_Code_View() {
   const [codes, setCodes] = useState([]);
 
   useEffect(() => {
-    const generated = generatingRandomCodes(email_deliverable_code);
+    const generated = generatingRandomCodes(realCode);
 
     setCodes(generated);
-  }, []);
+  }, [realCode]);
 
   return (
     <SafeArea
@@ -144,7 +157,22 @@ export default function Confirm_Email_Code_View() {
                   setSelectedCode(item);
                   setIsLocked(true);
 
-                  if (item === String(email_deliverable_code)) {
+                  if (item === String(realCode)) {
+                    if (flow === "forgot_pin") {
+                      navigation.navigate("AuthModal", {
+                        screen: "Pin_Decrypted_View", // or whatever screen you create next
+                        params: {
+                          email,
+                          encrypted_pin,
+                          uid,
+                          user_id,
+                          returnTo,
+                        },
+                      });
+
+                      return;
+                    }
+
                     setUserToDB({
                       ...userToDB,
                       email,

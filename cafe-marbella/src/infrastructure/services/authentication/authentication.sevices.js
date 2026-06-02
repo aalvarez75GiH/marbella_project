@@ -1,31 +1,6 @@
 import axios from "axios";
 import { environment } from "../../../util/env";
 
-// export const gettingUserByEmailRequest = async (email) => {
-//   const { usersEndPoint } = environment;
-//   const endpoint = `${usersEndPoint}/userByEmail`;
-//   try {
-//     const res = await axios.post(
-//       endpoint,
-//       { email },
-//       {
-//         timeout: 15000, // Optional timeout
-//       }
-//     );
-
-//     // console.log("RESPONSE:", res.data);
-//     return res.data;
-//   } catch (error) {
-//     const status = error?.response?.status;
-
-//     // 404 is an expected business case (user doesn't exist)
-//     if (status !== 404) {
-//       console.error("Error fetching user by email:", error);
-//     }
-
-//     throw error;
-//   }
-// };
 export const gettingUserByEmailRequest = async (email) => {
   const { usersEndPoint } = environment;
   const endpoint = `${usersEndPoint}/userByEmail`;
@@ -178,6 +153,78 @@ export const post_email_deliverability_Request = async (email) => {
       ok: false,
       code: e?.response?.data?.code,
       error: e?.response?.data?.msg || e?.message || "EMAIL_VALIDATION_FAILED",
+    };
+  }
+};
+
+export const post_forgot_pin_Request = async (email) => {
+  console.log("CHECKING FORGOT PIN WITH EMAIL AT SERVICE:", email);
+  const { usersEndPoint } = environment;
+  const endpoint = `${usersEndPoint}/forgot-pin`;
+
+  try {
+    const payload = {
+      email: String(email || "")
+        .trim()
+        .toLowerCase(),
+    };
+
+    console.log(
+      "FORGOT PIN EMAIL BEFORE REQUEST:",
+      JSON.stringify(payload, null, 2)
+    );
+
+    const res = await axios.post(endpoint, payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      timeout: 15000,
+    });
+
+    console.log(
+      "FORGOT PIN RESPONSE AT SERVICE:",
+      JSON.stringify(res.data, null, 2)
+    );
+
+    return {
+      ok: true,
+      forgot_pin_code: res.data?.forgot_pin_code,
+      encrypted_pin: res.data?.encrypted_pin,
+      uid: res.data?.uid,
+      user_id: res.data?.user_id,
+      email_sent: res.data?.email_sent,
+    };
+  } catch (e) {
+    console.log("FORGOT PIN ERROR:", {
+      status: e?.response?.status,
+      data: e?.response?.data,
+      message: e?.message,
+    });
+
+    return {
+      ok: false,
+      code: e?.response?.data?.code || "FORGOT_PIN_FAILED",
+
+      error: e?.response?.data?.msg || e?.message || "Could not recover PIN",
+    };
+  }
+};
+
+export const post_decrypt_pin_Request = async (encrypted_pin) => {
+  const endpoint = `${environment.usersEndPoint}/credentials`;
+
+  try {
+    const res = await axios.post(
+      endpoint,
+      { encrypted_pin },
+      { timeout: 15000 }
+    );
+
+    return res.data;
+  } catch (e) {
+    return {
+      ok: false,
+      error: e?.response?.data?.error || e?.message || "PIN_DECRYPT_FAILED",
     };
   }
 };
