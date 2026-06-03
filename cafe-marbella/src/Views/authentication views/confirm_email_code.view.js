@@ -122,8 +122,8 @@ export default function Confirm_Email_Code_View() {
             <Spacer position="left" size="extraLarge">
               <Text variant="raleway_regular_18" textAlign="center">
                 {t("authentication_views.code_verification_view.title_1")}
-                <Text variant="raleway_bold_18">{email}</Text>
               </Text>
+              <Text variant="raleway_bold_18">{email}</Text>
             </Spacer>
             <Spacer position="top" size="large" />
             <Spacer position="left" size="extraLarge">

@@ -370,6 +370,12 @@
       "title_1": "Go to you email: ",
       "title_2": "and tell us what code you received to verify your email",
       "snack_bar_error": "Incorrect verification code. Request a new code."
+    },
+    "decrypted_pin_view": {
+      "title_1": "Your PIN has been recovered",
+      "title_2": "This is the PIN linked to:",
+      "cta": "Go to login",
+      "activity_indicator": "Recovering your PIN..."
     }
   }
 }

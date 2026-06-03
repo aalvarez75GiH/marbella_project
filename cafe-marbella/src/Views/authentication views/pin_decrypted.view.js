@@ -71,7 +71,9 @@ export default function Pin_Decrypted_View() {
       >
         {isLoading ? (
           <Global_activity_indicator
-            caption="Recovering your PIN..."
+            caption={t(
+              "authentication_views.decrypted_pin_view.activity_indicator"
+            )}
             caption_width="65%"
           />
         ) : (
@@ -90,7 +92,7 @@ export default function Pin_Decrypted_View() {
             >
               <Spacer position="left" size="extraLarge">
                 <Text variant="raleway_bold_18">
-                  Your PIN has been recovered
+                  {t("authentication_views.decrypted_pin_view.title_1")}
                 </Text>
               </Spacer>
 
@@ -98,7 +100,7 @@ export default function Pin_Decrypted_View() {
 
               <Spacer position="left" size="extraLarge">
                 <Text variant="raleway_regular_18">
-                  This is the PIN linked to:
+                  {t("authentication_views.decrypted_pin_view.title_2")}
                 </Text>
               </Spacer>
 
@@ -131,7 +133,7 @@ export default function Pin_Decrypted_View() {
               height="60px"
               color={theme.colors.ui.primary}
               border_radius="40px"
-              caption="Go to Login"
+              caption={t("authentication_views.decrypted_pin_view.cta")}
               caption_text_variant="dm_sans_bold_20_white"
               action={() => {
                 navigation.navigate("Login_View", {

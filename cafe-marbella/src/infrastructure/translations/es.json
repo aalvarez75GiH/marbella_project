@@ -375,6 +375,12 @@
       "title_1": "Ve a tu correo:",
       "title_2": "y dinos que codigo de verificación te enviamos",
       "snack_bar_error": "Código incorrecto, intenta de nuevo"
+    },
+    "decrypted_pin_view": {
+      "title_1": "¡Recuperación exitosa!",
+      "title_2": "Este PIN pertenece al email:",
+      "cta": "Iniciar sesión",
+      "activity_indicator": "Espera, recobrando tu PIN..."
     }
   }
 }

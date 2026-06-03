@@ -176,12 +176,13 @@ export default function Forgot_PIN_View() {
                       setEmail("");
                       setFocusEmailAfterError(true);
 
-                      showErrorSnackbar(
-                        response?.error ||
-                          t(
-                            "authentication_views.enter_email_view.snack_bar_email_error"
-                          )
-                      );
+                      showErrorSnackbar(t("login_screen.user_not_found_error"));
+                      // showErrorSnackbar(
+                      //   response?.error ||
+                      //     t(
+                      //       "authentication_views.enter_email_view.snack_bar_email_error"
+                      //     )
+                      // );
 
                       return;
                     }
@@ -212,8 +213,8 @@ export default function Forgot_PIN_View() {
         )}
         <Snack_Bar_Component
           snackbar={snackbar}
-          bottom_ios={250}
-          bottom_android={250}
+          bottom_ios={270}
+          bottom_android={270}
         />
       </KeyboardAvoidingView>
     </SafeArea>
