@@ -10,6 +10,7 @@ import User_To_Create_Info_Review_View from "../../Views/authentication views/us
 import Confirm_Email_Code_View from "../../Views/authentication views/confirm_email_code.view";
 import Forgot_PIN_View from "../../Views/authentication views/forgot_pin.view";
 import Pin_Decrypted_View from "../../Views/authentication views/pin_decrypted.view";
+import Register_Email_Sent_Notification_View from "../../Views/authentication views/register_email_sent_notification.view";
 
 const AuthStack = createNativeStackNavigator();
 
@@ -43,6 +44,10 @@ export const Auth_Navigator = () => {
       <AuthStack.Screen
         name="User_To_Create_Info_Review_View"
         component={User_To_Create_Info_Review_View}
+      />
+      <AuthStack.Screen
+        name="Register_Email_Sent_Notification_View"
+        component={Register_Email_Sent_Notification_View}
       />
     </AuthStack.Navigator>
   );

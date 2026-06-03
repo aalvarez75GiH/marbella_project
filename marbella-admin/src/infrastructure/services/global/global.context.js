@@ -139,6 +139,17 @@ export const Global_Context_Provider = ({ children }) => {
     setStatusSnackbarVisible(true);
   };
 
+  const getText = (value, lang = "en") => {
+    if (typeof value === "string") return value;
+    if (typeof value === "number") return String(value);
+
+    if (value && typeof value === "object") {
+      return value[lang] || value.en || value.es || "";
+    }
+
+    return "";
+  };
+
   console.log("USER LANGUAGE AT GLOBAL CONTEXT:", globalLanguage);
   return (
     <GlobalContext.Provider
@@ -162,6 +173,7 @@ export const Global_Context_Provider = ({ children }) => {
         setStatusSnackbarVisible,
         showStatusSnackbar,
         statusSnackbarMessage,
+        getText,
       }}
     >
       {children}

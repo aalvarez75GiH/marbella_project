@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View } from "react-native";
 import { Image } from "expo-image";
+
 import { Text } from "../../../infrastructure/typography/text.component.js";
 import { theme } from "../../../infrastructure/theme/index.js";
 import { Product_Initial_Info_Component } from "./product_intial_info.component.js";
 import { DataInput } from "../../inputs/data_text_input.js";
 import NotImageYet from "../../../../assets/my_icons/broken-image.png";
+
+import { GlobalContext } from "../../../infrastructure/services/global/global.context.js";
 
 export const Products_Inventory_Card = ({
   item = null,
@@ -17,7 +20,7 @@ export const Products_Inventory_Card = ({
     product_subtitle,
     size_variants = [],
   } = item || {};
-
+  const { getText } = useContext(GlobalContext);
   const defaultVariant =
     size_variants.find((v) => v.isDefault) || size_variants[0];
 
@@ -28,6 +31,7 @@ export const Products_Inventory_Card = ({
       : productMainImage;
   console.log("PRODUCT MAIN IMAGE SOURCE:", imageSource);
   const isValidImage = imageSource === undefined;
+
   return (
     <View
       style={{
@@ -69,8 +73,8 @@ export const Products_Inventory_Card = ({
       <View style={{ height: 12 }} />
 
       <Product_Initial_Info_Component
-        product_name={product_name}
-        product_subtitle={product_subtitle}
+        product_name={getText(product_name)}
+        product_subtitle={getText(product_subtitle)}
         size_variants={size_variants}
       />
 

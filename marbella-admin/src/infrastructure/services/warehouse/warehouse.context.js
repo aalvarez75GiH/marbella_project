@@ -18,37 +18,68 @@ import { GeolocationContext } from "../geolocation/geolocation.context";
 
 export const WarehouseContext = createContext();
 
+const WAREHOUSE_INITIAL_STATE = {
+  warehouse_name: "",
+  warehouse_id: "",
+  active: true,
+  max_delivery_time: 0,
+  max_limit_delivery_ratio: 20,
+  max_limit_pickup_ratio: 20,
+  physical_address: "",
+  geo: {},
+  warehouse_information: {
+    representative: {
+      name: "",
+      email: "",
+      phone_number: "",
+    },
+    email: "",
+    phone: "",
+    opening_time: "08:00 AM",
+    closing_time: "05:00 PM",
+  },
+  inventory: {},
+  ship_from: {},
+  shipping_information: {
+    is_shipping_flat_rate_active: false,
+    shipping_flat_rate: 0,
+  },
+};
+
 export const Warehouse_Context_Provider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [warehouses, setWarehouses] = useState([]);
-  const [warehouseSelected, setWarehouseSelected] = useState({
-    warehouse_name: "",
-    warehouse_id: "",
-    active: true,
-    max_delivery_time: 0,
-    max_limit_delivery_ratio: 32186.8,
-    max_limit_pickup_ratio: 32186.8,
-    physical_address: "",
-    geo: {},
-    warehouse_information: {
-      representative: {
-        name: "",
-        email: "",
-        phone_number: "",
-      },
-      email: "",
-      phone: "",
-      opening_time: "08:00 AM",
-      closing_time: "05:00 PM",
-    },
-    inventory: {},
-    ship_from: {},
-    shipping_information: {
-      is_shipping_flat_rate_active: false,
-      shipping_flat_rate: 0,
-    },
-  });
+  const [warehouseSelected, setWarehouseSelected] = useState(
+    WAREHOUSE_INITIAL_STATE
+  );
+  // const [warehouseSelected, setWarehouseSelected] = useState({
+  //   warehouse_name: "",
+  //   warehouse_id: "",
+  //   active: true,
+  //   max_delivery_time: 0,
+  //   max_limit_delivery_ratio: 32186.8,
+  //   max_limit_pickup_ratio: 32186.8,
+  //   physical_address: "",
+  //   geo: {},
+  //   warehouse_information: {
+  //     representative: {
+  //       name: "",
+  //       email: "",
+  //       phone_number: "",
+  //     },
+  //     email: "",
+  //     phone: "",
+  //     opening_time: "08:00 AM",
+  //     closing_time: "05:00 PM",
+  //   },
+  //   inventory: {},
+  //   ship_from: {},
+  //   shipping_information: {
+  //     is_shipping_flat_rate_active: false,
+  //     shipping_flat_rate: 0,
+  //   },
+  // });
   // later you’ll set this based on geolocation
   const { productsCatalog } = useContext(GlobalContext);
 
@@ -216,13 +247,29 @@ export const Warehouse_Context_Provider = ({ children }) => {
       setIsLoading(false);
     }
   };
+  const normalizeWarehouseShipFrom = (warehouse) => ({
+    ...warehouse,
+    ship_from: {
+      ...warehouse.ship_from,
+      name: warehouse.warehouse_name || warehouse.ship_from?.name || "",
+      phone:
+        warehouse.warehouse_information?.phone ||
+        warehouse.ship_from?.phone ||
+        warehouse.warehouse_information?.representative?.phone_number ||
+        "",
+      company_name: "Cafe Marbella",
+    },
+  });
 
   // TODO: createWarehouse and updateWarehouse functions that call the API and update the warehouses state accordingly
   const createWarehouse = async (warehouseToCreate) => {
     // TODO: implement create warehouse function that calls the API and updates the warehouses state
     setIsLoading(true);
     try {
-      const warehouseCreated = await createdWarehouseRequest(warehouseToCreate);
+      const normalizedWarehouse = normalizeWarehouseShipFrom(warehouseToCreate);
+      const warehouseCreated = await createdWarehouseRequest(
+        normalizedWarehouse
+      );
       console.log(
         "WAREHOUSE UPDATE RESPONSE:",
         JSON.stringify(warehouseCreated, null, 2)
@@ -269,7 +316,10 @@ export const Warehouse_Context_Provider = ({ children }) => {
   const updateWarehouse = async (warehouse) => {
     setIsLoading(true);
     try {
-      const warehouseUpdated = await updateWarehouseRequest(warehouse);
+      const normalizedWarehouse = normalizeWarehouseShipFrom(warehouseToCreate);
+      const warehouseUpdated = await updateWarehouseRequest(
+        normalizedWarehouse
+      );
       console.log(
         "WAREHOUSE UPDATE RESPONSE:",
         JSON.stringify(warehouseUpdated, null, 2)
@@ -393,7 +443,8 @@ export const Warehouse_Context_Provider = ({ children }) => {
         createWarehouse,
         validateWarehouse,
         buildShipFromFromGooglePlace,
-
+        WAREHOUSE_INITIAL_STATE,
+        normalizeWarehouseShipFrom,
         // handleChangeVariantQty,
       }}
     >

@@ -245,7 +245,7 @@ export default function Shop_Order_Receipt_View() {
             // color="red"
             style={{
               paddingTop: 10,
-              paddingBottom: 70,
+              paddingBottom: 60,
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center",

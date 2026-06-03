@@ -218,6 +218,11 @@ font-size: ${theme.fontSizes.text_24};
 font-family: ${theme.fonts.ralewayBold};
 color: ${theme.colors.text.black};
 `;
+const raleway_bold_22 = (theme) => `
+font-size: ${theme.fontSizes.text_22};
+font-family: ${theme.fonts.ralewayBold};
+color: ${theme.colors.text.black};
+`;
 const raleway_bold_24_white = (theme) => `
 font-size: ${theme.fontSizes.text_24};
 font-family: ${theme.fonts.ralewayBold};
@@ -313,6 +318,11 @@ font-size: ${theme.fontSizes.text_12};
 font-family: ${theme.fonts.ralewayBold};
 color: ${theme.colors.text.white};
 `;
+const raleway_regular_12 = (theme) => `
+font-size: ${theme.fontSizes.text_12};
+font-family: ${theme.fonts.ralewayRegular};
+color: ${theme.colors.text.black};
+`;
 const raleway_bold_10 = (theme) => `
 font-size: ${theme.fontSizes.text_10};
 font-family: ${theme.fonts.ralewayBold};
@@ -366,6 +376,7 @@ const variants = {
   raleway_bold_26,
   raleway_bold_24,
   raleway_bold_24_white,
+  raleway_bold_22,
   raleway_bold_20,
   raleway_bold_20_white,
   raleway_bold_18,
@@ -381,6 +392,7 @@ const variants = {
   raleway_regular_16,
   raleway_medium_16_white,
   raleway_bold_14,
+  raleway_regular_12,
   raleway_bold_14_white,
   raleway_bold_14_grey,
   raleway_bold_12_white,

@@ -19,6 +19,24 @@ export const Product_Inventory_Edit_Card = ({
     size_variants = [],
   } = product || {};
 
+  const product_name_en =
+    typeof product_name === "object" ? product_name.en : product_name;
+  const product_subtitle_en =
+    typeof product_subtitle === "object"
+      ? product_subtitle.en
+      : product_subtitle;
+  console.log("PRODUCT NAME:", JSON.stringify(product_name, null, 2));
+  console.log("PRODUCT SUBTITLE:", JSON.stringify(product_subtitle, null, 2));
+
+  const getText = (value, lang = "en") => {
+    if (typeof value === "string") return value;
+    if (typeof value === "number") return String(value);
+    if (value && typeof value === "object") {
+      return value[lang] || value.en || value.es || "";
+    }
+    return "";
+  };
+
   return (
     <Container
       width="100%"
@@ -37,8 +55,10 @@ export const Product_Inventory_Edit_Card = ({
         color={theme.colors.bg.elements_bg}
         align="flex-start"
       >
-        <Text variant="raleway_bold_16">{product_name}</Text>
-        <Text variant="dm_sans_regular_14">{product_subtitle}</Text>
+        {/* <Text variant="raleway_bold_16">{product_name_en}</Text> */}
+        {/* <Text variant="dm_sans_regular_14">{product_subtitle_en}</Text> */}
+        {/* <Text variant="raleway_bold_16">{getText(product_name)}</Text> */}
+        {/* <Text variant="dm_sans_regular_14">{getText(product_subtitle)}</Text> */}
       </Container>
 
       <Container

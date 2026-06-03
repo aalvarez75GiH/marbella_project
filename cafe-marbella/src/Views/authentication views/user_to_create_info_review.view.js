@@ -45,8 +45,6 @@ export default function User_To_Create_Info_Review_View() {
   const [error, setError] = useState(null);
   const [userExists, setUserExists] = useState(false);
 
-  console.log("USER TO DB AT REVIEW VIEW:", JSON.stringify(userToDB, null, 2));
-
   const {
     cart,
     setCart,
@@ -73,14 +71,7 @@ export default function User_To_Create_Info_Review_View() {
     }),
   };
 
-  console.log(
-    "CART PAYLOAD AT REVIEW VIEW:",
-    JSON.stringify(cartPayload, null, 2)
-  );
-  console.log(
-    "RAW CART PAYLOAD AT REVIEW VIEW:",
-    JSON.stringify(cart, null, 2)
-  );
+  console.log("RETURN TO:", JSON.stringify(returnTo, null, 2));
 
   return (
     <SafeArea
@@ -395,19 +386,6 @@ export default function User_To_Create_Info_Review_View() {
                   // 2) register
                   const result = await registerUser(userToDB, cartPayload);
 
-                  // if (result.error === "email_already_in_use") {
-                  //   setUserExists(true);
-                  //   showErrorSnackbar(
-                  //     t("authentication_views.info_review.user_exists_error"),
-                  //     () => {
-                  //       // setUserExists(
-                  //       //   "You already have a account, please log in instead."
-                  //       // );
-                  //       hideSnackbar();
-                  //     }
-                  //   );
-                  //   return;
-                  // }
                   if (!result.ok) {
                     if (result.code === "auth/email-already-in-use") {
                       setUserExists(true);
@@ -465,19 +443,10 @@ export default function User_To_Create_Info_Review_View() {
                   // 9) build order from the same cart
                   prepareOrderFromCart(mergedCart, nextUser);
 
-                  // 10) close auth modal
-                  navigation.getParent()?.goBack();
-
-                  // 11) then close auth modal
-
-                  requestAnimationFrame(() => {
-                    navigationRef.current?.navigate("App", {
-                      screen: returnTo?.tab ?? "Shop",
-                      params: {
-                        screen: returnTo?.screen,
-                        params: returnTo?.params ?? {},
-                      },
-                    });
+                  // 10) navigate to email sent screen with returnTo and email params
+                  navigation.navigate("Register_Email_Sent_Notification_View", {
+                    returnTo,
+                    email: nextUser.email,
                   });
                 } catch (e) {
                   console.log("CTA REGISTER ERROR:", e?.message ?? e, e);

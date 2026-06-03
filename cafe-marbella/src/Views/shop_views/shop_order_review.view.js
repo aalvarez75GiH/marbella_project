@@ -116,7 +116,7 @@ export default function Shop_Order_Review_View() {
               justifyContent: "flex-start",
               alignItems: "center",
               backgroundColor: theme.colors.bg.elements_bg,
-              paddingBottom: 16,
+              paddingBottom: 0,
             }}
             style={{ flex: 1 }} // Ensures dynamic height adjustment
             showsVerticalScrollIndicator={false}
@@ -228,11 +228,10 @@ export default function Shop_Order_Review_View() {
             width="100%"
             padding_vertical="10px"
             color="transparent"
-            // color="red"
-
+            //color="red"
             style={{
               paddingTop: 10,
-              paddingBottom: 70,
+              paddingBottom: 60,
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center",
