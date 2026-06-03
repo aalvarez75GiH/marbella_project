@@ -635,44 +635,7 @@ export default function Warehouse_Details_View() {
                   }}
                 />
                 <Spacer position="top" size="medium" />
-                {/* <DataInput
-                  ref={emailDataInputRef}
-                  label="Phone number"
-                  // value={warehouseSelected.warehouse_information.phone}
-                  value={selectedWarehouse.warehouse_information.phone}
-                  onChangeText={(value) => {
-                    const formatted = formatPhone(value);
-                    setWarehouseSelected({
-                      ...warehouseSelected,
-                      warehouse_information: {
-                        ...warehouseSelected.warehouse_information,
-                        phone: formatted,
-                      },
-                    });
-                  }}
-                  border_color={theme.colors.inputs.bottom_lines_disabled}
-                  underlineColor={theme.colors.inputs.bottom_lines_disabled}
-                  border_width={"0.3px"}
-                  activeUnderlineColor={theme.colors.ui.primary}
-                  keyboardType={
-                    Platform.OS === "ios" ? "number-pad" : "phone-pad"
-                  }
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  textContentType="telephoneNumber"
-                  autoComplete="tel"
-                  returnKeyType="done"
-                  blurOnSubmit
-                  style={{
-                    backgroundColor: "#F5F5F5",
-                    fontSize: 16,
-                  }}
-                  contentStyle={{
-                    fontFamily: "ralewayBold",
-                    fontSize: 16,
-                  }}
-                /> */}
-                <Spacer position="top" size="medium" />
+
                 {/* {showOpenPicker && ( */}
 
                 <Time_Picker_Component
@@ -767,17 +730,13 @@ export default function Warehouse_Details_View() {
                     {warehouseSelected.shipping_information
                       .is_shipping_flat_rate_active && (
                       <DataInput
-                        // value={String(
-                        //   warehouseSelected.shipping_information
-                        //     .shipping_flat_rate ?? ""
-                        // )}
-                        value={
-                          selectedWarehouse.shipping_information
-                            .shipping_flat_rate ?? ""
-                        }
+                        value={String(
+                          warehouseSelected?.shipping_information
+                            ?.shipping_flat_rate ?? ""
+                        )}
                         onChangeText={(value) => {
                           const numericValue =
-                            parseFloat(value.replace(/[^1-9]/g, "")) || 0;
+                            parseFloat(value.replace(/[^0-9]/g, "")) || 0;
                           setWarehouseSelected({
                             ...warehouseSelected,
                             shipping_information: {

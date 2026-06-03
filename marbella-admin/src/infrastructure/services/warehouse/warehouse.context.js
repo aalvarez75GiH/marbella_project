@@ -313,10 +313,10 @@ export const Warehouse_Context_Provider = ({ children }) => {
     }
   };
 
-  const updateWarehouse = async (warehouse) => {
+  const updateWarehouse = async (warehouseToUpdate) => {
     setIsLoading(true);
     try {
-      const normalizedWarehouse = normalizeWarehouseShipFrom(warehouseToCreate);
+      const normalizedWarehouse = normalizeWarehouseShipFrom(warehouseToUpdate);
       const warehouseUpdated = await updateWarehouseRequest(
         normalizedWarehouse
       );
