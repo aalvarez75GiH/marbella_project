@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "cafe-marbella",
+    "name": "Cafe Marbella Preview",
     "slug": "cafe-marbella",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -13,13 +13,20 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cafemarbella.app.preview",
+      "buildNumber": "1",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "package": "com.cafemarbella.app.preview",
+      "versionCode": 1,
       "edgeToEdgeEnabled": true
     },
     "web": {

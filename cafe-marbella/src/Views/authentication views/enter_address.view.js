@@ -1,7 +1,13 @@
 import React, { useContext, useState, useRef, useEffect } from "react";
 import { useTheme } from "styled-components/native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { Platform, KeyboardAvoidingView, ScrollView, View } from "react-native";
+import {
+  Platform,
+  KeyboardAvoidingView,
+  ScrollView,
+  View,
+  Alert,
+} from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { useTranslation } from "react-i18next";
 
