@@ -22,20 +22,24 @@ export const Warehouse_Context_Provider = ({ children }) => {
   const [error, setError] = useState(null);
   const [myWarehouse, setMyWarehouse] = useState(null);
   const [productsChosenForShop, setProductsChosenForShop] = useState([]);
+  const [warehouseReady, setWarehouseReady] = useState(false);
+
   // later you’ll set this based on geolocation
   const { productsCatalog } = useContext(GlobalContext);
 
   const { deviceLat, deviceLng } = useContext(GeolocationContext);
-  // let deviceLat = 36.1060631;
-  // let deviceLng = -86.74432890000001;
-  // console.log("MY WAREHOUSE CONTEXT AT CONTEXT", myWarehouse);
   useEffect(() => {
     if (typeof deviceLat !== "number" || typeof deviceLng !== "number") {
-      console.log("Device location not ready yet:", deviceLat, deviceLng);
       return;
     }
 
     const gettingClosestWarehouseForDevice = async () => {
+      if (!myWarehouse) {
+        setIsLoading(true);
+        setWarehouseReady(false);
+      }
+      // setWarehouseReady(false);
+
       try {
         const closestWarehouse = await gettingClosestWarehouseForDeviceRequest(
           deviceLat,
@@ -43,12 +47,11 @@ export const Warehouse_Context_Provider = ({ children }) => {
         );
 
         setMyWarehouse(closestWarehouse);
-        console.log(
-          "CLOSEST WAREHOUSE AT CONTEXT:",
-          JSON.stringify(closestWarehouse, null, 2)
-        );
       } catch (error) {
         console.error("Error fetching closest warehouse:", error);
+      } finally {
+        setIsLoading(false);
+        setWarehouseReady(true);
       }
     };
 
@@ -227,6 +230,7 @@ export const Warehouse_Context_Provider = ({ children }) => {
         setProductsChosenForShop,
 
         gettingRateForDelivery,
+        warehouseReady,
       }}
     >
       {children}

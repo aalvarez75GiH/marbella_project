@@ -2,43 +2,62 @@ import React, { useContext, useState, useEffect } from "react";
 import { View, ActivityIndicator } from "react-native";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 
-import { AuthenticationContext } from "../services/authentication/authentication.context";
 import { RootNavigator } from "./root.navigator";
 import { AppProviders } from "./app.providers.navigator";
 import { navigationRef } from "./navigation_ref";
 import { theme as appTheme } from "../../infrastructure/theme";
+import { Marbella_Custom_Splash } from "../../components/others/marbella_custom_splash_screen";
 
-const BootScreen = () => {
-  return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: appTheme.colors.bg.elements_bg,
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <ActivityIndicator size="large" />
-    </View>
-  );
-};
+import { AuthenticationContext } from "../services/authentication/authentication.context";
+import { WarehouseContext } from "../services/warehouse/warehouse.context";
 
+// const BootScreen = () => {
+//   return (
+//     <View
+//       style={{
+//         flex: 1,
+//         backgroundColor: appTheme.colors.bg.elements_bg,
+//         alignItems: "center",
+//         justifyContent: "center",
+//       }}
+//     >
+//       <ActivityIndicator size="large" />
+//     </View>
+//   );
+// };
 const NavigationInner = () => {
-  // console.log("NAV: profileReady =", profileReady);
   const { profileReady } = useContext(AuthenticationContext);
-
-  // ✅ hard gate: nothing under RootNavigator runs until user vs guest decided
-  // if (!profileReady) return <BootScreen />;
+  const { warehouseReady, myWarehouse } = useContext(WarehouseContext);
+  const [minimumSplashFinished, setMinimumSplashFinished] = useState(false);
   const [hasBootstrapped, setHasBootstrapped] = useState(false);
+
   useEffect(() => {
-    if (profileReady && !hasBootstrapped) {
+    const timer = setTimeout(() => {
+      setMinimumSplashFinished(true);
+    }, 9000); // 4 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (
+      !hasBootstrapped &&
+      profileReady &&
+      warehouseReady &&
+      !!myWarehouse &&
+      minimumSplashFinished
+    ) {
       setHasBootstrapped(true);
     }
-  }, [profileReady, hasBootstrapped]);
-  // console.log("NAV: profileReady =", profileReady);
-  // console.log("NAV: hasBootstrapped =", hasBootstrapped);
-  // ✅ only block the VERY FIRST app boot
-  if (!hasBootstrapped) return <BootScreen />;
+  }, [
+    profileReady,
+    warehouseReady,
+    myWarehouse,
+    minimumSplashFinished,
+    hasBootstrapped,
+  ]);
+
+  if (!hasBootstrapped) return <Marbella_Custom_Splash />;
 
   return <RootNavigator />;
 };

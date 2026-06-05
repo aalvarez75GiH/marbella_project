@@ -33,8 +33,8 @@ export default function Shop_Products_View() {
     shopProductsWhole,
     setProductsChosenForShop,
   } = useContext(WarehouseContext);
-  const ready = !!myWarehouse; // or also require productsCatalog if needed
-
+  const warehouseReady = !!myWarehouse;
+  const showInitialLoader = !warehouseReady || isLoading;
   const [isLoading, setIsLoading] = useState(false);
 
   useFocusEffect(
@@ -64,13 +64,13 @@ export default function Shop_Products_View() {
           // label="Explore coffee"
         />
         <Spacer position="top" size="large" />
-        {(!ready || whLoading || isLoading) && (
+        {showInitialLoader && (
           <Global_activity_indicator
             caption={t("shop_products_view.activity_indicator")}
             caption_width="65%"
           />
         )}
-        {ready && !whLoading && !isLoading && (
+        {warehouseReady && !isLoading && (
           <ScrollView
             style={{
               flex: 1,
