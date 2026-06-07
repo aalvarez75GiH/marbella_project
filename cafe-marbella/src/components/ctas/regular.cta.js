@@ -3,6 +3,7 @@ import React from "react";
 import { Text } from "../../infrastructure/typography/text.component.js";
 import { Action_Container } from "../containers/general.containers.js";
 import { theme } from "../../infrastructure/theme/index.js";
+import { ActivityIndicator } from "react-native-paper";
 
 export const Regular_CTA = ({
   action,
@@ -15,6 +16,7 @@ export const Regular_CTA = ({
   border_width = "1px",
   border_color = theme.colors.ui.white,
   isDisabled = false,
+  isLoading = false,
 }) => {
   console.log("isDisabled:", isDisabled);
   return (
@@ -29,7 +31,11 @@ export const Regular_CTA = ({
       border_width={border_width}
       border_color={border_color}
     >
-      <Text variant={caption_text_variant}>{caption}</Text>
+      {isLoading ? (
+        <ActivityIndicator size="small" color={theme.colors.ui.white} />
+      ) : (
+        <Text variant={caption_text_variant}>{caption}</Text>
+      )}
     </Action_Container>
   );
 };

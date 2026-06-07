@@ -129,12 +129,9 @@ export default function Shop_Order_Receipt_View() {
         <>
           <Go_Back_Header
             action={() => navigation.goBack()}
-            label="Order receipt"
+            caption="Order receipt"
           />
-          {/* <Go_Back_Header_With_Label_And_Menu
-            action_1={() => navigation.goBack()}
-            action_2={() => navigation.navigate("Menu_View")}
-          /> */}
+
           <ScrollView
             contentContainerStyle={{
               flexGrow: 1,
@@ -245,7 +242,7 @@ export default function Shop_Order_Receipt_View() {
             // color="red"
             style={{
               paddingTop: 10,
-              paddingBottom: 60,
+              paddingBottom: tabBarHeight,
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center",

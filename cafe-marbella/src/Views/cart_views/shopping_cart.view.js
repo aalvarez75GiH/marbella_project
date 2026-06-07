@@ -1,5 +1,5 @@
 import React, { useContext, useCallback } from "react";
-import { FlatList } from "react-native";
+import { FlatList, Platform } from "react-native";
 import { useTheme } from "styled-components/native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -16,7 +16,6 @@ import { Shopping_Cart_Sub_Total_Footer } from "../../components/footers/shoppin
 import { Regular_CTA } from "../../components/ctas/regular.cta";
 import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import Empty_Shopping_Cart_View from "./empty_shopping_cart.view";
-import { Just_Caption_Header } from "../../components/headers/just_caption.header.js";
 
 import { CartContext } from "../../infrastructure/services/cart/cart.context";
 import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context";
@@ -89,11 +88,10 @@ export default function Shopping_Cart_View() {
         {!isLoading && products.length > 0 && (
           <>
             <Container
-              style={{ flex: 1, paddingBottom: 65 }} // ✅ this is the key     }} // ✅ THIS fills remaining SafeArea
+              style={{ flex: 1 }}
               width="100%"
               color={theme.colors.bg.screens_bg}
-              justify="center"
-              align="center"
+              justify="flex-start"
             >
               <Spacer position="top" size="large" />
               <Shopping_Cart_Title cartTotalItems={cartTotalItems} />
@@ -101,6 +99,7 @@ export default function Shopping_Cart_View() {
 
               <FlatList
                 style={{ flex: 1 }}
+                //style={{ flex: 1, width: "100%" }}
                 showsHorizontalScrollIndicator={false}
                 showsVerticalScrollIndicator={false}
                 data={products}
@@ -112,10 +111,24 @@ export default function Shopping_Cart_View() {
               />
 
               <Shopping_Cart_Sub_Total_Footer sub_total={sub_total} />
-              <Spacer position="top" size="medium" />
+              {/* <Spacer position="top" size="medium" /> */}
+            </Container>
+            <Container
+              width="100%"
+              color="transparent"
+              // color="red"
+              style={{
+                paddingTop: 16,
+                paddingBottom: Platform.OS === "ios" ? 65 : 95,
+                paddingHorizontal: 22,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <Regular_CTA
-                width="95%"
+                width="90%"
                 height={"65px"} // ✅ fixed height instead of %
+                // color={theme.colors.ui.business}
                 color={theme.colors.ui.business}
                 border_radius="40px"
                 caption={t("shopping_cart_view.cta")}

@@ -116,7 +116,8 @@ export default function Shop_Order_Review_View() {
               justifyContent: "flex-start",
               alignItems: "center",
               backgroundColor: theme.colors.bg.elements_bg,
-              paddingBottom: 0,
+
+              paddingBottom: tabBarHeight + 100,
             }}
             style={{ flex: 1 }} // Ensures dynamic height adjustment
             showsVerticalScrollIndicator={false}
@@ -231,8 +232,7 @@ export default function Shop_Order_Review_View() {
             //color="red"
             style={{
               paddingTop: 10,
-              paddingBottom: 60,
-              flexDirection: "row",
+              paddingBottom: tabBarHeight, // Add extra padding to ensure the button is above the tab bar
               justifyContent: "center",
               alignItems: "center",
             }}

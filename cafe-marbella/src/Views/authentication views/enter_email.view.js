@@ -172,14 +172,14 @@ export default function Enter_Email_View() {
                   caption={t("authentication_views.enter_email_view.cta")}
                   caption_text_variant="dm_sans_bold_20_white"
                   action={async () => {
-                    const isEmailDeliverable = {
-                      ok: true,
-                      email_checked: true,
-                      email_sent: true,
-                      email_deliverable_code: "250",
-                    };
-                    // const isEmailDeliverable =
-                    //   await validatingEmailDeliverability(email);
+                    // const isEmailDeliverable = {
+                    //   ok: true,
+                    //   email_checked: true,
+                    //   email_sent: true,
+                    //   email_deliverable_code: "250",
+                    // };
+                    const isEmailDeliverable =
+                      await validatingEmailDeliverability(email);
 
                     console.log(
                       "RESPONSE AT EMAIL VIEW:",

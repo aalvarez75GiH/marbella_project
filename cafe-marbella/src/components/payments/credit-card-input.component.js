@@ -19,7 +19,8 @@ export const CreditCardInputComponent = ({
 }) => {
   const { myOrder, setMyOrder } = useContext(OrdersContext);
   const [isLoading, setIsLoading] = useState(false);
-  const { setCardError, setCardVerified } = useContext(PaymentsContext);
+  const { setCardError, setCardVerified, whileIsSuccess } =
+    useContext(PaymentsContext);
 
   const onlyDigits = (value = "") => value.replace(/\D/g, "");
 
@@ -81,12 +82,13 @@ export const CreditCardInputComponent = ({
     // console.log("CARD INFO:", card);
 
     if (!isIncomplete) {
-      setIsLoading(true);
+      whileIsSuccess(true);
+      // setIsLoading(true);
       setCardError(null);
       try {
         const card_from_stripe = await cardTokenRequest(card);
         console.log("CARD_TOKEN_FROM_STRIPE:", card_from_stripe);
-        setIsLoading(false);
+        // whileIsSuccess(false);
         onSuccess(card_from_stripe);
         setMyOrder((prevOrder) => ({
           ...prevOrder,
@@ -126,8 +128,8 @@ export const CreditCardInputComponent = ({
           param: stripeParam,
           raw: error,
         });
-
-        setIsLoading(false);
+      } finally {
+        whileIsSuccess(false);
       }
 
       // catch (error) {
@@ -145,36 +147,6 @@ export const CreditCardInputComponent = ({
           inputStyle={{
             fontFamily: "DMSans-Bold",
           }}
-          // validColor={theme.colors.text.primary}
-          // invalidColor={
-          //   !canPay ? theme.colors.text.error : theme.colors.text.primary
-          // }
-          // additionalInputsProps={{
-          //   number: {
-          //     underlineColorAndroid: canPay
-          //       ? theme.colors.inputs.bottom_lines
-          //       : theme.colors.ui.error,
-          //     selectionColor: canPay
-          //       ? theme.colors.text.primary
-          //       : theme.colors.ui.error,
-          //   },
-          //   expiry: {
-          //     underlineColorAndroid: canPay
-          //       ? theme.colors.inputs.bottom_lines
-          //       : theme.colors.ui.error,
-          //     selectionColor: canPay
-          //       ? theme.colors.text.primary
-          //       : theme.colors.ui.error,
-          //   },
-          //   cvc: {
-          //     underlineColorAndroid: canPay
-          //       ? theme.colors.inputs.bottom_lines
-          //       : theme.colors.ui.error,
-          //     selectionColor: canPay
-          //       ? theme.colors.text.primary
-          //       : theme.colors.ui.error,
-          //   },
-          // }}
         />
       </Container>
     </Spacer>

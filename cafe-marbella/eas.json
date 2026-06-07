@@ -10,7 +10,10 @@
       "channel": "development"
     },
     "preview": {
-      "channel": "preview"
+      "channel": "preview",
+      "android": {
+        "buildType": "apk"
+      }
     },
     "production": {
       "channel": "production"
