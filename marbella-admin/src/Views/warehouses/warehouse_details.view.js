@@ -29,18 +29,21 @@ import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 import { Time_Picker_Component } from "../../components/others/time_picker.component.js";
 import RightArrowIcon from "../../../assets/my_icons/chevron-right.svg";
 
-import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
+// import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { GeolocationContext } from "../../infrastructure/services/geolocation/geolocation.context.js";
 import { GlobalContext } from "../../infrastructure/services/global/global.context.js";
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context.js";
 
 export default function Warehouse_Details_View() {
+  // 1. Navigation / theme / route
   const navigation = useNavigation();
+  const route = useRoute();
   const theme = useTheme();
   const tabBarHeight = useBottomTabBarHeight();
-  const route = useRoute();
+
   const { coming_from } = route?.params ?? {};
-  console.log("COMING FROM AT DETAILS WAREHOUSE:", coming_from);
+
+  // 2. Contexts
   const {
     warehouseSelected,
     setWarehouseSelected,
@@ -52,49 +55,8 @@ export default function Warehouse_Details_View() {
     WAREHOUSE_INITIAL_STATE,
   } = useContext(WarehouseContext);
 
-  const selectedWarehouse = warehouseSelected || WAREHOUSE_INITIAL_STATE;
-
-  const originalWarehouseRef = useRef(null);
-
-  useEffect(() => {
-    if (coming_from !== "warehouse_tile") return;
-    if (!warehouseSelected?.warehouse_id) return;
-    if (originalWarehouseRef.current) return;
-
-    originalWarehouseRef.current = JSON.parse(
-      JSON.stringify(warehouseSelected)
-    );
-  }, [coming_from, warehouseSelected]);
-
-  const hasChanges = useMemo(() => {
-    if (coming_from === "add_cta") return true;
-
-    const original = originalWarehouseRef.current;
-    const current = warehouseSelected;
-
-    if (!original || !current) return false;
-
-    return JSON.stringify(original) !== JSON.stringify(current);
-  }, [coming_from, warehouseSelected]);
-
-  const isCreateMode = coming_from === "add_cta";
-  const isEditMode = coming_from === "warehouse_tile";
-  const shouldShowCTA = isCreateMode || (isEditMode && hasChanges);
-
-  // const [selectedAddress, setSelectedAddress] = useState(null);
-  const [addressText, setAddressText] = useState("");
-  const [scrollEnabled, setScrollEnabled] = useState(true);
-  const [error, setError] = useState(null);
-  const [unLocked, setUnlocked] = useState(false);
-  // const [checked, setChecked] = useState(warehouseSelected?.active ?? true);
-  const [isSnackbarLocked, setIsSnackbarLocked] = useState(false);
-  const [isScreenLocked, setIsScreenLocked] = useState(false);
-
-  const warehouseNameInputRef = useRef(null);
-  const addressDataInputRef = useRef(null);
-  const emailDataInputRef = useRef(null);
-
   const { deviceLat, deviceLng } = useContext(GeolocationContext);
+
   const {
     formatPhone,
     statusSnackbarVisible,
@@ -103,42 +65,239 @@ export default function Warehouse_Details_View() {
     showStatusSnackbar,
   } = useContext(GlobalContext);
 
+  // 3. Mode flags
+  const isCreateMode = coming_from === "add_cta";
+  const isEditMode = coming_from === "warehouse_tile";
+
+  const selectedWarehouse = warehouseSelected || WAREHOUSE_INITIAL_STATE;
+
+  // 4. Refs
+  const originalWarehouseRef = useRef(null);
+  const warehouseNameInputRef = useRef(null);
+  const addressDataInputRef = useRef(null);
+  const phoneDataInputRef = useRef(null);
+  const emailDataInputRef = useRef(null);
+
+  // 5. Local state
+  const [addressText, setAddressText] = useState("");
+  const [scrollEnabled, setScrollEnabled] = useState(true);
+  const [error, setError] = useState(null);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [isSnackbarLocked, setIsSnackbarLocked] = useState(false);
+  const [isScreenLocked, setIsScreenLocked] = useState(false);
+
+  // 6. Derived values
+
+  const warehouseFormattedAddress = useMemo(
+    () =>
+      selectedWarehouse?.geo?.formatted_address ||
+      selectedWarehouse?.physical_address ||
+      "",
+    [selectedWarehouse]
+  );
+
+  const placesQuery = useMemo(
+    () => ({
+      key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
+      language: "en",
+      components: "country:us",
+      types: "geocode",
+      ...(typeof deviceLat === "number" && typeof deviceLng === "number"
+        ? { location: `${deviceLat},${deviceLng}`, radius: 50000 }
+        : {}),
+    }),
+    [deviceLat, deviceLng]
+  );
+
+  // 7. Effects
+
   useEffect(() => {
+    if (!isEditMode) return;
+    if (!selectedWarehouse?.warehouse_id) return;
+    if (originalWarehouseRef.current) return;
+
+    originalWarehouseRef.current = JSON.parse(
+      JSON.stringify(selectedWarehouse)
+    );
+  }, [isEditMode, selectedWarehouse?.warehouse_id]);
+
+  useEffect(() => {
+    const isNewWarehouse = isCreateMode && !selectedWarehouse?.warehouse_id;
+
+    if (!isNewWarehouse) {
+      Keyboard.dismiss();
+      return;
+    }
+
     const timer = setTimeout(() => {
       warehouseNameInputRef.current?.focus();
-    }, 100); // small delay helps with navigation transitions
+    }, 100);
 
     return () => clearTimeout(timer);
-  }, []);
-
-  const warehouseFormattedAddress =
-    warehouseSelected?.geo?.formatted_address ||
-    warehouseSelected?.physical_address ||
-    "";
+  }, [isCreateMode, selectedWarehouse?.warehouse_id]);
 
   useEffect(() => {
     setAddressText(warehouseFormattedAddress || "");
 
-    if (addressDataInputRef.current) {
-      addressDataInputRef.current.setAddressText(
-        warehouseFormattedAddress || ""
-      );
-    }
+    addressDataInputRef.current?.setAddressText?.(
+      warehouseFormattedAddress || ""
+    );
   }, [warehouseFormattedAddress]);
 
-  console.log(
-    "WAREHOUSE SELECTED IN DETAILS VIEW:",
-    JSON.stringify(warehouseSelected, null, 2)
-  );
+  // 8. Memoized computed state
 
-  const placesQuery = {
-    key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
-    language: "en",
-    components: "country:us",
-    types: "geocode",
-    ...(typeof deviceLat === "number" && typeof deviceLng === "number"
-      ? { location: `${deviceLat},${deviceLng}`, radius: 50000 }
-      : {}),
+  const hasChanges = useMemo(() => {
+    if (isCreateMode) return true;
+
+    const original = originalWarehouseRef.current;
+    const current = selectedWarehouse;
+
+    if (!original || !current) return false;
+
+    return JSON.stringify(original) !== JSON.stringify(current);
+  }, [isCreateMode, selectedWarehouse]);
+
+  const shouldShowCTA = isCreateMode || hasChanges;
+
+  // 9. Handlers
+
+  const handleGoBack = () => {
+    setWarehouseSelected(WAREHOUSE_INITIAL_STATE);
+    navigation.goBack();
+  };
+
+  const lockScreenAfterSuccess = (message) => {
+    setIsUnlocked(true);
+    setIsSnackbarLocked(true);
+    setIsScreenLocked(true);
+    showStatusSnackbar(message);
+  };
+
+  const handleSubmitWarehouse = async () => {
+    Keyboard.dismiss();
+
+    const validationError = validateWarehouse();
+    setError(validationError);
+
+    if (validationError) {
+      showStatusSnackbar(validationError);
+      return;
+    }
+
+    if (isEditMode) {
+      const { success, warehouse, error } = await updateWarehouse(
+        selectedWarehouse
+      );
+
+      console.log(
+        "UPDATE WAREHOUSE RESULT:",
+        JSON.stringify(warehouse, null, 2)
+      );
+
+      if (success) {
+        lockScreenAfterSuccess("Warehouse updated successfully!");
+      } else {
+        setError(error || "Failed to update warehouse");
+        showStatusSnackbar(error || "Failed to update warehouse");
+      }
+
+      return;
+    }
+
+    if (isCreateMode) {
+      const { success, warehouse, error } = await createWarehouse(
+        selectedWarehouse
+      );
+
+      console.log(
+        "CREATE WAREHOUSE RESULT:",
+        JSON.stringify(warehouse, null, 2)
+      );
+
+      if (success) {
+        lockScreenAfterSuccess("Warehouse created successfully!");
+      } else {
+        setError(error || "Failed to create warehouse");
+        showStatusSnackbar(error || "Failed to create warehouse");
+      }
+    }
+  };
+
+  const handleAddressPress = (data, details = null) => {
+    if (isScreenLocked) return;
+
+    const formatted = details?.formatted_address ?? data.description;
+    const lat = details?.geometry?.location?.lat;
+    const lng = details?.geometry?.location?.lng;
+
+    if (!formatted || typeof lat !== "number" || typeof lng !== "number") {
+      setScrollEnabled(true);
+      return;
+    }
+
+    setAddressText(formatted);
+
+    const ship_from = buildShipFromFromGooglePlace({
+      details,
+      warehouse: selectedWarehouse,
+    });
+
+    setWarehouseSelected((prev) => ({
+      ...prev,
+      physical_address: formatted,
+      geo: {
+        formatted_address: formatted,
+        lat,
+        lng,
+        place_id: details?.place_id ?? data?.place_id,
+        address_components: details?.address_components || [],
+      },
+      ship_from,
+    }));
+
+    setScrollEnabled(true);
+  };
+
+  const handleClearAddress = () => {
+    setAddressText("");
+    addressDataInputRef.current?.setAddressText?.("");
+
+    requestAnimationFrame(() => {
+      addressDataInputRef.current?.focus?.();
+    });
+  };
+
+  const handleToggleShippingFlatRate = () => {
+    setWarehouseSelected((prev) => ({
+      ...prev,
+      shipping_information: {
+        ...(prev?.shipping_information || {}),
+        is_shipping_flat_rate_active:
+          !prev?.shipping_information?.is_shipping_flat_rate_active,
+      },
+    }));
+  };
+
+  const handleToggleWarehouseActive = () => {
+    setWarehouseSelected((prev) => ({
+      ...prev,
+      active: !prev?.active,
+    }));
+  };
+
+  const handleSnackbarClose = () => {
+    if (isUnlocked) {
+      setIsUnlocked(false);
+      setIsSnackbarLocked(false);
+      setIsScreenLocked(false);
+      setStatusSnackbarVisible(false);
+      navigation.popToTop();
+      return;
+    }
+
+    if (error) {
+      setStatusSnackbarVisible(false);
+    }
   };
 
   return (
@@ -153,7 +312,7 @@ export default function Warehouse_Details_View() {
         {isLoading ? (
           <Global_activity_indicator
             caption={
-              coming_from === "add_cta"
+              isCreateMode
                 ? "Wait, Creating warehouse..."
                 : "Wait, Updating warehouse..."
             }
@@ -167,13 +326,7 @@ export default function Warehouse_Details_View() {
             justify="flex-start"
             align="center"
           >
-            <Go_Back_Header
-              label=""
-              action={() => {
-                setWarehouseSelected(WAREHOUSE_INITIAL_STATE);
-                navigation.goBack();
-              }}
-            />
+            <Go_Back_Header label="" action={handleGoBack} />
 
             <Container
               width="100%"
@@ -191,59 +344,7 @@ export default function Warehouse_Details_View() {
                   border_radius={"40px"}
                   caption={coming_from === "add_cta" ? "Create" : "Update"}
                   caption_text_variant="dm_sans_bold_16_white"
-                  action={async () => {
-                    Keyboard.dismiss(); // ✅ CLOSE KEYBOARD FIRST
-                    if (isEditMode) {
-                      const validationError = validateWarehouse();
-                      setError(validationError); // reset previous errors
-                      if (validationError) {
-                        showStatusSnackbar(validationError);
-                        return;
-                      }
-                      const { success, warehouse, error } =
-                        await updateWarehouse(warehouseSelected); // pass true for create mode
-                      console.log(
-                        "UPDATE WAREHOUSE RESULT:",
-                        JSON.stringify(warehouse, null, 2)
-                      );
-
-                      if (success) {
-                        setUnlocked(true);
-                        setIsSnackbarLocked(true); // 🔒 LOCK
-                        setIsScreenLocked(true); // LOCK SCREEN (optional, for extra safety)
-                        showStatusSnackbar("Warehouse updated successfully!");
-                      } else {
-                        setError(error || "Failed to create warehouse");
-                      }
-                    }
-                    if (isCreateMode) {
-                      console.log(
-                        "VALIDATING WAREHOUSE:",
-                        JSON.stringify(warehouseSelected, null, 2)
-                      );
-                      const validationError = validateWarehouse();
-                      setError(validationError); // reset previous errors
-
-                      if (validationError) {
-                        showStatusSnackbar(validationError);
-                        return;
-                      }
-                      const { success, warehouse, error } =
-                        await createWarehouse(warehouseSelected); // pass true for create mode
-                      console.log(
-                        "CREATE WAREHOUSE RESULT:",
-                        JSON.stringify(warehouse, null, 2)
-                      );
-                      if (success) {
-                        setUnlocked(true);
-                        setIsSnackbarLocked(true); // 🔒 LOCK
-                        setIsScreenLocked(true); // LOCK SCREEN (optional, for extra safety)
-                        showStatusSnackbar("Warehouse created successfully!");
-                      } else {
-                        setError(error || "Failed to create warehouse");
-                      }
-                    }
-                  }}
+                  action={handleSubmitWarehouse}
                 />
               ) : (
                 // 👇 keeps layout stable when CTA is hidden
@@ -290,13 +391,12 @@ export default function Warehouse_Details_View() {
                 <DataInput
                   ref={warehouseNameInputRef}
                   label="Warehouse name"
-                  // value={warehouseSelected.warehouse_name}
                   value={selectedWarehouse.warehouse_name}
                   onChangeText={(value) => {
-                    setWarehouseSelected({
-                      ...warehouseSelected,
+                    setWarehouseSelected((prev) => ({
+                      ...prev,
                       warehouse_name: value,
-                    });
+                    }));
                   }}
                   border_color={theme.colors.inputs.bottom_lines_disabled}
                   underlineColor={theme.colors.inputs.bottom_lines_disabled}
@@ -322,19 +422,20 @@ export default function Warehouse_Details_View() {
                 <Spacer position="top" size="large" />
 
                 <DataInput
-                  ref={emailDataInputRef}
+                  ref={phoneDataInputRef}
                   label="Phone number"
                   // value={warehouseSelected.warehouse_information.phone}
                   value={selectedWarehouse.warehouse_information.phone}
                   onChangeText={(value) => {
                     const formatted = formatPhone(value);
-                    setWarehouseSelected({
-                      ...warehouseSelected,
+
+                    setWarehouseSelected((prev) => ({
+                      ...prev,
                       warehouse_information: {
-                        ...warehouseSelected.warehouse_information,
+                        ...prev.warehouse_information,
                         phone: formatted,
                       },
-                    });
+                    }));
                   }}
                   border_color={theme.colors.inputs.bottom_lines_disabled}
                   underlineColor={theme.colors.inputs.bottom_lines_disabled}
@@ -382,45 +483,7 @@ export default function Warehouse_Details_View() {
                       }
                       onNotFound={() => console.log("PLACES NOT FOUND")}
                       onTimeout={() => console.log("PLACES TIMEOUT")}
-                      onPress={(data, details = null) => {
-                        if (isScreenLocked) return;
-
-                        const formatted =
-                          details?.formatted_address ?? data.description;
-                        const lat = details?.geometry?.location?.lat;
-                        const lng = details?.geometry?.location?.lng;
-
-                        if (
-                          formatted &&
-                          typeof lat === "number" &&
-                          typeof lng === "number"
-                        ) {
-                          setAddressText(formatted);
-
-                          const ship_from = buildShipFromFromGooglePlace({
-                            details,
-                            warehouse: warehouseSelected,
-                          });
-
-                          setWarehouseSelected((prev) => ({
-                            ...prev,
-                            physical_address: formatted,
-                            geo: {
-                              formatted_address: formatted,
-                              lat,
-                              lng,
-                              place_id: details?.place_id ?? data?.place_id,
-                              address_components:
-                                details?.address_components || [],
-                            },
-                            ship_from,
-                          }));
-                        } else {
-                          // setSelectedAddress(null);
-                        }
-
-                        setScrollEnabled(true);
-                      }}
+                      onPress={handleAddressPress}
                       textInputProps={{
                         value: addressText,
                         autoCorrect: false,
@@ -483,95 +546,69 @@ export default function Warehouse_Details_View() {
                     }}
                     pointerEvents="box-none"
                   >
-                    {Platform.OS === "android" && (
-                      <GooglePlacesAutocomplete
-                        ref={addressDataInputRef}
-                        placeholder="Warehouse address"
-                        fetchDetails
-                        listViewDisplayed="auto" // you can keep true while debugging
-                        keyboardShouldPersistTaps="handled"
-                        enablePoweredByContainer={false}
-                        minLength={2}
-                        debounce={250}
-                        query={{
-                          key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
-                          language: "en",
-                          components: "country:us",
-                          location: `${deviceLat},${deviceLng}`,
-                          radius: 50000,
-                        }}
-                        textInputProps={{
-                          value: addressText,
-                          onFocus: () => setScrollEnabled(false),
-                          onBlur: () => setScrollEnabled(true),
-                          onChangeText: (t) => {
-                            setAddressText(t); // ✅ sync state
-                            // setSelectedAddress(null);
-                          },
-                        }}
-                        onPress={(data, details = null) => {
-                          const formatted =
-                            details?.formatted_address ?? data.description;
-                          setAddressText(formatted); // ✅ keep synced
-                          const lat = details?.geometry?.location?.lat;
-                          const lng = details?.geometry?.location?.lng;
-
-                          if (
-                            formatted &&
-                            typeof lat === "number" &&
-                            typeof lng === "number"
-                          ) {
-                            setWarehouseSelected({
-                              ...warehouseSelected,
-                              physical_address: formatted,
-                              geo: {
-                                formatted_address: formatted,
-                                lat,
-                                lng,
-                                place_id: details?.place_id ?? data?.place_id,
-                              },
-                            });
-                          } else {
+                    <GooglePlacesAutocomplete
+                      ref={addressDataInputRef}
+                      placeholder="Warehouse address"
+                      fetchDetails
+                      listViewDisplayed="auto" // you can keep true while debugging
+                      keyboardShouldPersistTaps="handled"
+                      enablePoweredByContainer={false}
+                      minLength={2}
+                      debounce={250}
+                      query={{
+                        key: process.env.EXPO_PUBLIC_GOOGLE_PLACES_KEY,
+                        language: "en",
+                        components: "country:us",
+                        location: `${deviceLat},${deviceLng}`,
+                        radius: 50000,
+                      }}
+                      textInputProps={{
+                        value: addressText,
+                        editable: !isScreenLocked,
+                        onFocus: () => {
+                          if (!isScreenLocked) {
+                            setScrollEnabled(false);
                           }
-                        }}
-                        styles={{
-                          container: { flex: 0, width: "100%" },
-                          textInputContainer: {
-                            width: "100%",
-                            paddingHorizontal: 0,
-                          },
-                          textInput: {
-                            width: "100%",
-                            height: 50,
-                            borderBottomWidth: 0.5,
-                            borderBottomColor: theme.colors.inputs.bottom_lines,
-                            backgroundColor: "transparent",
-                            paddingLeft: 5,
-                            fontFamily: "ralewayBold",
-                          },
-                          listView: {
-                            position: "absolute",
-                            top: 50,
-                            left: 0,
-                            right: 0,
-                            maxHeight: 260,
-                            zIndex: 999999,
-                            elevation: 999999,
-                            backgroundColor: theme.colors.bg.elements_bg,
-                          },
-                        }}
-                      />
-                    )}
+                        },
+                        onBlur: () => setScrollEnabled(true),
+
+                        onChangeText: (t) => {
+                          if (isScreenLocked) return;
+
+                          setAddressText(t);
+                        },
+                      }}
+                      onPress={handleAddressPress}
+                      styles={{
+                        container: { flex: 0, width: "100%" },
+                        textInputContainer: {
+                          width: "100%",
+                          paddingHorizontal: 0,
+                        },
+                        textInput: {
+                          width: "100%",
+                          height: 50,
+                          borderBottomWidth: 0.5,
+                          borderBottomColor: theme.colors.inputs.bottom_lines,
+                          backgroundColor: "transparent",
+                          paddingLeft: 5,
+                          fontFamily: "ralewayBold",
+                        },
+                        listView: {
+                          position: "absolute",
+                          top: 50,
+                          left: 0,
+                          right: 0,
+                          maxHeight: 260,
+                          zIndex: 999999,
+                          elevation: 999999,
+                          backgroundColor: theme.colors.bg.elements_bg,
+                        },
+                      }}
+                    />
                     {addressText.length > 0 && (
                       <TouchableOpacity
-                        onPress={() => {
-                          setAddressText("");
-                          addressDataInputRef.current?.setAddressText("");
-                          // setSelectedAddress(null);
-                          requestAnimationFrame(() => {
-                            addressDataInputRef.current?.focus?.();
-                          });
-                        }}
+                        onPress={handleClearAddress}
                         style={{
                           position: "absolute",
                           right: 10,
@@ -606,13 +643,13 @@ export default function Warehouse_Details_View() {
                   // value={warehouseSelected.warehouse_information.email}
                   value={selectedWarehouse.warehouse_information.email}
                   onChangeText={(value) => {
-                    setWarehouseSelected({
-                      ...warehouseSelected,
+                    setWarehouseSelected((prev) => ({
+                      ...prev,
                       warehouse_information: {
-                        ...warehouseSelected.warehouse_information,
+                        ...prev.warehouse_information,
                         email: value,
                       },
-                    });
+                    }));
                   }}
                   border_color={theme.colors.inputs.bottom_lines_disabled}
                   underlineColor={theme.colors.inputs.bottom_lines_disabled}
@@ -659,17 +696,7 @@ export default function Warehouse_Details_View() {
                   justify="center"
                   align="flex-start"
                   direction="row"
-                  onPress={() => {
-                    setWarehouseSelected({
-                      ...warehouseSelected,
-                      shipping_information: {
-                        ...warehouseSelected.shipping_information,
-                        is_shipping_flat_rate_active:
-                          !warehouseSelected.shipping_information
-                            .is_shipping_flat_rate_active, // Toggle the value,
-                      },
-                    });
-                  }}
+                  onPress={handleToggleShippingFlatRate}
                 >
                   <Container
                     width="50%"
@@ -680,7 +707,7 @@ export default function Warehouse_Details_View() {
                     align="flex-start"
                   >
                     <Spacer position="left" size="large">
-                      <Text variant="raleway_bold_18">Shippipng Flat rate</Text>
+                      <Text variant="raleway_bold_18">Shipping Flat rate</Text>
                     </Spacer>
                     <Spacer position="left" size="large">
                       <Text
@@ -703,18 +730,12 @@ export default function Warehouse_Details_View() {
                       color={theme.colors.ui.primary}
                       uncheckedColor="#A5A5A5"
                       status={
-                        warehouseSelected?.shipping_information
-                          .is_shipping_flat_rate_active === true
+                        selectedWarehouse?.shipping_information
+                          ?.is_shipping_flat_rate_active
                           ? "checked"
                           : "unchecked"
                       }
-                      onPress={() => {
-                        setWarehouseSelected({
-                          ...warehouseSelected,
-                          active:
-                            warehouseSelected?.active === true ? false : true,
-                        });
-                      }}
+                      onPress={handleToggleShippingFlatRate}
                     />
                   </Container>
                   <Container
@@ -727,23 +748,23 @@ export default function Warehouse_Details_View() {
                     justify="center"
                     align="flex-end"
                   >
-                    {warehouseSelected.shipping_information
-                      .is_shipping_flat_rate_active && (
+                    {selectedWarehouse?.shipping_information
+                      ?.is_shipping_flat_rate_active && (
                       <DataInput
                         value={String(
-                          warehouseSelected?.shipping_information
+                          selectedWarehouse?.shipping_information
                             ?.shipping_flat_rate ?? ""
                         )}
                         onChangeText={(value) => {
                           const numericValue =
                             parseFloat(value.replace(/[^0-9]/g, "")) || 0;
-                          setWarehouseSelected({
-                            ...warehouseSelected,
+                          setWarehouseSelected((prev) => ({
+                            ...prev,
                             shipping_information: {
-                              ...warehouseSelected.shipping_information,
+                              ...(prev?.shipping_information || {}),
                               shipping_flat_rate: numericValue,
                             },
-                          });
+                          }));
                         }}
                         keyboardType="numeric"
                         label=""
@@ -777,12 +798,7 @@ export default function Warehouse_Details_View() {
                   justify="center"
                   align="flex-start"
                   direction="row"
-                  onPress={() => {
-                    setWarehouseSelected({
-                      ...warehouseSelected,
-                      active: warehouseSelected?.active === true ? false : true,
-                    });
-                  }}
+                  onPress={handleToggleWarehouseActive}
                 >
                   <Container
                     width="75%"
@@ -812,103 +828,51 @@ export default function Warehouse_Details_View() {
                       color={theme.colors.ui.primary}
                       uncheckedColor="#A5A5A5"
                       status={
-                        warehouseSelected?.active === true
-                          ? "checked"
-                          : "unchecked"
+                        selectedWarehouse?.active ? "checked" : "unchecked"
                       }
-                      onPress={() => {
-                        setWarehouseSelected({
-                          ...warehouseSelected,
-                          active:
-                            warehouseSelected?.active === true ? false : true,
-                        });
-                      }}
+                      onPress={handleToggleWarehouseActive}
                     />
                     {/* <RightArrowIcon width={20} height={20} /> */}
                   </Container>
                 </Action_Container>
                 {/* ***************************************************************************** */}
                 <Spacer position="top" size="medium" />
-                {coming_from === "add_cta" && (
-                  <Action_Container
-                    width="95%"
-                    // height="15%"
-                    padding_vertical="35px"
+                <Action_Container
+                  width="95%"
+                  padding_vertical="35px"
+                  color={theme.colors.bg.screens_bg}
+                  justify="center"
+                  align="flex-start"
+                  direction="row"
+                  onPress={() =>
+                    navigation.navigate("Warehouse_Representative_View")
+                  }
+                >
+                  <Container
+                    width="75%"
+                    style={{ alignSelf: "stretch" }}
                     color={theme.colors.bg.screens_bg}
-                    // color={"lightgreen"}
                     justify="center"
                     align="flex-start"
-                    direction="row"
-                    onPress={() =>
-                      navigation.navigate("Warehouse_Representative_View")
-                    }
                   >
-                    <Container
-                      width="75%"
-                      style={{ alignSelf: "stretch" }}
-                      color={theme.colors.bg.screens_bg}
-                      //   color={"red"}
-                      justify="center"
-                      align="flex-start"
-                    >
-                      <Spacer position="left" size="large">
-                        <Text variant="raleway_bold_18">
-                          Warehouse Representative
-                        </Text>
-                      </Spacer>
-                    </Container>
-                    <Container
-                      width="25%"
-                      style={{ alignSelf: "stretch" }}
-                      color={theme.colors.bg.screens_bg}
-                      //   color={"blue"}
-                      justify="center"
-                      align="flex-end"
-                    >
-                      <RightArrowIcon width={20} height={20} />
-                    </Container>
-                  </Action_Container>
-                )}
-                {coming_from === "warehouse_tile" && (
-                  <Action_Container
-                    width="95%"
-                    // height="15%"
-                    padding_vertical="35px"
+                    <Spacer position="left" size="large">
+                      <Text variant="raleway_bold_18">
+                        Warehouse Representative
+                      </Text>
+                    </Spacer>
+                  </Container>
+
+                  <Container
+                    width="25%"
+                    style={{ alignSelf: "stretch" }}
                     color={theme.colors.bg.screens_bg}
-                    // color={"lightgreen"}
                     justify="center"
-                    align="flex-start"
-                    direction="row"
-                    onPress={() =>
-                      navigation.navigate("Warehouse_Representative_View")
-                    }
+                    align="flex-end"
                   >
-                    <Container
-                      width="75%"
-                      style={{ alignSelf: "stretch" }}
-                      color={theme.colors.bg.screens_bg}
-                      //   color={"red"}
-                      justify="center"
-                      align="flex-start"
-                    >
-                      <Spacer position="left" size="large">
-                        <Text variant="raleway_bold_18">
-                          Warehouse Representative
-                        </Text>
-                      </Spacer>
-                    </Container>
-                    <Container
-                      width="25%"
-                      style={{ alignSelf: "stretch" }}
-                      color={theme.colors.bg.screens_bg}
-                      //   color={"blue"}
-                      justify="center"
-                      align="flex-end"
-                    >
-                      <RightArrowIcon width={20} height={20} />
-                    </Container>
-                  </Action_Container>
-                )}
+                    <RightArrowIcon width={20} height={20} />
+                  </Container>
+                </Action_Container>
+
                 {/* ***************************************************************************** */}
                 <Spacer position="top" size="medium" />
                 <Action_Container
@@ -979,18 +943,7 @@ export default function Warehouse_Details_View() {
         duration={Number.POSITIVE_INFINITY}
         action={{
           label: "Close",
-          onPress: () => {
-            if (unLocked) {
-              setUnlocked(false);
-              setIsSnackbarLocked(false); // 🔓 UNLOCK
-              setIsScreenLocked(false);
-              setStatusSnackbarVisible(false);
-              navigation.popToTop();
-            }
-            if (error) {
-              setStatusSnackbarVisible(false);
-            }
-          },
+          onPress: handleSnackbarClose,
         }}
         style={{
           minHeight: 80,

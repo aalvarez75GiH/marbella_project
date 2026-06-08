@@ -30,7 +30,6 @@ export default function Warehouses_View() {
           warehouse_address={formatted_address}
           item={item}
         />
-        <Spacer position="top" size="extraLarge" />
         <Spacer position="top" size="medium" />
       </>
     );
@@ -48,6 +47,7 @@ export default function Warehouses_View() {
           })
         }
         caption="Warehouses"
+        hide_icon={true}
       />
 
       <Container

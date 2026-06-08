@@ -36,6 +36,13 @@ export const Back_And_Add_Header = ({
           <ArrowBackIcon width={30} height={30} fill={"#000000"} />
         </Action_Container>
       )}
+      {hide_icon && (
+        <Container
+          width="15%"
+          height="100%"
+          color={theme.colors.bg.elements_bg}
+        ></Container>
+      )}
 
       <Container
         width="70%"

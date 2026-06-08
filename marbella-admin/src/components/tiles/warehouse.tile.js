@@ -24,14 +24,24 @@ export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
   const { setWarehouseSelected } = useContext(WarehouseContext);
   const navigation = useNavigation();
 
+  const active_text_variant = active
+    ? "dm_sans_regular_14_white"
+    : "dm_sans_regular_14";
+
+  const active_bg_color = active
+    ? theme.colors.ui.primary
+    : theme.colors.bg.warehouse_tile;
+
   return (
     <>
       <Action_Container
         width="95%"
-        height="180px"
-        color="blue"
+        height="220px"
+        color={active_bg_color}
         justify="center"
         align="center"
+        border_width="3px"
+        border_color={active ? theme.colors.ui.primary : "transparent"}
         onPress={() => {
           setWarehouseSelected({
             warehouse_name: item?.warehouse_name || "",
@@ -68,8 +78,8 @@ export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
         {/* SECTION 1 */}
         <Container
           width="100%"
-          height="100%"
-          color="#E0E0E0"
+          height="80%"
+          color={active_bg_color}
           //color="green"
           direction="row"
           //   padding_vertical="10px"
@@ -78,52 +88,62 @@ export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
           <Container
             width="20%"
             height="100%"
-            color="#E0E0E0"
-            //color="indigo"
+            //color={active_bg_color}
+            color="transparent"
             style={{
               minHeight: 44,
               justifyContent: "center",
               alignItems: "center",
             }}
           >
-            <StoreIcon width={40} height={40} fill={"#000000"} />
+            <StoreIcon
+              width={40}
+              height={40}
+              fill={active ? "#FFFFFF" : "#000000"}
+            />
           </Container>
 
           <Container
             width="80%"
             height="100%"
-            color="#E0E0E0"
+            color="transparent"
             // color="red"
             align="flex-start"
             padding_vertical="4px"
             direction="column"
           >
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_bold_16">{warehouse_name}</Text>
+              <Text
+                variant={active ? "dm_sans_bold_16_white" : "dm_sans_bold_16"}
+              >
+                {warehouse_name}
+              </Text>
             </Spacer>
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_regular_14">
+              <Text variant={active_text_variant}>
                 Address: {warehouse_address}
               </Text>
             </Spacer>
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_regular_14">Email: {email}</Text>
+              <Text variant={active_text_variant}>Email: {email}</Text>
             </Spacer>
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_regular_14">Phone number: {phone}</Text>
+              <Text variant={active_text_variant}>Phone number: {phone}</Text>
             </Spacer>
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_regular_14">Open at: {opening_time}</Text>
+              <Text variant={active_text_variant}>Open at: {opening_time}</Text>
             </Spacer>
             <Spacer position="left" size="large">
-              <Text variant="dm_sans_regular_14">Close at: {closing_time}</Text>
+              <Text variant={active_text_variant}>
+                Close at: {closing_time}
+              </Text>
             </Spacer>
           </Container>
         </Container>
         <Container
           width="100%"
           height="20%"
-          color="#E0E0E0"
+          color={"transparent"}
           align="center"
           justify="center"
           direction="row"
@@ -131,19 +151,22 @@ export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
           <Container
             width="50%"
             height="100%"
-            color="#E0E0E0"
+            color={"transparent"}
             align="flex-start"
             direction="row"
           ></Container>
           <Container
             width="50%"
             height="100%"
-            color="#E0E0E0"
+            color={"transparent"}
             align="flex-start"
             justify="center"
             direction="row"
           >
-            <Text variant="dm_sans_bold_16" color={theme.colors.text.primary}>
+            <Text
+              variant={active_text_variant}
+              color={theme.colors.text.primary}
+            >
               {active ? "Active" : "Not active"}
             </Text>
             {active && (
@@ -151,7 +174,7 @@ export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
                 <SuccessIcon
                   width={20}
                   height={20}
-                  color={theme.colors.ui.success}
+                  color={active ? "#FFFFFF" : theme.colors.ui.success}
                 />
               </Spacer>
             )}

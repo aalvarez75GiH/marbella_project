@@ -22,6 +22,7 @@ export const colors = {
   bg: {
     screens_bg: "#F5F4F4",
     elements_bg: "#FFFFFF",
+    warehouse_tile: "#E0E0E0",
   },
   text: {
     black: "#000000",
