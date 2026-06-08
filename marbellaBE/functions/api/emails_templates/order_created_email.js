@@ -366,98 +366,374 @@ const orderCreatedEmail = ({ preheader, order }) => {
     `;
 };
 
-module.exports = {
-  orderCreatedEmail,
+const teamOrderCreatedEmail = ({ preheader, order }) => {
+  const year = new Date().getFullYear();
+
+  const {
+    delivery_type,
+    order_number,
+    pricing = {},
+    warehouse_to_pickup = {},
+    customer = {},
+    payment_information = {},
+    order_products = [],
+    quantity,
+    shipping_label = {},
+    shipping_label_error = null,
+  } = order || {};
+
+  const isPickup = delivery_type === "pickup";
+  const isDelivery = delivery_type === "delivery";
+
+  const itemsCents = pricing?.sub_total ?? 0;
+  const shippingCents = pricing?.shipping ?? 0;
+  const taxesCents = pricing?.taxes ?? 0;
+  const discountCents = pricing?.discount ?? 0;
+  const totalCents = pricing?.total ?? 0;
+
+  const customerName = [customer?.first_name, customer?.last_name]
+    .filter(Boolean)
+    .join(" ");
+
+  const itemsCount =
+    Number(quantity) ||
+    (order_products || []).reduce((sum, p) => {
+      const v = getSelectedVariant(p);
+      return sum + Number(v?.quantity || 0);
+    }, 0);
+
+  const shipmentAddress = isPickup
+    ? warehouse_to_pickup?.warehouse_address || ""
+    : order?.order_delivery_address || customer?.customer_address || "";
+
+  const productsHtml = (order_products || [])
+    .map((p) => {
+      const v = getSelectedVariant(p);
+
+      const brandTitle = p?.title || "Café Marbella";
+      const origin = p?.originCountry || "";
+      const grind = p?.product_subtitle || "";
+      const sizeText = [v?.sizeLabel, v?.sizeLabel_ounces]
+        .filter(Boolean)
+        .join(" - ");
+
+      const qty = Number(v?.quantity || 1);
+      const unitPriceCents = Number(v?.price || 0);
+      const lineTotalCents = unitPriceCents * qty;
+
+      return `
+        <tr>
+          <td style="padding:12px 0;border-top:1px solid #e9e0c9;">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+              <tr>
+                <td style="vertical-align:top;">
+                  <div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1f1f1f;font-weight:700;">
+                    ${esc(brandTitle)}
+                  </div>
+
+                  <div style="margin-top:4px;font-family:Arial,Helvetica,sans-serif;font-size:22px;line-height:1.1;color:#1f1f1f;font-weight:900;">
+                    ${esc(origin)}
+                  </div>
+
+                  <div style="margin-top:6px;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#1f1f1f;font-weight:700;">
+                    ${esc(grind)}
+                  </div>
+
+                  <div style="margin-top:6px;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#4a4a4a;">
+                    ${sizeText ? esc(sizeText) : ""}
+                  </div>
+                </td>
+
+                <td align="right" style="vertical-align:top;">
+                  <div style="font-family:Arial,Helvetica,sans-serif;font-size:24px;line-height:1;color:#1f1f1f;font-weight:900;">
+                    ${money(lineTotalCents)}
+                  </div>
+                  <div style="margin-top:8px;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#4a4a4a;">
+                    Qty: ${esc(qty)}${
+        qty > 1 ? ` • Each: ${money(unitPriceCents)}` : ""
+      }
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      `;
+    })
+    .join("");
+
+  return `
+    <div style="margin:0;padding:0;background:#f5ead9;">
+      <div style="display:none!important;visibility:hidden;opacity:0;height:0;width:0;overflow:hidden;color:transparent;">
+        ${esc(preheader)}
+      </div>
+
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;background:#f5ead9;">
+        <tr>
+          <td align="center" style="padding:24px 12px;">
+            <table role="presentation" width="560" cellspacing="0" cellpadding="0" border="0"
+              style="width:560px;max-width:560px;background:#ffffff;border-radius:18px;overflow:hidden;border:1px solid #eadfca;">
+
+              <tr>
+                <td style="padding:22px 20px;background:#247F35;">
+                  <div style="font-family:Arial,Helvetica,sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#f5ead9;font-weight:700;">
+                    Café Marbella Team Notification
+                  </div>
+                  <div style="margin-top:8px;font-family:Arial,Helvetica,sans-serif;font-size:28px;line-height:1.2;font-weight:900;color:#ffffff;">
+                    New ${isPickup ? "Pickup" : "Delivery"} Order
+                  </div>
+                  <div style="margin-top:8px;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#ffffff;">
+                    Order number: <strong>${esc(order_number)}</strong>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:18px 20px 8px;">
+                  <div style="font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:900;color:#1f1f1f;">
+                    Action needed
+                  </div>
+                  <div style="margin-top:6px;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#4a4a4a;">
+                    ${
+                      isPickup
+                        ? "Prepare this order for customer pickup."
+                        : "Prepare this order for shipping/delivery."
+                    }
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:10px 20px 14px;">
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+                    style="background:#f6f1c9;border-radius:18px;overflow:hidden;">
+                    <tr>
+                      <td style="padding:16px;">
+                        <div style="font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:900;color:#1f1f1f;">
+                          Customer
+                        </div>
+
+                        <div style="margin-top:8px;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#1f1f1f;">
+                          <strong>Name:</strong> ${esc(
+                            customerName || "Customer"
+                          )}
+                        </div>
+
+                        <div style="margin-top:6px;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#1f1f1f;">
+                          <strong>Email:</strong> ${esc(customer?.email || "")}
+                        </div>
+
+                        <div style="margin-top:6px;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#1f1f1f;">
+                          <strong>Phone:</strong> ${esc(
+                            customer?.phone_number || ""
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:0 20px 14px;">
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+                    style="background:#f6f1c9;border-radius:18px;overflow:hidden;">
+                    <tr>
+                      <td style="padding:16px;">
+                        <div style="font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:900;color:#1f1f1f;">
+                          ${
+                            isPickup
+                              ? "Pickup information"
+                              : "Delivery information"
+                          }
+                        </div>
+
+                        <div style="margin-top:8px;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#1f1f1f;">
+                          <strong>Type:</strong> ${esc(delivery_type || "")}
+                        </div>
+
+                        ${
+                          isPickup
+                            ? `
+                              <div style="margin-top:6px;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#1f1f1f;">
+                                <strong>Warehouse:</strong> ${esc(
+                                  warehouse_to_pickup?.warehouse_name || ""
+                                )}
+                              </div>
+                            `
+                            : ``
+                        }
+
+                        <div style="margin-top:6px;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#1f1f1f;">
+                          <strong>Address:</strong> ${esc(shipmentAddress)}
+                        </div>
+
+                        ${
+                          isDelivery && shipping_label?.tracking_number
+                            ? `
+                              <div style="margin-top:6px;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#1f1f1f;">
+                                <strong>Tracking:</strong> ${esc(
+                                  shipping_label.tracking_number
+                                )}
+                              </div>
+                            `
+                            : ``
+                        }
+
+                        ${
+                          isDelivery && shipping_label?.label_url
+                            ? `
+                              <div style="margin-top:10px;font-family:Arial,Helvetica,sans-serif;font-size:15px;">
+                                <a href="${esc(
+                                  shipping_label.label_url
+                                )}" style="color:#247F35;font-weight:800;text-decoration:none;">
+                                  Download shipping label
+                                </a>
+                              </div>
+                            `
+                            : ``
+                        }
+
+                        ${
+                          shipping_label_error
+                            ? `
+                              <div style="margin-top:10px;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#b00020;font-weight:700;">
+                                Shipping label issue: ${esc(
+                                  shipping_label_error?.message ||
+                                    "Label creation failed"
+                                )}
+                              </div>
+                            `
+                            : ``
+                        }
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:4px 20px 8px;">
+                  <div style="font-family:Arial,Helvetica,sans-serif;font-size:24px;font-weight:900;color:#1f1f1f;">
+                    Products to prepare
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:0 20px 18px;">
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                    ${
+                      productsHtml ||
+                      `
+                      <tr>
+                        <td style="padding:14px 0;border-top:1px solid #e9e0c9;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#4a4a4a;">
+                          (No products found in this order)
+                        </td>
+                      </tr>
+                    `
+                    }
+                  </table>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:14px 20px 10px;">
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+                    style="font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#1f1f1f;">
+                    <tr>
+                      <td style="padding:6px 0;">Items (${esc(
+                        itemsCount
+                      )}):</td>
+                      <td align="right" style="padding:6px 0;">${money(
+                        itemsCents
+                      )}</td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding:6px 0;">Shipping:</td>
+                      <td align="right" style="padding:6px 0;">${money(
+                        shippingCents
+                      )}</td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding:6px 0;">Taxes:</td>
+                      <td align="right" style="padding:6px 0;">${money(
+                        taxesCents
+                      )}</td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding:6px 0;">Discounts:</td>
+                      <td align="right" style="padding:6px 0;">-${money(
+                        discountCents
+                      )}</td>
+                    </tr>
+
+                    <tr>
+                      <td colspan="2" style="padding:10px 0;">
+                        <div style="height:1px;background:#eadfca;"></div>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td style="padding:6px 0;font-weight:900;font-size:17px;">Order total:</td>
+                      <td align="right" style="padding:6px 0;font-weight:900;font-size:17px;">${money(
+                        totalCents
+                      )}</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:0 20px 18px;">
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+                    style="background:#ffffff;border:1px solid #eadfca;border-radius:18px;overflow:hidden;">
+                    <tr>
+                      <td style="padding:16px;">
+                        <div style="font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:900;color:#1f1f1f;">
+                          Payment
+                        </div>
+
+                        <div style="margin-top:8px;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#1f1f1f;">
+                          <strong>Status:</strong> ${esc(
+                            payment_information?.payment_status || ""
+                          )}
+                        </div>
+
+                        <div style="margin-top:6px;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#1f1f1f;">
+                          <strong>Transaction:</strong> ${esc(
+                            payment_information?.transaction_id || ""
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:16px 20px;background:#ffffff;border-top:1px solid #eadfca;">
+                  <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#6b6b6b;">
+                    Internal Café Marbella order notification. Do not forward payment details.
+                  </div>
+                  <div style="margin-top:8px;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#8a8a8a;">
+                    © ${year} Café Marbella.
+                  </div>
+                </td>
+              </tr>
+
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+  `;
 };
 
-// const orderCreatedEmail = ({ preheader, order_number }) => {
-//   const year = new Date().getFullYear();
-
-//   return `
-//       <div style="margin:0;padding:0;background:#0b0c0f;">
-//         <!-- Preheader -->
-//         <div style="display:none!important;visibility:hidden;opacity:0;height:0;width:0;overflow:hidden;color:transparent;">
-//           ${preheader}
-//         </div>
-
-//         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#0b0c0f;">
-//           <tr>
-//             <td align="center" style="padding:24px 16px;">
-//               <table role="presentation" width="560" cellspacing="0" cellpadding="0" border="0"
-//                 style="width:560px;max-width:560px;background:#101318;border-radius:16px;overflow:hidden;border:1px solid #1c2230;">
-
-//                 <!-- Header -->
-//                 <tr>
-//                   <td style="padding:20px 24px;background:#0f131a;">
-//                     <h1 style="
-//                       margin:0 0 8px;
-//                       font-family:'Raleway','Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-//                       font-size:40px;
-//                       line-height:1.3;
-//                       font-weight:700;
-//                       letter-spacing:0.5px;
-//                       color:#ffffff;
-//                     ">
-//                       Café Marbella
-//                     </h1>
-//                   </td>
-//                 </tr>
-
-//                 <!-- Hero -->
-//                 <tr>
-//                   <td style="background:#141a24;">
-//                     <img src="cid:marbella-hero" width="560" alt="Café Marbella"
-//                       style="display:block;width:100%;height:auto;border:0;">
-//                   </td>
-//                 </tr>
-
-//                 <!-- Content -->
-//                 <tr>
-//                   <td style="padding:28px 24px;background:#101318;">
-//                     <h1 style="margin:0 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:22px;color:#ffffff;">
-//                       This is your order number:
-//                     </h1>
-
-//                     <div style="margin:16px 0 20px;">
-//                       <div style="
-//                         display:inline-block;
-//                         font-family:Arial,Helvetica,sans-serif;
-//                         font-size:28px;
-//                         font-weight:700;
-//                         letter-spacing:6px;
-//                         color:#101318;
-//                         background:#ffffff;
-//                         border-radius:12px;
-//                         padding:14px 18px;
-//                         border:1px solid #e6e8ef;
-//                       ">
-//                         ${order_number}
-//                       </div>
-//                     </div>
-
-//                     <p style="margin:16px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#8c96a6;">
-//                       If you didn’t request this, you can ignore this email.
-//                     </p>
-//                   </td>
-//                 </tr>
-
-//                 <!-- Footer -->
-//                 <tr>
-//                   <td style="padding:18px 24px;background:#0f131a;">
-//                     <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#778199;">
-//                       © ${year} Café Marbella. All rights reserved.
-//                     </p>
-//                   </td>
-//                 </tr>
-
-//               </table>
-//             </td>
-//           </tr>
-//         </table>
-//       </div>
-//       `;
-// };
-
-// module.exports = {
-//   orderCreatedEmail,
-// };
+module.exports = {
+  orderCreatedEmail,
+  teamOrderCreatedEmail,
+};

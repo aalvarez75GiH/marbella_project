@@ -3,6 +3,7 @@ const nodemailer = require("nodemailer");
 const path = require("path");
 const {
   orderCreatedEmail,
+  teamOrderCreatedEmail,
 } = require("../emails_templates/order_created_email");
 const { admin } = require("../../fb");
 // const usersController = require("../users/users.controllers");
@@ -15,10 +16,8 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   auth: {
-    // user: process.env.GMAIL_EMAIL, // e.g., "alvarez.arnoldo@gmail.com"
-    user: "alvarez.arnoldo@gmail.com", // e.g., "alvarez.arnoldo@gmail.com"
-    // pass: process.env.GMAIL_APP_PASSWORD, // 16-char app password
-    pass: "ubfiljheujsrwhsy", // 16-char app password
+    user: process.env.GMAIL_EMAIL, // e.g., "alvarez.arnoldo@gmail.com"
+    pass: process.env.GMAIL_APP_PASSWORD, // 16-char app password
   },
   logger: true, // optional: helpful during debugging
   debug: true, // optional
@@ -122,7 +121,7 @@ const sendingEmailToUserWhenOrderIsCreated = async (order) => {
 
   const mailOptions = {
     // from: process.env.GMAIL_EMAIL, // must match the authenticated account
-    from: "alvarez.arnoldo@gmail.com", // must match the authenticated account
+    from: `"Café Marbella" <${process.env.GMAIL_EMAIL}>`,
     to,
     // subject: "Your Marbella Cafe order has been received",
     subject: `Order received — ${order_number}`,
@@ -162,6 +161,95 @@ const sendingEmailToUserWhenOrderIsCreated = async (order) => {
     };
   } catch (error) {
     console.error("Error sending email:", error);
+    throw error;
+  }
+};
+
+// const getOrderTeamEmails = () => {
+//   return (process.env.ORDER_TEAM_EMAILS || "")
+//     .split(",")
+//     .map((email) => email.trim().toLowerCase())
+//     .filter(Boolean)
+//     .filter(isValidEmail);
+// };
+
+const getOrderTeamEmails = () => {
+  console.log("RAW ORDER_TEAM_EMAILS:", process.env.ORDER_TEAM_EMAILS);
+
+  return (process.env.ORDER_TEAM_EMAILS || "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean)
+    .filter(isValidEmail);
+};
+
+const sendingOrderNotificationToTeam = async (order) => {
+  const { order_number, customer, delivery_type } = order || {};
+
+  const teamEmails = getOrderTeamEmails();
+
+  if (!teamEmails.length) {
+    console.error("No valid team emails configured.");
+    return null;
+  }
+
+  await transporter.verify();
+
+  const subject = `New ${
+    delivery_type === "pickup" ? "Pickup" : "Delivery"
+  } Order — ${order_number}`;
+
+  const text = `
+New Café Marbella order received.
+
+Order number: ${order_number}
+Delivery type: ${delivery_type}
+Customer: ${customer?.name || ""}
+Email: ${customer?.email || ""}
+Phone: ${customer?.phone || ""}
+
+Total: $${((order.total || 0) / 100).toFixed(2)}
+Payment status: ${order.payment_information?.payment_status || ""}
+
+Please review this order in the admin/order system.
+`;
+
+  const html = teamOrderCreatedEmail({
+    order,
+    preheader: `New ${delivery_type} order received: ${order_number}`,
+  });
+
+  const mailOptions = {
+    from: `"Café Marbella Orders" <${process.env.GMAIL_EMAIL}>`,
+    to: teamEmails,
+    subject,
+    text,
+    html,
+
+    replyTo: customer?.email || process.env.GMAIL_EMAIL,
+
+    envelope: {
+      from: process.env.GMAIL_EMAIL,
+      to: teamEmails,
+    },
+
+    headers: {
+      "X-Entity-Ref-ID": `marbella-team-${order_number}-${Date.now()}`,
+    },
+  };
+
+  try {
+    const info = transporter.sendMail(mailOptions);
+
+    return {
+      ok: true,
+      message: "Team order notification email sent successfully.",
+      accepted: info.accepted,
+      rejected: info.rejected,
+      messageId: info.messageId,
+    };
+  } catch (error) {
+    console.error("Error sending team order notification email:", error);
     throw error;
   }
 };
@@ -267,4 +355,5 @@ module.exports = {
   buildSkuQtyFromOrderProducts,
   sendingEmailToUserWhenOrderIsCreated,
   sendOrderStatusPush,
+  sendingOrderNotificationToTeam,
 };

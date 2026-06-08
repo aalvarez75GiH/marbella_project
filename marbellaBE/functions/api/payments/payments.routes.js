@@ -6,6 +6,7 @@ const stripeClient = require("stripe")(process.env.STRIPE_KEY);
 
 const {
   sendingEmailToUserWhenOrderIsCreated,
+  sendingOrderNotificationToTeam,
 } = require("../orders/orders.handlers");
 
 const ordersControllers = require("../orders/orders.controllers");
@@ -19,7 +20,7 @@ const {
   decrementWarehouseInventoryFromOrder,
 } = require("../warehouses/warehouses.controllers");
 const { sendOrderStatusPush } = require("../orders/orders.handlers");
-const warehousesControllers = require("../warehouses/warehouses.controllers");
+
 paymentsRouter.post("/payments", async (req, res) => {
   const totalForStripe = req.body.totalForStripe;
   const card_token = req.body.card_id;
@@ -198,14 +199,28 @@ paymentsRouter.post("/payments", async (req, res) => {
     console.log("ORDER CREATED AT PAYMENTS ROUTE:", createdOrder);
 
     // 7. SEND EMAIL, BUT DO NOT FAIL PAYMENT/ORDER IF EMAIL FAILS
-    try {
-      const emailSent = await sendingEmailToUserWhenOrderIsCreated(
-        createdOrder
-      );
-      console.log("Order confirmation email sent:", emailSent?.message);
-    } catch (emailError) {
-      console.log("EMAIL FAILED BUT PAYMENT/ORDER SUCCEEDED:", emailError);
-    }
+    sendingEmailToUserWhenOrderIsCreated(createdOrder).catch((emailError) => {
+      console.log("CUSTOMER EMAIL FAILED BUT ORDER SUCCEEDED:", emailError);
+    });
+
+    sendingOrderNotificationToTeam(createdOrder).catch((teamEmailError) => {
+      console.log("TEAM EMAIL FAILED BUT ORDER SUCCEEDED:", teamEmailError);
+    });
+    // try {
+    //   const emailSent = await sendingEmailToUserWhenOrderIsCreated(
+    //     createdOrder
+    //   );
+    //   console.log("Order confirmation email sent:", emailSent?.message);
+    //   const emailSentToTeam = await sendingOrderNotificationToTeam(
+    //     createdOrder
+    //   );
+    //   console.log(
+    //     "Order confirmation email sent to team:",
+    //     emailSentToTeam?.message
+    //   );
+    // } catch (emailError) {
+    //   console.log("EMAIL FAILED BUT PAYMENT/ORDER SUCCEEDED:", emailError);
+    // }
 
     return res.status(200).json({
       status: "success",

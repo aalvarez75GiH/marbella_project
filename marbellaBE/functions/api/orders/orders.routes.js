@@ -5,6 +5,7 @@ const ordersRouter = express.Router();
 const {
   sendingEmailToUserWhenOrderIsCreated,
   sendOrderStatusPush,
+  sendingOrderNotificationToTeam,
 } = require("./orders.handlers");
 
 const ordersControllers = require("./orders.controllers");
@@ -101,7 +102,7 @@ ordersRouter.post("/testingEmail", async (req, res) => {
     //   order,
     //   user_id
     // );
-    const emailSent = await sendingEmailToUserWhenOrderIsCreated(order);
+    const emailSent = await sendingOrderNotificationToTeam(order);
     return res.status(201).json({
       order_id: order.order_id,
       msg: emailSent
