@@ -686,7 +686,7 @@ export default function Warehouse_Details_View() {
                 />
 
                 <Spacer position="top" size="medium" />
-                {/* ***************************************************************************** */}
+                {/* **************** Shipping flat rate activation tile  ***************************************** */}
                 <Action_Container
                   width="95%"
                   // height="15%"
@@ -785,6 +785,83 @@ export default function Warehouse_Details_View() {
                         }}
                       />
                     )}
+                  </Container>
+                </Action_Container>
+                <Spacer position="top" size="medium" />
+                {/* ***************************************************************************** */}
+                {/* **************** Customer's Max Pickup distance limit tile  ***************************************** */}
+                <Action_Container
+                  width="95%"
+                  // height="15%"
+                  padding_vertical="25px"
+                  color={theme.colors.bg.screens_bg}
+                  // color={"lightgreen"}
+                  justify="center"
+                  align="flex-start"
+                  direction="row"
+                  onPress={handleToggleShippingFlatRate}
+                >
+                  <Container
+                    width="50%"
+                    style={{ alignSelf: "stretch" }}
+                    color={theme.colors.bg.screens_bg}
+                    //color={"lightblue"}
+                    justify="center"
+                    align="flex-start"
+                  >
+                    <Spacer position="left" size="large">
+                      <Text variant="raleway_bold_18">
+                        Max pickup distance limit
+                      </Text>
+                    </Spacer>
+                  </Container>
+                  <Container
+                    width="15%"
+                    style={{ alignSelf: "stretch" }}
+                    color={theme.colors.bg.screens_bg}
+                    //color={"lightgreen"}
+                    justify="center"
+                    align="center"
+                  />
+                  <Container
+                    width="35%"
+                    style={{
+                      alignSelf: "stretch",
+                      overflow: "visible", // Ensure no clipping occurs
+                    }}
+                    color={theme.colors.bg.screens_bg}
+                    justify="center"
+                    align="flex-end"
+                  >
+                    <DataInput
+                      value={String(
+                        selectedWarehouse?.max_limit_pickup_ratio ?? ""
+                      )}
+                      onChangeText={(value) => {
+                        const numericValue =
+                          parseFloat(value.replace(/[^0-9]/g, "")) || 0;
+
+                        setWarehouseSelected((prev) => ({
+                          ...prev,
+                          max_limit_pickup_ratio: numericValue,
+                        }));
+                      }}
+                      keyboardType="numeric"
+                      label=""
+                      border_color={theme.colors.inputs.bottom_lines_disabled}
+                      underlineColor={theme.colors.inputs.bottom_lines_disabled}
+                      activeUnderlineColor={theme.colors.ui.primary}
+                      style={{
+                        backgroundColor: "#D5D5D8",
+                        // borderRadius: 20, // Ensure border radius is applied
+                        height: 45,
+                        overflow: "visible", // Prevent clipping
+                      }}
+                      contentStyle={{
+                        fontFamily: "ralewayBold",
+                        fontSize: 16,
+                      }}
+                    />
                   </Container>
                 </Action_Container>
                 <Spacer position="top" size="medium" />

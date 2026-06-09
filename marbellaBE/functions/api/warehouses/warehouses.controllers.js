@@ -321,77 +321,7 @@ const getCheapestShippingRate = async (ship_to, ship_from, packages) => {
     throw formattedError;
   }
 };
-// const getCheapestShippingRate = async (ship_to, ship_from, packages) => {
-//   try {
-//     // const { ship_to, ship_from, packages } = req.body;
 
-//     // if (!ship_to || !ship_from || !packages?.length) {
-//     //   return res.status(400).json({
-//     //     error: true,
-//     //     message: "Missing ship_to, ship_from, or packages",
-//     //   });
-//     // }
-
-//     const payload = {
-//       rate_options: {
-//         // carrier_ids: [process.env.SHIPENGINE_UPS_CARRIER_ID],
-//         carrier_ids: [process.env.SHIPENGINE_UPS_CARRIER_ID],
-//       },
-//       shipment: {
-//         validate_address: "no_validation",
-//         ship_to,
-//         ship_from,
-//         packages,
-//       },
-//     };
-
-//     const response = await axios.post(SHIPENGINE_API_URL, payload, {
-//       headers: {
-//         // "API-Key": process.env.SHIPENGINE_API_KEY,
-//         "API-Key": process.env.SHIPENGINE_API_KEY,
-//         "Content-Type": "application/json",
-//       },
-//     });
-
-//     const rates = response.data?.rate_response?.rates || [];
-
-//     if (!rates.length) {
-//       return res.status(404).json({
-//         error: true,
-//         message: "No shipping rates found",
-//         invalid_rates: response.data?.rate_response?.invalid_rates || [],
-//       });
-//     }
-
-//     // Optional: only allow UPS Ground
-//     const allowedRates = rates.filter(
-//       (rate) => rate.service_code === "ups_ground"
-//     );
-
-//     const ratesToCompare = allowedRates.length ? allowedRates : rates;
-
-//     const cheapestRate = ratesToCompare.reduce((cheapest, current) => {
-//       if (!cheapest) return current;
-
-//       return current.shipping_amount.amount < cheapest.shipping_amount.amount
-//         ? current
-//         : cheapest;
-//     }, null);
-
-//     return {
-//       response: response.data,
-//       cheapestRate,
-//     };
-//   } catch (error) {
-//     console.log("SHIPENGINE RATE ERROR:", error.response?.data || error);
-
-//     return res.status(500).json({
-//       error: true,
-//       message: "Error getting shipping rates",
-//       details: error.response?.data || null,
-//     });
-//   }
-// };
 const creatingShippingLabel = async (rate_id) => {
   try {
     const response = await axios.post(
