@@ -1,0 +1,130 @@
+import React, { useContext, useMemo } from "react";
+import { SectionList, View } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useTheme } from "styled-components/native";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useTranslation } from "react-i18next";
+
+import { Container } from "../../components/containers/general.containers";
+import { Go_Back_Header_With_Label_And_Menu } from "../../components/headers/goBack_with_label_and_menu.header";
+import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
+import { SafeArea } from "../../components/spacers and globals/safe-area.component";
+import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
+import { Product_Initial_Card } from "../../components/cards/product_initial_card/product_intial.card";
+import { Text } from "../../infrastructure/typography/text.component";
+
+import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
+
+export default function Products_View() {
+  const navigation = useNavigation();
+  const { t } = useTranslation();
+  const tabBarHeight = useBottomTabBarHeight();
+  const route = useRoute();
+
+  const { coming_from, products: routeProducts } = route.params || {};
+  const { productsChosenForShop } = useContext(WarehouseContext);
+
+  const productsToRender =
+    Array.isArray(routeProducts) && routeProducts.length > 0
+      ? routeProducts
+      : productsChosenForShop;
+
+  const theme = useTheme();
+
+  // console.log(
+  //   "PRODUCTS CHOSEN FOR SHOP AT PRODUCTS VIEW: ",
+  //   JSON.stringify(productsChosenForShop, null, 2)
+  // );
+  console.log(
+    "PRODUCTS ROUTED FOR SHOP AT PRODUCTS VIEW: ",
+    JSON.stringify(routeProducts[0], null, 2)
+  );
+
+  const sections = useMemo(() => {
+    if (!Array.isArray(productsToRender)) return [];
+
+    const grouped = productsToRender.reduce((acc, product) => {
+      const country =
+        product?.country || product?.originCountry || "Other origins";
+
+      if (!acc[country]) {
+        acc[country] = [];
+      }
+
+      acc[country].push(product);
+      return acc;
+    }, {});
+
+    return Object.entries(grouped).map(([title, data]) => ({
+      title,
+      data,
+    }));
+  }, [productsToRender]);
+  console.log("SECTIONS:", JSON.stringify(sections, null, 2));
+  return (
+    <SafeArea
+      background_color={theme.colors.bg.elements_bg}
+      style={{ flex: 1 }}
+    >
+      <Container
+        width="100%"
+        height="100%"
+        // color={theme.colors.bg.elements_bg}
+        color={theme.colors.bg.screens_bg}
+        // color={"red"}
+        justify="flex-start"
+        align="center"
+        style={{ paddingBottom: 50 }}
+      >
+        <Go_Back_Header
+          action={() => navigation.goBack()}
+          caption={
+            coming_from === "whole_beans"
+              ? t("shop_view.header.whole")
+              : t("shop_view.header.ground")
+          }
+        />
+
+        <Spacer position="top" size="large" />
+        <SectionList
+          sections={sections}
+          stickySectionHeadersEnabled={false}
+          ItemSeparatorComponent={() => (
+            <View
+              style={{
+                height: 20,
+                backgroundColor: theme.colors.bg.screens_bg,
+              }}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            alignItems: "flex-start",
+            width: "100%",
+            paddingBottom: 24,
+            flexGrow: 1,
+            backgroundColor: theme.colors.bg.elements_bg,
+          }}
+          renderSectionHeader={({ section }) => (
+            <Container
+              width="100%"
+              padding_vertical="12px"
+              margin_top="16px"
+              margin_bottom="12px"
+              color={theme.colors.bg.elements_bg}
+              justify="flex-start"
+              align="flex-start"
+            >
+              <Spacer position="left" size="large">
+                <Text variant="dm_sans_bold_20">{section.title}</Text>
+              </Spacer>
+            </Container>
+          )}
+          renderItem={({ item }) => <Product_Initial_Card item={item} />}
+        />
+        <Spacer position="top" size="large" />
+      </Container>
+    </SafeArea>
+  );
+}

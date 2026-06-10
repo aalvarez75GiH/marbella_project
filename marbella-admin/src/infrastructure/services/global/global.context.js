@@ -149,7 +149,17 @@ export const Global_Context_Provider = ({ children }) => {
 
     return "";
   };
+  // infrastructure/utils/translations.helpers.js
 
+  const getTranslatedField = (field, language = "en", fallback = "en") => {
+    if (!field) return "";
+
+    if (typeof field === "object") {
+      return field?.[language] || field?.[fallback] || "";
+    }
+
+    return field;
+  };
   console.log("USER LANGUAGE AT GLOBAL CONTEXT:", globalLanguage);
   return (
     <GlobalContext.Provider
@@ -174,6 +184,7 @@ export const Global_Context_Provider = ({ children }) => {
         showStatusSnackbar,
         statusSnackbarMessage,
         getText,
+        getTranslatedField,
       }}
     >
       {children}

@@ -19,7 +19,6 @@ export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
   const { email, phone, opening_time, closing_time } =
     warehouse_information || {};
   const { formatCentsToUSD } = useContext(GlobalContext);
-  const formatted_currency = formatCentsToUSD;
 
   const { setWarehouseSelected } = useContext(WarehouseContext);
   const navigation = useNavigation();

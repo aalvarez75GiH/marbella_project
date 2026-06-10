@@ -17,7 +17,7 @@ export default function Warehouses_View() {
   const navigation = useNavigation();
   const tabBarHeight = useBottomTabBarHeight();
   const { warehouses } = useContext(WarehouseContext);
-  console.log("WAREHOUSE:", JSON.stringify(warehouses[3], null, 2));
+  // console.log("WAREHOUSE:", JSON.stringify(warehouses[3], null, 2));
 
   const renderingWarehousesFromBackendTile = ({ item }) => {
     const { warehouse_name, geo } = item;

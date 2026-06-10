@@ -1,0 +1,381 @@
+{
+  "headers": {
+    "main": {
+      "title": "Explore our coffee",
+      "subtitle": "Ground · Whole · Merchandise"
+    },
+    "grind_type": {
+      "caption.ground": "Ground",
+      "caption.whole": "Whole"
+    }
+  },
+  "bottom_tab_bar": {
+    "home": "Shop",
+    "orders": "Orders",
+    "cart": "Cart"
+  },
+  "menu": {
+    "title": "Account",
+    "profile_subTitle": "Profile",
+    "credentials_subTitle": "Credentials & account",
+    "help_subTitle": "Help & Support",
+    "tiles": {
+      "personal_info": "Personal info",
+      "transactions_history": "Transactions history",
+      "qr_code": "Your QR code",
+      "get_new_pin": "Get a new PIN number",
+      "switch_account": "Switch to another account",
+      "switch_language": "Cambiar a español",
+      "sign_out": "Sign out",
+      "warehouse": "Connected to warehouse:"
+    },
+    "welcome": "Welcome",
+    "sign_in_status": "You are signed out!",
+    "sign_in_cta": "Sign in / Sign up",
+    "activity_indicator": "Espera, cambiando a español...",
+    "sign_out_layout": {
+      "caption": "Are you sure about signing out?",
+      "cta": "Yes, Sign me out"
+    },
+    "get_a_new_pin_view": {
+      "title": "Enter your new PIN number...",
+      "data_input_1": "PIN number (only 6 digits)",
+      "data_input_2": "Repeat PIN number",
+      "pin_length_error": "PIN must be exactly 6 digits",
+      "pin_mismatch_error": "PIN doesn't match with previous one.",
+      "activity_indicator": "Wait, we are setting up your new PIN...",
+      "cta": "Update PIN",
+      "pin_first_required_error": "Please enter your new PIN number"
+    },
+    "switch_account_view": {
+      "title": "Switch to another account",
+      "email_input_placeholder": "Enter email address to switch",
+      "cta": "Next",
+      "activity_indicator": "Wait, we are switching your account...",
+      "show_other_users_1_caption": "Other accounts in this device (tap to switch)",
+      "show_other_users_loading": "Loading accounts...",
+      "email_error": "Please enter a valid email address",
+      "pin_switch_view": {
+        "caption": "Enter PIN number of the account",
+        "data_input": "PIN number (only 6 digits)",
+        "cta": "Switch",
+        "activity_indicator": "Wait, we are switching your account...",
+        "snack_bar": "Your account has been switched successfully!",
+        "snack_bar_error": "PIN is incorrect, please try again...",
+        "switched": "Switched"
+      }
+    },
+    "personal_info_view": {
+      "activity_indicator": "Wait, we are updating your info...",
+      "title": "Personal information",
+      "name_input_placeholder": "First Name",
+      "last_name_input_placeholder": "Last Name",
+      "email_input_placeholder": "Email address",
+      "phone_input_placeholder": "Phone number",
+      "address_input_placeholder": "Enter an address",
+      "cta": "Update",
+      "snack_bar_updated": "Your information was updated successfully.",
+      "snack_bar_auth_error": "Please log in again to change your email.",
+      "snack_bar_email_used": "Email already in used. Enter a different one...",
+
+      "first_name_required": "Please enter your first name.",
+      "last_name_required": "Please enter your last name.",
+      "email_required": "Please enter your email.",
+      "phone_required": "Please enter your phone number.",
+      "address_required": "Please enter your address."
+    },
+    "qr_code_view": {
+      "header": "Your QR code",
+      "caption_1": "Show this QR code at merchant",
+      "caption_2": "so they can get your orders, payments",
+      "caption_3": "and other info to make your",
+      "caption_4": "experience nicer!"
+    },
+    "reset_pin_view": {}
+  },
+  "login_screen": {
+    "title": "Let's start logging in...",
+    "activity_indicator": "Wait, we are logging you in...",
+    "data_input_email": "Email",
+    "data_input_pin": "PIN number (only 6 digits)",
+    "email_login_error": "Please enter a valid email address.",
+    "pin_login_error": "PIN number is incorrect, please try again.",
+    "user_not_found_error": "We could not find your account profile. Please register or check your email address"
+  },
+  "shop_products_view": {
+    "activity_indicator": "Wait, loading our products..."
+  },
+  "select_roast_type_view": {
+    "main_title": "Tap an option to select your roast type",
+    "secondary_title": "Each roast bring out unique flavors and aromas",
+    "roast_type_tiles": {
+      "captions": {
+        "light": "Light Roast",
+        "medium": "Medium Roast",
+        "dark": "Dark Roast"
+      },
+      "descriptions": {
+        "light": "The light roast highlights the original flavors of the coffee, with fruity and acidic notes.",
+        "medium": "The medium roast offers a balance between the original flavors and the roasted flavors",
+        "dark": " The dark roast highlights the roasted flavors of the coffee"
+      }
+    },
+    "tap_footer": "Tap a roast to see available coffees",
+    "activity_indicator": "Wait..."
+  },
+  "shop_view": {
+    "header": {
+      "ground": "Ground beans coffee",
+      "whole": "Whole beans coffee"
+    }
+  },
+  "product_details_view": {
+    "header": "Product details",
+    "activity_indicator": "Wait, we are adding to shopping cart...",
+    "details_card": {
+      "stock_hurry_caption": "Hurry! Only {{stock}} left in stock.",
+      "stock_sold_out_caption": "Sorry, this product size is sold out!",
+      "stock_available_caption": "{{stock}} Available in stock, you are lucky!",
+      "details_info": {
+        "add_to_cart_caption": "Add to cart"
+      },
+      "product_size_option": {
+        "caption": "Size options"
+      },
+      "description_ctas": {
+        "specs": "Specifications",
+        "ingredients": "Ingredients"
+      }
+    }
+  },
+  "shopping_cart_view": {
+    "header": "My Cart",
+    "title": "Shopping Cart",
+    "cta": "Proceed to checkout",
+    "activity_indicator": "Wait, updating your cart...",
+    "empty_cart_view": {
+      "user": {
+        "caption_1": "You are not logged in!",
+        "caption_2": "Go to menu and Sign in or Sign up",
+        "caption_3": "then go ahead and start filling your cart!!"
+      },
+      "filling": {
+        "caption_1": "Start filling your cart",
+        "caption_2": "as you add coffee products at Shop section",
+        "caption_3": " your cart will be shown up here..."
+      }
+    }
+  },
+  "delivery_type_view": {
+    "title": "Select delivery type",
+    "subTitle": "(For deliveries we usually ship with UPS)",
+    "pickup_cta": {
+      "caption": "Pick up"
+    },
+    "activity_indicator": "Wait, we are calculating delivery fees...",
+
+    "delivery_cta": {
+      "caption": "Delivery",
+      "address_placeholder": "Select your delivery address",
+      "delivery_option_tile": {
+        "caption_1": "Your current address:",
+        "caption_2": "Add a different address"
+      }
+    },
+    "different_delivery_view": {
+      "caption_1": "Do you want to enter a different delivery address?",
+      "caption_2": "Go ahead!",
+      "input_placeholder": "New delivery address",
+      "cta_caption": "Confirm & continue",
+      "activity_indicator": "Wait, Working with your new delivery address & delivery fees..."
+    }
+  },
+  "order_review_view": {
+    "header": "order review",
+    "order_info_tile": {
+      "handling": "Shipping & handling",
+      "tax": "Estimated tax",
+      "discounts": "Discounts",
+      "order_total": "Order total:"
+    },
+    "delivery_badge": {
+      "delivery": {
+        "caption_1": "Delivery",
+        "caption_2": "por solo {{shippingAmountInCents}}"
+      },
+      "pickup": {
+        "caption": "Free pick up"
+      }
+    },
+    "delivery_info_tile": {
+      "caption_pickup": "Pickup at",
+      "caption_delivery": "Delivery to",
+      "between": "Between",
+      "delivery_by": "Delivery by {{carrier_name}} - {{delivery_days}} {{day}}",
+      "away": "away"
+    },
+    "cta": "Continue to payment",
+    "products_in_the_order": "Products in the order"
+  },
+  "common": {
+    "day_one": "day",
+    "day_other": "days"
+  },
+  "payment_view": {
+    "title": "Your payment information",
+    "data_input_name": "Credit card holder Full name",
+    "card_verified_caption": "Card verified successfully!",
+    "cta": {
+      "processing": "Processing...",
+      "make": "Place your payment"
+    },
+    "errors": {
+      "name_required": "Please enter the card holder full name",
+      "card_required": "Please enter your card information to continue"
+    },
+    "activity_indicator": "Wait, we are processing your payment..."
+  },
+  "confirmation_view": {
+    "thanks": "Thanks for choosing us!",
+    "order_placed": "Order placed successfully!!",
+    "email_sent": "We have sent your receipt by email",
+    "view_receipt_cta": "View order receipt",
+    "go_home": "Tap to go Shop"
+  },
+  "order_receipt_view": {
+    "shipment_details": "Shipment details",
+    "products_in_the_order": "Products in the order",
+    "cta": "Done",
+    "payment_used": {
+      "title": "Payment method used",
+      "last_4": "Card ending in {{last_four}}"
+    }
+  },
+  "orders": {
+    "order_view": {
+      "snack_bar": {
+        "action_caption": "View QR",
+        "caption": "Show this QR code at merchant when pick up."
+      },
+      "shipment_details": "Shipment details",
+      "products_in_the_order": "Products in the order"
+    },
+    "rt_delivery_info_tile": {
+      "caption_pickup": "Pickup at",
+      "caption_delivery": "Delivery to",
+      "between": "Between",
+      "delivery_by": "Delivery by {{carrier_name}} - {{delivery_days}} {{day}}",
+      "away": "away"
+    },
+    "orders_tile": {
+      "date": "Order date:",
+      "order_number": "Order number:",
+      "total": "Order total:",
+      "pickup_since": "Pickup since {{short_formatted_date}}",
+      "shipping_eta": "Shipping estimated by {{ short_date}}",
+      "at": "at",
+      "status": {
+        "in_progress": "In Progress",
+        "finished": "Finished",
+        "refunded": "Refunded"
+      }
+    },
+    "orders_empty_view": {
+      "user_logged_out": {
+        "caption_1": "You are not logged in!",
+        "caption_2": "Go to menu and Sign in or Sign up",
+        "caption_3": "then go ahead and place orders!!"
+      },
+      "user_logged_in": {
+        "caption_1": "Start an order, Come on!!",
+        "caption_2": "as you make a purchase order at Shop section",
+        "caption_3": "it'll be shown up here"
+      }
+    }
+  },
+  "qr_code_view": {
+    "title": "Your QR code",
+    "caption": "Show this QR code at merchant when pick up.",
+    "screen_states": {
+      "finishing": {
+        "activity_indicator": "Wait, we are finishing up your order...",
+        "text": "Updating your order..."
+      },
+      "refunding": {
+        "activity_indicator": "Wait, we are refunding up your order...",
+        "text": "Updating your order..."
+      },
+      "finished": {
+        "text_1": "Thank you for trusting us!",
+        "text_2": "Your order has been marked as finished."
+      }
+    }
+  },
+  "shop_login_user_view": {
+    "activity_indicator": "Wait, we are logging you in...",
+    "title": " Login using your new email...",
+    "pin_data_input": "PIN number (only 6 digits)",
+    "forgot_cta": "Forgot your PIN?",
+    "sign_up_cta": "Sign Up",
+    "login_cta": "Login"
+  },
+  "email_verification_view": {
+    "caption_1": "Verify your new email",
+    "caption_2": "We sent a verification link to:",
+    "caption_3": "1) Open your email and tap the verification link",
+    "caption_4": "2) Come back here and tap",
+    "caption_5": "Continue",
+    "cta_1": "Checking...",
+    "cta_2": "Continue"
+  },
+  "authentication_views": {
+    "enter_names_view": {
+      "title": "Let's start with your name",
+      "data_input_first_name": "First name",
+      "data_input_last_name": "Last name",
+      "cta": "Next"
+    },
+    "enter_email_view": {
+      "title": "Enter your email",
+      "data_input_email": "Email",
+      "cta": "Next",
+      "snack_bar_email_error": "We couldn't validate your email address. Please try again with a different one or check for typos.",
+      "activity_indicator": "Wait, we are validating your email address..."
+    },
+    "enter_address_view": {
+      "title": "Enter your address",
+      "data_input_address": "Address",
+      "cta": "Next"
+    },
+    "enter_phone_view": {
+      "title": "Enter your phone number",
+      "data_input_phone": "Phone number",
+      "cta": "Next"
+    },
+    "info_review": {
+      "title": "Review your information",
+      "first_name": "First name:",
+      "last_name": "Last name:",
+      "email": "Email:",
+      "address": "Address:",
+      "phone": "Phone",
+      "cta": "Finish registration",
+      "cta_instead": "Login instead",
+      "user_exists_error": "You already have a account, please log in instead."
+    },
+    "showNameWarningSnackbar": {
+      "message": "Please enter your first name to continue"
+    },
+    "code_verification_view": {
+      "title_1": "Go to you email: ",
+      "title_2": "and tell us what code you received to verify your email",
+      "snack_bar_error": "Incorrect verification code. Request a new code."
+    },
+    "decrypted_pin_view": {
+      "title_1": "Your PIN has been recovered",
+      "title_2": "This is the PIN linked to:",
+      "cta": "Go to login",
+      "activity_indicator": "Recovering your PIN..."
+    }
+  }
+}

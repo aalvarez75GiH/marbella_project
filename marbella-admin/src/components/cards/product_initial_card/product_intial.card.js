@@ -1,43 +1,47 @@
 import React, { useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
 
-import {
-  Action_Container,
-  Container,
-} from "../../containers/general.containers.js";
+import { Action_Container } from "../../containers/general.containers.js";
 import { theme } from "../../../infrastructure/theme/index.js";
 import { Rating_And_Country_Flag_Component } from "./rating_and_country_flag.component.js";
 import { Product_Image_Component } from "./product_image.component.js";
 import { Product_Initial_Info_Component } from "./product_intial_info.component.js";
 import { Product_Identification_Line } from "./product_identification_line.component.js";
 import { FLAGS_BY_KEY } from "../../../infrastructure/local_data/images_mapping/flags.maps.js";
-import { Text } from "../../../infrastructure/typography/text.component.js";
 import { Product_Initial_OOS_Info_Component } from "./product_initial_oos_info.component.js";
 
 import { AuthenticationContext } from "../../../infrastructure/services/authentication/authentication.context.js";
 
 export const Product_Initial_Card = ({ item = null }) => {
-  console.log("PRODUCT INITIAL CARD ITEM:", JSON.stringify(item, null, 2));
   const {
-    // flag_image: FlagImage,
     flag_key,
     product_name,
     product_subtitle,
     rating,
     size_variants,
     totalStock,
+    totalQty,
+    inStock,
+    grindType,
   } = item || {};
 
-  const { comingFrom, setComingFrom } = useContext(AuthenticationContext);
+  const stock = Number(totalStock ?? totalQty ?? 0);
+  console.log("STOCK VALUE AT PRODUCT INITIAL CARD:", stock);
+  const isProductInStock = inStock === true || stock > 0;
+
+  // console.log("PRODUCT INITIAL CARD ITEM:", JSON.stringify(item, null, 2));
+
+  const { setComingFrom } = useContext(AuthenticationContext);
 
   const normalizedFlagKey = String(flag_key ?? "")
     .trim()
     .toLowerCase();
   const FlagImage = FLAGS_BY_KEY[normalizedFlagKey] ?? null;
-  console.log("TOTAL STOCK: ", totalStock);
+
   const defaultVariant =
-    item.size_variants.find((v) => v.isDefault) || item.size_variants[0];
-  const productMainImage = defaultVariant.images[0];
+    item?.size_variants?.find((v) => v.isDefault) || item?.size_variants?.[0];
+
+  const productMainImage = defaultVariant?.images?.[0] ?? null;
 
   const navigation = useNavigation();
 
@@ -58,25 +62,36 @@ export const Product_Initial_Card = ({ item = null }) => {
       justify="flex-start"
       color={theme.colors.bg.elements_bg}
       // onPress={() => handleNavigate(item)}
-      onPress={
-        () => (totalStock > 0 ? handleNavigate(item) : null) // Replace with your desired action
-      }
+      onPress={() => {
+        if (isProductInStock) {
+          handleNavigate(item);
+        }
+      }}
+      // onPress={
+      //   () => (totalStock > 0 ? handleNavigate(item) : null) // Replace with your desired action
+      // }
     >
       <Rating_And_Country_Flag_Component
         rating={rating}
         FlagImage={FlagImage}
       />
       <Product_Image_Component image={productMainImage} />
-      {/* {totalStock > 0 && ( */}
-      <Product_Initial_Info_Component
-        product_name={product_name}
-        product_subtitle={product_subtitle}
-        size_variants={size_variants}
-      />
-      {/* )} */}
-      {totalStock === 0 && <Product_Initial_OOS_Info_Component />}
+      {isProductInStock ? (
+        <Product_Initial_Info_Component
+          product_name={product_name}
+          product_subtitle={product_subtitle}
+          size_variants={size_variants}
+        />
+      ) : (
+        <Product_Initial_OOS_Info_Component
+          product_name={product_name}
+          product_subtitle={product_subtitle}
+        />
+      )}
 
-      <Product_Identification_Line product_color={"#CA7B53"} />
+      <Product_Identification_Line
+        product_color={grindType === "ground" ? "#FAB844" : "#FB4762"}
+      />
     </Action_Container>
   );
 };

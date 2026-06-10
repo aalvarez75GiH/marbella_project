@@ -22,7 +22,6 @@ export const colors = {
   bg: {
     screens_bg: "#F5F4F4",
     elements_bg: "#FFFFFF",
-    warehouse_tile: "#E0E0E0",
   },
   text: {
     black: "#000000",
@@ -48,5 +47,15 @@ export const colors = {
     inProgress: "#FFBA08",
     finished: "#247F35",
     refunded: "#CD491B",
+  },
+  roasts_borders: {
+    light: "#E8B65C",
+    medium: "#B56A12",
+    dark: "#4A2A1A",
+  },
+  roastBackgrounds: {
+    light: "#FFF6E8",
+    medium: "#F7EFE6",
+    dark: "#EEE7E3",
   },
 };

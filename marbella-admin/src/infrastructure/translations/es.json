@@ -1,0 +1,386 @@
+{
+  "headers": {
+    "main": {
+      "title": "Explora nuestro café",
+      "subtitle": "Molido · Entero · Mercancía"
+    },
+    "grind_type": {
+      "caption.ground": "Molido",
+      "caption.whole": "Entero"
+    }
+  },
+  "bottom_tab_bar": {
+    "home": "Cómpra",
+    "orders": "Órdenes",
+    "cart": "Carrito"
+  },
+  "menu": {
+    "title": "Tú cuenta",
+    "profile_subTitle": "Perfíl",
+    "credentials_subTitle": "Credenciales & cuenta",
+    "help_subTitle": "Ayuda & Soporte",
+    "tiles": {
+      "personal_info": "Información personal",
+      "transactions_history": "Historial de transacciones",
+      "qr_code": "Tu código QR",
+      "get_new_pin": "Obtener nuevo PIN",
+      "switch_account": "Cambiar de cuenta",
+      "switch_language": "Switch to english",
+      "sign_out": "Cerrar sesión",
+      "warehouse": "Conectado a warehouse:"
+    },
+    "welcome": "Bienvenido ",
+    "sign_in_status": "No has iniciado sesión!",
+    "sign_in_cta": "Iniciar sesión",
+    "activity_indicator": "Wait, switching to english...",
+    "sign_out_layout": {
+      "caption": "¿Estas seguro que quieres salir?",
+      "cta": "Si, quiero salir"
+    },
+    "get_a_new_pin_view": {
+      "title": "Introduce tu nuevo PIN...",
+      "data_input_1": "Número PIN (Sólo 6 dígitos)",
+      "data_input_2": "Repite el número PIN",
+      "pin_mismatch_error": "Los PIN no coinciden, intenta de nuevo",
+      "pin_length_error": "El PIN debe tener 6 dígitos",
+      "activity_indicator": "Espera, configurando tu nuevo PIN...",
+      "cta": "Actualizar PIN",
+      "pin_first_required_error": "Introduzca el 1er número PIN"
+    },
+    "switch_account_view": {
+      "title": "Cambiar a otra cuenta",
+      "email_input_placeholder": "Introduce el email de la cuenta",
+      "cta": "Siguiente",
+      "activity_indicator": "Espera, cambiando tu cuenta...",
+      "show_other_users_1_caption": "Otras cuentas en este dispositivo (presiona para cambiar)",
+      "show_other_users_loading": "Cargando cuentas...",
+      "email_error": "Por favor introduce una dirección de email válida",
+      "pin_switch_view": {
+        "caption": "Introduce el número PIN para cambiar...",
+        "data_input": "Número PIN (Sólo 6 dígitos)",
+        "cta": "Cambiar",
+        "activity_indicator": "Espera, cambiando tu cuenta...",
+        "snack_bar": "Cuenta cambiada exitosamente!",
+        "snack_bar_error": "PIN incorrectp, intenta de nuevo",
+        "invalid_pin": "PIN incorrecto, intenta de nuevo",
+        "switched": "Cambiado!"
+      }
+    },
+    "personal_info_view": {
+      "activity_indicator": "Espera, actualizando tu información personal...",
+      "title": " Información personal",
+      "name_input_placeholder": "Nombre",
+      "last_name_input_placeholder": "Apellido",
+      "email_input_placeholder": "Email",
+      "phone_input_placeholder": "Número de teléfono",
+      "address_input_placeholder": "Introduzca su dirección",
+      "cta": "Actualizar",
+      "snack_bar_updated": "Información actualizada exitosamente!",
+      "snack_bar_auth_error": "Por favor, vuelve a iniciar sesión.",
+      "snack_bar_email_used": "La dirección de email ya está en uso, por favor elige otra.",
+      "first_name_required": "Por favor, introduce tu nombre.",
+      "last_name_required": "Por favor, introduce tu apellido.",
+      "email_required": "Por favor, introduce tu email.",
+      "phone_required": "Por favor, introduce tu número de teléfono.",
+      "address_required": "Por favor, introduce tu dirección."
+    },
+    "qr_code_view": {
+      "header": "Tu código QR",
+      "caption_1": "Muestra este codigo QR",
+      "caption_2": "así ellos pueden ver tus órdenes, pagos",
+      "caption_3": "y otra información importante ",
+      "caption_4": "y brindarte una mejor experiencia"
+    }
+  },
+  "login_screen": {
+    "title": "Comencemos inciando sesión...",
+    "activity_indicator": "Espera, iniciando sesión...",
+    "data_input_email": "Email",
+    "data_input_pin": "Número PIN (Sólo 6 dígitos)",
+    "email_login_error": "introduzca un email válido",
+    "pin_login_error": "Número PIN incorrecto, intenta de nuevo",
+    "user_not_found_error": "No se encontró un usuario con este email. Regístrate o chequea el email"
+  },
+  "shop_products_view": {
+    "activity_indicator": "Espera, cargando nuestros productos..."
+  },
+  "select_roast_type_view": {
+    "main_title": "Presiona una opción para el tostado",
+    "secondary_title": "Cada tostado resalta sabores y aromas únicos",
+    "roast_type_tiles": {
+      "captions": {
+        "light": "Tostado claro",
+        "medium": "Tostado medio",
+        "dark": "Tostado oscuro"
+      },
+      "descriptions": {
+        "light": "El tostado claro resalta los sabores originales del café, con notas frutales y ácidas.",
+        "medium": "El tostado medio ofrece un equilibrio entre los sabores originales y los sabores tostados",
+        "dark": "El tostado oscuro resalta los sabores tostados del café"
+      }
+    },
+    "tap_footer": "Presiona un tostado para ver los cafés disponibles",
+    "activity_indicator": "Espera..."
+  },
+  "shop_view": {
+    "header": {
+      "ground": "Café de grano molido",
+      "whole": "Café de grano entero"
+    }
+  },
+  "product_details_view": {
+    "header": "Detalles del producto",
+    "activity_indicator": "Espera, agregando al carrito de compras...",
+    "details_card": {
+      "stock_hurry_caption": "Apurate! solo {{stock}} quedan en stock.",
+      "stock_sold_out_caption": "Sorry, Este tamaño esta agotado!",
+      "stock_available_caption": "{{stock}} Dísponible en stock, tienes suerte!!",
+      "details_info": {
+        "add_to_cart_caption": "Agregar"
+      },
+      "product_size_option": {
+        "caption": "Tamaños"
+      },
+      "description_ctas": {
+        "specs": "Especificaciones",
+        "ingredients": "Ingredientes"
+      }
+    }
+  },
+  "shopping_cart_view": {
+    "header": "Mi Carrito",
+    "title": "Carrito de compras",
+    "cta": "Proceder al pago",
+    "activity_indicator": "Espera, actualizando tu carrito...",
+    "empty_cart_view": {
+      "user": {
+        "caption_1": "No has iniciado sesión!",
+        "caption_2": "Ve al menú e inicia sesión o regístrate",
+        "caption_3": "luego anda y comienza a llenar tu carrito!!"
+      },
+      "filling": {
+        "caption_1": "Comienza a llenar tu carrito",
+        "caption_2": "Ve a Shop y elige tus productos favoritos,",
+        "caption_3": "¡te encantarán!"
+      }
+    }
+  },
+  "delivery_type_view": {
+    "title": "Selecciona tipo de entrega",
+    "subTitle": "(Para deliveries usualmente enviamos con UPS)",
+    "pickup_cta": {
+      "caption": "Recoger"
+    },
+    "activity_indicator": "Espera, calculando fees de entrega...",
+
+    "delivery_cta": {
+      "caption": "A domicilio",
+      "address_placeholder": "Selecciona tu dirección de entrega",
+      "delivery_option_tile": {
+        "caption_1": "Tu dirección actual:",
+        "caption_2": "Agrega una dirección diferente"
+      }
+    },
+    "different_delivery_view": {
+      "caption_1": "Quiéres el delivery en otra dirección?",
+      "caption_2": "Adelante!",
+      "input_placeholder": "Nueva dirección de entrega",
+      "cta_caption": "Confirmar & Continuar",
+      "activity_indicator": "Espera, confirmando tu dirección & calculando costos..."
+    }
+  },
+  "order_review_view": {
+    "header": "Resumen del pedido",
+    "order_info_tile": {
+      "handling": "Envío & fees",
+      "tax": "Impuestos estimados",
+      "discounts": "Descuentos",
+      "order_total": "Total del pedido"
+    },
+    "delivery_badge": {
+      "delivery": {
+        "caption_1": "Entrega",
+        "caption_2": "por solo {{shippingAmountInCents}}"
+      },
+      "pickup": {
+        "caption": "Recoger gratis"
+      }
+    },
+    "delivery_info_tile": {
+      "caption_pickup": "Recoger en",
+      "caption_delivery": "Entregar a",
+      "between": "Entre",
+      "common": {
+        "day_one": "día",
+        "day_other": "días"
+      },
+
+      "delivery_by": "Entrega por {{carrier_name}} - {{delivery_days}} {{day}}",
+      "away": "de distancia"
+    },
+    "cta": "Realizar el pago",
+    "products_in_the_order": "Productos en el pedido"
+  },
+  "payment_view": {
+    "title": "Tú información de pago",
+    "data_input_name": "Nombre del titular de la tarjeta de crédito",
+    "card_verified_caption": "Tarjeta verificada!",
+    "cta": {
+      "processing": "Procesando...",
+      "make": "Hacer el pago"
+    },
+    "errors": {
+      "name_required": "Por favor, introduce el nombre del titular de la tarjeta de crédito",
+      "card_required": "Por favor, introduce los detalles de tu tarjeta de crédito"
+    },
+    "activity_indicator": "Espera, procesando tu pago..."
+  },
+  "confirmation_view": {
+    "thanks": "Gracias por elegirnos!",
+    "order_placed": "Orden realizada exitosamente.",
+    "email_sent": "Hemos enviado tu recibo por correo electrónico",
+    "view_receipt_cta": "Ver recibo",
+    "go_home": "Volver a Shop"
+  },
+  "order_receipt_view": {
+    "shipment_details": "Detalles del envío",
+    "products_in_the_order": "Productos en la orden",
+    "cta": "Listo",
+    "payment_used": {
+      "title": "Método de pago utilizado",
+      "last_4": "Tarjeta terminada en {{last_four}}"
+    }
+  },
+  "orders": {
+    "order_view": {
+      "snack_bar": {
+        "action_caption": "Ver QR",
+        "caption": "Muestra este código QR en tu tienda local para recoger tu orden"
+      },
+      "shipment_details": "Detalles del envío",
+      "products_in_the_order": "Productos en la orden"
+    },
+    "rt_delivery_info_tile": {
+      "caption_pickup": "Recoger en",
+      "caption_delivery": "Entregar a",
+      "between": "Entre",
+      "delivery_by": "Entrega por {{carrier_name}} - {{delivery_days}} {{day}}",
+      "away": "de distancia",
+      "common": {
+        "day_one": "día",
+        "day_other": "días"
+      }
+    },
+
+    "orders_tile": {
+      "date": "Fecha de la órden:",
+      "order_number": "Número de orden:",
+      "total": "Total:",
+      "pickup_since": "Recoger a partir de {{short_formatted_date}}",
+      "shipping_eta": "Entrega estimada para {{ short_date}}",
+      "at": "en",
+      "status": {
+        "in_progress": "En progreso",
+        "finished": "Finalizado",
+        "refunded": "Reembolsado"
+      }
+    },
+    "orders_empty_view": {
+      "user_logged_out": {
+        "caption_1": "No has iniciado sesión!",
+        "caption_2": "Ve al menú e inicia sesión o regístrate",
+        "caption_3": "luego anda y comienza a hacer órdenes!!"
+      },
+      "user_logged_in": {
+        "caption_1": "Comienza a hacer órdenes",
+        "caption_2": "Ve a Shop y elige tus cafés favoritos,",
+        "caption_3": "¡te encantarán!"
+      }
+    }
+  },
+  "qr_code_view": {
+    "title": "Tu código QR",
+    "caption": "Muestra este código QR al recoger tu orden",
+    "screen_states": {
+      "finishing": {
+        "activity_indicator": "Espera, estamos finalizando tu orden...",
+        "text": "Actualizando tu orden..."
+      },
+      "refunding": {
+        "activity_indicator": "Espera, estamos reembolsando tu orden...",
+        "text": "Actualizando tu orden..."
+      },
+      "finished": {
+        "text_1": "Gracias por confiar en nosotros!",
+        "text_2": "Tu orden ha sido marcada como finalizada."
+      }
+    }
+  },
+  "shop_login_user_view": {
+    "activity_indicator": "Espera, iniciando sesión...",
+    "title": "Inicia sesión con tu nuevo email...",
+    "pin_data_input": "Número PIN (Sólo 6 dígitos)",
+    "forgot_cta": "Olvidé mi PIN",
+    "sign_up_cta": "Registrarse",
+    "login_cta": "Iniciar sesión"
+  },
+  "email_verification_view": {
+    "caption_1": "Verifica tu nuevo email",
+    "caption_2": "Hemos enviado un email de verificación a tu correo electrónico...",
+    "caption_3": "1) Ve a tu correo electrónico, abre el email de verificación y haz clic en el botón de verificación",
+    "caption_4": "2) Regresa aquí y haz clic en Continuar",
+    "caption_5": "Continuar",
+    "cta_1": "Chequeando...",
+    "cta_2": "Continuar"
+  },
+  "authentication_views": {
+    "enter_names_view": {
+      "title": "Introduzca su nombre",
+      "data_input_first_name": "Nombre",
+      "data_input_last_name": "Apellido",
+      "cta": "Continuar"
+    },
+    "enter_email_view": {
+      "title": "Introduzca su email",
+      "data_input_email": "Correo electrónico",
+      "cta": "Continuar",
+      "snack_bar_email_error": "No pudimos validar esta cuenta de correo. Chequea si no tienes un error",
+      "activity_indicator": "Espera, validando tu email..."
+    },
+    "enter_address_view": {
+      "title": "Introduzca su dirección",
+      "data_input_address": "Dirección",
+      "cta": "Continuar"
+    },
+    "enter_phone_view": {
+      "title": "Introdúzca su número de teléfono",
+      "data_input_phone": "Número de teléfono",
+      "cta": "Continuar"
+    },
+    "info_review": {
+      "title": "Resúmen de tu información",
+      "first_name": "Nómbre:",
+      "last_name": "Apellido:",
+      "email": "Email:",
+      "address": "Dirección:",
+      "phone": "Teléfono:",
+      "cta": "Registrar",
+      "cta_instead": "Inicia sesión",
+      "user_exists_error": "Ya existe un usuario con este email, inicia sesión o regístrate con otro"
+    },
+    "showNameWarningSnackbar": {
+      "message": "Por favor, introduce tu nombre para continuar"
+    },
+    "code_verification_view": {
+      "title_1": "Ve a tu correo:",
+      "title_2": "y dinos que codigo de verificación te enviamos",
+      "snack_bar_error": "Código incorrecto, intenta de nuevo"
+    },
+    "decrypted_pin_view": {
+      "title_1": "¡Recuperación exitosa!",
+      "title_2": "Este PIN pertenece al email:",
+      "cta": "Iniciar sesión",
+      "activity_indicator": "Espera, recobrando tu PIN..."
+    }
+  }
+}

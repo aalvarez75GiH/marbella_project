@@ -53,33 +53,11 @@ export const Warehouse_Context_Provider = ({ children }) => {
   const [warehouseSelected, setWarehouseSelected] = useState(
     WAREHOUSE_INITIAL_STATE
   );
-  // const [warehouseSelected, setWarehouseSelected] = useState({
-  //   warehouse_name: "",
-  //   warehouse_id: "",
-  //   active: true,
-  //   max_delivery_time: 0,
-  //   max_limit_delivery_ratio: 32186.8,
-  //   max_limit_pickup_ratio: 32186.8,
-  //   physical_address: "",
-  //   geo: {},
-  //   warehouse_information: {
-  //     representative: {
-  //       name: "",
-  //       email: "",
-  //       phone_number: "",
-  //     },
-  //     email: "",
-  //     phone: "",
-  //     opening_time: "08:00 AM",
-  //     closing_time: "05:00 PM",
-  //   },
-  //   inventory: {},
-  //   ship_from: {},
-  //   shipping_information: {
-  //     is_shipping_flat_rate_active: false,
-  //     shipping_flat_rate: 0,
-  //   },
-  // });
+  const [editableInventory, setEditableInventory] = useState(
+    warehouseSelected.inventory || {}
+  );
+  const [productsChosenForShop, setProductsChosenForShop] = useState([]);
+
   // later you’ll set this based on geolocation
   const { productsCatalog } = useContext(GlobalContext);
 
@@ -106,6 +84,10 @@ export const Warehouse_Context_Provider = ({ children }) => {
 
     fetchAllWarehouses();
   }, []);
+
+  useEffect(() => {
+    setEditableInventory(warehouseSelected?.inventory || {});
+  }, [warehouseSelected?.warehouse_id]);
 
   const makeSku = (productId, variantId) => `${productId}:${variantId}`;
 
@@ -143,6 +125,10 @@ export const Warehouse_Context_Provider = ({ children }) => {
       })
       .map((p) => {
         const size_variants = (p.size_variants ?? []).map((v) => {
+          const sku = `${p.id}:${v.id}`;
+          console.log("SKU CHECK:", sku);
+          console.log("INVENTORY VALUE:", inventoryMap[sku]);
+          console.log("INVENTORY MAP KEYS:", Object.keys(inventoryMap));
           const qty = Number(inventoryMap[`${p.id}:${v.id}`] ?? 0);
 
           return {
@@ -425,6 +411,22 @@ export const Warehouse_Context_Provider = ({ children }) => {
     };
   };
 
+  const groundProductsForUI = useMemo(() => {
+    return buildInventoryProducts({
+      productsCatalog,
+      inventoryMap: editableInventory,
+      grindType: "ground",
+    });
+  }, [productsCatalog, editableInventory]);
+
+  const wholeProductsForUI = useMemo(() => {
+    return buildInventoryProducts({
+      productsCatalog,
+      inventoryMap: editableInventory,
+      grindType: "whole",
+    });
+  }, [productsCatalog, editableInventory]);
+
   return (
     <WarehouseContext.Provider
       value={{
@@ -446,6 +448,9 @@ export const Warehouse_Context_Provider = ({ children }) => {
         WAREHOUSE_INITIAL_STATE,
         normalizeWarehouseShipFrom,
         // handleChangeVariantQty,
+        groundProductsForUI,
+        wholeProductsForUI,
+        setProductsChosenForShop,
       }}
     >
       {children}

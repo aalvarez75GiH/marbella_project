@@ -325,6 +325,9 @@ export default function Warehouse_Details_View() {
             color={theme.colors.bg.elements_bg}
             justify="flex-start"
             align="center"
+            // style={{
+            //   paddingBottom: tabBarHeight,
+            // }}
           >
             <Go_Back_Header label="" action={handleGoBack} />
 
@@ -961,10 +964,11 @@ export default function Warehouse_Details_View() {
                   align="flex-start"
                   direction="row"
                   onPress={() =>
-                    navigation.navigate("Warehouse_Inventory_View", {
-                      coming_from: coming_from,
-                    })
+                    navigation.navigate("Products_By_grindType_View")
                   }
+                  style={{
+                    marginBottom: 70,
+                  }}
                 >
                   <Container
                     width="75%"
