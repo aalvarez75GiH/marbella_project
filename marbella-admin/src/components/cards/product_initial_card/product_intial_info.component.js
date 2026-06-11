@@ -23,7 +23,7 @@ export const Product_Initial_Info_Component = ({
   return (
     <Container
       width="100%"
-      height="26%"
+      height="15%"
       color={theme.colors.bg.elements_bg}
       // color={"lightgreen"}
       justify="center"
@@ -43,26 +43,6 @@ export const Product_Initial_Info_Component = ({
           <Text variant="raleway_bold_18">{productNameText}</Text>
           <Text variant="raleway_bold_18">{productSubtitleText}</Text>
         </Spacer>
-        <Container
-          width="100%"
-          height="45%"
-          color={theme.colors.bg.elements_bg}
-          // color={"blue"}
-          justify="flex-start"
-          align="flex-start"
-          direction="row"
-        >
-          <Spacer position="left" size="large" />
-          <Text variant="raleway_bold_18">{size_variants[0].sizeLabel}</Text>
-          <Spacer position="left" size="medium" />
-          <Container width="2px" height="25px" color="#000000" />
-          <Spacer position="left" size="large" />
-          <Text variant="raleway_bold_18">{size_variants[1].sizeLabel}</Text>
-          <Spacer position="left" size="medium" />
-          <Container width="2px" height="25px" color="#000000" />
-          <Spacer position="left" size="large" />
-          <Text variant="raleway_bold_18">{size_variants[2].sizeLabel}</Text>
-        </Container>
       </Container>
       <Container
         width="25%"
@@ -71,14 +51,7 @@ export const Product_Initial_Info_Component = ({
         // color="lightyellow"
         justify="center"
         align="center"
-      >
-        <Text
-          variant="raleway_bold_14"
-          style={{ color: "#247F35", textDecorationLine: "underline" }}
-        >
-          View
-        </Text>
-      </Container>
+      ></Container>
     </Container>
   );
 };

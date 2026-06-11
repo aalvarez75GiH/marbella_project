@@ -26,21 +26,10 @@ export default function Products_By_Roast_View() {
   const tabBarHeight = useBottomTabBarHeight();
   const navigation = useNavigation();
   const route = useRoute();
-  const { coming_from } = route.params || {};
+  const { coming_from, grind_type } = route.params || {};
   console.log("coming from at filterProductsByRoast:", coming_from);
 
-  const {
-    isLoading: whLoading,
-    setProductsChosenForShop,
-    shopProductsGround,
-    shopProductsWhole,
-    groundProductsForUI,
-    wholeProductsForUI,
-  } = useContext(WarehouseContext);
-  //   console.log(
-  //     "GROUND PRODUCTS FOR UI AT ROAST TYPE VIEW: ",
-  //     JSON.stringify(groundProductsForUI, null, 2)
-  //   );
+  const { setSelectedRoastType } = useContext(WarehouseContext);
 
   const [isLoading, setIsLoading] = useState(false);
   const [roastTypeSelected, setRoastTypeSelected] = useState("light");
@@ -50,48 +39,18 @@ export default function Products_By_Roast_View() {
     }, [])
   );
 
-  const filterProductsByRoast = (roastType, coming_from) => {
-    console.log("coming from at filterProductsByRoast:", coming_from);
-
+  const filterProductsByRoast = (roastType) => {
     setIsLoading(true);
     setRoastTypeSelected(roastType);
 
     setTimeout(() => {
       try {
-        const baseProducts =
-          coming_from === "ground_beans"
-            ? groundProductsForUI || []
-            : wholeProductsForUI || [];
-
-        // console.log("BASE PRODUCTS:", JSON.stringify(baseProducts, null, 2));
-
-        const filteredProducts = baseProducts.filter((product) => {
-          const roast =
-            product?.roast ||
-            product?.roast_type ||
-            product?.roastType ||
-            product?.roast_level;
-
-          return roast?.toLowerCase() === roastType.toLowerCase();
-        });
-
-        // console.log(
-        //   "FILTERED PRODUCTS:",
-        //   JSON.stringify(filteredProducts, null, 2)
-        // );
-
-        setProductsChosenForShop(filteredProducts);
+        setSelectedRoastType(roastType);
 
         navigation.navigate("Products_View", {
-          coming_from:
-            coming_from === "ground_beans" ? "ground_beans" : "whole_beans",
-          products: filteredProducts,
+          coming_from,
+          grind_type,
         });
-
-        // navigation.navigate("Products_View", {
-        //   coming_from:
-        //     coming_from === "ground_beans" ? "ground_beans" : "whole_beans",
-        // });
       } catch (error) {
         console.error("Error filtering products by roast type:", error);
       } finally {
@@ -154,7 +113,7 @@ export default function Products_By_Roast_View() {
                 roast_description={t(
                   "select_roast_type_view.roast_type_tiles.descriptions.light"
                 )}
-                action={() => filterProductsByRoast("light", coming_from)}
+                action={() => filterProductsByRoast("light")}
                 roastTypeSelected={roastTypeSelected}
               />
               <Spacer position="top" size="large" />
@@ -168,7 +127,7 @@ export default function Products_By_Roast_View() {
                 roast_description={t(
                   "select_roast_type_view.roast_type_tiles.descriptions.medium"
                 )}
-                action={() => filterProductsByRoast("medium", coming_from)}
+                action={() => filterProductsByRoast("medium")}
                 roastTypeSelected={roastTypeSelected}
               />
               <Spacer position="top" size="large" />
@@ -181,7 +140,7 @@ export default function Products_By_Roast_View() {
                 roast_description={t(
                   "select_roast_type_view.roast_type_tiles.descriptions.dark"
                 )}
-                action={() => filterProductsByRoast("dark", coming_from)}
+                action={() => filterProductsByRoast("dark")}
                 roastTypeSelected={roastTypeSelected}
               />
 

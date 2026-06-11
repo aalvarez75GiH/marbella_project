@@ -963,8 +963,12 @@ export default function Warehouse_Details_View() {
                   justify="center"
                   align="flex-start"
                   direction="row"
-                  onPress={() =>
-                    navigation.navigate("Products_By_grindType_View")
+                  onPress={
+                    () =>
+                      navigation.navigate("Products_By_grindType_View", {
+                        coming_from,
+                      })
+                    // navigation.navigate("Products_By_grindType_View")
                   }
                   style={{
                     marginBottom: 70,

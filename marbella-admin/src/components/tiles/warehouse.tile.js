@@ -29,7 +29,7 @@ export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
 
   const active_bg_color = active
     ? theme.colors.ui.primary
-    : theme.colors.bg.warehouse_tile;
+    : theme.colors.bg.screens_bg;
 
   return (
     <>
@@ -171,8 +171,8 @@ export const Warehouse_Tile = ({ warehouse_name, warehouse_address, item }) => {
             {active && (
               <Spacer position="left" size="medium">
                 <SuccessIcon
-                  width={20}
-                  height={20}
+                  width={15}
+                  height={15}
                   color={active ? "#FFFFFF" : theme.colors.ui.success}
                 />
               </Spacer>

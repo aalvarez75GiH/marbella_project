@@ -6,7 +6,6 @@ import React, {
   useContext,
 } from "react";
 import {
-  gettingWarehouseByIDRequest,
   gettingAllWarehousesRequest,
   updatingWarehouseInventoryRequest,
   updateWarehouseRequest,
@@ -56,15 +55,10 @@ export const Warehouse_Context_Provider = ({ children }) => {
   const [editableInventory, setEditableInventory] = useState(
     warehouseSelected.inventory || {}
   );
-  const [productsChosenForShop, setProductsChosenForShop] = useState([]);
+  const [selectedGrindType, setSelectedGrindType] = useState(null);
+  const [selectedRoastType, setSelectedRoastType] = useState(null);
 
-  // later you’ll set this based on geolocation
   const { productsCatalog } = useContext(GlobalContext);
-
-  const { deviceLat, deviceLng } = useContext(GeolocationContext);
-  // let deviceLat = 36.1060631;
-  // let deviceLng = -86.74432890000001;
-  // console.log("MY WAREHOUSE CONTEXT AT CONTEXT", myWarehouse);
 
   useEffect(() => {
     const fetchAllWarehouses = async () => {
@@ -124,21 +118,38 @@ export const Warehouse_Context_Provider = ({ children }) => {
         return productGrindType === requestedGrindType;
       })
       .map((p) => {
+        // const size_variants = (p.size_variants ?? []).map((v) => {
+        //   const sku = `${p.id}:${v.id}`;
+        //   const rawQty = inventoryMap[sku];
+
+        //   const qty =
+        //     rawQty === "" || rawQty === null || rawQty === undefined
+        //       ? ""
+        //       : Number(rawQty);
+
+        //   return {
+        //     ...v,
+        //     qty,
+        //   };
+        // });
         const size_variants = (p.size_variants ?? []).map((v) => {
           const sku = `${p.id}:${v.id}`;
-          console.log("SKU CHECK:", sku);
-          console.log("INVENTORY VALUE:", inventoryMap[sku]);
-          console.log("INVENTORY MAP KEYS:", Object.keys(inventoryMap));
-          const qty = Number(inventoryMap[`${p.id}:${v.id}`] ?? 0);
+          const rawQty = inventoryMap[sku];
+
+          const qty =
+            rawQty === ""
+              ? ""
+              : rawQty === null || rawQty === undefined
+              ? 0
+              : Number(rawQty);
 
           return {
             ...v,
             qty,
           };
         });
-
         const totalQty = size_variants.reduce(
-          (sum, v) => sum + Number(v.qty ?? 0),
+          (sum, v) => sum + Number(v.qty || 0),
           0
         );
 
@@ -427,6 +438,47 @@ export const Warehouse_Context_Provider = ({ children }) => {
     });
   }, [productsCatalog, editableInventory]);
 
+  const handleChangeVariantQty = (productId, variantId, value) => {
+    const sku = `${productId}:${variantId}`;
+
+    const cleanValue = String(value ?? "").replace(/[^0-9]/g, "");
+
+    setEditableInventory((prev) => ({
+      ...prev,
+      [sku]: cleanValue,
+    }));
+
+    setWarehouseSelected((prev) => ({
+      ...prev,
+      inventory: {
+        ...(prev?.inventory || {}),
+        [sku]: cleanValue,
+      },
+    }));
+  };
+
+  const productsChosenForShop = useMemo(() => {
+    const baseProducts =
+      selectedGrindType === "ground" ? groundProductsForUI : wholeProductsForUI;
+
+    if (!selectedRoastType) return baseProducts;
+
+    return baseProducts.filter((product) => {
+      const roast =
+        product?.roast ||
+        product?.roast_type ||
+        product?.roastType ||
+        product?.roast_level;
+
+      return roast?.toLowerCase() === selectedRoastType.toLowerCase();
+    });
+  }, [
+    selectedGrindType,
+    selectedRoastType,
+    groundProductsForUI,
+    wholeProductsForUI,
+  ]);
+
   return (
     <WarehouseContext.Provider
       value={{
@@ -439,7 +491,6 @@ export const Warehouse_Context_Provider = ({ children }) => {
         getQty,
         makeSku,
         buildInventoryProducts,
-        // gettingWarehouseByID,
         updateWarehouseInventory,
         updateWarehouse,
         createWarehouse,
@@ -447,10 +498,14 @@ export const Warehouse_Context_Provider = ({ children }) => {
         buildShipFromFromGooglePlace,
         WAREHOUSE_INITIAL_STATE,
         normalizeWarehouseShipFrom,
-        // handleChangeVariantQty,
         groundProductsForUI,
         wholeProductsForUI,
-        setProductsChosenForShop,
+        editableInventory,
+        setEditableInventory,
+        productsChosenForShop,
+        setSelectedGrindType,
+        setSelectedRoastType,
+        handleChangeVariantQty,
       }}
     >
       {children}

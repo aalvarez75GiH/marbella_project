@@ -16,8 +16,9 @@ export const Product_Image_Component = ({ image }) => {
   return (
     <Container
       width="100%"
-      height="60%"
+      height="40%"
       color={theme.colors.bg.elements_bg}
+      // color={"red"}
       justify="center"
       align="center"
       style={{ paddingRight: "5%" }}
@@ -26,7 +27,7 @@ export const Product_Image_Component = ({ image }) => {
         source={isValidImage ? NotImageYet : imageSource}
         style={{
           width: "90%",
-          height: isValidImage ? "50%" : "90%",
+          height: isValidImage ? "40%" : "90%",
         }}
         contentFit="contain" // replaces resizeMode
         transition={300} // smooth fade-in

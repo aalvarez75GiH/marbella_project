@@ -1,8 +1,8 @@
-import React, { useContext, useState, useCallback } from "react";
+import React, { useContext } from "react";
 import { ScrollView } from "react-native";
 import { Image } from "expo-image";
 import { useTheme } from "styled-components/native";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useTranslation } from "react-i18next";
 
@@ -10,10 +10,9 @@ import {
   Container,
   Action_Container,
 } from "../../components/containers/general.containers";
-import { Main_Header } from "../../components/headers/main.header";
+import { Go_Back_Header } from "../../components/headers/goBack_with_label.header";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
 import { Spacer } from "../../components/spacers and globals/optimized.spacer.component";
-import { Global_activity_indicator } from "../../components/activity indicators/global_activity_indicator_screen.component";
 import { Grind_Type_Header } from "../../components/headers/grind_type.header";
 
 import { WarehouseContext } from "../../infrastructure/services/warehouse/warehouse.context";
@@ -24,31 +23,15 @@ export default function Products_By_grindType_View() {
   const tabBarHeight = useBottomTabBarHeight();
   const navigation = useNavigation();
   const CARD_HEIGHT = 290; // ✅ pick the height you want
+  const route = useRoute();
+  const { coming_from } = route.params || {};
 
   const {
-    myWarehouse,
     isLoading: whLoading,
-    shopProductsGround,
-    shopProductsWhole,
-    setProductsChosenForShop,
-    groundProductsForUI,
-    wholeProductsForUI,
     warehouseSelected,
+    setSelectedGrindType,
+    setSelectedRoastType,
   } = useContext(WarehouseContext);
-  //   console.log(
-  //     "WAREHOUSE SELECTED AT PRODUCTS VIEW: ",
-  //     JSON.stringify(warehouseSelected, null, 2)
-  //   );
-
-  //   const warehouseReady = !!myWarehouse;
-  //   const showInitialLoader = !warehouseReady || isLoading;
-  const [isLoading, setIsLoading] = useState(false);
-
-  useFocusEffect(
-    useCallback(() => {
-      setIsLoading(false);
-    }, [])
-  );
 
   return (
     <SafeArea
@@ -63,20 +46,9 @@ export default function Products_By_grindType_View() {
         align="center"
         style={{ flex: 1 }}
       >
-        <Main_Header
-          action_1={() => null}
-          action_2={() => navigation.navigate("Menu_View")}
-          caption={t("headers.main.title")}
-          subCaption={t("headers.main.subtitle")}
-          // label="Explore coffee"
-        />
+        <Go_Back_Header label="" action={() => navigation.goBack()} />
         <Spacer position="top" size="large" />
-        {/* {showInitialLoader && (
-          <Global_activity_indicator
-            caption={t("shop_products_view.activity_indicator")}
-            caption_width="65%"
-          />
-        )} */}
+
         {warehouseSelected && (
           <ScrollView
             style={{
@@ -105,14 +77,16 @@ export default function Products_By_grindType_View() {
               direction="row"
               overflow="hidden"
               onPress={() => {
-                setIsLoading(true);
-
                 requestAnimationFrame(() => {
-                  setProductsChosenForShop(groundProductsForUI);
-
+                  setSelectedGrindType("ground");
+                  setSelectedRoastType(null);
                   navigation.navigate("Products_By_Roast_View", {
-                    coming_from: "ground_beans",
+                    coming_from,
+                    grind_type: "ground",
                   });
+                  //   navigation.navigate("Products_By_Roast_View", {
+                  //     coming_from: "ground_beans",
+                  //   });
                 });
               }}
             >
@@ -154,13 +128,16 @@ export default function Products_By_grindType_View() {
               direction="row"
               overflow="hidden"
               onPress={() => {
-                setIsLoading(true);
                 requestAnimationFrame(() => {
-                  setProductsChosenForShop(wholeProductsForUI);
-
+                  setSelectedGrindType("whole");
+                  setSelectedRoastType(null);
                   navigation.navigate("Products_By_Roast_View", {
-                    coming_from: "whole_beans",
+                    coming_from,
+                    grind_type: "whole",
                   });
+                  //   navigation.navigate("Products_By_Roast_View", {
+                  //     coming_from: "whole_beans",
+                  //   });
                 });
               }}
             >

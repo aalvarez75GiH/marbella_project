@@ -139,6 +139,26 @@ export const Global_Context_Provider = ({ children }) => {
     setStatusSnackbarVisible(true);
   };
 
+  // ******** SNACKS BARS SHOW FUNCTIONS  ********
+
+  const showErrorSnackbar = (message, onAction = hideSnackbar) => {
+    showSnackbar({
+      message,
+      actionLabel: "OK",
+      bgColor: theme.colors.ui.error,
+      onAction,
+    });
+  };
+
+  const showSuccessSnackbar = (message, onAction = hideSnackbar) => {
+    showSnackbar({
+      message,
+      actionLabel: "OK",
+      bgColor: theme.colors.ui.primary,
+      onAction,
+    });
+  };
+
   const getText = (value, lang = "en") => {
     if (typeof value === "string") return value;
     if (typeof value === "number") return String(value);
@@ -185,6 +205,8 @@ export const Global_Context_Provider = ({ children }) => {
         statusSnackbarMessage,
         getText,
         getTranslatedField,
+        showErrorSnackbar,
+        showSuccessSnackbar,
       }}
     >
       {children}
