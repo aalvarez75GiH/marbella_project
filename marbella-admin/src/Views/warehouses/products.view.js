@@ -1,5 +1,11 @@
 import React, { useContext, useMemo, useState, useRef, useEffect } from "react";
-import { SectionList, View, Keyboard } from "react-native";
+import {
+  SectionList,
+  View,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -32,6 +38,8 @@ export default function Products_View() {
     createWarehouse,
   } = useContext(WarehouseContext);
 
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
   const { coming_from, products: routeProducts } = route.params || {};
   const isCreateMode = coming_from === "add_cta";
   const isEditMode = coming_from === "warehouse_tile";
@@ -40,6 +48,21 @@ export default function Products_View() {
 
   const { snackbar, showErrorSnackbar, showSuccessSnackbar } =
     useContext(GlobalContext);
+
+  // useEffect(() => {
+  //   const showSub = Keyboard.addListener("keyboardDidShow", () => {
+  //     setKeyboardVisible(true);
+  //   });
+
+  //   const hideSub = Keyboard.addListener("keyboardDidHide", () => {
+  //     setKeyboardVisible(false);
+  //   });
+
+  //   return () => {
+  //     showSub.remove();
+  //     hideSub.remove();
+  //   };
+  // }, []);
 
   const originalWarehouseRef = useRef(null);
   useEffect(() => {
@@ -135,16 +158,21 @@ export default function Products_View() {
           caption_width="70%"
         />
       ) : (
-        <>
+        <KeyboardAvoidingView
+          //       style={{ flex: 1, width: "100%" }}
+          // behavior={Platform.OS === "ios" ? "position" : undefined}
+          // keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+          style={{ flex: 1, width: "100%" }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+        >
           <Container
             width="100%"
             height="100%"
-            // color={theme.colors.bg.elements_bg}
             color={theme.colors.bg.screens_bg}
-            // color={"red"}
             justify="flex-start"
             align="center"
-            style={{ paddingBottom: 50 }}
+            style={{ flex: 1 }}
           >
             <Back_And_CTA_Header
               action_1={() => navigation.goBack()}
@@ -152,10 +180,14 @@ export default function Products_View() {
               showCTA={shouldShowCTA}
               cta_caption={isCreateMode ? "Create" : "Update"}
             />
+
             <Spacer position="top" size="large" />
+
             <SectionList
               sections={sections}
               stickySectionHeadersEnabled={false}
+              keyboardShouldPersistTaps="handled"
+              // keyboardDismissMode="interactive"
               ItemSeparatorComponent={() => (
                 <View
                   style={{
@@ -169,7 +201,7 @@ export default function Products_View() {
               contentContainerStyle={{
                 alignItems: "flex-start",
                 width: "100%",
-                paddingBottom: 24,
+                paddingBottom: 80,
                 flexGrow: 1,
                 backgroundColor: theme.colors.bg.elements_bg,
               }}
@@ -195,14 +227,84 @@ export default function Products_View() {
                 />
               )}
             />
+
             <Spacer position="top" size="large" />
           </Container>
+
           <Snack_Bar_Component
             snackbar={snackbar}
             bottom_ios={40}
             bottom_android={40}
           />
-        </>
+        </KeyboardAvoidingView>
+        // <>
+        //   <Container
+        //     width="100%"
+        //     height="100%"
+        //     // color={theme.colors.bg.elements_bg}
+        //     color={theme.colors.bg.screens_bg}
+        //     // color={"red"}
+        //     justify="flex-start"
+        //     align="center"
+        //     style={{ paddingBottom: 50 }}
+        //   >
+        //     <Back_And_CTA_Header
+        //       action_1={() => navigation.goBack()}
+        //       action_2={handleSubmitWarehouseFromProducts}
+        //       showCTA={shouldShowCTA}
+        //       cta_caption={isCreateMode ? "Create" : "Update"}
+        //     />
+        //     <Spacer position="top" size="large" />
+        //     <SectionList
+        //       sections={sections}
+        //       stickySectionHeadersEnabled={false}
+        //       ItemSeparatorComponent={() => (
+        //         <View
+        //           style={{
+        //             height: 20,
+        //             backgroundColor: theme.colors.bg.screens_bg,
+        //           }}
+        //         />
+        //       )}
+        //       keyExtractor={(item) => item.id}
+        //       showsVerticalScrollIndicator={false}
+        //       contentContainerStyle={{
+        //         alignItems: "flex-start",
+        //         width: "100%",
+        //         paddingBottom: 24,
+        //         flexGrow: 1,
+        //         backgroundColor: theme.colors.bg.elements_bg,
+        //       }}
+        //       renderSectionHeader={({ section }) => (
+        //         <Container
+        //           width="100%"
+        //           padding_vertical="12px"
+        //           margin_top="16px"
+        //           margin_bottom="12px"
+        //           color={theme.colors.bg.elements_bg}
+        //           justify="flex-start"
+        //           align="flex-start"
+        //         >
+        //           <Spacer position="left" size="large">
+        //             <Text variant="dm_sans_bold_20">{section.title}</Text>
+        //           </Spacer>
+        //         </Container>
+        //       )}
+        //       renderItem={({ item }) => (
+        //         <Product_Initial_Card
+        //           item={item}
+        //           onChangeVariantQty={handleChangeVariantQty}
+        //         />
+        //       )}
+        //     />
+        //     <Spacer position="top" size="large" />
+        //   </Container>
+        //   <Snack_Bar_Component
+        //     snackbar={snackbar}
+        //     bottom_ios={40}
+        //     bottom_android={40}
+        //   />
+        // </>
       )}
     </SafeArea>
   );
