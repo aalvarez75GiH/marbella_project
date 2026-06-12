@@ -2,13 +2,13 @@ import { Navigation } from "./src/infrastructure/navigation";
 import { ThemeProvider } from "styled-components/native";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
+import "./src/infrastructure/translations/i18n";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { Authentication_Context_Provider } from "./src/infrastructure/services/authentication/authentication.context";
 import { Geolocation_Context_Provider } from "./src/infrastructure/services/geolocation/geolocation.context";
 import { AppProviders } from "./src/infrastructure/navigation/app.providers.navigator";
 import { theme } from "./src/infrastructure/theme";
-import "./src/infrastructure/translations/i18n";
 
 export default function App() {
   // useEffect(() => {

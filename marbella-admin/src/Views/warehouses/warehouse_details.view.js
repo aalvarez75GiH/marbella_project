@@ -14,6 +14,7 @@ import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplet
 import { Checkbox } from "react-native-paper";
 import { Snackbar } from "react-native-paper";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import {
   Container,
@@ -27,7 +28,9 @@ import { Global_activity_indicator } from "../../components/activity indicators/
 import { DataInput } from "../../components/inputs/data_text_input.js";
 import { Regular_CTA } from "../../components/ctas/regular.cta.js";
 import { Time_Picker_Component } from "../../components/others/time_picker.component.js";
-import RightArrowIcon from "../../../assets/my_icons/chevron-right.svg";
+// import RightArrowIcon from "../../../assets/my_icons/chevron-right.svg";
+import { RightArrowIcon } from "../../../assets/modified_icons/right_arrow_icon.js";
+import { Detail_Navigation_Tile } from "../../components/tiles/detail_navigation.tile.js";
 
 // import { AuthenticationContext } from "../../infrastructure/services/authentication/authentication.context.js";
 import { GeolocationContext } from "../../infrastructure/services/geolocation/geolocation.context.js";
@@ -300,6 +303,18 @@ export default function Warehouse_Details_View() {
     }
   };
 
+  const representativeCompleted =
+    !!selectedWarehouse?.warehouse_information?.representative.name &&
+    !!selectedWarehouse?.warehouse_information?.representative.email &&
+    !!selectedWarehouse?.warehouse_information?.representative.phone_number;
+
+  const inventoryValues = Object.values(selectedWarehouse?.inventory || {});
+  const productsConfigured = inventoryValues.some((qty) => Number(qty) > 0);
+
+  console.log("REP INFO:", selectedWarehouse?.warehouse_information);
+  console.log("REP COMPLETED:", representativeCompleted);
+  console.log("PRODUCTS CONFIGURED:", productsConfigured);
+
   return (
     <SafeArea
       background_color={theme.colors.bg.elements_bg}
@@ -421,9 +436,7 @@ export default function Warehouse_Details_View() {
                     fontSize: 16,
                   }}
                 />
-
                 <Spacer position="top" size="large" />
-
                 <DataInput
                   ref={phoneDataInputRef}
                   label="Phone number"
@@ -463,7 +476,6 @@ export default function Warehouse_Details_View() {
                   }}
                 />
                 <Spacer position="top" size="large" />
-
                 {Platform.OS === "ios" && (
                   <View
                     style={{
@@ -675,9 +687,7 @@ export default function Warehouse_Details_View() {
                   }}
                 />
                 <Spacer position="top" size="medium" />
-
                 {/* {showOpenPicker && ( */}
-
                 <Time_Picker_Component
                   type="opening_time"
                   coming_from={coming_from}
@@ -687,7 +697,6 @@ export default function Warehouse_Details_View() {
                   type="closing_time"
                   coming_from={coming_from}
                 />
-
                 <Spacer position="top" size="medium" />
                 {/* **************** Shipping flat rate activation tile  ***************************************** */}
                 <Action_Container
@@ -869,134 +878,87 @@ export default function Warehouse_Details_View() {
                 </Action_Container>
                 <Spacer position="top" size="medium" />
                 {/* ***************************************************************************** */}
-                <Action_Container
-                  width="95%"
-                  // height="15%"
-                  padding_vertical="25px"
-                  color={theme.colors.bg.screens_bg}
-                  // color={"lightgreen"}
-                  justify="center"
-                  align="flex-start"
-                  direction="row"
-                  onPress={handleToggleWarehouseActive}
-                >
-                  <Container
-                    width="75%"
-                    style={{ alignSelf: "stretch" }}
-                    color={theme.colors.bg.screens_bg}
-                    justify="center"
-                    align="flex-start"
-                  >
-                    <Spacer position="left" size="large">
-                      <Text variant="raleway_bold_18">Warehouse active</Text>
-                    </Spacer>
-                    <Spacer position="left" size="large">
-                      <Text variant="raleway_regular_14">
-                        (Tap to change status)
-                      </Text>
-                    </Spacer>
-                  </Container>
-                  <Container
-                    width="25%"
-                    style={{ alignSelf: "stretch" }}
-                    color={theme.colors.bg.screens_bg}
-                    //color={"green"}
-                    justify="center"
-                    align="flex-end"
-                  >
-                    <Checkbox
-                      color={theme.colors.ui.primary}
-                      uncheckedColor="#A5A5A5"
-                      status={
-                        selectedWarehouse?.active ? "checked" : "unchecked"
+                <Detail_Navigation_Tile
+                  action={handleToggleWarehouseActive}
+                  main_caption={
+                    selectedWarehouse?.active
+                      ? "Warehouse: active"
+                      : "Warehouse: inactive"
+                  }
+                  sub_caption="(Tap to change status)"
+                  icon={
+                    <MaterialCommunityIcons
+                      name={
+                        selectedWarehouse?.active
+                          ? "check-circle"
+                          : "checkbox-blank-circle-outline"
                       }
-                      onPress={handleToggleWarehouseActive}
+                      size={24}
+                      color={
+                        selectedWarehouse?.active
+                          ? theme.colors.ui.primary
+                          : theme.colors.ui.error
+                      }
                     />
-                    {/* <RightArrowIcon width={20} height={20} /> */}
-                  </Container>
-                </Action_Container>
-                {/* ***************************************************************************** */}
+                  }
+                  highlighted={selectedWarehouse?.active}
+                />
                 <Spacer position="top" size="medium" />
-                <Action_Container
-                  width="95%"
-                  padding_vertical="35px"
-                  color={theme.colors.bg.screens_bg}
-                  justify="center"
-                  align="flex-start"
-                  direction="row"
-                  onPress={() =>
+                <Detail_Navigation_Tile
+                  action={() =>
                     navigation.navigate("Warehouse_Representative_View")
                   }
-                >
-                  <Container
-                    width="75%"
-                    style={{ alignSelf: "stretch" }}
-                    color={theme.colors.bg.screens_bg}
-                    justify="center"
-                    align="flex-start"
-                  >
-                    <Spacer position="left" size="large">
-                      <Text variant="raleway_bold_18">
-                        Warehouse Representative
-                      </Text>
-                    </Spacer>
-                  </Container>
-
-                  <Container
-                    width="25%"
-                    style={{ alignSelf: "stretch" }}
-                    color={theme.colors.bg.screens_bg}
-                    justify="center"
-                    align="flex-end"
-                  >
-                    <RightArrowIcon width={20} height={20} />
-                  </Container>
-                </Action_Container>
+                  main_caption="Warehouse Representative"
+                  sub_caption="Tap to see info..."
+                  icon={
+                    <MaterialCommunityIcons
+                      name={
+                        representativeCompleted
+                          ? "check-circle"
+                          : "checkbox-blank-circle-outline"
+                      }
+                      size={24}
+                      color={
+                        representativeCompleted
+                          ? theme.colors.ui.primary
+                          : theme.colors.ui.error
+                      }
+                    />
+                  }
+                  highlighted={representativeCompleted}
+                />
 
                 {/* ***************************************************************************** */}
                 <Spacer position="top" size="medium" />
-                <Action_Container
-                  width="95%"
-                  padding_vertical="35px"
-                  color={theme.colors.bg.screens_bg}
-                  // color={"lightgreen"}
-                  justify="center"
-                  align="flex-start"
-                  direction="row"
-                  onPress={
-                    () =>
-                      navigation.navigate("Products_By_grindType_View", {
-                        coming_from,
-                      })
-                    // navigation.navigate("Products_By_grindType_View")
+                <Detail_Navigation_Tile
+                  action={() =>
+                    navigation.navigate("Products_By_grindType_View", {
+                      coming_from,
+                    })
                   }
-                  style={{
-                    marginBottom: 70,
-                  }}
-                >
-                  <Container
-                    width="75%"
-                    style={{ alignSelf: "stretch" }}
-                    color={theme.colors.bg.screens_bg}
-                    //   color={"red"}
-                    justify="center"
-                    align="flex-start"
-                  >
-                    <Spacer position="left" size="large">
-                      <Text variant="raleway_bold_18">Warehouse Products</Text>
-                    </Spacer>
-                  </Container>
-                  <Container
-                    width="25%"
-                    style={{ alignSelf: "stretch" }}
-                    color={theme.colors.bg.screens_bg}
-                    //   color={"blue"}
-                    justify="center"
-                    align="flex-end"
-                  >
-                    <RightArrowIcon width={20} height={20} />
-                  </Container>
-                </Action_Container>
+                  main_caption="Warehouse Products"
+                  sub_caption="(Tap to see inventory...)"
+                  icon={
+                    <MaterialCommunityIcons
+                      name={
+                        productsConfigured
+                          ? "check-circle"
+                          : "checkbox-blank-circle-outline"
+                      }
+                      size={24}
+                      color={
+                        productsConfigured
+                          ? theme.colors.ui.primary
+                          : theme.colors.ui.error
+                      }
+                    />
+                  }
+                  highlighted={productsConfigured}
+                  last_one={true}
+                />
+
+                {/* ***************************************************************************** */}
+                <Spacer position="top" size="medium" />
               </Container>
               {isScreenLocked && (
                 <View

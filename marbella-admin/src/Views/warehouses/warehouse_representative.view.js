@@ -80,7 +80,7 @@ export default function Warehouse_Representative_View() {
             >
               <Spacer position="left" size="extraLarge">
                 <Text variant="raleway_bold_18" textAlign="center">
-                  Warehouse information
+                  Warehouse representative
                 </Text>
               </Spacer>
             </Container>

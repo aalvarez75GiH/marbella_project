@@ -27,7 +27,7 @@ export const colors = {
     black: "#000000",
     white: "#FFFFFF",
     placeHolders: "#898989",
-    not_active: "#CCCCCC",
+    not_active: "#898989",
     success: "#247F35",
     error: "#FA462D",
   },

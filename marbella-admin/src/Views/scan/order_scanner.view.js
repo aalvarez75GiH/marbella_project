@@ -16,6 +16,7 @@ import {
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Snackbar } from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { Container } from "../../components/containers/general.containers";
 import { SafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -304,9 +305,12 @@ export default function Merchant_Pickup_Scanner_View() {
               justifyContent: "center",
               alignItems: "center",
               paddingHorizontal: 24,
+              flexDirection: "row",
             }}
           >
-            <Text variant="dm_sans_bold_22">Scan Order's QR</Text>
+            <MaterialCommunityIcons name={"qrcode"} size={24} />
+            <Spacer position="left" size="medium" />
+            <Text variant="dm_sans_bold_22">Scan Order's QR code</Text>
             <Spacer position="top" size="small" />
           </View>
 

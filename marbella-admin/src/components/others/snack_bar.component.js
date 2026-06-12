@@ -6,19 +6,22 @@ import { GlobalContext } from "../../infrastructure/services/global/global.conte
 
 export const Snack_Bar_Component = ({
   snackbar,
-  bottom_ios,
-  bottom_android,
+  bottom_ios = 40,
+  bottom_android = 40,
 }) => {
   const { hideSnackbar } = React.useContext(GlobalContext);
+
+  if (!snackbar) return null;
+
   return (
     <Snackbar
       visible={snackbar.visible}
-      onDismiss={() => {}}
+      onDismiss={hideSnackbar}
       duration={Number.POSITIVE_INFINITY}
       action={{
-        label: snackbar.actionLabel,
+        label: snackbar.actionLabel || "OK",
         onPress: () => {
-          if (snackbar.onAction) {
+          if (typeof snackbar.onAction === "function") {
             snackbar.onAction();
           } else {
             hideSnackbar();
@@ -39,4 +42,3 @@ export const Snack_Bar_Component = ({
     </Snackbar>
   );
 };
-// names - bottom: Platform.OS === "ios" ? 310 : 290,

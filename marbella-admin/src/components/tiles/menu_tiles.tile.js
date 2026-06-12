@@ -14,6 +14,7 @@ export const Menu_Tile = ({
   caption = "Standard caption",
   action,
   disabled = false,
+  icon = null,
 }) => {
   return (
     <Action_Container
@@ -28,7 +29,17 @@ export const Menu_Tile = ({
       onPress={action}
     >
       <Container
-        width="90%"
+        width="15%"
+        padding_vertical="4%"
+        color={theme.colors.bg.elements_bg}
+        //color={"red"}
+        justify="center"
+        align="center"
+      >
+        {icon}
+      </Container>
+      <Container
+        width="70%"
         padding_vertical="4%"
         color={theme.colors.bg.elements_bg}
         //color={"yellow"}
@@ -46,7 +57,7 @@ export const Menu_Tile = ({
         </Spacer>
       </Container>
       <Container
-        width="10%"
+        width="15%"
         padding_vertical="4%"
         color={theme.colors.bg.elements_bg}
         // color={"blue"}

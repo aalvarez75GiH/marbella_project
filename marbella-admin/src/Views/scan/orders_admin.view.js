@@ -3,6 +3,7 @@ import { useTheme } from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { Container } from "../../components/containers/general.containers";
 import { NewSafeArea } from "../../components/spacers and globals/safe-area.component";
@@ -61,23 +62,40 @@ export default function Orders_Admin_View() {
           <Splitter_Component width="95%" height="0.3%" color={"#EBEBEB"} />
           <Menu_Tile
             caption="Scanning Customer's QR code"
-            // action={() => navigation.navigate("Personal_Information_View")}
-            // action={() => null}
             action={() => navigation.navigate("Customers_QR_Scanner_View")}
+            icon={
+              <MaterialCommunityIcons
+                name="account-outline"
+                size={24}
+                color={"#000000"}
+              />
+            }
           />
 
           <Splitter_Component width="95%" height="0.3%" color={"#EBEBEB"} />
 
           <Menu_Tile
             caption="Scanning Order's QR code"
-            // action={() => navigation.navigate("Orders_View")}
             action={() => navigation.navigate("Merchant_Pickup_Scanner_View")}
+            icon={
+              <MaterialCommunityIcons
+                name="receipt-text-outline"
+                size={24}
+                color={"#000000"}
+              />
+            }
           />
           <Splitter_Component width="95%" height="0.3%" color={"#EBEBEB"} />
           <Menu_Tile
             caption="Customer's email"
-            // action={() => navigation.navigate("Orders_View")}
             action={() => navigation.navigate("Admin_Enter_Email_View")}
+            icon={
+              <MaterialCommunityIcons
+                name="email-outline"
+                size={24}
+                color={"#000000"}
+              />
+            }
           />
           <Splitter_Component width="95%" height="0.3%" color={"#EBEBEB"} />
         </ScrollView>
